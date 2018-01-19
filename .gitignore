@@ -1,0 +1,17 @@
+# eclipse
+bin
+.classpath
+.project
+.settings
+
+# forge
+run
+
+# github
+.git
+
+# gradle
+.gradle
+
+# things
+.DS_Store
