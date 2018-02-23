@@ -40,7 +40,7 @@ public class ConfigHandler {
 	public static String[] petArmorBlackList = new String[] {};
 	
 	public static String[] blockBreakName = new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"};
-	public static String[] mobListAIBlacklist = new String[]{"EntityCreeper"}; //TODO
+	public static String[] mobListAIBlacklist = new String[]{"EntityCreeper"};
 	public static String[] itemUseBlackList = new String[] {};
 	public static float breakerChance;
 	public static float neutralAggressiv;
