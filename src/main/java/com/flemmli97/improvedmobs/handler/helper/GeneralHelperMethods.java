@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.handler.helper;
 
+import com.flemmli97.improvedmobs.entity.EntityGuardianBoat;
 import com.flemmli97.improvedmobs.handler.ConfigHandler;
 
 import net.minecraft.block.Block;
@@ -28,6 +29,8 @@ public class GeneralHelperMethods {
 	
 	public static boolean isMobInList(EntityLiving living, String[] list)
 	{
+		if(living instanceof EntityGuardianBoat)
+			return true;
 		for(int i = 0;i< list.length;i++)
 		{
 			String classPath=null;
