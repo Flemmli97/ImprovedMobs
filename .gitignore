@@ -12,6 +12,7 @@ run
 
 # gradle
 .gradle
+build
 
 # things
 .DS_Store
