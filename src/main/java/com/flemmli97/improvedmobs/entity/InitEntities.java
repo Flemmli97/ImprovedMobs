@@ -4,6 +4,7 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderGuardian;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPotion;
 import net.minecraft.client.renderer.entity.RenderSnowball;
@@ -23,7 +24,8 @@ public class InitEntities {
 		EntityRegistry.registerModEntity(EntitySnowBallNew.class, "snowBallDamage", ++entityID, ImprovedMobs.instance, 64, 10, true);
 		EntityRegistry.registerModEntity(EntityTntNew.class, "mobTnt", ++entityID, ImprovedMobs.instance, 64, 10, true);
 		EntityRegistry.registerModEntity(EntityMobSplash.class, "mobSplash", ++entityID, ImprovedMobs.instance, 64, 3, true);
-		//EntityRegistry.registerModEntity(EntityMobBoat.class, "mobBoat", ++entityID, ImprovedMobs.instance, 64, 10, true);
+		EntityRegistry.registerModEntity(EntityGuardianBoat.class, "guardianBoat", ++entityID, ImprovedMobs.instance, 64, 3, true);
+
 	}
 	
 	@SideOnly(Side.CLIENT)
@@ -55,14 +57,14 @@ public class InitEntities {
 			}
 		});
 		
-		/*RenderingRegistry.registerEntityRenderingHandler(EntityMobBoat.class, new IRenderFactory<EntityMobBoat>() 
+		RenderingRegistry.registerEntityRenderingHandler(EntityGuardianBoat.class, new IRenderFactory<EntityGuardianBoat>() 
 		{
 			@Override
-			public Render<? super EntityMobBoat> createRenderFor(RenderManager manager) 
+			public Render<? super EntityGuardianBoat> createRenderFor(RenderManager manager) 
 			{
-				return new RenderBase<>(manager);
+				return new RenderGuardian(manager);
 			}
-		});*/
+		});
 	}
 
 }

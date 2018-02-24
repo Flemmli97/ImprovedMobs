@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.handler.helper;
 
+import com.flemmli97.improvedmobs.entity.EntityGuardianBoat;
 import com.flemmli97.improvedmobs.handler.ConfigHandler;
 
 import net.minecraft.block.Block;
@@ -28,6 +29,8 @@ public class GeneralHelperMethods {
 	
 	public static boolean isMobInList(EntityLiving living, String[] list)
 	{
+		if(living instanceof EntityGuardianBoat)
+			return true;
 		for(int i = 0;i< list.length;i++)
 		{
 			String classPath=null;
@@ -59,27 +62,25 @@ public class GeneralHelperMethods {
 		return false;
 	}
 	
-    
     public static boolean canHarvest(IBlockState block, ItemStack item)
     {
-    	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
-    	boolean nerfedPick = !Items.IRON_PICKAXE.canHarvestBlock(Blocks.STONE.getDefaultState(), new ItemStack(Items.IRON_PICKAXE));
-    	return (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.ROCK))) || block.getMaterial().isToolNotRequired();
+    		boolean nerfedPick = !Items.IRON_PICKAXE.canHarvestBlock(Blocks.STONE.getDefaultState(), new ItemStack(Items.IRON_PICKAXE));
+    		return (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.ROCK))) || block.getMaterial().isToolNotRequired();
     }
 	
 	public static float calculateArmorRarityChance(ItemStack stack)
     {
-    	ItemArmor armor = (ItemArmor) stack.getItem();
-    	float fullProt = armor.getArmorMaterial().getDamageReductionAmount(EntityEquipmentSlot.HEAD)+armor.getArmorMaterial().getDamageReductionAmount(EntityEquipmentSlot.CHEST)
+		ItemArmor armor = (ItemArmor) stack.getItem();
+    		float fullProt = armor.getArmorMaterial().getDamageReductionAmount(EntityEquipmentSlot.HEAD)+armor.getArmorMaterial().getDamageReductionAmount(EntityEquipmentSlot.CHEST)
     			+armor.getArmorMaterial().getDamageReductionAmount(EntityEquipmentSlot.LEGS)+armor.getArmorMaterial().getDamageReductionAmount(EntityEquipmentSlot.FEET);
 
-    	float averageDurability = (armor.getArmorMaterial().getDurability(EntityEquipmentSlot.HEAD)+armor.getArmorMaterial().getDurability(EntityEquipmentSlot.CHEST)
+    		float averageDurability = (armor.getArmorMaterial().getDurability(EntityEquipmentSlot.HEAD)+armor.getArmorMaterial().getDurability(EntityEquipmentSlot.CHEST)
     			+armor.getArmorMaterial().getDurability(EntityEquipmentSlot.LEGS)+armor.getArmorMaterial().getDurability(EntityEquipmentSlot.FEET))/4.0F;
-    	if(averageDurability<0)
-    		averageDurability=0;
-    	float ench = armor.getItemEnchantability();
-    	float rep = armor.isRepairable() ? 1.0F:0.9F;
-    	float vanillaMulti = (armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.LEATHER)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.GOLD)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.CHAIN)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.IRON)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.DIAMOND)) ? 1.2F:1.0F;
+    		if(averageDurability<0)
+    			averageDurability=0;
+    		float ench = armor.getItemEnchantability();
+    		float rep = armor.isRepairable() ? 1.0F:0.9F;
+    		float vanillaMulti = (armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.LEATHER)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.GOLD)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.CHAIN)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.IRON)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.DIAMOND)) ? 1.2F:1.0F;
     	
     	float rarity = ((float)Math.pow(averageDurability, 1/2.864)*2.0F + fullProt*3.74F + ench*0.7F)/(rep*vanillaMulti);
     	if(rarity>=100.0)
@@ -240,7 +241,6 @@ public class GeneralHelperMethods {
 
     public static float getBlockStrength(EntityLiving entityLiving, IBlockState state, World world, BlockPos pos, boolean ignoreTool)
     {
-    	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.IRON_PICKAXE.canHarvestBlock(Blocks.STONE.getDefaultState(), new ItemStack(Items.IRON_PICKAXE));
         float hardness = world.getBlockState(pos).getBlockHardness(world, pos);
         

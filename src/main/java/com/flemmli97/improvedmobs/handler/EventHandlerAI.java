@@ -3,6 +3,7 @@ package com.flemmli97.improvedmobs.handler;
 import java.util.Iterator;
 
 import com.flemmli97.improvedmobs.entity.ai.EntityAIBlockBreaking;
+import com.flemmli97.improvedmobs.entity.ai.EntityAIRideBoat;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIUseItem;
 import com.flemmli97.improvedmobs.entity.ai.NewPathNavigateGround;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
@@ -26,6 +27,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
@@ -103,7 +105,7 @@ public class EventHandlerAI {
 	
 	@SubscribeEvent
 	public void onEntityLoad(EntityJoinWorldEvent e) {
-	    if (e.getEntity() instanceof EntityMob && !e.getWorld().isRemote) 
+	    if (e.getEntity() instanceof EntityMob && !e.getWorld().isRemote)
 	    {    	
 	    		EntityMob living= (EntityMob) e.getEntity();
 
@@ -123,6 +125,8 @@ public class EventHandlerAI {
 		    	if(!GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist))
 		    	{
 		    		living.tasks.addTask(3, new EntityAIUseItem(living, 15));
+		    		if(!(living.getNavigator() instanceof PathNavigateSwimmer))
+		    			living.tasks.addTask(6, new EntityAIRideBoat(living));
 		    	}
 	    		if(ConfigHandler.targetVillager && !(living instanceof EntityZombie))
 	    			living.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(living, EntityVillager.class, living.worldObj.rand.nextFloat()<=0.5));
