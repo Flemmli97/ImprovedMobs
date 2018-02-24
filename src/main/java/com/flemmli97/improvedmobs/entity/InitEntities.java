@@ -4,6 +4,7 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.Render;
+import net.minecraft.client.renderer.entity.RenderGuardian;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.client.renderer.entity.RenderPotion;
 import net.minecraft.client.renderer.entity.RenderShulkerBullet;
@@ -25,7 +26,7 @@ public class InitEntities {
 		EntityRegistry.registerModEntity(new ResourceLocation(ImprovedMobs.MODID, "snowBall"), EntitySnowBallNew.class, "snowBall", ++entityID, ImprovedMobs.instance, 64, 10, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ImprovedMobs.MODID, "mobTnt"),EntityTntNew.class, "mobTnt", ++entityID, ImprovedMobs.instance, 64, 10, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ImprovedMobs.MODID, "mobSplash"),EntityMobSplash.class, "mobSplash", ++entityID, ImprovedMobs.instance, 64, 3, true);
-		//EntityRegistry.registerModEntity(new ResourceLocation(ImprovedMobs.MODID, "mobBoat"),EntityMobBoat.class, "mobBoat", ++entityID, ImprovedMobs.instance, 64, 3, true);
+		EntityRegistry.registerModEntity(new ResourceLocation(ImprovedMobs.MODID, "guardianBoat"), EntityGuardianBoat.class, "guardianBoat", ++entityID, ImprovedMobs.instance, 64, 3, true);
 		EntityRegistry.registerModEntity(new ResourceLocation(ImprovedMobs.MODID, "mobBullet"),EntityMobBullet.class, "mobBullet", ++entityID, ImprovedMobs.instance, 64, 3, true);
 	
 	}
@@ -56,6 +57,15 @@ public class InitEntities {
 			public Render<? super EntityMobSplash> createRenderFor(RenderManager manager) 
 			{
 				return new RenderPotion(manager, Minecraft.getMinecraft().getRenderItem());
+			}
+		});
+		
+		RenderingRegistry.registerEntityRenderingHandler(EntityGuardianBoat.class, new IRenderFactory<EntityGuardianBoat>() 
+		{
+			@Override
+			public Render<? super EntityGuardianBoat> createRenderFor(RenderManager manager) 
+			{
+				return new RenderGuardian(manager);
 			}
 		});
 		
