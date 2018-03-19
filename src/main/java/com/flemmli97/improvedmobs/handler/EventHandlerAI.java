@@ -2,12 +2,18 @@ package com.flemmli97.improvedmobs.handler;
 
 import java.util.Iterator;
 
+import org.lwjgl.opengl.GL11;
+
 import com.flemmli97.improvedmobs.entity.ai.EntityAIBlockBreaking;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIRideBoat;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIUseItem;
 import com.flemmli97.improvedmobs.entity.ai.NewPathNavigateGround;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
+import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
+import com.flemmli97.improvedmobs.handler.packet.PathDebugging;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.FontRenderer;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -22,35 +28,108 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
+import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
-import net.minecraft.pathfinding.PathNavigateSwimmer;
+import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.EnumSkyBlock;
+import net.minecraftforge.client.event.RenderGameOverlayEvent;
+import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class EventHandlerAI {
+	
+	public static DifficultyData data;
 	
 	@SubscribeEvent
 	public void entityProps(EntityConstructing e) {
 		if (e.getEntity() instanceof EntityMob && e.getEntity().world!=null && !e.getEntity().world.isRemote)
 		{
-			if(ConfigHandler.breakerChance!=0 &&e.getEntity().world.rand.nextFloat()<=ConfigHandler.breakerChance)
+			if(ConfigHandler.breakerChance!=0 &&e.getEntity().world.rand.nextFloat()<ConfigHandler.breakerChance)
 			{
 				e.getEntity().addTag("Breaker");
 			}
 		}
 	}
+	
+	@SubscribeEvent
+    public void initTracker(WorldEvent.Load e)
+    {
+    		if(e.getWorld()!=null && !e.getWorld().isRemote)
+    			EventHandlerAI.data = DifficultyData.get(e.getWorld());
+    }
+	
+	@SubscribeEvent
+    public void increaseDifficulty(WorldTickEvent e)
+    {
+    		if(e.phase==Phase.END && e.world!=null && !e.world.isRemote)
+    		{
+    			if(ConfigHandler.shouldPunishTimeSkip)
+			{
+	    			long timeDiff = (int) Math.abs(e.world.getWorldTime() - data.getPrevTime());
+	    			if(timeDiff>2400)
+	    			{
+	    				long i = timeDiff/2400;
+	    				if(timeDiff-i*2400<(i+1)*2400-timeDiff)
+	    					i *= 2400;
+	    				else
+	    					i*=2400+2400;
+	    				EventHandlerAI.data.increaseDifficultyBy(i/24000F, e.world.getWorldTime());
+    				}
+    			}
+    			else
+    			{
+    				if(e.world.getWorldTime() - data.getPrevTime()>2400)
+	    				EventHandlerAI.data.increaseDifficultyBy(0.1F, e.world.getWorldTime());
+    			}
+    		}
+    }
+	
+	@SideOnly(Side.CLIENT)
+	@SubscribeEvent
+    public void showDifficulty(RenderGameOverlayEvent.Post e)
+    {
+		if (e.isCancelable() || e.getType() != ElementType.EXPERIENCE)
+			return;
+		if(data!=null)
+		{
+			FontRenderer font = Minecraft.getMinecraft().fontRenderer;
+			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
+			GL11.glDisable(GL11.GL_LIGHTING);
+			int x = ConfigHandler.guiX==0?2:ConfigHandler.guiX==1?e.getResolution().getScaledWidth()/2:e.getResolution().getScaledWidth()-2;
+			int y = ConfigHandler.guiY==0?2:ConfigHandler.guiY==1?e.getResolution().getScaledHeight()/2:e.getResolution().getScaledHeight()-2;
+			if(ConfigHandler.guiX==2)
+			{
+				String t = "Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty());
+				font.drawString(t, x-font.getStringWidth(t), y, 0x6d0c9e);
+			}
+			else if(ConfigHandler.guiX==1)
+			{
+				String t = "Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty());
+				font.drawString(t, x-font.getStringWidth(t)/2, y, 0x6d0c9e);
+			}
+			else
+				font.drawString("Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty()), x, y, 0x6d0c9e);
+		}
+    }
 
 	@SubscribeEvent
 	public void equip(SpecialSpawn e)
@@ -61,23 +140,23 @@ public class EventHandlerAI {
 			if(!GeneralHelperMethods.isMobInList((EntityLiving) mob, ConfigHandler.armorMobBlacklist))
 			{
 				//List<IRecipe> r= CraftingManager.getInstance().getRecipeList(); for further things maybe	
-				if(ConfigHandler.equipChance!=0 )
+				if(ConfigHandler.baseEquipChance!=0 )
 					GeneralHelperMethods.tryEquipArmor(mob);
-				if(ConfigHandler.enchantChance!=0)
+				if(ConfigHandler.baseEnchantChance!=0)
 					GeneralHelperMethods.enchantGear(mob);
-				if(ConfigHandler.itemChance!=0)
+				if(ConfigHandler.baseItemChance!=0)
 					GeneralHelperMethods.equipItem(mob);		
 				if(ConfigHandler.healthIncrease!=0)
 				{
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease, ConfigHandler.healthMax,  true);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease*0.02, ConfigHandler.healthMax,  true);
 					mob.setHealth(mob.getMaxHealth());
 				}
 				if(ConfigHandler.damageIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease, ConfigHandler.damageMax,  true);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease*0.01, ConfigHandler.damageMax,  true);
 				if(ConfigHandler.speedIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease, ConfigHandler.speedMax,  false);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease*0.001, ConfigHandler.speedMax,  false);
 				if(ConfigHandler.knockbackIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease, ConfigHandler.knockbackMax,  false);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease*0.002, ConfigHandler.knockbackMax,  false);
 			}
 		}
 	}
@@ -120,15 +199,17 @@ public class EventHandlerAI {
 		    	if(living.getTags().contains("Breaker"))
 	        {
 		    		living.tasks.addTask(1, new EntityAIBlockBreaking(living));
+		    		living.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.DIAMOND_PICKAXE));
+		    		living.setDropChance(EntityEquipmentSlot.OFFHAND, 0);
 	        }
-		    	if(!GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist))
+		    	if((ConfigHandler.mobListAsWhitelist && GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist)) ||!GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist))
 		    	{
 		    		living.tasks.addTask(3, new EntityAIUseItem(living, 15));
-		    		if(!(living.getNavigator() instanceof PathNavigateSwimmer))
+		    		if(!(living.canBreatheUnderwater()))
 		    			living.tasks.addTask(6, new EntityAIRideBoat(living));
 		    	}
 	    		if(ConfigHandler.targetVillager && !(living instanceof EntityZombie))
-					living.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(living, EntityVillager.class, living.world.rand.nextFloat()<=0.5));
+				living.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(living, EntityVillager.class, living.getTags().contains("Breaker")? false:living.world.rand.nextFloat()<=0.5));
 		    	Iterator<EntityAITaskEntry> targetTask = living.targetTasks.taskEntries.iterator();
 	    		while (targetTask.hasNext())
 	        {
@@ -155,9 +236,24 @@ public class EventHandlerAI {
 	}
 	
 	@SubscribeEvent
+	public void pathDebug(LivingEvent e)
+	{
+		if(ConfigHandler.debuggingPath && e.getEntityLiving() instanceof EntityLiving && !e.getEntityLiving().world.isRemote)
+		{
+			Path path= ((EntityLiving)e.getEntityLiving()).getNavigator().getPath();
+			if(path!=null)
+			{
+				for(int i = 0; i < path.getCurrentPathLength(); i++)
+					PacketHandler.sendToAllAround(new PathDebugging(EnumParticleTypes.NOTE.getParticleID(), path.getPathPointFromIndex(i).x,path.getPathPointFromIndex(i).y,path.getPathPointFromIndex(i).z), 0, e.getEntityLiving().posX, e.getEntityLiving().posY, e.getEntityLiving().posZ, 64);
+				PacketHandler.sendToAllAround(new PathDebugging(EnumParticleTypes.HEART.getParticleID(), path.getFinalPathPoint().x,path.getFinalPathPoint().y,path.getFinalPathPoint().z), 0, e.getEntityLiving().posX, e.getEntityLiving().posY, e.getEntityLiving().posZ, 64);
+			}
+		}
+	}
+	
+	@SubscribeEvent
 	public void friendlyFire(LivingAttackEvent e)
 	{
-		if(!ConfigHandler.friendlyFire &&e.getEntityLiving() instanceof IEntityOwnable)
+		if(!ConfigHandler.friendlyFire &&e.getEntityLiving() instanceof IEntityOwnable && !e.getEntityLiving().world.isRemote)
 		{
 			IEntityOwnable pet = (IEntityOwnable) e.getEntityLiving();
 			if(e.getSource().getTrueSource()!=null && e.getSource().getTrueSource() == pet.getOwner() && !e.getSource().getTrueSource().isSneaking())

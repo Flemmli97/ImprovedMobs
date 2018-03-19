@@ -15,7 +15,6 @@ import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
-
 public class CommonProxy {
 	
 	public void preInit(FMLPreInitializationEvent e) {
@@ -26,6 +25,7 @@ public class CommonProxy {
 
     public void init(FMLInitializationEvent e) {
     		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
+    		
     }
 
     public void postInit(FMLPostInitializationEvent e) {

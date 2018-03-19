@@ -1,7 +1,10 @@
 package com.flemmli97.improvedmobs.handler.helper;
 
+import java.util.List;
+
 import com.flemmli97.improvedmobs.entity.EntityGuardianBoat;
 import com.flemmli97.improvedmobs.handler.ConfigHandler;
+import com.flemmli97.improvedmobs.handler.EventHandlerAI;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -22,7 +25,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
 
 public class GeneralHelperMethods {
@@ -43,21 +45,20 @@ public class GeneralHelperMethods {
 					living.getClass().getName().equals("net.minecraft.entity.passive."+list[i]) ||
 					EntityList.getEntityString(living).equals(list[i]) ||
 					living.getClass().getName().equals(list[i]))
-			{
-				return true;
-			}
+					{
+						return true;
+					}
 		}
 		return false;
 	}
 	
-	public static boolean isBlockBreakable(Block block, String[] list)
+	public static boolean isBlockBreakable(Block block, List<String> list)
 	{
-		for(int i = 0;i< list.length;i++)
+		if(ConfigHandler.blockAsBlacklist && !list.contains(block.getRegistryName().toString()))
+			return true;
+		else if(list.contains(block.getRegistryName().toString()))
 		{
-			if(block.getRegistryName().toString().equals(list[i]))
-			{
-				return true;
-			}
+			return true;
 		}
 		return false;
 	}
@@ -65,7 +66,6 @@ public class GeneralHelperMethods {
     
     public static boolean canHarvest(IBlockState block, ItemStack item)
     {
-    	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
     	boolean nerfedPick = !Items.IRON_PICKAXE.canHarvestBlock(Blocks.STONE.getDefaultState(), new ItemStack(Items.IRON_PICKAXE));
     	return (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.ROCK))) || block.getMaterial().isToolNotRequired();
     }
@@ -93,68 +93,68 @@ public class GeneralHelperMethods {
     /**armortype: 0 = helmet, 1 = chest, 2 = leggs, 3 = boots;  slot: equipmentstot: armortype in reverse order*/
     public static void tryEquipArmor(EntityMob living)
     {
-		double time = getDifficultyAddition(living);
-		if(living.world.rand.nextFloat() < (ConfigHandler.equipChance+time) )
+		float time = EventHandlerAI.data.getDifficulty()*ConfigHandler.diffEquipAdd*0.01F;
+		if(living.getRNG().nextFloat() < (ConfigHandler.baseEquipChance+time) )
 		{
 	    		ItemStack helmet = ConfigHandler.getArmor(3);
 	    		int triesHelmet = 0;
-			boolean helmetChance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
+			boolean helmetChance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
 			while(!helmetChance && triesHelmet < 3)
 			{
 		        helmet = ConfigHandler.getArmor(3);
 		        if(!GeneralHelperMethods.armorItemList(helmet, ConfigHandler.armorBlacklist))
 		        {
-			        helmetChance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
+			        helmetChance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
 			        triesHelmet++;
 			        if(helmetChance)
 				        living.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
 		        }
 			}
-	        if(ConfigHandler.addChance!=0 &&living.world.rand.nextFloat() < (ConfigHandler.addChance+time) )
+	        if(ConfigHandler.baseEquipChanceAdd!=0 &&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
 			{
 		    	ItemStack chest = ConfigHandler.getArmor(2);
 		    	int tries = 0;
-				boolean chance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
+				boolean chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
 				while(!chance && tries < 3)
 				{
 			        chest = ConfigHandler.getArmor(2);
 			        if(!GeneralHelperMethods.armorItemList(chest, ConfigHandler.armorBlacklist))
 			        {
-				        chance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
+				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
 				        tries++;
 				        if(chance)
 				        	living.setItemStackToSlot(EntityEquipmentSlot.CHEST, chest);
 				    }
 				}
 			}
-	        if(ConfigHandler.addChance!=0&&living.world.rand.nextFloat() < (ConfigHandler.addChance+time) )
+	        if(ConfigHandler.baseEquipChanceAdd!=0&&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
 			{
 		    	ItemStack legs = ConfigHandler.getArmor(1);
 		    	int tries = 0;
-				boolean chance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
+				boolean chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
 				while(!chance && tries < 3)
 				{
 			        legs = ConfigHandler.getArmor(1);
 			        if(!GeneralHelperMethods.armorItemList(legs, ConfigHandler.armorBlacklist))
 			        {
-				        chance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
+				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
 				        tries++;
 				        if(chance)
 				        	living.setItemStackToSlot(EntityEquipmentSlot.LEGS, legs);
 			        }
 				}
 			}
-	        if(ConfigHandler.addChance!=0&& living.world.rand.nextFloat() < (ConfigHandler.addChance+time) )
+	        if(ConfigHandler.baseEquipChanceAdd!=0&& living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
 			{
 		    	ItemStack feet = ConfigHandler.getArmor(0);
 		    	int tries = 0;
-				boolean chance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
+				boolean chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
 				while(!chance && tries < 3)
 				{
 					if(!GeneralHelperMethods.armorItemList(feet, ConfigHandler.armorBlacklist))
 			        {
 				        feet = ConfigHandler.getArmor(0);
-				        chance = living.world.rand.nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
+				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
 				        tries++;
 				        if(chance)
 				        	living.setItemStackToSlot(EntityEquipmentSlot.FEET, feet);
@@ -178,21 +178,18 @@ public class GeneralHelperMethods {
     
     public static void enchantGear(EntityMob mob)
     {
-		double time = getDifficultyAddition(mob);
-    	for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values())
+    		for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values())
         {
-	            if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR)
+            if (entityequipmentslot.getSlotType() == EntityEquipmentSlot.Type.ARMOR)
+            {
+            		ItemStack itemstack = mob.getItemStackFromSlot(entityequipmentslot);
+	            if (itemstack != null && mob.getRNG().nextFloat() < (ConfigHandler.baseEnchantChance+EventHandlerAI.data.getDifficulty()*ConfigHandler.diffEnchantAdd*0.01F))
 	            {
-	            ItemStack itemstack = mob.getItemStackFromSlot(entityequipmentslot);
-	
-	            if (itemstack != null && mob.world.rand.nextFloat() < (ConfigHandler.enchantChance+time))
-	            {
-	                EnchantmentHelper.addRandomEnchantment(mob.world.rand, itemstack, Math.max(30,(int)(5.0F + (float)mob.world.rand.nextInt((int) (10+time*10)))), true);
+	                EnchantmentHelper.addRandomEnchantment(mob.getRNG(), itemstack, 5 + mob.getRNG().nextInt(25), true);
 	            }
-	        }
+            }
         }
-    }
-    
+    } 
     
     public static float getBreakSpeed(EntityLiving entityLiving, ItemStack stack, IBlockState state)
     {
@@ -241,12 +238,9 @@ public class GeneralHelperMethods {
         return (f < 0 ? 0 : f);
     }
 
-    public static float getBlockStrength(EntityLiving entityLiving, IBlockState state, World world, BlockPos pos, boolean ignoreTool)
+    public static float getBlockStrength(EntityLiving entityLiving, IBlockState state, World world, BlockPos pos)
     {
-    	// Returns true if something like Iguana Tweaks is nerfing the vanilla picks. This will then cause zombies to ignore the harvestability of blocks when holding picks
-    	boolean nerfedPick = !Items.IRON_PICKAXE.canHarvestBlock(Blocks.STONE.getDefaultState(), new ItemStack(Items.IRON_PICKAXE));
         float hardness = world.getBlockState(pos).getBlockHardness(world, pos);
-        
         if (hardness < 0.0F)
         {
             return 0.0F;
@@ -254,16 +248,11 @@ public class GeneralHelperMethods {
         
 		ItemStack main = entityLiving.getHeldItemMainhand();
 		ItemStack off = entityLiving.getHeldItemOffhand();
-
-		boolean canHarvestMain = ignoreTool || (main != null && (main.getItem().canHarvestBlock(state, main) || (main.getItem() instanceof ItemPickaxe && nerfedPick))) || state.getMaterial().isToolNotRequired();
-		boolean canHarvestOff = ignoreTool || (off != null && (off.getItem().canHarvestBlock(state, off) || (off.getItem() instanceof ItemPickaxe && nerfedPick))) || state.getMaterial().isToolNotRequired();
-
-		
-        if (!canHarvestMain)
+        if (!canHarvest(state, main))
         {
             return getBreakSpeed(entityLiving, main, state) / hardness / 100F;
         }
-        else if(!canHarvestOff)
+        else if(!canHarvest(state, off))
         {
             return getBreakSpeed(entityLiving, off, state) / hardness / 100F;
         }
@@ -275,9 +264,9 @@ public class GeneralHelperMethods {
 
     public static void equipItem(EntityMob mob)
     {    		
-    		if(mob.world.rand.nextFloat() < (ConfigHandler.itemChance))
+    		if(mob.getRNG().nextFloat() < (ConfigHandler.baseItemChance) && mob.getRNG().nextFloat()<0.8)
     		{
-        		int itemRand = mob.world.rand.nextInt(8);
+        		int itemRand = mob.getRNG().nextInt(8);
         		switch(itemRand)
         		{
         			case 0:
@@ -308,24 +297,10 @@ public class GeneralHelperMethods {
     		}
     }
     
-    public static double getDifficultyAddition(EntityMob mob)
-    {
-    		float f = mob.world.getDifficulty() == EnumDifficulty.HARD ? 1.1F : 1.0F;
-		double timeTotal = mob.world.getTotalWorldTime();
-		double timeWorld = mob.world.getWorldTime();
-		double time = Math.max(timeTotal, timeWorld);
-		if(time<24000)
-			time=0;
-		else
-			time-=24000;
-		time = (time/(double)2400000)*f;
-		return time;
-    }
-    
     public static void modifyAttr(EntityMob mob, IAttribute att, double value, double max, boolean multiply)
     {
     		double oldValue = mob.getAttributeMap().getAttributeInstance(att).getBaseValue();
-    		value *= getDifficultyAddition(mob);
+    		value *= EventHandlerAI.data.getDifficulty();
     		if(multiply)
     		{
     			value = Math.min(value, max-1);

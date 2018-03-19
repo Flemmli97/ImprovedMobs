@@ -5,6 +5,7 @@ import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
 
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
@@ -25,7 +26,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	EntityLivingBase target;
 	int scanTick;
 	private BlockPos markedLoc;
-	private int digTick;
+	private int digTimer;
 	
 	public EntityAIBlockBreaking(EntityLiving living)
 	{
@@ -35,7 +36,8 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	public boolean shouldExecute() {
 		target = living.getAttackTarget();
 		double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
-		if(living.ticksExisted%20 == 0 && target != null && motion<0.5 && living.getDistance(target) > 1D && target.onGround)
+		
+		if(living.ticksExisted%20 == 0 && target != null && motion<0.8 && living.getDistance(target) > 1D && living.onGround)
 		{
 
 			BlockPos blockPos = this.getBlock(living);
@@ -72,23 +74,23 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	@Override
 	public void resetTask() {
 		markedLoc = null;
-		digTick = 0;
+		digTimer = 0;
 	}
 
 	@Override
 	public void updateTask() {
 		if(markedLoc == null || living.world.getBlockState(markedLoc).getMaterial() == Material.AIR)
 		{
-			digTick = 0;
+			digTimer = 0;
 			return;
 		}
 		IBlockState state = living.world.getBlockState(markedLoc);
-		digTick++;
+		digTimer++;
 		
-		float str = GeneralHelperMethods.getBlockStrength(this.living, state, living.world, markedLoc, false) * (digTick + 1);
+		float str = GeneralHelperMethods.getBlockStrength(this.living, state, living.world, markedLoc) * (digTimer + 1);
 		if(str >= 1F)
 		{
-			digTick = 0;
+			digTimer = 0;
 			
 			ItemStack item = living.getHeldItemMainhand();
 			ItemStack itemOff = living.getHeldItemOffhand();
@@ -98,14 +100,14 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 			living.getNavigator().setPath(living.getNavigator().getPathToEntityLiving(target), 1D);
 		} else
 		{
-			if(digTick%5 == 0)
+			if(digTimer%5 == 0)
 			{
-				
+				SoundType sound = state.getBlock().getSoundType(state, living.world, markedLoc, living);
 				living.getNavigator().setPath(living.getNavigator().getPathToPos(markedLoc), 1D);
-				living.world.playSound(null, markedLoc, SoundEvents.BLOCK_NOTE_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
+				living.world.playSound(null, markedLoc, ConfigHandler.useBlockBreakSound? sound.getBreakSound():SoundEvents.BLOCK_NOTE_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
 				living.swingArm(EnumHand.MAIN_HAND);
 				living.getLookHelper().setLookPosition(markedLoc.getX(), markedLoc.getY(), markedLoc.getZ(), 0.0F, 0.0F);
-				living.world.sendBlockBreakProgress(living.getEntityId(), markedLoc, (int)(str)*digTick*10);
+				living.world.sendBlockBreakProgress(living.getEntityId(), markedLoc, (int)(str)*digTimer*10);
 			}
 		}
 	}
@@ -146,7 +148,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 				ItemStack item = entityLiving.getHeldItemMainhand();
 				ItemStack itemOff = entityLiving.getHeldItemMainhand();
 
-				if(!GeneralHelperMethods.isBlockBreakable(block.getBlock(), ConfigHandler.blockBreakName))
+				if(!GeneralHelperMethods.isBlockBreakable(block.getBlock(), ConfigHandler.breakList))
 				{
 					scanTick = (scanTick + 1)%passMax;
 					return null;

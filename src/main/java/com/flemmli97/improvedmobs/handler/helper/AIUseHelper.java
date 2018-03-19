@@ -178,7 +178,6 @@ public class AIUseHelper {
 				if(dis < 8 && AIUseHelper.tryPlaceLava(theEntity.world, new BlockPos(target.posX-2+theEntity.world.rand.nextInt(4),target.posY-1+theEntity.world.rand.nextInt(2),target.posZ-2+theEntity.world.rand.nextInt(4))))
 				{
 					theEntity.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:fire_resistance"), 240, 1, true, false));
-					//theEntity.setItemStackToSlot(type.getHand() == EnumHand.MAIN_HAND?EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, new ItemStack(Items.BUCKET));
 				}
 			}
 			else if (type.getItem() == Items.BUCKET)
