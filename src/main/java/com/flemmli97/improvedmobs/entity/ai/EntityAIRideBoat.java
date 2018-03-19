@@ -21,7 +21,7 @@ public class EntityAIRideBoat extends EntityAIBase{
 		{
 			if(this.wait==40)
 				return true;
-			if(this.wait<60)
+			if(this.wait<40)
 				this.wait++;
 			else
 				this.wait=0;
