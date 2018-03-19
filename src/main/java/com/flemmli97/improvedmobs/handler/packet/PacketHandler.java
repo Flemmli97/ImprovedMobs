@@ -19,6 +19,7 @@ public class PacketHandler {
 	
 	public static final void registerPackets() {
 		dispatcher.registerMessage(ExplosionPacket.Handler.class, ExplosionPacket.class, 0, Side.CLIENT);
+		dispatcher.registerMessage(PathDebugging.Handler.class, PathDebugging.class, 1, Side.CLIENT);
 	}
 	
 	public static final void sendTo(IMessage message, EntityPlayerMP player) {
