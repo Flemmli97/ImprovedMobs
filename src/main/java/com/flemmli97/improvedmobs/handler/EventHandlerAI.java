@@ -35,6 +35,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigate;
 import net.minecraft.pathfinding.PathNavigateGround;
+import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.world.EnumSkyBlock;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -206,7 +207,7 @@ public class EventHandlerAI {
 		    	if((ConfigHandler.mobListAsWhitelist && GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist)) ||!GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist))
 		    	{
 		    		living.tasks.addTask(3, new EntityAIUseItem(living, 15));
-		    		if(!(living.canBreatheUnderwater()))
+		    		if(!(living.canBreatheUnderwater()) || !(living.getNavigator() instanceof PathNavigateSwimmer))
 		    			living.tasks.addTask(6, new EntityAIRideBoat(living));
 		    	}
 	    		if(ConfigHandler.targetVillager && !(living instanceof EntityZombie))
