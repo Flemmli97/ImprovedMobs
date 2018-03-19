@@ -206,7 +206,7 @@ public class EventHandlerAI {
 		    	if((ConfigHandler.mobListAsWhitelist && GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist)) ||!GeneralHelperMethods.isMobInList((EntityLiving) e.getEntity(), ConfigHandler.mobListAIBlacklist))
 		    	{
 		    		living.tasks.addTask(3, new EntityAIUseItem(living, 15));
-		    		if(!(living.canBreatheUnderwater() && living.getNavigator() instanceof PathNavigateSwimmer))
+		    		if(!(living.canBreatheUnderwater() || living.getNavigator() instanceof PathNavigateSwimmer))
 		    			living.tasks.addTask(6, new EntityAIRideBoat(living));
 		    	}
 	    		if(ConfigHandler.targetVillager && !(living instanceof EntityZombie))
