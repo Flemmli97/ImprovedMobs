@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = "1.0"
 group = "com.flemmli97.improvedmobs"
-archivesBaseName = "Improved Mobs 1.1.3 [1.11.2]"
+archivesBaseName = "Improved Mobs 1.1.4 [1.11.2]"
 
 sourceCompatibility = targetCompatibility = "1.8" // Need this here so eclipse task generates correctly.
 compileJava {

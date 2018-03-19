@@ -2,12 +2,13 @@ package com.flemmli97.improvedmobs.handler.packet;
 
 import java.util.List;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.entity.MobExplosion;
 import com.google.common.collect.Lists;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.client.Minecraft;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -145,11 +146,12 @@ public class ExplosionPacket  implements IMessage{
 
         @Override
         public IMessage onMessage(ExplosionPacket msg, MessageContext ctx) {
-        		MobExplosion explosion = new MobExplosion(Minecraft.getMinecraft().world, (Entity)null, msg.getX(), msg.getY(), msg.getZ(), msg.getStrength(), msg.getAffectedBlockPositions());
+        		EntityPlayer player = ImprovedMobs.proxy.getPlayerEntity(ctx);
+        		MobExplosion explosion = new MobExplosion(player.world, (Entity)null, msg.getX(), msg.getY(), msg.getZ(), msg.getStrength(), msg.getAffectedBlockPositions());
             explosion.doExplosionB(true);
-            Minecraft.getMinecraft().player.motionX += (double)msg.getMotionX();
-            Minecraft.getMinecraft().player.motionY += (double)msg.getMotionY();
-            Minecraft.getMinecraft().player.motionZ += (double)msg.getMotionZ();	
+            player.motionX += (double)msg.getMotionX();
+            player.motionY += (double)msg.getMotionY();
+            player.motionZ += (double)msg.getMotionZ();	
             return null;
         }
     }
