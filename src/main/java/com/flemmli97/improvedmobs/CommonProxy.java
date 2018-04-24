@@ -4,6 +4,7 @@ import java.io.File;
 
 import com.flemmli97.improvedmobs.entity.InitEntities;
 import com.flemmli97.improvedmobs.handler.ConfigHandler;
+import com.flemmli97.improvedmobs.handler.DifficultyHandler;
 import com.flemmli97.improvedmobs.handler.EventHandlerAI;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 
@@ -24,8 +25,9 @@ public class CommonProxy {
     }
 
     public void init(FMLInitializationEvent e) {
-    		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
-    		
+		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
+		if(ConfigHandler.enableDifficultyScaling)
+			MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
     }
 
     public void postInit(FMLPostInitializationEvent e) {

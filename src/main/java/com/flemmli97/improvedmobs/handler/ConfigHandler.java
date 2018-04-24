@@ -31,6 +31,7 @@ public class ConfigHandler {
 	//public static String[] modName = new String[]{};
 	public static String[] armorBlacklist = new String[]{};
 	public static String[] armorMobBlacklist = new String[]{};
+	public static boolean enableDifficultyScaling;
 	
 	public static float baseEquipChance;
 	public static float baseEquipChanceAdd;
@@ -38,11 +39,12 @@ public class ConfigHandler {
 	public static float baseItemChance;
 	public static float baseEnchantChance;
 	public static float diffEnchantAdd;
+	public static boolean shouldDropEquip;
 	
 	public static boolean friendlyFire;
 	public static String[] petArmorBlackList = new String[] {};
 	
-	private static String[] blockBreakName = new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"};
+	private static String[] blockBreakName = new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:spruce_door", "minecraft:birch_door", "minecraft:jungle_door", "minecraft:acacia_door", "minecraft:dark_oak_door",   "minecraft:glass_pane", "minecraft:stained_glass_pane"};
 	public static boolean blockAsBlacklist;
 	public static boolean useBlockBreakSound;
 	public static String[] mobListAIBlacklist = new String[]{"EntityCreeper"};
@@ -76,6 +78,7 @@ public class ConfigHandler {
 		config.addCustomCategoryComment("gui", "GUI");
 		config.addCustomCategoryComment("debug", "Debugging");
 		
+		enableDifficultyScaling = config.getBoolean("Enable difficulty scaling", "general", true, "Disable/Enables the whole difficulty scaling of this mod");
 		mobListLight = config.getStringList("Mob List", "general", mobListLight, "Mobs to include for the new light spawning rules.");
 		light = config.getInt("Light", "general", 7, 0, 15, "Light level, blocks can have at max, so mobs can spawn on them.");
 		
@@ -89,11 +92,12 @@ public class ConfigHandler {
 		baseEnchantChance = config.getFloat("Enchanting Chance", "general", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
 		diffEnchantAdd = getFloatConfig(config, "Enchanting Addition", "general", 0.3F,  "Adds additional x*difficulty% to base enchanting chance");
 		baseItemChance = config.getFloat("Item Equip Chance", "general", 0.05F, 0, 1, "Chance for mobs to have an item. Always has a 20% fail chance");
+		shouldDropEquip = config.getBoolean("Should drop equipment", "general", false, "Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)");
 
 		friendlyFire = config.getBoolean("FriendlyFire", "general", false, "Disable/Enable friendly fire for owned pets.");
 		petArmorBlackList = config.getStringList("Pet Blacklist", "general", petArmorBlackList, "Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.");
 
-		blockBreakName = config.getStringList("Block WhiteList", "mob ai", blockBreakName, "Whitelist for blocks, which can be actively broken.");
+		blockBreakName = config.getStringList("Block WhiteList", "mob ai", blockBreakName, "Whitelist for blocks, which can be actively broken. Use +Classname to include all blocks of that type e.g. \"+BlockDoor\" will make all blocks extending BlockDoor breakable.");
 		blockAsBlacklist = config.getBoolean("Block as Blacklist", "mob ai", false, "Treat Break-Whitelist as Blacklist");
 		useBlockBreakSound = config.getBoolean("Sound", "mob ai", false, "Use the block breaking sound instead of a knocking sound");
 		mobListAIBlacklist = config.getStringList("AI Blacklist", "mob ai", mobListAIBlacklist, "Blacklist for mobs, which should not gain the new ai");
