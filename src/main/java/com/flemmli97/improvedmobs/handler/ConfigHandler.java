@@ -30,6 +30,7 @@ public class ConfigHandler {
 	//public static String[] modName = new String[]{};
 	public static String[] armorBlacklist = new String[]{};
 	public static String[] armorMobBlacklist = new String[]{};
+	public static boolean enableDifficultyScaling;
 	
 	public static float baseEquipChance;
 	public static float baseEquipChanceAdd;
@@ -37,7 +38,8 @@ public class ConfigHandler {
 	public static float baseItemChance;
 	public static float baseEnchantChance;
 	public static float diffEnchantAdd;
-	
+	public static boolean shouldDropEquip;
+
 	public static boolean friendlyFire;
 	public static String[] petArmorBlackList = new String[] {};
 	
@@ -75,6 +77,7 @@ public class ConfigHandler {
 		config.addCustomCategoryComment("gui", "GUI");
 		config.addCustomCategoryComment("debug", "Debugging");
 		
+		enableDifficultyScaling = config.getBoolean("Enable difficulty scaling", "general", true, "Disable/Enables the whole difficulty scaling of this mod");
 		mobListLight = config.getStringList("Mob List", "general", mobListLight, "Mobs to include for the new light spawning rules.");
 		light = config.getInt("Light", "general", 7, 0, 15, "Light level, blocks can have at max, so mobs can spawn on them.");
 		
@@ -88,6 +91,7 @@ public class ConfigHandler {
 		baseEnchantChance = config.getFloat("Enchanting Chance", "general", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
 		diffEnchantAdd = getFloatConfig(config, "Enchanting Addition", "general", 0.3F,  "Adds additional x*difficulty% to base enchanting chance");
 		baseItemChance = config.getFloat("Item Equip Chance", "general", 0.05F, 0, 1, "Chance for mobs to have an item. Always has a 20% fail chance");
+		shouldDropEquip = config.getBoolean("Should drop equipment", "general", false, "Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)");
 
 		friendlyFire = config.getBoolean("FriendlyFire", "general", false, "Disable/Enable friendly fire for owned pets.");
 		petArmorBlackList = config.getStringList("Pet Blacklist", "general", petArmorBlackList, "Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.");
