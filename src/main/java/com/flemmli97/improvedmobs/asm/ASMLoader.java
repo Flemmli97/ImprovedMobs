@@ -10,7 +10,7 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.Name;
  * @author kevin
  *
  */
-@MCVersion(value="1.12.2")
+@MCVersion(value="1.11.2")
 @Name(value="ImprovedMobs/ASM")
 public class ASMLoader implements IFMLLoadingPlugin{
 
