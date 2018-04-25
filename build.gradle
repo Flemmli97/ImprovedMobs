@@ -25,10 +25,17 @@ minecraft {
     runDir = "run"
 
     mappings = "snapshot_20161111"
-    makeObfSourceJar = false // an Srg named sources jar is made by default. uncomment this to disable.
+    makeObfSourceJar = false
 }
 
 dependencies {
+
+}
+
+jar {
+    manifest {
+        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "com.flemmli97.improvedmobs.asm.ASMLoader")
+    }
 
 }
 
