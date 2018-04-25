@@ -39,11 +39,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
     public PathPoint getPathPointToCoords(double x, double y, double z)
     {
         return this.openPoint(MathHelper.floor_double(x), MathHelper.floor_double(y), MathHelper.floor_double(z));
-    }
-    
-    //l 238 getsafepoint
-    
-    
+    }  
     
 	@Override
 	public int findPathOptions(PathPoint[] pathOptions, PathPoint currentPoint, PathPoint targetPoint, float maxDistance)
