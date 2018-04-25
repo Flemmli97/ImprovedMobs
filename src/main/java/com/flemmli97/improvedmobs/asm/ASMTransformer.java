@@ -32,7 +32,7 @@ public class ASMTransformer implements IClassTransformer{
 	{
 		patches.put("net.minecraft.pathfinding.PathNavigateGround", pathNavigateGround());
 		classMethod.put("net.minecraft.pathfinding.PathNavigateGround", 
-				new Method("getPathFinder","func_179679_a","a", "()Lnet/minecraft/pathfinding/PathFinder;", "()Lbem;"));
+				new Method("getPathFinder","func_179679_a","a", "()Lnet/minecraft/pathfinding/PathFinder;", "()Lbbe;"));
 	}
 	
 	@Override

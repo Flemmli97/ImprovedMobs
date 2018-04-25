@@ -68,15 +68,15 @@ public class EventHandlerAI {
 					GeneralHelperMethods.equipItem(mob);
 				if(ConfigHandler.healthIncrease!=0)
 				{
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease, ConfigHandler.healthMax,  true);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease*0.02, ConfigHandler.healthMax,  true);
 					mob.setHealth(mob.getMaxHealth());
 				}
 				if(ConfigHandler.damageIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease, ConfigHandler.damageMax,  true);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease*0.01, ConfigHandler.damageMax,  true);
 				if(ConfigHandler.speedIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease, ConfigHandler.speedMax,  false);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease*0.001, ConfigHandler.speedMax,  false);
 				if(ConfigHandler.knockbackIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease, ConfigHandler.knockbackMax,  false);
+					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease*0.002, ConfigHandler.knockbackMax,  false);
 			}
 		}
 	}
