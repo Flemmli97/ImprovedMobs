@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.flemmli97.improvedmobs.entity.EntityGuardianBoat;
 import com.flemmli97.improvedmobs.handler.ConfigHandler;
-import com.flemmli97.improvedmobs.handler.DifficultyHandler;
+import com.flemmli97.improvedmobs.handler.DifficultyData;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.material.Material;
@@ -18,9 +18,9 @@ import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.init.PotionTypes;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemPickaxe;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
@@ -54,19 +54,32 @@ public class GeneralHelperMethods {
 	
 	public static boolean isBlockBreakable(Block block, List<String> list)
 	{
-		if(ConfigHandler.blockAsBlacklist && !list.contains(block.getRegistryName().toString()))
-			return true;
-		else if(list.contains(block.getRegistryName().toString()))
+		if(ConfigHandler.blockAsBlacklist)
 		{
-			return true;
+			if(!list.contains(block.getRegistryName().toString()))
+				return true;
+			for(ConfigHandler.BlockClassPredicate pred : ConfigHandler.breakListClass)
+			{
+				if(!pred.matches(block))
+					return true;
+			}
+		}
+		else
+		{
+			for(ConfigHandler.BlockClassPredicate pred : ConfigHandler.breakListClass)
+			{
+				if(pred.matches(block))
+					return true;
+			}
+			if(ConfigHandler.breakListNames.contains(block.getRegistryName().toString()))
+				return true;
 		}
 		return false;
 	}
 	
     public static boolean canHarvest(IBlockState block, ItemStack item)
     {
-    		boolean nerfedPick = !Items.IRON_PICKAXE.canHarvestBlock(Blocks.STONE.getDefaultState(), new ItemStack(Items.IRON_PICKAXE));
-    		return (item != null && (item.getItem().canHarvestBlock(block, item) || (item.getItem() instanceof ItemPickaxe && nerfedPick && block.getMaterial() == Material.ROCK))) || block.getMaterial().isToolNotRequired();
+    		return item != null && (item.getItem().canHarvestBlock(block, item)|| block.getMaterial().isToolNotRequired());
     }
 	
 	public static float calculateArmorRarityChance(ItemStack stack)
@@ -92,8 +105,8 @@ public class GeneralHelperMethods {
     /**armortype: 0 = helmet, 1 = chest, 2 = leggs, 3 = boots;  slot: equipmentstot: armortype in reverse order*/
     public static void tryEquipArmor(EntityMob living)
     {
-		float time = DifficultyHandler.data!=null?DifficultyHandler.data.getDifficulty()*ConfigHandler.diffEquipAdd*0.01F:0;
-		int maxTries = 7;
+		float time = DifficultyData.get(living.worldObj).getDifficulty()*ConfigHandler.diffEquipAdd*0.01F;
+		int maxTries = 10;
 		if(living.getRNG().nextFloat() < (ConfigHandler.baseEquipChance+time) )
 		{
 	    		ItemStack helmet = ConfigHandler.getArmor(3);
@@ -102,7 +115,7 @@ public class GeneralHelperMethods {
 			while(!helmetChance && triesHelmet < maxTries)
 			{
 		        helmet = ConfigHandler.getArmor(3);
-		        if(!GeneralHelperMethods.armorItemList(helmet, ConfigHandler.armorBlacklist))
+		        if(!GeneralHelperMethods.itemInList(helmet.getItem(), ConfigHandler.armorBlacklist))
 		        {
 			        helmetChance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
 			        triesHelmet++;
@@ -123,7 +136,7 @@ public class GeneralHelperMethods {
 				while(!chance && tries < maxTries)
 				{
 			        chest = ConfigHandler.getArmor(2);
-			        if(!GeneralHelperMethods.armorItemList(chest, ConfigHandler.armorBlacklist))
+			        if(!GeneralHelperMethods.itemInList(chest.getItem(), ConfigHandler.armorBlacklist))
 			        {
 				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
 				        tries++;
@@ -145,7 +158,7 @@ public class GeneralHelperMethods {
 				while(!chance && tries < maxTries)
 				{
 			        legs = ConfigHandler.getArmor(1);
-			        if(!GeneralHelperMethods.armorItemList(legs, ConfigHandler.armorBlacklist))
+			        if(!GeneralHelperMethods.itemInList(legs.getItem(), ConfigHandler.armorBlacklist))
 			        {
 				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
 				        tries++;
@@ -166,7 +179,7 @@ public class GeneralHelperMethods {
 				boolean chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
 				while(!chance && tries < maxTries)
 				{
-					if(!GeneralHelperMethods.armorItemList(feet, ConfigHandler.armorBlacklist))
+					if(!GeneralHelperMethods.itemInList(feet.getItem(), ConfigHandler.armorBlacklist))
 			        {
 				        feet = ConfigHandler.getArmor(0);
 				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
@@ -184,18 +197,6 @@ public class GeneralHelperMethods {
 		}
     }
     
-    public static boolean armorItemList(ItemStack stack, String[] list)
-    {
-    	for(int i = 0;i< list.length;i++)
-		{
-			if(stack.getItem().getRegistryName().toString().equals(list[i]))
-			{
-				return true;
-			}
-		}
-		return false;
-    }
-    
     public static void enchantGear(EntityMob mob)
     {
     		for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values())
@@ -204,7 +205,7 @@ public class GeneralHelperMethods {
 	            {
 	            ItemStack itemstack = mob.getItemStackFromSlot(entityequipmentslot);
 	
-	            if (itemstack != null && mob.getRNG().nextFloat() < (ConfigHandler.baseEnchantChance+(DifficultyHandler.data!=null?DifficultyHandler.data.getDifficulty()*ConfigHandler.diffEnchantAdd*0.01F:0)))
+	            if (itemstack != null && mob.getRNG().nextFloat() < (ConfigHandler.baseEnchantChance+(DifficultyData.get(mob.worldObj).getDifficulty()*ConfigHandler.diffEnchantAdd*0.01F)))
 	            {
 	                EnchantmentHelper.addRandomEnchantment(mob.getRNG(), itemstack, 5 + mob.getRNG().nextInt(25), true);
 	            }
@@ -291,41 +292,60 @@ public class GeneralHelperMethods {
     		if(mob.getRNG().nextFloat() < (ConfigHandler.baseItemChance) && mob.getRNG().nextFloat()<0.8)
     		{
         		int itemRand = mob.getRNG().nextInt(8);
+        		ItemStack stack = null;
+        		EntityEquipmentSlot hand = EntityEquipmentSlot.MAINHAND;
         		switch(itemRand)
         		{
         			case 0:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.LAVA_BUCKET));
+        				hand=EntityEquipmentSlot.OFFHAND;
+        				stack=new ItemStack(Items.LAVA_BUCKET);
         				break;
         			case 1:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.SNOWBALL));
+        				hand=EntityEquipmentSlot.OFFHAND;
+        				stack=new ItemStack(Items.SNOWBALL);
         				break;
         			case 2:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.ENDER_PEARL));
+        				hand=EntityEquipmentSlot.OFFHAND;
+        				stack=new ItemStack(Items.ENDER_PEARL);
         				break;
         			case 3:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, new ItemStack(Items.BOW));
+        				hand=EntityEquipmentSlot.MAINHAND;
+        				stack=new ItemStack(Items.BOW);
         				break;
         			case 4:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(ItemBlock.getItemFromBlock(Blocks.TNT)));
+        				hand=EntityEquipmentSlot.OFFHAND;
+        				stack=new ItemStack(ItemBlock.getItemFromBlock(Blocks.TNT));
         				break;
         			case 5:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.FLINT_AND_STEEL));
+        				hand=EntityEquipmentSlot.OFFHAND;
+        				stack=new ItemStack(Items.FLINT_AND_STEEL);
         				break;
         			case 6:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), PotionTypes.HARMING));
+        				hand=EntityEquipmentSlot.OFFHAND;
+        				stack=PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), PotionTypes.HARMING);
         				break;
         			case 7:
-        				mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(Items.ENCHANTED_BOOK));
+        				hand=EntityEquipmentSlot.OFFHAND;
+        				stack=new ItemStack(Items.ENCHANTED_BOOK);
         				break;
         		}
+        		if(stack!=null&&!itemInList(stack.getItem(), ConfigHandler.itemUseBlackList))
+        			mob.setItemStackToSlot(hand, stack);
     		}
-
+    }
+    
+    public static boolean itemInList(Item item, String[] list)
+    {
+    	for(String s : list)
+    		if(item.getRegistryName().equals(s))
+    			return true;
+    	return false;
     }
     
     public static void modifyAttr(EntityMob mob, IAttribute att, double value, double max, boolean multiply)
     {
     		double oldValue = mob.getAttributeMap().getAttributeInstance(att).getBaseValue();
-    		value *= DifficultyHandler.data!=null?DifficultyHandler.data.getDifficulty():0;
+    		value *= DifficultyData.get(mob.worldObj).getDifficulty();
     		if(multiply)
     		{
     			value = Math.min(value, max-1);

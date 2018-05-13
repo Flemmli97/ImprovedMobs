@@ -8,30 +8,40 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.google.common.collect.ImmutableList;
 
+import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
+
 public class ConfigHandler {
 
 	public static String[] mobListLight = new String[]{};
+	public static boolean mobListLightBlackList;
 	public static int light;
 	//public static String[] modName = new String[]{};
 	public static String[] armorBlacklist = new String[]{};
-	public static String[] armorMobBlacklist = new String[]{};
 	public static boolean enableDifficultyScaling;
 	
+	//Equipment config
+	public static String[] armorMobBlacklist = new String[]{};
+	public static boolean armorMobWhiteList;
+
 	public static float baseEquipChance;
 	public static float baseEquipChanceAdd;
 	public static float diffEquipAdd;
@@ -39,20 +49,37 @@ public class ConfigHandler {
 	public static float baseEnchantChance;
 	public static float diffEnchantAdd;
 	public static boolean shouldDropEquip;
-
+	public static String[] mobListEquipBlacklist = new String[]{"EntityCreeper"};
+	public static boolean mobListEquipWhitelist;
+	
 	public static boolean friendlyFire;
 	public static String[] petArmorBlackList = new String[] {};
+	public static boolean petWhiteList;
 	
-	private static String[] blockBreakName = new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"};
+	//Block breaking config
+	private static String[] blockBreakName = new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:spruce_door", "minecraft:birch_door", "minecraft:jungle_door", "minecraft:acacia_door", "minecraft:dark_oak_door",   "minecraft:glass_pane", "minecraft:stained_glass_pane"};
 	public static boolean blockAsBlacklist;
 	public static boolean useBlockBreakSound;
-	public static String[] mobListAIBlacklist = new String[]{"EntityCreeper"};
-	public static boolean mobListAsWhitelist;
-	public static String[] itemUseBlackList = new String[] {};
 	public static float breakerChance;
+	public static String[] mobListBreakBlacklist = new String[]{"EntityCreeper"};
+	public static boolean mobListBreakWhitelist;
+	//Item use config
+	public static String[] itemUseBlackList = new String[0];
+	public static String[] mobListUseBlacklist = new String[0];
+	public static boolean mobListUseWhitelist;
+	//Ladder config
+	public static String[] mobListLadderBlacklist = new String[0];
+	public static boolean mobListLadderWhitelist;
+	//Steal config
+	public static String[] mobListStealBlacklist = new String[0];
+	public static boolean mobListStealWhitelist;
+	//Boat config
+	public static String[] mobListBoatBlacklist = new String[0];
+	public static boolean mobListBoatWhitelist;
+	
 	public static float neutralAggressiv;
 	public static boolean targetVillager;
-
+	
 	public static boolean shouldPunishTimeSkip;
 	public static float healthIncrease;
 	public static float healthMax;
@@ -62,15 +89,22 @@ public class ConfigHandler {
 	public static float speedMax;
 	public static float knockbackIncrease;
 	public static float knockbackMax;
+	public static String[] mobAttributeBlackList = new String[0];
+	public static boolean mobAttributeWhitelist;
 	
 	public static int guiX, guiY;
+	public static TextFormatting color;
 	
 	public static boolean debuggingPath;
-	public static List<String> breakList;
+	
+	public static List<String> breakListNames;
+	public static List<BlockClassPredicate> breakListClass;
 		
 	public static void loadConfig(Configuration config) {
 		config.load();
 		config.addCustomCategoryComment("general", "With default value every difficulty perk maxes out roughly with 300 minecraft days");
+		config.addCustomCategoryComment("equipment", "Configs regarding mobs spawning with equipment");
+
 		config.addCustomCategoryComment("mob ai", "Settings regarding custom ai for mobs");
 		config.addCustomCategoryComment("mob attributes", "Settings for attribute modifiers");
 		config.addCustomCategoryComment("integration", "Settings for mod integration. Unused now");
@@ -78,34 +112,51 @@ public class ConfigHandler {
 		config.addCustomCategoryComment("debug", "Debugging");
 		
 		enableDifficultyScaling = config.getBoolean("Enable difficulty scaling", "general", true, "Disable/Enables the whole difficulty scaling of this mod");
-		mobListLight = config.getStringList("Mob List", "general", mobListLight, "Mobs to include for the new light spawning rules.");
-		light = config.getInt("Light", "general", 7, 0, 15, "Light level, blocks can have at max, so mobs can spawn on them.");
-		
-		armorBlacklist = config.getStringList("Armor Blacklist", "general", armorBlacklist, "Blacklist for armor");
-		armorMobBlacklist = config.getStringList("Armor-Buff Blacklist", "general", armorMobBlacklist, "Blacklist for mobs, which shouldn't get armor equiped");
-		
-		shouldPunishTimeSkip = config.getBoolean("Punish Time Skip", "general", true, "Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.");
-		baseEquipChance = config.getFloat("Equipment Chance", "general", 0.1F, 0, 1, "Base chance that a mob can have one piece of armor");
-		baseEquipChanceAdd = config.getFloat("Additional Equipment Chance", "general", 0.3F, 0, 1, "Base chance for each additional armor pieces");
-		diffEquipAdd = getFloatConfig(config, "Equipment Addition", "general", 0.3F,  "Adds to both equipment chances. Adds additional x*difficulty% to it.");
-		baseEnchantChance = config.getFloat("Enchanting Chance", "general", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
-		diffEnchantAdd = getFloatConfig(config, "Enchanting Addition", "general", 0.3F,  "Adds additional x*difficulty% to base enchanting chance");
-		baseItemChance = config.getFloat("Item Equip Chance", "general", 0.05F, 0, 1, "Chance for mobs to have an item. Always has a 20% fail chance");
-		shouldDropEquip = config.getBoolean("Should drop equipment", "general", false, "Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)");
+		mobListLight = config.getStringList("Light list", "general", mobListLight, "Mobs to include for the new light spawning rules.");
+		mobListLightBlackList = config.getBoolean("Light list blacklist", "general", false, "Turn the list list whitelist to blacklist");
 
+		light = config.getInt("Light", "general", 7, 0, 15, "Light level, blocks can have at max, so mobs can spawn on them.");
+		shouldPunishTimeSkip = config.getBoolean("Punish Time Skip", "general", true, "Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.");
 		friendlyFire = config.getBoolean("FriendlyFire", "general", false, "Disable/Enable friendly fire for owned pets.");
 		petArmorBlackList = config.getStringList("Pet Blacklist", "general", petArmorBlackList, "Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.");
+		petWhiteList = config.getBoolean("Pet Whitelist", "general", false, "Treat pet blacklist as whitelist");
 
-		blockBreakName = config.getStringList("Block WhiteList", "mob ai", blockBreakName, "Whitelist for blocks, which can be actively broken.");
+		armorBlacklist = config.getStringList("Armor Blacklist", "equipment", armorBlacklist, "Blacklist for armor");
+		armorMobBlacklist = config.getStringList("Armor Mob-Blacklist", "equipment", armorMobBlacklist, "Blacklist for mobs, which shouldn't get armor equiped");
+		armorMobWhiteList = config.getBoolean("Armor Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
+		baseEquipChance = config.getFloat("Equipment Chance", "equipment", 0.1F, 0, 1, "Base chance that a mob can have one piece of armor");
+		baseEquipChanceAdd = config.getFloat("Additional Equipment Chance", "equipment", 0.3F, 0, 1, "Base chance for each additional armor pieces");
+		diffEquipAdd = getFloatConfig(config, "Equipment Addition", "equipment", 0.3F,  "Adds to both equipment chances. Adds additional x*difficulty% to it.");
+		baseEnchantChance = config.getFloat("Enchanting Chance", "equipment", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
+		diffEnchantAdd = getFloatConfig(config, "Enchanting Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base enchanting chance");
+		baseItemChance = config.getFloat("Item Equip Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have an item. Always has a 20% fail chance");
+		shouldDropEquip = config.getBoolean("Should drop equipment", "equipment", false, "Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)");
+
+		blockBreakName = config.getStringList("Block WhiteList", "mob ai", blockBreakName, "Whitelist for blocks, which can be actively broken. Use +Classname to include all blocks of that type and \"!\" to exclude a specific block e.g. \"+BlockDoor!minecraft:iron_door\" will make all blocks extending BlockDoor except iron doors breakable.");
 		blockAsBlacklist = config.getBoolean("Block as Blacklist", "mob ai", false, "Treat Break-Whitelist as Blacklist");
 		useBlockBreakSound = config.getBoolean("Sound", "mob ai", false, "Use the block breaking sound instead of a knocking sound");
-		mobListAIBlacklist = config.getStringList("AI Blacklist", "mob ai", mobListAIBlacklist, "Blacklist for mobs, which should not gain the new ai");
-		mobListAsWhitelist = config.getBoolean("Mob as Whitelist", "mob ai", false, "Use the AI Blacklist as Whitelist");
-		itemUseBlackList = config.getStringList("Item Blacklist", "mob ai", itemUseBlackList, "Blacklist for items given to mobs (WIP)");
+		mobListBreakBlacklist = config.getStringList("AI Blacklist", "mob ai", mobListBreakBlacklist, "Blacklist for mobs, which can never break blocks");
+		mobListBreakWhitelist = config.getBoolean("Mob as Whitelist", "mob ai", false, "Use the AI Blacklist as Whitelist");
 		breakerChance = config.getFloat("Breaker Chance", "mob ai", 0.3F, 0, 1, "Chance for a mob to be able to break blocks."); 
+		
+		itemUseBlackList = config.getStringList("Item Blacklist", "mob ai", itemUseBlackList, "Blacklist for items given to mobs.");
+		mobListUseBlacklist = config.getStringList("Item Mob-Blacklist", "mob ai", mobListUseBlacklist, "Blacklist for mobs which can't use items");
+		mobListUseWhitelist = config.getBoolean("Item Mob-Whitelist", "mob ai", false, "Treat Item Mob-Blacklist as Whitelist");
+
+		mobListLadderBlacklist = config.getStringList("Ladder Blacklist", "mob ai", mobListLadderBlacklist, "Blacklist for items given to entities which can't climb ladder");
+		mobListLadderWhitelist = config.getBoolean("Ladder Whitelist", "mob ai", false, "Treat Ladder Blacklist as Whitelist");
+
+		mobListStealBlacklist = config.getStringList("Steal Blacklist", "mob ai", mobListStealBlacklist, "Blacklist for mobs who can't steal from inventory");
+		mobListStealWhitelist = config.getBoolean("Steal Whitelist", "mob ai", false, "Treat Steal Blacklist as Whitelist");
+		
+		mobListBoatBlacklist = config.getStringList("Boat Blacklist", "mob ai", mobListBoatBlacklist, "Blacklist for mobs who can't ride a boat");
+		mobListBoatWhitelist = config.getBoolean("Boat Whitelist", "mob ai", false, "Treat Boat Blacklist as Whitelist");
+		
 		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "mob ai", 0.2F, 0, 0, "Chance for neutral mobs to be aggressive"); 
 		targetVillager = config.getBoolean("Villager Target", "mob ai", true, "Should mobs target villagers? RIP Villagers");
 		
+		mobAttributeBlackList = config.getStringList("Attribute Blacklist", "mob attributes", mobListBoatBlacklist, "Blacklist for mobs which should not have their attributes modified");
+		mobAttributeWhitelist = config.getBoolean("Attribute Whitelist", "mob attributes", false, "Treat Attribute Blacklist as Whitelist");
 		healthIncrease = getFloatConfig(config, "Health Increase Multiplier", "mob attributes", 1.0F, "Health will be multiplied by difficulty*0.02*x. Set to 0 to disable.");
 		healthMax = getFloatConfig(config, "Max Health Increase", "mob attributes", 5.0F, "Health will be multiplied by at maximum this. Set to 0 means no limit");
 		damageIncrease = getFloatConfig(config, "Damage Increase Multiplier", "mob attributes", 1.0F, "Damage will be multiplied by difficulty*0.01*x. Set to 0 to disable.");
@@ -116,10 +167,35 @@ public class ConfigHandler {
 		knockbackMax = config.getFloat("Max Knockback", "mob attributes", 0.5F, 0, 1, "Maximum increase in knockback."); 
 		
 		guiPosition(config, "Gui Position", "gui", "TOPLEFT", "Position of the difficulty value on screen. Valid values: TOPLEFT, TOPMIDDLE, TOPRIGHT, MIDDLELEFT, MIDDLERIGHT, BOTTOMLEFT, BOTTOMMIDDLE, BOTTOMRIGHT");
-
+		color = TextFormatting.getValueByName(config.getString("Difficulty color", "gui", "dark_purple","Color for the text of the difficulty. Uses minecraft textformatting codes", new String[] {"black","dark_blue","dark_green","dark_aqua","dark_red","dark_purple","gold","grey","dark_grey","blue","green","aqua","red","light_purple","yellow","white"}));
+		
 		debuggingPath = config.getBoolean("Path Debugging", "debug", false, "Enable showing of entity paths (might/will cause lag)");
 
-		breakList = ImmutableList.copyOf(blockBreakName);
+		List<String> registryNames = new LinkedList<String>();
+		List<BlockClassPredicate> blockInstances= new LinkedList<BlockClassPredicate>();
+		for(String s : blockBreakName)
+		{
+			if(s.startsWith("+"))
+			{
+				String[] part = s.split("!");
+				try {
+					Class<?> clss = Class.forName("net.minecraft.block."+part[0]);
+					if(clss!=null)
+						blockInstances.add(new BlockClassPredicate(clss, part.length>1?Arrays.copyOfRange(part, 1,  part.length):new String[0]));
+				} catch (ClassNotFoundException e) {
+					try {
+						Class<?> clss = Class.forName(part[0]);
+						if(clss!=null)
+							blockInstances.add(new BlockClassPredicate(clss, part.length>1?Arrays.copyOfRange(part, 1,  part.length):new String[0]));
+					} catch (ClassNotFoundException e1) {
+						ImprovedMobs.logger.error("Couldn't find class for "+s.substring(1));
+					}
+				}
+			}
+			else registryNames.add(s);
+		}
+		breakListNames = ImmutableList.copyOf(registryNames);
+		breakListClass =  ImmutableList.copyOf(blockInstances);
 		config.save();
 	 }
 	
@@ -211,7 +287,6 @@ public class ConfigHandler {
         return defaultValue;
 	}
 	
-	
 	private static String[] valid = new String[] {"TOPLEFT", "TOPMIDDLE", "TOPRIGHT", "MIDDLELEFT", "MIDDLERIGHT", "BOTTOMLEFT", "BOTTOMMIDDLE", "BOTTOMRIGHT"};
 	private static String guiPosition(Configuration config, String name, String category, String defaultValue, String comment)
 	{
@@ -246,5 +321,30 @@ public class ConfigHandler {
         		}
         guiX = 0;guiY = 0;
 		return defaultValue;
+	}
+	
+	public static class BlockClassPredicate
+	{
+		private Class<?> clss;
+		private String[] exclude;
+		public BlockClassPredicate(Class<?> clss, String[] strings)
+		{
+			this.clss=clss;
+			if(strings.length>0)
+				this.exclude=strings;
+		}
+		
+		public boolean matches(Block block)
+		{
+			boolean flag=true;;
+			if(this.exclude!=null)
+				for(String s : this.exclude)
+					if(block.getRegistryName().toString().equals(s))
+					{
+						flag=false;
+						break;
+					}
+			return clss.isInstance(block) && flag;
+		}
 	}
 }

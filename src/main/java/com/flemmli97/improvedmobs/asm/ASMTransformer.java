@@ -26,7 +26,7 @@ public class ASMTransformer implements IClassTransformer{
 
 	private static Map<String, Transform> patches = Maps.newHashMap();
 	private static Map<String, Method> classMethod = Maps.newHashMap();
-	private static Logger logger = LogManager.getLogger("ImprovedMobs/ASM");
+	private static final Logger logger = LogManager.getLogger("ImprovedMobs/ASM");
 
 	static
 	{

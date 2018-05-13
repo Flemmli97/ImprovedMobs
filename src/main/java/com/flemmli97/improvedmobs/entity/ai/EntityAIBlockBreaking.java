@@ -123,7 +123,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		ItemStack itemOff = entityLiving.getHeldItemMainhand();
         if(notFull.getMaterial()!=Material.AIR)
 		{
-			if(!GeneralHelperMethods.isBlockBreakable(notFull.getBlock(), ConfigHandler.breakList))
+			if(!GeneralHelperMethods.isBlockBreakable(notFull.getBlock(), ConfigHandler.breakListNames))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;
@@ -143,7 +143,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		else if(block.getMaterial()!=Material.AIR)
         {	
 			
-			if(!GeneralHelperMethods.isBlockBreakable(block.getBlock(), ConfigHandler.breakList))
+			if(!GeneralHelperMethods.isBlockBreakable(block.getBlock(), ConfigHandler.breakListNames))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;
