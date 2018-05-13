@@ -69,8 +69,10 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 
 	@Override
 	public void resetTask() {
-		markedLoc = null;
 		digTimer = 0;
+		if(this.markedLoc!=null)
+        this.living.world.sendBlockBreakProgress(this.living.getEntityId(), this.markedLoc, -1);
+		markedLoc = null;
 	}
 
 	@Override
@@ -87,7 +89,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		if(str >= 1F)
 		{
 			digTimer = 0;
-			
+			System.out.println("destroy " + this.markedLoc);
 			ItemStack item = living.getHeldItemMainhand();
 			ItemStack itemOff = living.getHeldItemOffhand();
 			boolean canHarvest = GeneralHelperMethods.canHarvest(state, item) || GeneralHelperMethods.canHarvest(state, itemOff);
@@ -125,7 +127,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		ItemStack itemOff = entityLiving.getHeldItemMainhand();
         if(notFull.getMaterial()!=Material.AIR)
 		{
-			if(!GeneralHelperMethods.isBlockBreakable(notFull.getBlock(), ConfigHandler.breakList))
+			if(!GeneralHelperMethods.isBlockBreakable(notFull.getBlock(), ConfigHandler.breakListNames))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;
@@ -145,7 +147,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		else if(block.getMaterial()!=Material.AIR)
         {	
 			
-			if(!GeneralHelperMethods.isBlockBreakable(block.getBlock(), ConfigHandler.breakList))
+			if(!GeneralHelperMethods.isBlockBreakable(block.getBlock(), ConfigHandler.breakListNames))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;

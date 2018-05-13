@@ -7,9 +7,13 @@ import com.flemmli97.improvedmobs.handler.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.DifficultyHandler;
 import com.flemmli97.improvedmobs.handler.EventHandlerAI;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
+import com.flemmli97.improvedmobs.handler.tilecap.ITileOpened;
+import com.flemmli97.improvedmobs.handler.tilecap.TileCap;
+import com.flemmli97.improvedmobs.handler.tilecap.TileCapNetwork;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -25,6 +29,7 @@ public class CommonProxy {
     }
 
     public void init(FMLInitializationEvent e) {
+    	CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
 		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
 		if(ConfigHandler.enableDifficultyScaling)
 			MinecraftForge.EVENT_BUS.register(new DifficultyHandler());

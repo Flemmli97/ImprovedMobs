@@ -105,6 +105,12 @@ public class EntityGuardianBoat extends EntityGuardian{
 		return false;
 	}
 	
+	@Override
+	public boolean isMoving()
+	{
+		return true;
+	}
+	
 	private boolean isOnLand()
 	{
 		if(this.world.getBlockState(this.getPosition()).getMaterial()!=Material.WATER)

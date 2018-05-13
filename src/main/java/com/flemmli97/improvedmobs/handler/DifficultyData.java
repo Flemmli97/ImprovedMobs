@@ -1,5 +1,8 @@
 package com.flemmli97.improvedmobs.handler;
 
+import com.flemmli97.improvedmobs.handler.packet.PacketDifficulty;
+import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
+
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.MapStorage;
@@ -37,6 +40,7 @@ public class DifficultyData extends WorldSavedData{
 		this.difficultyLevel+=amount;
 		this.prevTime=time;
 		this.markDirty();
+		PacketHandler.sendToAll(new PacketDifficulty(this));
 	}
 	
 	public void setDifficulty(float level)
