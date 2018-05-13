@@ -90,6 +90,12 @@ public class EntityGuardianBoat extends EntityGuardian{
     }
 	
 	@Override
+	public boolean isMoving()
+	{
+		return true;
+	}
+	
+	@Override
 	public void fall(float distance, float damageMultiplier) {}
 
 	private boolean nearShore(int cliffSize)

@@ -53,7 +53,9 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         PathPoint pathpoint1 = this.getSafePoint(currentPoint.xCoord - 1, currentPoint.yCoord, currentPoint.zCoord, j, d0, EnumFacing.WEST);
         PathPoint pathpoint2 = this.getSafePoint(currentPoint.xCoord + 1, currentPoint.yCoord, currentPoint.zCoord, j, d0, EnumFacing.EAST);
         PathPoint pathpoint3 = this.getSafePoint(currentPoint.xCoord, currentPoint.yCoord, currentPoint.zCoord - 1, j, d0, EnumFacing.NORTH);
-
+        PathPoint ladderUp = this.openPoint(currentPoint.xCoord, currentPoint.yCoord + 1, currentPoint.zCoord);
+        PathPoint ladderDown = this.openPoint(currentPoint.xCoord, currentPoint.yCoord - 1, currentPoint.zCoord);
+        
         if (pathpoint != null && !pathpoint.visited && pathpoint.distanceTo(targetPoint) < maxDistance)
         {
             pathOptions[i++] = pathpoint;
@@ -72,6 +74,18 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         if (pathpoint3 != null && !pathpoint3.visited && pathpoint3.distanceTo(targetPoint) < maxDistance)
         {
             pathOptions[i++] = pathpoint3;
+        }
+        
+        IBlockState ladderCheck = this.blockaccess.getBlockState(new BlockPos(currentPoint.xCoord, currentPoint.yCoord + 1, currentPoint.zCoord));
+        if (ladderUp != null && !ladderUp.visited && ladderUp.distanceTo(targetPoint) < maxDistance && ladderCheck.getBlock().isLadder(ladderCheck, this.blockaccess, new BlockPos(currentPoint.xCoord, currentPoint.yCoord + 1, currentPoint.zCoord), entity))
+        {
+            pathOptions[i++] = ladderUp;
+        }
+        
+        IBlockState ladderCheckDown = this.blockaccess.getBlockState(new BlockPos(currentPoint.xCoord, currentPoint.yCoord - 1, currentPoint.zCoord));
+        if (ladderDown != null && !ladderDown.visited && ladderDown.distanceTo(targetPoint) < maxDistance && ladderCheckDown.getBlock().isLadder(ladderCheckDown, this.blockaccess, new BlockPos(currentPoint.xCoord, currentPoint.yCoord - 1, currentPoint.zCoord), entity))
+        {
+            pathOptions[i++] = ladderDown;
         }
 
         boolean flag = pathpoint3 == null || pathpoint3.nodeType == PathNodeType.OPEN || pathpoint3.costMalus != 0.0F;
@@ -259,7 +273,9 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         BlockPos blockpos = new BlockPos(x, y, z);
         IBlockState iblockstate = acc.getBlockState(blockpos);
         Block block = iblockstate.getBlock();
-    		if(this.canBreakBlocks && GeneralHelperMethods.isBlockBreakable(block, ConfigHandler.breakList) && GeneralHelperMethods.canHarvest(iblockstate, new ItemStack(Items.DIAMOND_PICKAXE)) && this.entity != null)
+        if(block==Blocks.LADDER)
+        	return PathNodeType.WALKABLE;
+		if(this.canBreakBlocks && GeneralHelperMethods.isBlockBreakable(block, ConfigHandler.breakListNames) && GeneralHelperMethods.canHarvest(iblockstate, new ItemStack(Items.DIAMOND_PICKAXE)) && this.entity != null)
         {
     			if(this.entity.posY > blockpos.getY() + 0.8)
 					return this.defaultNode(acc, iblockstate, blockpos);
@@ -290,6 +306,10 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         if (material == Material.AIR)
         {
             return PathNodeType.OPEN;
+        }
+        else if(iblockstate.getCollisionBoundingBox(acc, blockpos)==Block.NULL_AABB)
+        {
+        	return PathNodeType.OPEN;
         }
         else if (block != Blocks.TRAPDOOR && block != Blocks.IRON_TRAPDOOR && block != Blocks.WATERLILY)
         {
