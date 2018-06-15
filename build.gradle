@@ -13,7 +13,7 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 
 version = ""
 group = "com.flemmli97.improvedmobs" 
-archivesBaseName = "ImprovedMobs-1.2.0[1.12.2]"
+archivesBaseName = "ImprovedMobs-1.2.1[1.12.2]"
 
 sourceCompatibility = targetCompatibility = '1.8' 
 compileJava {

@@ -46,8 +46,8 @@ public class EntityMobBullet extends EntityShulkerBullet{
         }
         else
         {
-        		if(result.entityHit == this.ownerNew.getAttackTarget())
-        		{
+    		if(this.ownerNew==null || (result.entityHit == this.ownerNew.getAttackTarget()))
+    		{
 	            boolean flag = result.entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.ownerNew).setProjectile(), 4.0F);
 	
 	            if (flag)
@@ -60,7 +60,7 @@ public class EntityMobBullet extends EntityShulkerBullet{
 	                }
 	            }
 	            this.setDead();
-        		}
+    		}
         }
 	}
 }

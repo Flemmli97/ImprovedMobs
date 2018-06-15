@@ -3,6 +3,7 @@ package com.flemmli97.improvedmobs.entity.ai.unused;
 import java.lang.ref.WeakReference;
 import java.util.UUID;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.EntityLivingBase;
@@ -20,14 +21,15 @@ import net.minecraftforge.fml.common.FMLCommonHandler;
 public class FakePlayerHandler {
 	
 	private static WeakReference<FakePlayer> player;
-
+	public static final String fakeID = ImprovedMobs.MODID+":fakePlayer";
 	public static FakePlayer getFakePlayer(World world, EntityLivingBase living)
 	{
 		UUID uuid = UUID.randomUUID(); 
-		player = new WeakReference<FakePlayer>(FakePlayerFactory.get((WorldServer) world, new GameProfile(uuid, living.getName())));
+		player = new WeakReference<FakePlayer>(FakePlayerFactory.get((WorldServer) world, new GameProfile(uuid, living.getCachedUniqueIdString())));
 		player.get().onGround = true;
 		player.get().interactionManager.setGameType(GameType.CREATIVE);
 		player.get().connection = new NetHandlerPlayServer(FMLCommonHandler.instance().getMinecraftServerInstance(), new NetworkManager(EnumPacketDirection.SERVERBOUND), player.get());
+		player.get().addTag(fakeID);
 		FakePlayer fakePlayer= player.get();
 		return fakePlayer;
 	}

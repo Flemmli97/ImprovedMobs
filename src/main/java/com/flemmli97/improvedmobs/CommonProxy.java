@@ -12,6 +12,7 @@ import com.flemmli97.improvedmobs.handler.tilecap.TileCap;
 import com.flemmli97.improvedmobs.handler.tilecap.TileCapNetwork;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
@@ -19,6 +20,7 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class CommonProxy {
 	
@@ -37,6 +39,7 @@ public class CommonProxy {
 
     public void postInit(FMLPostInitializationEvent e) {
     	ConfigHandler.write();
+    	ConfigHandler.breakingItem=ForgeRegistries.ITEMS.getValue(new ResourceLocation(ConfigHandler.breakingItemReg));
     }
     
     public EntityPlayer getPlayerEntity(MessageContext ctx) {

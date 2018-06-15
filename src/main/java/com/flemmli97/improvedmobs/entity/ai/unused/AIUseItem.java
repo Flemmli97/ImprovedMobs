@@ -1,4 +1,4 @@
-/*package com.flemmli97.improvedmobs.entity.ai.unused;
+package com.flemmli97.improvedmobs.entity.ai.unused;
 
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityLiving;
@@ -27,7 +27,7 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraftforge.common.util.FakePlayer;
 
-/**dropped for now*//*
+/**dropped for now*/
 public class AIUseItem extends EntityAIBase{
 
 	private EntityLiving living;
@@ -88,7 +88,7 @@ public class AIUseItem extends EntityAIBase{
 	}
 
 	@Override
-	public boolean continueExecuting()
+	public boolean shouldContinueExecuting()
     {
         return this.shouldExecute();
     }
@@ -131,7 +131,7 @@ public class AIUseItem extends EntityAIBase{
 
             if (d0 <= (double)this.maxAttackDistance && this.seeTime >= 20)
             {
-                this.living.getNavigator().clearPathEntity();
+                this.living.getNavigator().clearPath();
                 ++this.strafingTime;
             }
             else
@@ -225,9 +225,9 @@ public class AIUseItem extends EntityAIBase{
         		this.living.setActiveHand(useMainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
             	if(this.itemUseCount!=0 && stackCopy!=null)
             	{            		
-            		stackCopy.stackSize=1;
+            		stackCopy.setCount(1);
             		//EnumActionResult res = fake.interactionManager.processRightClick(fake, living.worldObj, stackCopy, useMainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND);
-            		if(!net.minecraftforge.common.ForgeHooks.onItemRightClick(fake, useMainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND, stack))
+            		if(net.minecraftforge.common.ForgeHooks.onItemRightClick(fake, useMainHand ? EnumHand.MAIN_HAND : EnumHand.OFF_HAND)==EnumActionResult.FAIL)
             			isRightItems=false;
             	}
             	else
@@ -280,9 +280,9 @@ public class AIUseItem extends EntityAIBase{
 	public void syncDataPlayerEntity(FakePlayer player, EntityLiving living, EnumHand hand)
 	{
 		ItemStack stack = living.getHeldItem(hand);
-			stack.stackSize--;
-			if(stack.stackSize<=0)
-				stack=null;
+			stack.shrink(1);;
+			if(stack.getCount()<=0)
+				stack=ItemStack.EMPTY;
 			living.setHeldItem(hand, stack);
 	}
 	
@@ -294,8 +294,8 @@ public class AIUseItem extends EntityAIBase{
         if(target.height <0.5)
         	d1=target.getEntityBoundingBox().minY - entitytippedarrow.posY;
         double d2 = target.posZ - theEntity.posZ;
-        double d3 = (double)MathHelper.sqrt_double(d0 * d0 + d2 * d2);
-        entitytippedarrow.setThrowableHeading(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float)(14 - theEntity.world.getDifficulty().getDifficultyId() * 4));
+        double d3 = (double)MathHelper.sqrt(d0 * d0 + d2 * d2);
+        entitytippedarrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float)(14 - theEntity.world.getDifficulty().getDifficultyId() * 4));
         int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, theEntity);
         int j = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, theEntity);
         DifficultyInstance difficultyinstance = theEntity.world.getDifficultyForLocation(new BlockPos(theEntity));
@@ -311,7 +311,7 @@ public class AIUseItem extends EntityAIBase{
             entitytippedarrow.setKnockbackStrength(j);
         }
 
-        boolean flag = theEntity.isBurning() && difficultyinstance.isHard() && theEntity.world.rand.nextBoolean();
+        boolean flag = theEntity.isBurning() && difficultyinstance.isHarderThan(3) && theEntity.world.rand.nextBoolean();
         flag = flag || EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.FLAME, theEntity) > 0;
 
         if (flag)
@@ -327,6 +327,6 @@ public class AIUseItem extends EntityAIBase{
         }
 
         theEntity.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (theEntity.getRNG().nextFloat() * 0.4F + 0.8F));
-        theEntity.world.spawnEntityInWorld(entitytippedarrow);
+        theEntity.world.spawnEntity(entitytippedarrow);
     }
-}*/
+}

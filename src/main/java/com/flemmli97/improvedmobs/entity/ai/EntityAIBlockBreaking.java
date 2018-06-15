@@ -71,7 +71,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	public void resetTask() {
 		digTimer = 0;
 		if(this.markedLoc!=null)
-        this.living.world.sendBlockBreakProgress(this.living.getEntityId(), this.markedLoc, -1);
+			this.living.world.sendBlockBreakProgress(this.living.getEntityId(), this.markedLoc, -1);
 		markedLoc = null;
 	}
 
@@ -89,7 +89,6 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		if(str >= 1F)
 		{
 			digTimer = 0;
-			System.out.println("destroy " + this.markedLoc);
 			ItemStack item = living.getHeldItemMainhand();
 			ItemStack itemOff = living.getHeldItemOffhand();
 			boolean canHarvest = GeneralHelperMethods.canHarvest(state, item) || GeneralHelperMethods.canHarvest(state, itemOff);

@@ -1,9 +1,12 @@
 package com.flemmli97.improvedmobs.entity.ai;
 
+import java.util.List;
+
 import javax.annotation.Nullable;
 
 import com.flemmli97.improvedmobs.handler.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
+import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockDoor;
@@ -15,8 +18,6 @@ import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
-import net.minecraft.init.Items;
-import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.pathfinding.WalkNodeProcessor;
@@ -216,9 +217,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         BlockPos blockpos = new BlockPos(x, y, z);
         IBlockState iblockstate = acc.getBlockState(blockpos);
         Block block = iblockstate.getBlock();
-        if(block==Blocks.LADDER)
-        	return PathNodeType.WALKABLE;
-    	if(this.entity!=null && this.canBreakBlocks && GeneralHelperMethods.isBlockBreakable(block, ConfigHandler.breakListNames) && GeneralHelperMethods.canHarvest(iblockstate, new ItemStack(Items.DIAMOND_PICKAXE)))
+    	if(this.entity!=null && this.canBreakBlocks && GeneralHelperMethods.isBlockBreakable(block, ConfigHandler.breakListNames))
         {
 			double d1 = (double)this.entity.width / 2.0D;
 			AxisAlignedBB aabb = new AxisAlignedBB((double)x - d1 + 0.5D, (double)y + 1.001D, (double)z - d1 + 0.5D, (double)x + d1 + 0.5D, (double)((float)y + 1+this.entity.height), (double)z + d1 + 0.5D);
@@ -235,6 +234,9 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         }
         else
         {
+        	if(this.entity!=null)
+        		if(block.isLadder(iblockstate, acc, blockpos, entity))
+                	return PathNodeType.WALKABLE;
             return this.defaultNode(acc, iblockstate, blockpos, block);
         }
     }
@@ -279,7 +281,9 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
             {
                 return PathNodeType.RAIL;
             }
-            else if (!(block instanceof BlockFence) && !(block instanceof BlockWall) && (!(block instanceof BlockFenceGate) || ((Boolean)iblockstate.getValue(BlockFenceGate.OPEN)).booleanValue()))
+            else if(this.isFence(acc, iblockstate, blockpos, block))
+                return PathNodeType.FENCE;
+            else
             {
                 if (material == Material.WATER)
                 {
@@ -294,15 +298,28 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
                     return block.isPassable(acc, blockpos) ? PathNodeType.OPEN : PathNodeType.BLOCKED;
                 }
             }
-            else
-            {
-                return PathNodeType.FENCE;
-            }
         }
         else
         {
             return PathNodeType.TRAPDOOR;
         }
+	}
+	
+	//For some block not extending fences but having a bigger collision box
+	private boolean isFence(IBlockAccess acc, IBlockState iblockstate, BlockPos blockpos, Block block)
+	{
+		if(block instanceof BlockFence || block instanceof BlockWall || (block instanceof BlockFenceGate && !((Boolean)iblockstate.getValue(BlockFenceGate.OPEN)).booleanValue()))
+		{
+			return true;
+		}
+		else if(this.entity!=null)
+		{
+			AxisAlignedBB collision2 = new AxisAlignedBB(0,0,0,1,1,1).offset(blockpos.up());
+	        List<AxisAlignedBB> list = Lists.<AxisAlignedBB>newArrayList();
+			iblockstate.addCollisionBoxToList(this.entity.world, blockpos, collision2, list, null, false);
+			return !list.isEmpty();
+		}
+		return false;
 	}
 	
 	public boolean canBreakBlocks()
