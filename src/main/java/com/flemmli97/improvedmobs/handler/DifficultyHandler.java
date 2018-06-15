@@ -7,11 +7,12 @@ import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
 import net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.PlayerEvent.PlayerLoggedInEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
 import net.minecraftforge.fml.common.gameevent.TickEvent.WorldTickEvent;
 import net.minecraftforge.fml.relauncher.Side;
@@ -20,10 +21,12 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class DifficultyHandler {
 
 	@SubscribeEvent
-	public void init(PlayerLoggedInEvent e)
+	public void worldJoin(EntityJoinWorldEvent event)
 	{
-		if(!e.player.worldObj.isRemote)
-			PacketHandler.sendTo(new PacketDifficulty(DifficultyData.get(e.player.worldObj)), (EntityPlayerMP) e.player);
+		if(event.getEntity() instanceof EntityPlayer && !event.getEntity().worldObj.isRemote)
+		{
+			PacketHandler.sendTo(new PacketDifficulty(DifficultyData.get(event.getEntity().worldObj)), (EntityPlayerMP) event.getEntity());
+		}
 	}
 	
 	@SubscribeEvent

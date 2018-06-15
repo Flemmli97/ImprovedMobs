@@ -69,6 +69,8 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	@Override
 	public void resetTask() {
 		markedLoc = null;
+		if(this.markedLoc!=null)
+			this.living.worldObj.sendBlockBreakProgress(this.living.getEntityId(), this.markedLoc, -1);
 		digTimer = 0;
 	}
 	@Override
