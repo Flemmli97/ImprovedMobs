@@ -3,6 +3,9 @@ package com.flemmli97.improvedmobs.handler;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.flemmli97.improvedmobs.handler.packet.PacketDifficulty;
+import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
+
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -59,13 +62,17 @@ public class CommandIMDifficulty implements ICommand{
         			}
         			if(s.equals("set"))
         			{
-        				DifficultyData.get(server.getEntityWorld()).setDifficulty(f);
+        				DifficultyData data = DifficultyData.get(server.getEntityWorld());
+        				data.setDifficulty(f);
+        				PacketHandler.sendToAll(new PacketDifficulty(data));
         				if(sender.getCommandSenderEntity() instanceof EntityPlayer)
         					((EntityPlayer)sender.getCommandSenderEntity()).sendMessage(new TextComponentString("Set difficulty to " + f));
         			}
         			else if(s.equals("add"))
         			{
-        				DifficultyData.get(server.getEntityWorld()).addDifficulty(f);
+        				DifficultyData data = DifficultyData.get(server.getEntityWorld());
+        				data.addDifficulty(f);
+        				PacketHandler.sendToAll(new PacketDifficulty(data));
         				if(sender.getCommandSenderEntity() instanceof EntityPlayer)
         					((EntityPlayer)sender.getCommandSenderEntity()).sendMessage(new TextComponentString("Added " + f + " to the difficulty"));
         			}

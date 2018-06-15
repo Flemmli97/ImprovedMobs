@@ -20,7 +20,9 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
+import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.ItemSword;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.Configuration;
@@ -63,6 +65,8 @@ public class ConfigHandler {
 	public static float breakerChance;
 	public static String[] mobListBreakBlacklist = new String[]{"EntityCreeper"};
 	public static boolean mobListBreakWhitelist;
+	public static String breakingItemReg;
+	public static Item breakingItem;
 	//Item use config
 	public static String[] itemUseBlackList = new String[0];
 	public static String[] mobListUseBlacklist = new String[0];
@@ -102,7 +106,7 @@ public class ConfigHandler {
 		
 	public static void loadConfig(Configuration config) {
 		config.load();
-		config.addCustomCategoryComment("general", "With default value every difficulty perk maxes out roughly with 300 minecraft days");
+		config.addCustomCategoryComment("general", "With default value every difficulty perk maxes out at difficulty 250");
 		config.addCustomCategoryComment("equipment", "Configs regarding mobs spawning with equipment");
 
 		config.addCustomCategoryComment("mob ai", "Settings regarding custom ai for mobs");
@@ -138,7 +142,7 @@ public class ConfigHandler {
 		mobListBreakBlacklist = config.getStringList("AI Blacklist", "mob ai", mobListBreakBlacklist, "Blacklist for mobs, which can never break blocks");
 		mobListBreakWhitelist = config.getBoolean("Mob as Whitelist", "mob ai", false, "Use the AI Blacklist as Whitelist");
 		breakerChance = config.getFloat("Breaker Chance", "mob ai", 0.3F, 0, 1, "Chance for a mob to be able to break blocks."); 
-		
+		breakingItemReg = config.getString("Breaking item", "mob ai", "minecraft:diamond_pickaxe", "Item which will be given to mobs who can break blocks. Set to nothing to not give any items.");
 		itemUseBlackList = config.getStringList("Item Blacklist", "mob ai", itemUseBlackList, "Blacklist for items given to mobs.");
 		mobListUseBlacklist = config.getStringList("Item Mob-Blacklist", "mob ai", mobListUseBlacklist, "Blacklist for mobs which can't use items");
 		mobListUseWhitelist = config.getBoolean("Item Mob-Whitelist", "mob ai", false, "Treat Item Mob-Blacklist as Whitelist");
@@ -155,13 +159,13 @@ public class ConfigHandler {
 		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "mob ai", 0.2F, 0, 0, "Chance for neutral mobs to be aggressive"); 
 		targetVillager = config.getBoolean("Villager Target", "mob ai", true, "Should mobs target villagers? RIP Villagers");
 		
-		mobAttributeBlackList = config.getStringList("Attribute Blacklist", "mob attributes", mobListBoatBlacklist, "Blacklist for mobs which should not have their attributes modified");
+		mobAttributeBlackList = config.getStringList("Attribute Blacklist", "mob attributes", mobAttributeBlackList, "Blacklist for mobs which should not have their attributes modified");
 		mobAttributeWhitelist = config.getBoolean("Attribute Whitelist", "mob attributes", false, "Treat Attribute Blacklist as Whitelist");
-		healthIncrease = getFloatConfig(config, "Health Increase Multiplier", "mob attributes", 1.0F, "Health will be multiplied by difficulty*0.02*x. Set to 0 to disable.");
+		healthIncrease = getFloatConfig(config, "Health Increase Multiplier", "mob attributes", 1.0F, "Health will be multiplied by difficulty*0.016*x. Set to 0 to disable.");
 		healthMax = getFloatConfig(config, "Max Health Increase", "mob attributes", 5.0F, "Health will be multiplied by at maximum this. Set to 0 means no limit");
-		damageIncrease = getFloatConfig(config, "Damage Increase Multiplier", "mob attributes", 1.0F, "Damage will be multiplied by difficulty*0.01*x. Set to 0 to disable.");
+		damageIncrease = getFloatConfig(config, "Damage Increase Multiplier", "mob attributes", 1.0F, "Damage will be multiplied by difficulty*0.008*x. Set to 0 to disable.");
 		damageMax = getFloatConfig(config, "Max Damage Increase", "mob attributes", 3.0F, "Damage will be multiplied by at maximum this. Set to 0 means no limit. ");
-		speedIncrease = getFloatConfig(config, "Speed Increase", "mob attributes", 1.0F, "Speed will be increased by difficulty*0.001*x. Set to 0 to disable."); 
+		speedIncrease = getFloatConfig(config, "Speed Increase", "mob attributes", 1.0F, "Speed will be increased by difficulty*0.0008*x. Set to 0 to disable."); 
 		speedMax = config.getFloat("Max Speed", "mob attributes", 0.2F, 0, 1, "Maximum increase in speed."); 
 		knockbackIncrease = getFloatConfig(config, "Knockback Increase", "mob attributes", 1.0F, "Knockback will be increased by difficulty*0.002*x. Set to 0 to disable."); 
 		knockbackMax = config.getFloat("Max Knockback", "mob attributes", 0.5F, 0, 1, "Maximum increase in knockback."); 
@@ -177,7 +181,7 @@ public class ConfigHandler {
 		{
 			if(s.startsWith("+"))
 			{
-				String[] part = s.split("!");
+				String[] part = s.substring(1).split("!");
 				try {
 					Class<?> clss = Class.forName("net.minecraft.block."+part[0]);
 					if(clss!=null)
@@ -203,8 +207,10 @@ public class ConfigHandler {
 	private static String leggingFile = "config/improvedmobs/leggings.txt";
 	private static String chestplateFile = "config/improvedmobs/chestplate.txt";
 	private static String helmetFile = "config/improvedmobs/helmet.txt";
+	private static String weaponsFile = "config/improvedmobs/weapons.txt";
+
 	private static File[] file = new File[]{new File(bootsFile),new File(leggingFile),
-			new File(chestplateFile),new File(helmetFile)};
+			new File(chestplateFile),new File(helmetFile),new File(weaponsFile)};
 	
 	public static void write()
 	{
@@ -214,8 +220,9 @@ public class ConfigHandler {
 			FileWriter writer2 = new FileWriter(file[1]);
 			FileWriter writer3 = new FileWriter(file[2]);
 			FileWriter writer4 = new FileWriter(file[3]);
+			FileWriter writer5 = new FileWriter(file[4]);
 
-			BufferedWriter[] buf = new BufferedWriter[]{new BufferedWriter(writer1),new BufferedWriter(writer2),new BufferedWriter(writer3),new BufferedWriter(writer4)};
+			BufferedWriter[] buf = new BufferedWriter[]{new BufferedWriter(writer1),new BufferedWriter(writer2),new BufferedWriter(writer3),new BufferedWriter(writer4), new BufferedWriter(writer5)};
 
 			Iterator<Item> it = ForgeRegistries.ITEMS.iterator();
 			while(it.hasNext())
@@ -226,12 +233,18 @@ public class ConfigHandler {
 					buf[((ItemArmor) item).armorType.getIndex()].write(item.getRegistryName().toString());
 					buf[((ItemArmor) item).armorType.getIndex()].newLine();
 				}
+				else if(item instanceof ItemSword || item instanceof ItemAxe)
+				{
+					buf[4].write(item.getRegistryName().toString());
+					buf[4].newLine();
+				}
 			}
 			
 			buf[0].close();
 			buf[1].close();
 			buf[2].close();
 			buf[3].close();
+			buf[4].close();
 		}
 		catch(IOException ex)
 		{
@@ -240,7 +253,7 @@ public class ConfigHandler {
 	}
 
 	/** type: 0 = boots, 1 = leggings, 2 = chestplate, 3 = helmet*/
-	public static ItemStack getArmor(int type)
+	public static ItemStack getEquipment(int type)
 	{
 		Random rand = new Random();
 		Item armor = null;
@@ -260,7 +273,7 @@ public class ConfigHandler {
             buf.close();         
         }
         catch(FileNotFoundException ex) {
-            System.out.println(
+        	ImprovedMobs.logger.error(
                 "Unable to open file");                
         }
         catch(IOException ex) {

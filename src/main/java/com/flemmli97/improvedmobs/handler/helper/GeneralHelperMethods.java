@@ -94,7 +94,7 @@ public class GeneralHelperMethods {
     	if(averageDurability<0)
     		averageDurability=0;
     	float ench = armor.getItemEnchantability();
-    	float rep = armor.isRepairable() ? 1.0F:0.9F;
+    	float rep = armor.isRepairable() ? 1.1F:0.9F;
     	float vanillaMulti = (armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.LEATHER)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.GOLD)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.CHAIN)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.IRON)||armor.getArmorMaterial() == (ItemArmor.ArmorMaterial.DIAMOND)) ? 1.2F:1.0F;
     	
     	float rarity = ((float)Math.pow(averageDurability, 1/2.864)*2.0F + fullProt*3.74F + ench*0.7F)/(rep*vanillaMulti);
@@ -104,18 +104,18 @@ public class GeneralHelperMethods {
     }
     
     /**armortype: 0 = helmet, 1 = chest, 2 = leggs, 3 = boots;  slot: equipmentstot: armortype in reverse order*/
-    public static void tryEquipArmor(EntityMob living)
+	public static void tryEquipArmor(EntityMob living)
     {
 		float time = DifficultyData.get(living.world).getDifficulty()*ConfigHandler.diffEquipAdd*0.01F;
-		int maxTries = 10;
+		int maxTries = 15;
 		if(living.getRNG().nextFloat() < (ConfigHandler.baseEquipChance+time) )
 		{
-	    		ItemStack helmet = ConfigHandler.getArmor(3);
-	    		int triesHelmet = 0;
-			boolean helmetChance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
+    		ItemStack helmet = ItemStack.EMPTY;
+    		int triesHelmet = 0;
+			boolean helmetChance = false;
 			while(!helmetChance && triesHelmet < maxTries)
 			{
-		        helmet = ConfigHandler.getArmor(3);
+		        helmet = ConfigHandler.getEquipment(3);
 		        if(!GeneralHelperMethods.itemInList(helmet.getItem(), ConfigHandler.armorBlacklist))
 		        {
 			        helmetChance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
@@ -124,19 +124,19 @@ public class GeneralHelperMethods {
 			        {
 				        living.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
 				        if(!ConfigHandler.shouldDropEquip)
-			    			living.setDropChance(EntityEquipmentSlot.HEAD, 0);
+			    			living.setDropChance(EntityEquipmentSlot.HEAD, -2);
 				    	break;
 			        }
 		        }
 			}
 	        if(ConfigHandler.baseEquipChanceAdd!=0 &&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
 			{
-		    	ItemStack chest = ConfigHandler.getArmor(2);
+		    	ItemStack chest = ItemStack.EMPTY;
 		    	int tries = 0;
-				boolean chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
+				boolean chance = false;
 				while(!chance && tries < maxTries)
 				{
-			        chest = ConfigHandler.getArmor(2);
+			        chest = ConfigHandler.getEquipment(2);
 			        if(!GeneralHelperMethods.itemInList(chest.getItem(), ConfigHandler.armorBlacklist))
 			        {
 				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
@@ -144,8 +144,8 @@ public class GeneralHelperMethods {
 				        if(chance)
 				        {
 				        	living.setItemStackToSlot(EntityEquipmentSlot.CHEST, chest);
-				        	 if(!ConfigHandler.shouldDropEquip)
-					    			living.setDropChance(EntityEquipmentSlot.CHEST, 0);
+				        	if(!ConfigHandler.shouldDropEquip)
+				    			living.setDropChance(EntityEquipmentSlot.CHEST, -2);
 				        	break;
 				        }
 				    }
@@ -153,12 +153,12 @@ public class GeneralHelperMethods {
 			}
 	        if(ConfigHandler.baseEquipChanceAdd!=0&&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
 			{
-		    	ItemStack legs = ConfigHandler.getArmor(1);
+		    	ItemStack legs = ItemStack.EMPTY;
 		    	int tries = 0;
-				boolean chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
+				boolean chance = false;
 				while(!chance && tries < maxTries)
 				{
-			        legs = ConfigHandler.getArmor(1);
+			        legs = ConfigHandler.getEquipment(1);
 			        if(!GeneralHelperMethods.itemInList(legs.getItem(), ConfigHandler.armorBlacklist))
 			        {
 				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
@@ -167,7 +167,7 @@ public class GeneralHelperMethods {
 				        {
 				        	living.setItemStackToSlot(EntityEquipmentSlot.LEGS, legs);
 				        	if(!ConfigHandler.shouldDropEquip)
-				    			living.setDropChance(EntityEquipmentSlot.LEGS, 0);
+				    			living.setDropChance(EntityEquipmentSlot.LEGS, -2);
 				        	break;
 				        }
 			        }
@@ -175,21 +175,21 @@ public class GeneralHelperMethods {
 			}
 	        if(ConfigHandler.baseEquipChanceAdd!=0&& living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
 			{
-		    	ItemStack feet = ConfigHandler.getArmor(0);
+		    	ItemStack feet = ItemStack.EMPTY;
 		    	int tries = 0;
-				boolean chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
+				boolean chance = false;
 				while(!chance && tries < maxTries)
 				{
 					if(!GeneralHelperMethods.itemInList(feet.getItem(), ConfigHandler.armorBlacklist))
 			        {
-				        feet = ConfigHandler.getArmor(0);
+				        feet = ConfigHandler.getEquipment(0);
 				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
 				        tries++;
 				        if(chance)
 				        {
 				        	living.setItemStackToSlot(EntityEquipmentSlot.FEET, feet);
 				        	if(!ConfigHandler.shouldDropEquip)
-				    			living.setDropChance(EntityEquipmentSlot.FEET, 0);
+				    			living.setDropChance(EntityEquipmentSlot.FEET, -2);
 				        	break;
 				        }
 			        }
@@ -338,7 +338,7 @@ public class GeneralHelperMethods {
     public static boolean itemInList(Item item, String[] list)
     {
     	for(String s : list)
-    		if(item.getRegistryName().equals(s))
+    		if(item.getRegistryName().toString().equals(s))
     			return true;
     	return false;
     }

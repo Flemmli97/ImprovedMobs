@@ -38,7 +38,7 @@ public class EntityMobBullet extends EntityShulkerBullet{
 
     @Override
 	protected void bulletHit(RayTraceResult result) {
-		if (result.entityHit == null)
+    	if (result.entityHit == null)
         {
             ((WorldServer)this.world).spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX, this.posY, this.posZ, 2, 0.2D, 0.2D, 0.2D, 0.0D, new int[0]);
             this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
@@ -46,8 +46,8 @@ public class EntityMobBullet extends EntityShulkerBullet{
         }
         else
         {
-        		if(result.entityHit == this.ownerNew.getAttackTarget())
-        		{
+    		if(this.ownerNew==null || (result.entityHit == this.ownerNew.getAttackTarget()))
+    		{
 	            boolean flag = result.entityHit.attackEntityFrom(DamageSource.causeIndirectDamage(this, this.ownerNew).setProjectile(), 4.0F);
 	
 	            if (flag)
@@ -60,7 +60,7 @@ public class EntityMobBullet extends EntityShulkerBullet{
 	                }
 	            }
 	            this.setDead();
-        		}
+    		}
         }
 	}
 }
