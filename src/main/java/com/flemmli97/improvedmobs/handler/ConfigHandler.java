@@ -1,12 +1,6 @@
 package com.flemmli97.improvedmobs.handler;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -15,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
+import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
 import com.google.common.collect.ImmutableList;
 
 import net.minecraft.block.Block;
@@ -37,13 +32,14 @@ public class ConfigHandler {
 	public static boolean mobListLightBlackList;
 	public static int light;
 	//public static String[] modName = new String[]{};
-	public static String[] armorBlacklist = new String[]{};
 	public static boolean enableDifficultyScaling;
 	
 	//Equipment config
 	public static String[] armorMobBlacklist = new String[]{};
 	public static boolean armorMobWhiteList;
-
+	public static String[] armorBlacklist = new String[]{};
+	public static boolean armorWhitelist;
+	
 	public static float baseEquipChance;
 	public static float baseEquipChanceAdd;
 	public static float diffEquipAdd;
@@ -51,8 +47,6 @@ public class ConfigHandler {
 	public static float baseEnchantChance;
 	public static float diffEnchantAdd;
 	public static boolean shouldDropEquip;
-	public static String[] mobListEquipBlacklist = new String[]{"EntityCreeper"};
-	public static boolean mobListEquipWhitelist;
 	
 	public static boolean friendlyFire;
 	public static String[] petArmorBlackList = new String[] {};
@@ -126,6 +120,7 @@ public class ConfigHandler {
 		petWhiteList = config.getBoolean("Pet Whitelist", "general", false, "Treat pet blacklist as whitelist");
 		
 		armorBlacklist = config.getStringList("Armor Blacklist", "equipment", armorBlacklist, "Blacklist for armor");
+		armorWhitelist = config.getBoolean("Armor Whitelist", "equipment", false, "Use blacklist as whitelist");
 		armorMobBlacklist = config.getStringList("Armor Mob-Blacklist", "equipment", armorMobBlacklist, "Blacklist for mobs, which shouldn't get armor equiped");
 		armorMobWhiteList = config.getBoolean("Armor Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
 		baseEquipChance = config.getFloat("Equipment Chance", "equipment", 0.1F, 0, 1, "Base chance that a mob can have one piece of armor");
@@ -212,74 +207,87 @@ public class ConfigHandler {
 	private static File[] file = new File[]{new File(bootsFile),new File(leggingFile),
 			new File(chestplateFile),new File(helmetFile),new File(weaponsFile)};
 	
-	public static void write()
+	private static List<String> boots = new ArrayList<String>();
+	private static List<String> legs = new ArrayList<String>();
+	private static List<String> chest = new ArrayList<String>();
+	private static List<String> helmet = new ArrayList<String>();
+	private static List<String> weapons = new ArrayList<String>();
+
+	public static void initEquipment()
 	{
-		try
+		/*
+		 * Delete old files, now unused.
+		 */
+		for(File f : file)
 		{
-			FileWriter writer1 = new FileWriter(file[0]);
-			FileWriter writer2 = new FileWriter(file[1]);
-			FileWriter writer3 = new FileWriter(file[2]);
-			FileWriter writer4 = new FileWriter(file[3]);
-			FileWriter writer5 = new FileWriter(file[4]);
-
-			BufferedWriter[] buf = new BufferedWriter[]{new BufferedWriter(writer1),new BufferedWriter(writer2),new BufferedWriter(writer3),new BufferedWriter(writer4), new BufferedWriter(writer5)};
-
-			Iterator<Item> it = ForgeRegistries.ITEMS.iterator();
-			while(it.hasNext())
-			{
-				Item item = it.next();			
-				if(item instanceof ItemArmor)
-				{				
-					buf[((ItemArmor) item).armorType.getIndex()].write(item.getRegistryName().toString());
-					buf[((ItemArmor) item).armorType.getIndex()].newLine();
-				}
-				else if(item instanceof ItemSword || item instanceof ItemAxe)
+			if(f.exists())
+				f.delete();
+		}
+		
+		Iterator<Item> it = ForgeRegistries.ITEMS.iterator();
+		while(it.hasNext())
+		{
+			Item item = it.next();
+			
+			if(item instanceof ItemArmor)
+			{				
+				switch(((ItemArmor) item).armorType.getIndex())
 				{
-					buf[4].write(item.getRegistryName().toString());
-					buf[4].newLine();
+					case 0:
+						if(!GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist) || (ConfigHandler.armorWhitelist && GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist)))
+				        {
+							boots.add(item.getRegistryName().toString());
+				        }
+						break;
+					case 1:
+						if(!GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist) || (ConfigHandler.armorWhitelist && GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist)))
+				        {
+							legs.add(item.getRegistryName().toString());
+				        }
+						break;
+					case 2:
+						if(!GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist) || (ConfigHandler.armorWhitelist && GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist)))
+				        {
+							chest.add(item.getRegistryName().toString());
+				        }
+						break;
+					case 3:
+						if(!GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist) || (ConfigHandler.armorWhitelist && GeneralHelperMethods.itemInList(item, ConfigHandler.armorBlacklist)))
+				        {
+							helmet.add(item.getRegistryName().toString());
+				        }
+						break;
 				}
 			}
-			
-			buf[0].close();
-			buf[1].close();
-			buf[2].close();
-			buf[3].close();
-			buf[4].close();
+			else if(item instanceof ItemSword || item instanceof ItemAxe)
+			{
+				weapons.add(item.getRegistryName().toString());
+			}
 		}
-		catch(IOException ex)
-		{
-			ex.printStackTrace();
-		}		
 	}
 
-	/** type: 0 = boots, 1 = leggings, 2 = chestplate, 3 = helmet*/
+	/** type: 0 = boots, 1 = leggings, 2 = chestplate, 3 = helmet, 4 = weapons*/
 	public static ItemStack getEquipment(int type)
 	{
 		Random rand = new Random();
-		Item armor = null;
-        String line = null;
-        List<String> list = new ArrayList<String>();
-
-        try {
-            FileReader read = new FileReader(file[type]);
-
-            BufferedReader buf = new BufferedReader(read);
-
-            while((line = buf.readLine()) != null) {
-            	list.add(line);
-            }
-            String[] regName = list.get(rand.nextInt(list.size())).split(":");
-            armor = ForgeRegistries.ITEMS.getValue(new ResourceLocation(regName[0], regName[1]));
-            buf.close();         
+        String item = "";
+        switch(type)
+        {
+	        case 0:
+					item = boots.get(rand.nextInt(boots.size()));
+				break;
+			case 1:
+					item = legs.get(rand.nextInt(legs.size()));
+				break;
+			case 2:
+					item = chest.get(rand.nextInt(chest.size()));
+				break;
+			case 3:
+					item = helmet.get(rand.nextInt(helmet.size()));
+				break;
         }
-        catch(FileNotFoundException ex) {
-        	ImprovedMobs.logger.error(
-                "Unable to open file");                
-        }
-        catch(IOException ex) {
-        	ex.printStackTrace();
-        }
-        ItemStack stack = new ItemStack(armor);
+        String[] regName = item.split(":");
+        ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(regName[0], regName[1])));
         return stack;
 	}
 	

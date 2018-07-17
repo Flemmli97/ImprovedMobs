@@ -116,18 +116,15 @@ public class GeneralHelperMethods {
 			while(!helmetChance && triesHelmet < maxTries)
 			{
 		        helmet = ConfigHandler.getEquipment(3);
-		        if(!GeneralHelperMethods.itemInList(helmet.getItem(), ConfigHandler.armorBlacklist))
+		        helmetChance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
+		        if(helmetChance)
 		        {
-			        helmetChance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(helmet)+time);
-			        triesHelmet++;
-			        if(helmetChance)
-			        {
-				        living.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
-				        if(!ConfigHandler.shouldDropEquip)
-			    			living.setDropChance(EntityEquipmentSlot.HEAD, -2);
-				    	break;
-			        }
+			        living.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
+			        if(!ConfigHandler.shouldDropEquip)
+		    			living.setDropChance(EntityEquipmentSlot.HEAD, -2);
+			    	break;
 		        }
+		        triesHelmet++;
 			}
 	        if(ConfigHandler.baseEquipChanceAdd!=0 &&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
 			{
@@ -137,18 +134,15 @@ public class GeneralHelperMethods {
 				while(!chance && tries < maxTries)
 				{
 			        chest = ConfigHandler.getEquipment(2);
-			        if(!GeneralHelperMethods.itemInList(chest.getItem(), ConfigHandler.armorBlacklist))
+			        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
+			        if(chance)
 			        {
-				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
-				        tries++;
-				        if(chance)
-				        {
-				        	living.setItemStackToSlot(EntityEquipmentSlot.CHEST, chest);
-				        	if(!ConfigHandler.shouldDropEquip)
-				    			living.setDropChance(EntityEquipmentSlot.CHEST, -2);
-				        	break;
-				        }
-				    }
+			        	living.setItemStackToSlot(EntityEquipmentSlot.CHEST, chest);
+			        	if(!ConfigHandler.shouldDropEquip)
+			    			living.setDropChance(EntityEquipmentSlot.CHEST, -2);
+			        	break;
+			        }
+			        tries++;
 				}
 			}
 	        if(ConfigHandler.baseEquipChanceAdd!=0&&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
@@ -159,18 +153,15 @@ public class GeneralHelperMethods {
 				while(!chance && tries < maxTries)
 				{
 			        legs = ConfigHandler.getEquipment(1);
-			        if(!GeneralHelperMethods.itemInList(legs.getItem(), ConfigHandler.armorBlacklist))
+			        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
+			        if(chance)
 			        {
-				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
-				        tries++;
-				        if(chance)
-				        {
-				        	living.setItemStackToSlot(EntityEquipmentSlot.LEGS, legs);
-				        	if(!ConfigHandler.shouldDropEquip)
-				    			living.setDropChance(EntityEquipmentSlot.LEGS, -2);
-				        	break;
-				        }
+			        	living.setItemStackToSlot(EntityEquipmentSlot.LEGS, legs);
+			        	if(!ConfigHandler.shouldDropEquip)
+			    			living.setDropChance(EntityEquipmentSlot.LEGS, -2);
+			        	break;
 			        }
+			        tries++;
 				}
 			}
 	        if(ConfigHandler.baseEquipChanceAdd!=0&& living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
@@ -180,19 +171,16 @@ public class GeneralHelperMethods {
 				boolean chance = false;
 				while(!chance && tries < maxTries)
 				{
-					if(!GeneralHelperMethods.itemInList(feet.getItem(), ConfigHandler.armorBlacklist))
+			        feet = ConfigHandler.getEquipment(0);
+			        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
+			        if(chance)
 			        {
-				        feet = ConfigHandler.getEquipment(0);
-				        chance = living.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
-				        tries++;
-				        if(chance)
-				        {
-				        	living.setItemStackToSlot(EntityEquipmentSlot.FEET, feet);
-				        	if(!ConfigHandler.shouldDropEquip)
-				    			living.setDropChance(EntityEquipmentSlot.FEET, -2);
-				        	break;
-				        }
+			        	living.setItemStackToSlot(EntityEquipmentSlot.FEET, feet);
+			        	if(!ConfigHandler.shouldDropEquip)
+			    			living.setDropChance(EntityEquipmentSlot.FEET, -2);
+			        	break;
 			        }
+			        tries++;
 				}
 			}
 		}
