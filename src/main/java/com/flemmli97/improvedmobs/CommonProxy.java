@@ -38,7 +38,7 @@ public class CommonProxy {
     }
 
     public void postInit(FMLPostInitializationEvent e) {
-    	ConfigHandler.write();
+    	ConfigHandler.initEquipment();
     	ConfigHandler.breakingItem=ForgeRegistries.ITEMS.getValue(new ResourceLocation(ConfigHandler.breakingItemReg));
     }
     
