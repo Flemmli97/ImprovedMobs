@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.entity.ai;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.handler.tilecap.ITileOpened;
 import com.flemmli97.improvedmobs.handler.tilecap.TileCapProvider;
 
@@ -50,10 +51,18 @@ public class EntityAISteal extends EntityAIMoveToBlock{
 	
 	private ItemStack randomStack(IInventory inv, int counter)
 	{
-		ItemStack drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
-		if(drop.isEmpty() && counter<5)
-			return this.randomStack(inv, ++counter);
-		return drop;
+		try
+		{
+			ItemStack drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
+			if(drop.isEmpty() && counter<5)
+				return this.randomStack(inv, ++counter);
+			return drop;
+		}
+		catch(Exception e)
+		{
+			ImprovedMobs.logger.error("#getSizeInventory and actual size of the inventory ("+inv +  ") is not the same.");
+			return ItemStack.EMPTY;
+		}
 	}
 	@Override
 	protected boolean shouldMoveTo(World world, BlockPos pos) {

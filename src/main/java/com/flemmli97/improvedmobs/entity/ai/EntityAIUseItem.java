@@ -6,6 +6,7 @@ import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -14,10 +15,7 @@ import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemSplashPotion;
 import net.minecraft.item.ItemStack;
 
-/**dropped for now*/
 public class EntityAIUseItem extends EntityAIBase{
-
-	//TODO make entity ai compatible with attackMelee, one way: replace attackmelee
 	
 	private EntityLiving living;
     double speedToTarget = 1;
@@ -40,14 +38,12 @@ public class EntityAIUseItem extends EntityAIBase{
 	@Override
 	public boolean shouldExecute() {
 		EntityLivingBase target = living.getAttackTarget();
-		if (target == null)
+		if (target == null||!target.isEntityAlive()||this.shouldNotExecute())
             return false;
-		else if(!target.isEntityAlive())
-			return false;
         else 
         {
-        		ItemType type =	AIUseHelper.isItemApplicable(living);
-        		this.type = type;
+    		ItemType type =	AIUseHelper.isItemApplicable(living);
+    		this.type = type;
             return this.type!=ItemType.NOTHING;
         }
 	}
@@ -98,13 +94,13 @@ public class EntityAIUseItem extends EntityAIBase{
                     }
                     else if ((this.type == ItemType.BOW && i >= 20) ||i >= this.itemUseCount)
                     {
-                    		if(this.type ==ItemType.BOW)
-                    			AIUseHelper.attackWithArrows(new EntityTippedArrow(living.world, living), living, target, ItemBow.getArrowVelocity(i));
-                    		else
-                    			AIUseHelper.chooseAttack(this.living, target);
-                    		
-                    		this.living.resetActiveHand();
-                    		this.attackTime = this.attackCooldown;
+                		if(this.type ==ItemType.BOW)
+                			AIUseHelper.attackWithArrows(new EntityTippedArrow(living.world, living), living, target, ItemBow.getArrowVelocity(i));
+                		else
+                			AIUseHelper.chooseAttack(this.living, target);
+                		
+                		this.living.resetActiveHand();
+                		this.attackTime = this.attackCooldown;
                     }
                 }
             }
@@ -200,5 +196,15 @@ public class EntityAIUseItem extends EntityAIBase{
 			cooldown=90;
 		}
 		return cooldown;
+	}
+	
+	/**
+	 * Specific mobs here. like for skeletons with bows
+	 */
+	private boolean shouldNotExecute()
+	{
+		if(this.living instanceof AbstractSkeleton)
+			return this.living.getHeldItemMainhand().getItem() instanceof ItemBow;
+		return false;
 	}
 }
