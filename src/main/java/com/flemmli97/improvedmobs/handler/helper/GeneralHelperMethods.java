@@ -43,7 +43,7 @@ public class GeneralHelperMethods {
 			if((classPath!=null && living.getClass().getName().equals(classPath)) || 
 					living.getClass().getName().equals("net.minecraft.entity.monster."+list[i]) || 
 					living.getClass().getName().equals("net.minecraft.entity.passive."+list[i]) ||
-					EntityList.getEntityString(living).equals(list[i]) ||
+					(EntityList.getEntityString(living)!=null && EntityList.getEntityString(living).equals(list[i])) ||
 					living.getClass().getName().equals(list[i]))
 			{
 				return true;

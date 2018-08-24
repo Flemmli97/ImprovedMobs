@@ -6,6 +6,7 @@ import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
+import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -40,9 +41,7 @@ public class EntityAIUseItem extends EntityAIBase{
 	@Override
 	public boolean shouldExecute() {
 		EntityLivingBase target = living.getAttackTarget();
-		if (target == null)
-            return false;
-		else if(!target.isEntityAlive())
+		if (target == null||!target.isEntityAlive()||this.shouldNotExecute())
 			return false;
         else 
         {
@@ -200,5 +199,12 @@ public class EntityAIUseItem extends EntityAIBase{
 			cooldown=90;
 		}
 		return cooldown;
+	}
+	
+	private boolean shouldNotExecute()
+	{
+		if(this.living instanceof AbstractSkeleton)
+			return this.living.getHeldItemMainhand().getItem() instanceof ItemBow;
+		return false;
 	}
 }
