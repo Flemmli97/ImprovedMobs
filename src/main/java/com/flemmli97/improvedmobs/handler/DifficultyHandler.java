@@ -32,7 +32,7 @@ public class DifficultyHandler {
 	@SubscribeEvent
     public void increaseDifficulty(WorldTickEvent e)
     {
-    		if(e.phase==Phase.END && e.world!=null && !e.world.isRemote)
+    		if(e.phase==Phase.END && e.world!=null && !e.world.isRemote && e.world.provider.getDimension()==0)
     		{
     			DifficultyData data = DifficultyData.get(e.world);
     			if(ConfigHandler.shouldPunishTimeSkip)
@@ -45,13 +45,15 @@ public class DifficultyHandler {
 	    					i *= 2400;
 	    				else
 	    					i*=2400+2400;
-	    				data.increaseDifficultyBy(i/24000F, e.world.getWorldTime());
+	    				data.increaseDifficultyBy(e.world.getGameRules().getBoolean("doIMDifficulty")?i/24000F:0, e.world.getWorldTime());
     				}
     			}
     			else
     			{
     				if(e.world.getWorldTime() - data.getPrevTime()>2400)
-    					data.increaseDifficultyBy(0.1F, e.world.getWorldTime());
+    				{
+    					data.increaseDifficultyBy(e.world.getGameRules().getBoolean("doIMDifficulty")?0.1F:0, e.world.getWorldTime());
+    				}
     			}
     		}
     }

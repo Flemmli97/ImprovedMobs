@@ -4,6 +4,7 @@ import com.flemmli97.improvedmobs.entity.InitEntities;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IThreadListener;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -27,6 +28,11 @@ public class ClientProxy extends CommonProxy {
     public void postInit(FMLPostInitializationEvent e) {
         super.postInit(e);
     }
+     
+    @Override
+	public IThreadListener getListener(MessageContext ctx) {
+    	return ctx.side.isClient() ? Minecraft.getMinecraft() : super.getListener(ctx);
+	}
     
     @Override
     public EntityPlayer getPlayerEntity(MessageContext ctx) {

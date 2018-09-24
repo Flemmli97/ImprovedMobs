@@ -11,9 +11,9 @@ apply plugin: 'net.minecraftforge.gradle.forge'
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
-version = ""
+version = "1.12.2-1.2.4"
 group = "com.flemmli97.improvedmobs" 
-archivesBaseName = "ImprovedMobs-1.2.3[1.12.2]"
+archivesBaseName = "ImprovedMobs"
 
 sourceCompatibility = targetCompatibility = '1.8' 
 compileJava {

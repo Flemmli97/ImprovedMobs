@@ -19,7 +19,7 @@ public enum ItemType {
 	NOTHING;
 	
 	EnumHand hand;
-	ItemStack item;
+	ItemStack item = ItemStack.EMPTY;
 	
 	public void setHand(EnumHand hand)
 	{
