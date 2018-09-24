@@ -12,7 +12,9 @@ import com.flemmli97.improvedmobs.handler.tilecap.TileCap;
 import com.flemmli97.improvedmobs.handler.tilecap.TileCapNetwork;
 
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.util.IThreadListener;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
@@ -41,6 +43,10 @@ public class CommonProxy {
     public void postInit(FMLPostInitializationEvent e) {
     	ConfigHandler.initEquipment();
     	ConfigHandler.breakingItem=ForgeRegistries.ITEMS.getValue(new ResourceLocation(ConfigHandler.breakingItemReg));
+    }
+    
+    public IThreadListener getListener(MessageContext ctx) {
+    	return (WorldServer) ctx.getServerHandler().playerEntity.worldObj;
     }
     
     public EntityPlayer getPlayerEntity(MessageContext ctx) {

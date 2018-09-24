@@ -4,7 +4,6 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.handler.DifficultyData;
 
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fml.common.network.ByteBufUtils;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
@@ -36,11 +35,11 @@ public class PacketDifficulty  implements IMessage{
 
         @Override
         public IMessage onMessage(PacketDifficulty msg, MessageContext ctx) {
-    		EntityPlayer player =  ImprovedMobs.proxy.getPlayerEntity(ctx);
-			if(player!=null)
-			{
-				DifficultyData.get(player.worldObj).readFromNBT(msg.compound);
-			}	
+    		ImprovedMobs.proxy.getListener(ctx).addScheduledTask(new Runnable() {
+				@Override
+				public void run() {
+					DifficultyData.get(ImprovedMobs.proxy.getPlayerEntity(ctx).worldObj).readFromNBT(msg.compound);					
+				}});	
             return null;
         }
     }

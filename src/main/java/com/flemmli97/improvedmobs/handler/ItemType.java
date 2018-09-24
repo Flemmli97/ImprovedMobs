@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.handler;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.EnumHand;
@@ -38,7 +39,7 @@ public enum ItemType {
 	
 	public Item getItem()
 	{
-		return this.item.getItem();
+		return this.item!=null?this.item.getItem():Item.getItemFromBlock(Blocks.AIR);
 	}
 	
 	public ItemStack getStack()
