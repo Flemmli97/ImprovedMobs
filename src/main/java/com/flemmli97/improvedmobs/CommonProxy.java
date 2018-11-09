@@ -18,6 +18,7 @@ import net.minecraft.world.WorldServer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
@@ -35,7 +36,8 @@ public class CommonProxy {
     public void init(FMLInitializationEvent e) {
     	CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
 		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
-		if(ConfigHandler.enableDifficultyScaling)
+        ConfigHandler.useScalingHealthMod=ConfigHandler.useScalingHealthMod?Loader.isModLoaded("scalinghealth"):false;
+		if(ConfigHandler.enableDifficultyScaling && !ConfigHandler.useScalingHealthMod)
 			MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
     }
 

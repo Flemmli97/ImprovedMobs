@@ -98,6 +98,8 @@ public class ConfigHandler {
 	public static List<String> breakListNames;
 	public static List<BlockClassPredicate> breakListClass;
 		
+	public static boolean useScalingHealthMod;
+
 	public static void loadConfig(Configuration config) {
 		config.load();
 		config.addCustomCategoryComment("general", "With default value every difficulty perk maxes out at difficulty 250");
@@ -105,7 +107,7 @@ public class ConfigHandler {
 
 		config.addCustomCategoryComment("mob ai", "Settings regarding custom ai for mobs");
 		config.addCustomCategoryComment("mob attributes", "Settings for attribute modifiers");
-		config.addCustomCategoryComment("integration", "Settings for mod integration. Unused now");
+		config.addCustomCategoryComment("integration", "Settings for mod integration.");
 		config.addCustomCategoryComment("gui", "GUI");
 		config.addCustomCategoryComment("debug", "Debugging");
 		
@@ -113,6 +115,8 @@ public class ConfigHandler {
 		mobListLight = config.getStringList("Light list", "general", mobListLight, "Mobs to include for the new light spawning rules.");
 		mobListLightBlackList = config.getBoolean("Light list blacklist", "general", false, "Turn the list list whitelist to blacklist");
 
+		useScalingHealthMod = config.getBoolean("Use Scaling Health Mod", "integration", true, "Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)");
+		
 		light = config.getInt("Light", "general", 7, 0, 15, "Light level, blocks can have at max, so mobs can spawn on them.");
 		shouldPunishTimeSkip = config.getBoolean("Punish Time Skip", "general", true, "Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.");
 		friendlyFire = config.getBoolean("FriendlyFire", "general", false, "Disable/Enable friendly fire for owned pets.");
@@ -151,7 +155,7 @@ public class ConfigHandler {
 		mobListBoatBlacklist = config.getStringList("Boat Blacklist", "mob ai", mobListBoatBlacklist, "Blacklist for mobs who can't ride a boat");
 		mobListBoatWhitelist = config.getBoolean("Boat Whitelist", "mob ai", false, "Treat Boat Blacklist as Whitelist");
 		
-		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "mob ai", 0.2F, 0, 0, "Chance for neutral mobs to be aggressive"); 
+		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "mob ai", 0.2F, 0, 1, "Chance for neutral mobs to be aggressive"); 
 		targetVillager = config.getBoolean("Villager Target", "mob ai", true, "Should mobs target villagers? RIP Villagers");
 		
 		mobAttributeBlackList = config.getStringList("Attribute Blacklist", "mob attributes", mobAttributeBlackList, "Blacklist for mobs which should not have their attributes modified");
@@ -161,7 +165,7 @@ public class ConfigHandler {
 		damageIncrease = getFloatConfig(config, "Damage Increase Multiplier", "mob attributes", 1.0F, "Damage will be multiplied by difficulty*0.008*x. Set to 0 to disable.");
 		damageMax = getFloatConfig(config, "Max Damage Increase", "mob attributes", 3.0F, "Damage will be multiplied by at maximum this. Set to 0 means no limit. ");
 		speedIncrease = getFloatConfig(config, "Speed Increase", "mob attributes", 1.0F, "Speed will be increased by difficulty*0.0008*x. Set to 0 to disable."); 
-		speedMax = config.getFloat("Max Speed", "mob attributes", 0.2F, 0, 1, "Maximum increase in speed."); 
+		speedMax = config.getFloat("Max Speed", "mob attributes", 0.1F, 0, 1, "Maximum increase in speed."); 
 		knockbackIncrease = getFloatConfig(config, "Knockback Increase", "mob attributes", 1.0F, "Knockback will be increased by difficulty*0.002*x. Set to 0 to disable."); 
 		knockbackMax = config.getFloat("Max Knockback", "mob attributes", 0.5F, 0, 1, "Maximum increase in knockback."); 
 		

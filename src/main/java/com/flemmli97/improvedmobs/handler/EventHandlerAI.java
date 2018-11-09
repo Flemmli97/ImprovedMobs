@@ -24,6 +24,7 @@ import net.minecraft.entity.monster.EntityPigZombie;
 import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemArmor;
@@ -68,7 +69,7 @@ public class EventHandlerAI {
 	public void entityProps(EntityConstructing e) {
 		if (e.getEntity() instanceof EntityMob && e.getEntity().world!=null && !e.getEntity().world.isRemote)
 		{
-			if(!GeneralHelperMethods.isMobInList((EntityMob) e.getEntity(), ConfigHandler.mobListBreakBlacklist) || (ConfigHandler.mobListBreakWhitelist && GeneralHelperMethods.isMobInList((EntityMob) e.getEntity(), ConfigHandler.mobListBreakBlacklist)))
+			if(!GeneralHelperMethods.isMobInList((EntityMob) e.getEntity(), ConfigHandler.mobListBreakBlacklist, ConfigHandler.mobListBreakWhitelist))
 			{
 				if(ConfigHandler.breakerChance!=0 &&e.getEntity().world.rand.nextFloat()<ConfigHandler.breakerChance)
 				{
@@ -78,15 +79,15 @@ public class EventHandlerAI {
 			if(!(e.getEntity() instanceof IEntityOwnable))
 			{
 				EntityMob mob = (EntityMob) e.getEntity();
-				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.armorMobBlacklist) ||(ConfigHandler.armorMobWhiteList && GeneralHelperMethods.isMobInList(mob, ConfigHandler.armorMobBlacklist)))
+				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.armorMobBlacklist, ConfigHandler.armorMobWhiteList))
 				{
 					mob.getEntityData().setBoolean(modifyArmor, false);	
 				}
-				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist) ||(ConfigHandler.mobListUseWhitelist && GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist)))
+				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist, ConfigHandler.mobListUseWhitelist))
 				{
 					mob.getEntityData().setBoolean(modifiyHeld, false);	
 				}
-				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList) ||(ConfigHandler.mobAttributeWhitelist && GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList)))
+				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList, ConfigHandler.mobAttributeWhitelist))
 				{
 					mob.getEntityData().setBoolean(modifiyAttributes, false);	
 				}
@@ -134,7 +135,7 @@ public class EventHandlerAI {
 	public void entityProps(CheckSpawn e) {
 		if(e.getEntityLiving() instanceof EntityLiving && !e.getWorld().isRemote)
 		{
-			if(GeneralHelperMethods.isMobInList((EntityLiving) e.getEntityLiving(), ConfigHandler.mobListLight) || (ConfigHandler.mobListLightBlackList && !GeneralHelperMethods.isMobInList((EntityLiving) e.getEntityLiving(), ConfigHandler.mobListLight)))
+			if(GeneralHelperMethods.isMobInList((EntityLiving) e.getEntityLiving(), ConfigHandler.mobListLight, ConfigHandler.mobListLightBlackList))
 			{
 				int light = e.getWorld().getLightFor(EnumSkyBlock.BLOCK, e.getEntity().getPosition());
 				if(light>=ConfigHandler.light)
@@ -156,7 +157,7 @@ public class EventHandlerAI {
 		if(e.getEntity() instanceof EntityLiving && !e.getWorld().isRemote)
 		{
 			EntityLiving living= (EntityLiving) e.getEntity();
-			if(!GeneralHelperMethods.isMobInList(living, ConfigHandler.mobListLadderBlacklist) || (ConfigHandler.mobListLadderWhitelist && GeneralHelperMethods.isMobInList(living, ConfigHandler.mobListLadderBlacklist)))
+			if(!GeneralHelperMethods.isMobInList(living, ConfigHandler.mobListLadderBlacklist, ConfigHandler.mobListLadderWhitelist))
 			{
 				if(!(living.getNavigator() instanceof PathNavigateClimber))
 					living.tasks.addTask(4, new EntityAIClimbLadder(living));
@@ -165,46 +166,52 @@ public class EventHandlerAI {
 	    if (e.getEntity() instanceof EntityMob && !e.getWorld().isRemote) 
 	    {    	
     		EntityMob mob= (EntityMob) e.getEntity();
-    		this.applyAttributesAndItems(mob);
-    		mob.targetTasks.taskEntries.iterator().forEachRemaining(t->{if(t.action instanceof EntityAINearestAttackableTarget)
-			{
-				EntityAINearestAttackableTarget<?> aiNearestTarget = (EntityAINearestAttackableTarget<?>) t.action;
-				if(mob.getTags().contains("Breaker"))
-				{
-					Class<?> targetCls = ObfuscationReflectionHelper.getPrivateValue(EntityAINearestAttackableTarget.class, aiNearestTarget, "field_75307_b","targetClass");
-					if(targetCls == EntityPlayer.class)
-					{
-						if(!(mob instanceof EntityEnderman && mob instanceof EntityPigZombie))
-							ObfuscationReflectionHelper.setPrivateValue(EntityAITarget.class, (EntityAITarget)aiNearestTarget, false, "field_75297_f","shouldCheckSight");
-						else if(ConfigHandler.neutralAggressiv!=0 && mob.world.rand.nextFloat() <= ConfigHandler.neutralAggressiv)
-							ObfuscationReflectionHelper.setPrivateValue(EntityAITarget.class, (EntityAITarget)aiNearestTarget, false, "field_75297_f","shouldCheckSight");
-					}
-				}
-			}});
     		boolean mobGriefing = mob.world.getGameRules().getBoolean("mobGriefing");
-	    	if(mob.getTags().contains("Breaker") && mobGriefing)
-	        {
+    		this.applyAttributesAndItems(mob);
+			if(mob.getTags().contains(breaker))
+			{
+	    		mob.targetTasks.taskEntries.iterator().forEachRemaining(t->{if(t.action instanceof EntityAINearestAttackableTarget)
+				{
+					EntityAINearestAttackableTarget<?> aiNearestTarget = (EntityAINearestAttackableTarget<?>) t.action;
+						Class<?> targetCls = ObfuscationReflectionHelper.getPrivateValue(EntityAINearestAttackableTarget.class, aiNearestTarget, "field_75307_b","targetClass");
+						if(targetCls == EntityPlayer.class)
+						{
+							//if(!(mob instanceof EntityEnderman && mob instanceof EntityPigZombie))
+							ObfuscationReflectionHelper.setPrivateValue(EntityAITarget.class, (EntityAITarget)aiNearestTarget, false, "field_75297_f","shouldCheckSight");
+							//else if(ConfigHandler.neutralAggressiv!=0 && mob.world.rand.nextFloat() <= ConfigHandler.neutralAggressiv)
+							//	ObfuscationReflectionHelper.setPrivateValue(EntityAITarget.class, (EntityAITarget)aiNearestTarget, false, "field_75297_f","shouldCheckSight");
+						}
+				}});
+	    		if(mobGriefing)
+		        {
 		    		mob.tasks.addTask(1, new EntityAIBlockBreaking(mob));
-		    		mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, new ItemStack(ConfigHandler.breakingItem));
+		    		ItemStack stack = new ItemStack(ConfigHandler.breakingItem);
 		    		if(!ConfigHandler.shouldDropEquip)
-		    			mob.setDropChance(EntityEquipmentSlot.OFFHAND, -2);
-	        }
-	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist) || (ConfigHandler.mobListUseWhitelist && GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist)))
+		    			stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+		    		mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack);
+		        }
+			}
+	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist, ConfigHandler.mobListUseWhitelist))
 			{
 	    		mob.tasks.addTask(3, new EntityAIUseItem(mob, 15));
 	    	}
-	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListStealBlacklist) || (ConfigHandler.mobListStealWhitelist && GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListStealBlacklist)))
+	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListStealBlacklist, ConfigHandler.mobListStealWhitelist))
 			{
 	    		if(mobGriefing)
 	    			mob.tasks.addTask(5, new EntityAISteal(mob));
 	    	}
-	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListBoatBlacklist) || (ConfigHandler.mobListBoatWhitelist && GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListBoatBlacklist)))
+	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListBoatBlacklist, ConfigHandler.mobListBoatWhitelist))
 			{
 	    		if(!(mob.canBreatheUnderwater() || mob.getNavigator() instanceof PathNavigateSwimmer))
 	    			mob.tasks.addTask(6, new EntityAIRideBoat(mob));
 	    	}
     		if(ConfigHandler.targetVillager && !(mob instanceof EntityZombie))
-    			mob.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(mob, EntityVillager.class, mob.getTags().contains("Breaker")? false:mob.world.rand.nextFloat()<=0.5));
+    		{
+    			if(!(mob instanceof EntityEnderman || mob instanceof EntityPigZombie))
+    				mob.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(mob, EntityVillager.class, mob.getTags().contains("Breaker")? false:mob.world.rand.nextFloat()<=0.5));
+    			else if(ConfigHandler.neutralAggressiv!=0 && mob.world.rand.nextFloat() <= ConfigHandler.neutralAggressiv)
+    				mob.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(mob, EntityVillager.class, mob.getTags().contains("Breaker")? false:mob.world.rand.nextFloat()<=0.5));
+    		}
 	    }
 	}
 	
@@ -227,12 +234,12 @@ public class EventHandlerAI {
 		}
 		if(mob.getEntityData().hasKey(modifiyAttributes) && !mob.getEntityData().getBoolean(modifiyAttributes))
 		{
-			if(ConfigHandler.healthIncrease!=0)
+			if(ConfigHandler.healthIncrease!=0 && !ConfigHandler.useScalingHealthMod)
 			{
 				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease*0.016, ConfigHandler.healthMax,  true);
 				mob.setHealth(mob.getMaxHealth());
 			}
-			if(ConfigHandler.damageIncrease!=0)
+			if(ConfigHandler.damageIncrease!=0 && !ConfigHandler.useScalingHealthMod)
 				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease*0.008, ConfigHandler.damageMax,  true);
 			if(ConfigHandler.speedIncrease!=0)
 				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease*0.0008, ConfigHandler.speedMax,  false);
@@ -288,7 +295,7 @@ public class EventHandlerAI {
     public void equipPet(EntityInteract e)
     {
     		if(e.getTarget() instanceof EntityLiving && e.getTarget() instanceof IEntityOwnable && !e.getTarget().world.isRemote && e.getEntityPlayer().isSneaking() &&
-    				(!GeneralHelperMethods.isMobInList((EntityLiving) e.getTarget(), ConfigHandler.petArmorBlackList)||(ConfigHandler.petWhiteList&&GeneralHelperMethods.isMobInList((EntityLiving) e.getTarget(), ConfigHandler.petArmorBlackList))))
+    				!GeneralHelperMethods.isMobInList((EntityLiving) e.getTarget(), ConfigHandler.petArmorBlackList, ConfigHandler.petWhiteList))
     		{
     			IEntityOwnable pet = (IEntityOwnable) e.getTarget();
     			if(e.getEntityPlayer() == pet.getOwner())

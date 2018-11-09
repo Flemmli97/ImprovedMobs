@@ -37,26 +37,31 @@ public class EntityAISteal extends EntityAIMoveToBlock{
 		super.updateTask();
 		this.stealDelay=Math.max(0, --this.stealDelay);
 		TileEntity tile = this.living.world.getTileEntity(this.destinationBlock);
-		if(tile instanceof IInventory && this.stealDelay==0 && this.living.getDistanceSq(this.destinationBlock)<=6)
+		
+		if(tile instanceof IInventory && this.stealDelay==0 && this.living.getDistanceSq(this.destinationBlock)<4)
 		{
 			IInventory inv = (IInventory) tile;
-			ItemStack drop = this.randomStack(inv, 0);
+			ItemStack drop = this.randomStack(inv);
 			this.living.world.playSound(null, this.living.getPosition(), SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.3F, 1);
 			this.living.swingArm(EnumHand.MAIN_HAND);
 			EntityItem item = new EntityItem(this.living.world, this.living.posX, this.living.posY, this.living.posZ, drop);
 			this.living.world.spawnEntity(item);
-			this.stealDelay=120+this.living.getRNG().nextInt(25);
+			this.stealDelay=150+this.living.getRNG().nextInt(45);
 		}
     }
 	
-	private ItemStack randomStack(IInventory inv, int counter)
+	private ItemStack randomStack(IInventory inv)
 	{
 		try
 		{
-			ItemStack drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
-			if(drop.isEmpty() && counter<5)
-				return this.randomStack(inv, ++counter);
-			return drop;
+			if(!inv.isEmpty())
+			{
+				ItemStack drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
+				while(drop.isEmpty())
+					drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
+				return drop;
+			}
+			return ItemStack.EMPTY;
 		}
 		catch(Exception e)
 		{
