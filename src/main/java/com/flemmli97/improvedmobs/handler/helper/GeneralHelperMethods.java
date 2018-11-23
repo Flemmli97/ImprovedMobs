@@ -1,7 +1,5 @@
 package com.flemmli97.improvedmobs.handler.helper;
 
-import java.util.List;
-
 import com.flemmli97.improvedmobs.entity.EntityGuardianBoat;
 import com.flemmli97.improvedmobs.handler.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.DifficultyData;
@@ -55,16 +53,16 @@ public class GeneralHelperMethods {
 		return false;
 	}
 	
-	public static boolean isBlockBreakable(Block block, List<String> list)
+	public static boolean isBlockBreakable(Block block)
 	{
 		if(ConfigHandler.blockAsBlacklist)
 		{
-			if(!list.contains(block.getRegistryName().toString()))
+			if(!ConfigHandler.breakListNames.contains(block.getRegistryName().toString()))
 				return true;
 			for(ConfigHandler.BlockClassPredicate pred : ConfigHandler.breakListClass)
 			{
 				if(!pred.matches(block))
-					return true;
+					return false;
 			}
 		}
 		else
@@ -277,7 +275,7 @@ public class GeneralHelperMethods {
 
     public static void equipItem(EntityMob mob)
     {    		
-		if(mob.getRNG().nextFloat() < (ConfigHandler.baseItemChance) && mob.getRNG().nextFloat()<0.8)
+		if(mob.getRNG().nextFloat() < (ConfigHandler.baseItemChance))
 		{
     		int itemRand = mob.getRNG().nextInt(8);
     		ItemStack stack = ItemStack.EMPTY;
@@ -322,6 +320,20 @@ public class GeneralHelperMethods {
     			if(!ConfigHandler.shouldDropEquip)
     				stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
     			mob.setItemStackToSlot(hand, stack);
+    		}
+		}
+    }
+    
+    public static void equipWeapon(EntityMob mob)
+    {
+    	if(mob.getRNG().nextFloat() < (ConfigHandler.baseWeaponChance+(DifficultyData.getDifficulty(mob.world, mob)*ConfigHandler.diffWeaponChance*0.01F)))
+		{
+    		if(mob.getHeldItemMainhand().isEmpty())
+    		{
+    			ItemStack stack = ConfigHandler.randomWeapon();
+    			if(!ConfigHandler.shouldDropEquip)
+    				stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+    			mob.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
     		}
 		}
     }

@@ -22,8 +22,9 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	EntityLivingBase target;
 	int scanTick;
 	private BlockPos markedLoc;
+	private BlockPos entityPos;
 	private int digTimer;
-	
+	private static float maxMotion = 2;
 	public EntityAIBlockBreaking(EntityLiving living)
 	{
 		this.living=living;
@@ -33,7 +34,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		target = living.getAttackTarget();
 		double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
 		
-		if(living.ticksExisted%10 == 0 && target != null && motion<1.5 && living.getDistance(target) > 1D && living.onGround)
+		if(living.ticksExisted%10 == 0 && target != null /*&& motion<maxMotion*/ && living.getDistance(target) > 1D && living.onGround)
 		{
 
 			BlockPos blockPos = this.getBlock(living);
@@ -51,6 +52,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 			if(GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff))
 			{
 				markedLoc = blockPos;
+				entityPos = living.getPosition();
 				return true;
 			} 
 			else
@@ -64,7 +66,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	@Override
 	public boolean shouldContinueExecuting() {
 		double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
-		return target != null && living != null && target.isEntityAlive() && living.isEntityAlive() && markedLoc != null && motion<1 && living.getDistance(target) > 1D && (target.onGround || !living.canEntityBeSeen(target));
+		return target != null && living != null && target.isEntityAlive() && living.isEntityAlive() && markedLoc != null && entityPos!=null && entityPos.equals(living.getPosition())/*motion<maxMotion*/ && living.getDistance(target) > 1D && (target.onGround || !living.canEntityBeSeen(target));
 	}
 
 	@Override
@@ -126,7 +128,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		ItemStack itemOff = entityLiving.getHeldItemMainhand();
         if(notFull.getMaterial()!=Material.AIR)
 		{
-			if(!GeneralHelperMethods.isBlockBreakable(notFull.getBlock(), ConfigHandler.breakListNames))
+			if(!GeneralHelperMethods.isBlockBreakable(notFull.getBlock()))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;
@@ -146,7 +148,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		else if(block.getMaterial()!=Material.AIR)
         {	
 			
-			if(!GeneralHelperMethods.isBlockBreakable(block.getBlock(), ConfigHandler.breakListNames))
+			if(!GeneralHelperMethods.isBlockBreakable(block.getBlock()))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;

@@ -26,7 +26,7 @@ import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 
 public class ConfigHandler {
-
+	
 	public static String[] mobListLight = new String[]{};
 	public static boolean mobListLightBlackList;
 	public static int light;
@@ -43,6 +43,9 @@ public class ConfigHandler {
 	public static float baseEquipChance;
 	public static float baseEquipChanceAdd;
 	public static float diffEquipAdd;
+	public static float baseWeaponChance;
+	public static float diffWeaponChance;
+
 	public static float baseItemChance;
 	public static float baseEnchantChance;
 	public static float diffEnchantAdd;
@@ -129,13 +132,17 @@ public class ConfigHandler {
 		armorMobWhiteList = config.getBoolean("Armor Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
 		baseEquipChance = config.getFloat("Equipment Chance", "equipment", 0.1F, 0, 1, "Base chance that a mob can have one piece of armor");
 		baseEquipChanceAdd = config.getFloat("Additional Equipment Chance", "equipment", 0.3F, 0, 1, "Base chance for each additional armor pieces");
-		diffEquipAdd = getFloatConfig(config, "Equipment Addition", "equipment", 0.3F,  "Adds to both equipment chances. Adds additional x*difficulty% to it.");
+		diffEquipAdd = getFloatConfig(config, "Equipment Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base equip chance");
+		baseWeaponChance = config.getFloat("Weapon Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have a weapon.");
+		diffWeaponChance = config.getFloat("Weapon Chance Add", "equipment", 0.4F, 0, 1, "Adds additional x*difficulty% to base weapon chance");
+
 		baseEnchantChance = config.getFloat("Enchanting Chance", "equipment", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
 		diffEnchantAdd = getFloatConfig(config, "Enchanting Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base enchanting chance");
-		baseItemChance = config.getFloat("Item Equip Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have an item. Always has a 20% fail chance");
+		baseItemChance = config.getFloat("Item Equip Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have an item. Higher priority than weapons");
+
 		shouldDropEquip = config.getBoolean("Should drop equipment", "equipment", false, "Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)");
 
-		blockBreakName = config.getStringList("Block WhiteList", "mob ai", blockBreakName, "Whitelist for blocks, which can be actively broken. Use +Classname to include all blocks of that type and \"!\" to exclude a specific block e.g. \"+BlockDoor!minecraft:iron_door\" will make all blocks extending BlockDoor except iron doors breakable.");
+		blockBreakName = config.getStringList("Block WhiteList", "mob ai", blockBreakName, "Whitelist for blocks, which can be actively broken. Use +Classname to include all blocks of that type and \"!\" to exclude a specific block e.g. \"+BlockDoor!minecraft:iron_door!minecraft:spruce_door\" will make all blocks extending BlockDoor except iron doors and spruce doors breakable.");
 		blockAsBlacklist = config.getBoolean("Block as Blacklist", "mob ai", false, "Treat Break-Whitelist as Blacklist");
 		useBlockBreakSound = config.getBoolean("Sound", "mob ai", false, "Use the block breaking sound instead of a knocking sound");
 		mobListBreakBlacklist = config.getStringList("AI Blacklist", "mob ai", mobListBreakBlacklist, "Blacklist for mobs, which can never break blocks");
@@ -146,7 +153,7 @@ public class ConfigHandler {
 		mobListUseBlacklist = config.getStringList("Item Mob-Blacklist", "mob ai", mobListUseBlacklist, "Blacklist for mobs which can't use items");
 		mobListUseWhitelist = config.getBoolean("Item Mob-Whitelist", "mob ai", false, "Treat Item Mob-Blacklist as Whitelist");
 
-		mobListLadderBlacklist = config.getStringList("Ladder Blacklist", "mob ai", mobListLadderBlacklist, "Blacklist for items given to entities which can't climb ladder");
+		mobListLadderBlacklist = config.getStringList("Ladder Blacklist", "mob ai", mobListLadderBlacklist, "Blacklist for entities which can't climb ladder");
 		mobListLadderWhitelist = config.getBoolean("Ladder Whitelist", "mob ai", false, "Treat Ladder Blacklist as Whitelist");
 
 		mobListStealBlacklist = config.getStringList("Steal Blacklist", "mob ai", mobListStealBlacklist, "Blacklist for mobs who can't steal from inventory");
@@ -180,20 +187,9 @@ public class ConfigHandler {
 		{
 			if(s.startsWith("+"))
 			{
-				String[] part = s.substring(1).split("!");
-				try {
-					Class<?> clss = Class.forName("net.minecraft.block."+part[0]);
-					if(clss!=null)
-						blockInstances.add(new BlockClassPredicate(clss, part.length>1?Arrays.copyOfRange(part, 1,  part.length):new String[0]));
-				} catch (ClassNotFoundException e) {
-					try {
-						Class<?> clss = Class.forName(part[0]);
-						if(clss!=null)
-							blockInstances.add(new BlockClassPredicate(clss, part.length>1?Arrays.copyOfRange(part, 1,  part.length):new String[0]));
-					} catch (ClassNotFoundException e1) {
-						ImprovedMobs.logger.error("Couldn't find class for "+s.substring(1));
-					}
-				}
+				BlockClassPredicate pred = BlockClassPredicate.fromString(s.substring(1));
+				if(pred!=null)
+					blockInstances.add(pred);
 			}
 			else registryNames.add(s);
 		}
@@ -291,9 +287,13 @@ public class ConfigHandler {
 					item = helmet.get(rand.nextInt(helmet.size()));
 				break;
         }
-        String[] regName = item.split(":");
-        ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(regName[0], regName[1])));
+        ItemStack stack = new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(item)));
         return stack;
+	}
+	
+	public static ItemStack randomWeapon()
+	{
+		return new ItemStack(ForgeRegistries.ITEMS.getValue(new ResourceLocation(weapons.get(new Random().nextInt(weapons.size())))));
 	}
 	
 	private static float getFloatConfig(Configuration config, String name, String category, float defaultValue, String comment)
@@ -354,23 +354,39 @@ public class ConfigHandler {
 		private Class<?> clss;
 		private String[] exclude;
 		public BlockClassPredicate(Class<?> clss, String[] strings)
-		{
+		{	
 			this.clss=clss;
-			if(strings.length>0)
-				this.exclude=strings;
+			this.exclude=strings;
 		}
 		
 		public boolean matches(Block block)
 		{
-			boolean flag=true;;
 			if(this.exclude!=null)
 				for(String s : this.exclude)
 					if(block.getRegistryName().toString().equals(s))
 					{
-						flag=false;
-						break;
+						return false;
 					}
-			return clss.isInstance(block) && flag;
+			return clss.isInstance(block);
+		}
+		
+		public static BlockClassPredicate fromString(String string)
+		{
+			String[] part = string.split("!");
+			Class<?> clss = null;
+			try 
+			{
+				clss = Class.forName("net.minecraft.block."+part[0]);
+			} catch (ClassNotFoundException e) 
+			{
+				try 
+				{
+					clss = Class.forName(part[0]);
+				} catch (ClassNotFoundException e1) {
+					ImprovedMobs.logger.error("Couldn't find class for "+part[0]);
+				}
+			}
+			return new BlockClassPredicate(clss, part.length>1?Arrays.copyOfRange(part, 1,  part.length):null);
 		}
 	}
 }

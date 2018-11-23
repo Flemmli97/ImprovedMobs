@@ -51,7 +51,7 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 public class EventHandlerAI {
 		
 	public static final ResourceLocation TileCap = new ResourceLocation(ImprovedMobs.MODID, "openedFlag");
-	private static final String breaker = ImprovedMobs.MODID+":Breaker";
+	public static final String breaker = ImprovedMobs.MODID+":Breaker";
 	private static final String modifyArmor = ImprovedMobs.MODID+":InitArmor";
 	private static final String modifiyHeld = ImprovedMobs.MODID+":InitHeld";
 	private static final String modifiyAttributes = ImprovedMobs.MODID+":InitAttr";
@@ -230,6 +230,8 @@ public class EventHandlerAI {
 		{
 			if(ConfigHandler.baseItemChance!=0)
 				GeneralHelperMethods.equipItem(mob);
+			if(ConfigHandler.baseWeaponChance!=0)
+				GeneralHelperMethods.equipWeapon(mob);
 			mob.getEntityData().setBoolean(modifiyHeld, true);
 		}
 		if(mob.getEntityData().hasKey(modifiyAttributes) && !mob.getEntityData().getBoolean(modifiyAttributes))
