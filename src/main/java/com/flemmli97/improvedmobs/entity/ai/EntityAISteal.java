@@ -15,6 +15,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityAISteal extends EntityAIMoveToBlock{
@@ -38,7 +40,7 @@ public class EntityAISteal extends EntityAIMoveToBlock{
 		this.stealDelay=Math.max(0, --this.stealDelay);
 		TileEntity tile = this.living.world.getTileEntity(this.destinationBlock);
 		
-		if(tile instanceof IInventory && this.stealDelay==0 && this.living.getDistanceSq(this.destinationBlock)<4)
+		if(tile instanceof IInventory && this.stealDelay==0 && this.living.getDistanceSq(this.destinationBlock)<5 && this.canSee())
 		{
 			IInventory inv = (IInventory) tile;
 			ItemStack drop = this.randomStack(inv);
@@ -49,6 +51,14 @@ public class EntityAISteal extends EntityAIMoveToBlock{
 			this.stealDelay=150+this.living.getRNG().nextInt(45);
 		}
     }
+	
+	private boolean canSee()
+	{
+		Vec3d eyes = this.living.getPositionEyes(1);
+		Vec3d block = new Vec3d(this.destinationBlock);
+		RayTraceResult res = this.living.world.rayTraceBlocks(eyes, block);
+		return res!=null && res.getBlockPos().equals(this.destinationBlock);
+	}
 	
 	private ItemStack randomStack(IInventory inv)
 	{
