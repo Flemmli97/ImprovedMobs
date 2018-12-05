@@ -7,7 +7,6 @@ import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.MCVersion;
 import net.minecraftforge.fml.relauncher.IFMLLoadingPlugin.Name;
 /**
  * Using reflection to replace pathnavigate breaks ai... (like EntityAIAvoidEntity)
- * @author kevin
  *
  */
 @MCVersion(value="1.11.2")
