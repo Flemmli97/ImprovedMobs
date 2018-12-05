@@ -2,6 +2,7 @@ package com.flemmli97.improvedmobs.handler;
 
 import org.lwjgl.opengl.GL11;
 
+import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.packet.PacketDifficulty;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 
@@ -35,7 +36,7 @@ public class DifficultyHandler {
     		if(e.phase==Phase.END && e.world!=null && !e.world.isRemote && e.world.provider.getDimension()==0)
     		{
     			DifficultyData data = DifficultyData.get(e.world);
-    			if(ConfigHandler.shouldPunishTimeSkip)
+    			if(ConfigHandler.general.shouldPunishTimeSkip)
     			{
 	    			long timeDiff = (int) Math.abs(e.world.getWorldTime() - data.getPrevTime());
 	    			if(timeDiff>2400)
@@ -70,20 +71,9 @@ public class DifficultyHandler {
 			FontRenderer font = Minecraft.getMinecraft().fontRenderer;
 			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
 			GL11.glDisable(GL11.GL_LIGHTING);
-			int x = ConfigHandler.guiX==0?2:ConfigHandler.guiX==1?e.getResolution().getScaledWidth()/2:e.getResolution().getScaledWidth()-2;
-			int y = ConfigHandler.guiY==0?2:ConfigHandler.guiY==1?e.getResolution().getScaledHeight()/2:e.getResolution().getScaledHeight()-2;
-			if(ConfigHandler.guiX==2)
-			{
-				String t = ConfigHandler.color+"Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty());
-				font.drawString(t, x-font.getStringWidth(t), y, 0);
-			}
-			else if(ConfigHandler.guiX==1)
-			{
-				String t = ConfigHandler.color+"Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty());
-				font.drawString(t, x-font.getStringWidth(t)/2, y, 0);
-			}
-			else
-				font.drawString(ConfigHandler.color+"Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty()), x, y, 0);
+			//int x = ConfigHandler.gui.guiX+e.getResolution().getScaledWidth()/2;
+			//int y = ConfigHandler.gui.guiY+e.getResolution().getScaledHeight();
+			font.drawString(ConfigHandler.gui.color+"Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty()), ConfigHandler.gui.guiX, ConfigHandler.gui.guiY, 0);
 		}
     }
 }

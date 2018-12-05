@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.handler;
 
+import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.packet.PacketDifficulty;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 
@@ -39,7 +40,7 @@ public class DifficultyData extends WorldSavedData{
 	
 	public static float getDifficulty(World world, EntityLiving e)
 	{
-		if(ConfigHandler.useScalingHealthMod)
+		if(ConfigHandler.integration.useScalingHealthMod)
 			return (float) Config.Difficulty.AREA_DIFFICULTY_MODE.getAreaDifficulty(world, e.getPosition());
 		return DifficultyData.get(e.world).getDifficulty();
 	}

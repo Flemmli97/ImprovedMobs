@@ -1,6 +1,6 @@
  package com.flemmli97.improvedmobs.entity.ai;
 
-import com.flemmli97.improvedmobs.handler.ConfigHandler;
+import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
 
 import net.minecraft.block.SoundType;
@@ -24,7 +24,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	private BlockPos markedLoc;
 	private BlockPos entityPos;
 	private int digTimer;
-	private static float maxMotion = 2;
+	//private static float maxMotion = 2;
 	public EntityAIBlockBreaking(EntityLiving living)
 	{
 		this.living=living;
@@ -32,7 +32,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	@Override
 	public boolean shouldExecute() {
 		target = living.getAttackTarget();
-		double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
+		//double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
 		
 		if(living.ticksExisted%10 == 0 && target != null /*&& motion<maxMotion*/ && living.getDistance(target) > 1D && living.onGround)
 		{
@@ -65,7 +65,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 	}
 	@Override
 	public boolean shouldContinueExecuting() {
-		double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
+		//double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
 		return target != null && living != null && target.isEntityAlive() && living.isEntityAlive() && markedLoc != null && entityPos!=null && entityPos.equals(living.getPosition())/*motion<maxMotion*/ && living.getDistance(target) > 1D && (target.onGround || !living.canEntityBeSeen(target));
 	}
 
@@ -103,7 +103,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 			{
 				SoundType sound = state.getBlock().getSoundType(state, living.world, markedLoc, living);
 				living.getNavigator().setPath(living.getNavigator().getPathToPos(markedLoc), 1D);
-				living.world.playSound(null, markedLoc, ConfigHandler.useBlockBreakSound? sound.getBreakSound():SoundEvents.BLOCK_NOTE_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
+				living.world.playSound(null, markedLoc, ConfigHandler.ai.useBlockBreakSound? sound.getBreakSound():SoundEvents.BLOCK_NOTE_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
 				living.swingArm(EnumHand.MAIN_HAND);
 				living.getLookHelper().setLookPosition(markedLoc.getX(), markedLoc.getY(), markedLoc.getZ(), 0.0F, 0.0F);
 				living.world.sendBlockBreakProgress(living.getEntityId(), markedLoc, (int)(str)*digTimer*10);
@@ -128,7 +128,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		ItemStack itemOff = entityLiving.getHeldItemMainhand();
         if(notFull.getMaterial()!=Material.AIR)
 		{
-			if(!GeneralHelperMethods.isBlockBreakable(notFull.getBlock()))
+			if(!ConfigHandler.ai.breakableBlocks.canBreak(notFull.getBlock()))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;
@@ -148,7 +148,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		else if(block.getMaterial()!=Material.AIR)
         {	
 			
-			if(!GeneralHelperMethods.isBlockBreakable(block.getBlock()))
+			if(!ConfigHandler.ai.breakableBlocks.canBreak(block.getBlock()))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;

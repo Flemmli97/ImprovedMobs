@@ -4,7 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.flemmli97.improvedmobs.handler.CommandIMDifficulty;
-import com.flemmli97.improvedmobs.handler.ConfigHandler;
+import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 
 import net.minecraft.world.GameRules.ValueType;
 import net.minecraftforge.fml.common.Mod;
@@ -15,8 +15,6 @@ import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
-
-
 
 @Mod(modid = ImprovedMobs.MODID, name = ImprovedMobs.MODNAME, version = ImprovedMobs.VERSION)
 public class ImprovedMobs {
@@ -51,7 +49,7 @@ public class ImprovedMobs {
     @EventHandler
     public void serverLoad(FMLServerStartingEvent event)
     {
-    	if(ConfigHandler.enableDifficultyScaling)
+    	if(ConfigHandler.general.enableDifficultyScaling)
     		event.registerServerCommand(new CommandIMDifficulty());
     	if(!event.getServer().getWorld(0).getGameRules().hasRule("doIMDifficulty"))
     		event.getServer().getWorld(0).getGameRules().addGameRule("doIMDifficulty", "true", ValueType.BOOLEAN_VALUE);

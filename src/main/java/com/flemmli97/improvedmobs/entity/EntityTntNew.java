@@ -30,7 +30,8 @@ public class EntityTntNew extends EntityTNTPrimed{
 	@Override
 	protected void entityInit()
     {
-        this.dataManager.register(FUSENEW, 80);
+		//Prevents botania entropyinnium aboose
+        this.dataManager.register(FUSENEW, 82);
     }
 
 	public EntityTntNew(World worldIn, double x, double y, double z, EntityLivingBase igniter) 
@@ -109,8 +110,8 @@ public class EntityTntNew extends EntityTNTPrimed{
         }
 
         --this.fuse;
-
-        if (this.fuse <= 0)
+        //Prevents botania entropyinnium aboose
+        if (this.fuse <= 2)
         {
             this.setDead();
 

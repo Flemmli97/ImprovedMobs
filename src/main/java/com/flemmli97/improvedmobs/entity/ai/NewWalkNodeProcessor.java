@@ -4,7 +4,7 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
+import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
@@ -216,7 +216,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         BlockPos blockpos = new BlockPos(x, y, z);
         IBlockState iblockstate = acc.getBlockState(blockpos);
         Block block = iblockstate.getBlock();
-    	if(this.entity!=null && this.canBreakBlocks && GeneralHelperMethods.isBlockBreakable(block))
+    	if(this.entity!=null && this.canBreakBlocks && ConfigHandler.ai.breakableBlocks.canBreak(block))
         {
 			double d1 = (double)this.entity.width / 2.0D;
 			AxisAlignedBB aabb = new AxisAlignedBB((double)x - d1 + 0.5D, (double)y + 1.001D, (double)z - d1 + 0.5D, (double)x + d1 + 0.5D, (double)((float)y + 1+this.entity.height), (double)z + d1 + 0.5D);

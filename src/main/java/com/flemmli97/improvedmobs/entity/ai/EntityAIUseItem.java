@@ -5,8 +5,9 @@ import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.ai.EntityAIAttackRanged;
+import net.minecraft.entity.ai.EntityAIAttackRangedBow;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.monster.AbstractSkeleton;
 import net.minecraft.entity.projectile.EntityTippedArrow;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
@@ -27,12 +28,18 @@ public class EntityAIUseItem extends EntityAIBase{
     private boolean strafingClockwise, strafingBackwards;
     private int strafingTime = -1;
     private ItemType type;
-
+    private boolean hasBowAI;
 	public EntityAIUseItem(EntityLiving entity, float maxDistance)
 	{
 		this.living=entity;
         this.maxAttackDistance = maxDistance * maxDistance;
         this.setMutexBits(8);
+        entity.tasks.taskEntries.forEach(entry->{
+        	if(entry.action instanceof EntityAIAttackRangedBow || entry.action instanceof EntityAIAttackRanged)
+        	{
+        		hasBowAI=true;
+        	}
+        });
 	}
 	
 	@Override
@@ -203,8 +210,6 @@ public class EntityAIUseItem extends EntityAIBase{
 	 */
 	private boolean shouldNotExecute()
 	{
-		if(this.living instanceof AbstractSkeleton)
-			return this.living.getHeldItemMainhand().getItem() instanceof ItemBow;
-		return false;
+		return this.hasBowAI && this.living.getHeldItemMainhand().getItem() instanceof ItemBow;
 	}
 }
