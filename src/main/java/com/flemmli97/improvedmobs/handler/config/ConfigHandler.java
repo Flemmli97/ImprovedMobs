@@ -7,8 +7,8 @@ import java.util.Random;
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.ConfigAnnotations;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
-import com.flemmli97.tenshilib.asm.ConfigUtils.Init;
-import com.flemmli97.tenshilib.common.item.Util;
+import com.flemmli97.tenshilib.common.config.ConfigUtils.Init;
+import com.flemmli97.tenshilib.common.item.ItemUtil;
 import com.google.common.collect.Lists;
 
 import net.minecraft.init.Items;
@@ -254,19 +254,19 @@ public class ConfigHandler {
 	public static void initEquipment()
 	{
 		List<String> conf = Arrays.asList(ConfigHandler.equipment.equipmentBlacklist);
-		for(Item item : Util.getList(EntityEquipmentSlot.FEET))
+		for(Item item : ItemUtil.getList(EntityEquipmentSlot.FEET))
 			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipment.armorWhitelist && conf.contains(item.getRegistryName().toString())))
 				boots.add(item);
-		for(Item item : Util.getList(EntityEquipmentSlot.CHEST))
+		for(Item item : ItemUtil.getList(EntityEquipmentSlot.CHEST))
 			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipment.armorWhitelist && conf.contains(item.getRegistryName().toString())))
 				chest.add(item);
-		for(Item item : Util.getList(EntityEquipmentSlot.HEAD))
+		for(Item item : ItemUtil.getList(EntityEquipmentSlot.HEAD))
 			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipment.armorWhitelist && conf.contains(item.getRegistryName().toString())))
 				helmet.add(item);
-		for(Item item : Util.getList(EntityEquipmentSlot.LEGS))
+		for(Item item : ItemUtil.getList(EntityEquipmentSlot.LEGS))
 			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipment.armorWhitelist && conf.contains(item.getRegistryName().toString())))
 				legs.add(item);
-		for(Item item : Util.getList(EntityEquipmentSlot.MAINHAND))
+		for(Item item : ItemUtil.getList(EntityEquipmentSlot.MAINHAND))
 			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipment.armorWhitelist && conf.contains(item.getRegistryName().toString())))
 				weapon.add(item);
 	}

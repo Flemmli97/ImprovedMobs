@@ -35,7 +35,7 @@ dependencies {
 
 jar {
     manifest {
-        attributes("FMLCorePluginContainsFMLMod": "true", "FMLCorePlugin": "com.flemmli97.improvedmobs.asm.ASMLoader")
+
     }
 
 }
