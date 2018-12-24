@@ -113,7 +113,7 @@ public class ConfigHandler {
 		@ConfigAnnotations.ConfigValue(getInitTime=Init.POST)
 		@Config.Comment(value="Item which will be given to mobs who can break blocks. Set to minecraft:air to not give any items")
 		@Config.Name(value="Breaking item")
-		public ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_SWORD);
+		public ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
 		
 		//Item use config
 		@Config.Comment(value="Blacklist for items given to mobs")

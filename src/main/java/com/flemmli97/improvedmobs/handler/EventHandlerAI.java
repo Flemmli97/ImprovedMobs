@@ -1,5 +1,7 @@
 package com.flemmli97.improvedmobs.handler;
 
+import java.lang.reflect.Field;
+
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIBlockBreaking;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIClimbLadder;
@@ -14,6 +16,7 @@ import com.flemmli97.improvedmobs.handler.packet.PathDebugging;
 import com.flemmli97.improvedmobs.handler.tilecap.ITileOpened;
 import com.flemmli97.improvedmobs.handler.tilecap.TileCapProvider;
 import com.flemmli97.tenshilib.common.events.PathFindInitEvent;
+import com.flemmli97.tenshilib.common.javahelper.ReflectionUtils;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityOwnable;
@@ -83,16 +86,21 @@ public class EventHandlerAI {
 		}
 	}
 	
+	private Field entity,nodeProcessor;
 	@SubscribeEvent
 	public void modifyPathfinder(PathFindInitEvent event)
     {
+		if(this.entity==null)
+			this.entity=ObfuscationReflectionHelper.findField(PathNavigate.class, "field_75515_a");
+		if(this.nodeProcessor==null)
+			this.nodeProcessor=ObfuscationReflectionHelper.findField(PathNavigate.class, "field_179695_a");
 		if(event.getNavigator() instanceof PathNavigateGround)
 		{
 			NewWalkNodeProcessor walkNode =  new NewWalkNodeProcessor();
-			EntityLiving entity = ObfuscationReflectionHelper.getPrivateValue(PathNavigate.class, event.getNavigator(), "entity", "field_75515_a");
+			EntityLiving entity = ReflectionUtils.getFieldValue(this.entity, event.getNavigator());
 			walkNode.setBreakBlocks(entity.getTags().contains(EventHandlerAI.breaker));
 			walkNode.setCanEnterDoors(true);
-			ObfuscationReflectionHelper.setPrivateValue(PathNavigate.class, event.getNavigator(), walkNode, "nodeProcessor", "field_179695_a");
+			ReflectionUtils.setFieldValue(this.nodeProcessor, event.getNavigator(), walkNode);
 	        event.setPathFinder(new PathFinder(walkNode));
 		}
     }
@@ -127,42 +135,6 @@ public class EventHandlerAI {
 		}
 	}
 	
-	/*@SubscribeEvent
-	public void equip(SpecialSpawn e)
-	{
-		if (e.getEntityLiving() instanceof EntityMob && e.getEntityLiving().world!=null && !e.getEntityLiving().world.isRemote && !(e.getEntityLiving() instanceof IEntityOwnable))
-		{			
-			EntityMob mob = (EntityMob) e.getEntityLiving();
-			if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.armorMobBlacklist) ||(ConfigHandler.armorMobWhiteList && GeneralHelperMethods.isMobInList(mob, ConfigHandler.armorMobBlacklist)))
-			{
-				//List<IRecipe> r= CraftingManager.getInstance().getRecipeList(); for further things maybe	
-				if(ConfigHandler.baseEquipChance!=0 )
-					GeneralHelperMethods.tryEquipArmor(mob);
-				if(ConfigHandler.baseEnchantChance!=0)
-					GeneralHelperMethods.enchantGear(mob);		
-			}
-			if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist) ||(ConfigHandler.mobListUseWhitelist && GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist)))
-			{
-				if(ConfigHandler.baseItemChance!=0)
-					GeneralHelperMethods.equipItem(mob);
-			}
-			if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList) ||(ConfigHandler.mobAttributeWhitelist && GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList)))
-			{
-				if(ConfigHandler.healthIncrease!=0)
-				{
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease*0.02, ConfigHandler.healthMax,  true);
-					mob.setHealth(mob.getMaxHealth());
-				}
-				if(ConfigHandler.damageIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease*0.01, ConfigHandler.damageMax,  true);
-				if(ConfigHandler.speedIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease*0.001, ConfigHandler.speedMax,  false);
-				if(ConfigHandler.knockbackIncrease!=0)
-					GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease*0.002, ConfigHandler.knockbackMax,  false);
-			}
-		}
-	}*/
-	
 	@SubscribeEvent
 	public void entityProps(CheckSpawn e) {
 		if(e.getEntityLiving() instanceof EntityLiving && !e.getWorld().isRemote)
@@ -184,8 +156,13 @@ public class EventHandlerAI {
 		}
 	}
 	
+	private Field targetClass, shouldCheckSight;
 	@SubscribeEvent
 	public void onEntityLoad(EntityJoinWorldEvent e) {
+		if(this.targetClass==null)
+			this.targetClass=ObfuscationReflectionHelper.findField(EntityAINearestAttackableTarget.class, "field_75307_b");
+		if(this.shouldCheckSight==null)
+			this.shouldCheckSight=ObfuscationReflectionHelper.findField(EntityAITarget.class, "field_75297_f");
 		if(e.getEntity() instanceof EntityLiving && !e.getWorld().isRemote)
 		{
 			EntityLiving living= (EntityLiving) e.getEntity();
@@ -202,17 +179,14 @@ public class EventHandlerAI {
     		this.applyAttributesAndItems(mob);
 			if(mob.getTags().contains(breaker))
 			{
-	    		mob.targetTasks.taskEntries.iterator().forEachRemaining(t->{if(t.action instanceof EntityAINearestAttackableTarget)
+	    		mob.targetTasks.taskEntries.forEach(t->{if(t.action instanceof EntityAINearestAttackableTarget)
 				{
 					EntityAINearestAttackableTarget<?> aiNearestTarget = (EntityAINearestAttackableTarget<?>) t.action;
-						Class<?> targetCls = ObfuscationReflectionHelper.getPrivateValue(EntityAINearestAttackableTarget.class, aiNearestTarget, "field_75307_b","targetClass");
-						if(targetCls == EntityPlayer.class)
-						{
-							//if(!(mob instanceof EntityEnderman && mob instanceof EntityPigZombie))
-							ObfuscationReflectionHelper.setPrivateValue(EntityAITarget.class, (EntityAITarget)aiNearestTarget, false, "field_75297_f","shouldCheckSight");
-							//else if(ConfigHandler.neutralAggressiv!=0 && mob.world.rand.nextFloat() <= ConfigHandler.neutralAggressiv)
-							//	ObfuscationReflectionHelper.setPrivateValue(EntityAITarget.class, (EntityAITarget)aiNearestTarget, false, "field_75297_f","shouldCheckSight");
-						}
+					Class<?> targetCls = ReflectionUtils.getFieldValue(this.targetClass, aiNearestTarget);
+					if(targetCls == EntityPlayer.class)
+					{
+						ReflectionUtils.setFieldValue(this.shouldCheckSight, aiNearestTarget, false);
+					}
 				}});
 	    		if(mobGriefing)
 		        {

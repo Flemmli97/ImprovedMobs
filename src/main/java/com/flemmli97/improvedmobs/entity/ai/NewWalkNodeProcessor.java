@@ -243,7 +243,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
 	private PathNodeType defaultNode(IBlockAccess acc, IBlockState iblockstate, BlockPos blockpos, Block block)
 	{
 		Material material = iblockstate.getMaterial();
-		PathNodeType type = block.getAiPathNodeType(iblockstate, acc, blockpos);
+		PathNodeType type = block.getAiPathNodeType(iblockstate, acc, blockpos, this.entity);
         if (type != null) return type;
 
         if (material == Material.AIR)
