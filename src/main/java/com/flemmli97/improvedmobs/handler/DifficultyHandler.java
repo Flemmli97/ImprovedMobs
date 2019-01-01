@@ -36,7 +36,7 @@ public class DifficultyHandler {
     		if(e.phase==Phase.END && e.world!=null && !e.world.isRemote && e.world.provider.getDimension()==0)
     		{
     			DifficultyData data = DifficultyData.get(e.world);
-    			if(ConfigHandler.general.shouldPunishTimeSkip)
+    			if(ConfigHandler.shouldPunishTimeSkip)
     			{
 	    			long timeDiff = (int) Math.abs(e.world.getWorldTime() - data.getPrevTime());
 	    			if(timeDiff>2400)
@@ -73,7 +73,7 @@ public class DifficultyHandler {
 			GL11.glDisable(GL11.GL_LIGHTING);
 			//int x = ConfigHandler.gui.guiX+e.getResolution().getScaledWidth()/2;
 			//int y = ConfigHandler.gui.guiY+e.getResolution().getScaledHeight();
-			font.drawString(ConfigHandler.gui.color+"Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty()), ConfigHandler.gui.guiX, ConfigHandler.gui.guiY, 0);
+			font.drawString(ConfigHandler.color+"Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty()), ConfigHandler.guiX, ConfigHandler.guiY, 0);
 		}
     }
 }

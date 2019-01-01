@@ -23,7 +23,7 @@ public class BreakableBlocks implements IConfigArrayValue{
 	
 	public boolean canBreak(Block block)
 	{
-		if(ConfigHandler.ai.breakingAsBlacklist)
+		if(ConfigHandler.breakingAsBlacklist)
 		{
 			for(Pair<Class<?>, List<String>> pair : clss)
 			{

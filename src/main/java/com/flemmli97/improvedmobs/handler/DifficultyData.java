@@ -40,7 +40,7 @@ public class DifficultyData extends WorldSavedData{
 	
 	public static float getDifficulty(World world, EntityLiving e)
 	{
-		if(ConfigHandler.integration.useScalingHealthMod)
+		if(ConfigHandler.useScalingHealthMod)
 			return (float) Config.Difficulty.AREA_DIFFICULTY_MODE.getAreaDifficulty(world, e.getPosition());
 		return DifficultyData.get(e.world).getDifficulty();
 	}

@@ -103,7 +103,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 			{
 				SoundType sound = state.getBlock().getSoundType(state, living.world, markedLoc, living);
 				living.getNavigator().setPath(living.getNavigator().getPathToPos(markedLoc), 1D);
-				living.world.playSound(null, markedLoc, ConfigHandler.ai.useBlockBreakSound? sound.getBreakSound():SoundEvents.BLOCK_NOTE_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
+				living.world.playSound(null, markedLoc, ConfigHandler.useBlockBreakSound? sound.getBreakSound():SoundEvents.BLOCK_NOTE_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
 				living.swingArm(EnumHand.MAIN_HAND);
 				living.getLookHelper().setLookPosition(markedLoc.getX(), markedLoc.getY(), markedLoc.getZ(), 0.0F, 0.0F);
 				living.world.sendBlockBreakProgress(living.getEntityId(), markedLoc, (int)(str)*digTimer*10);
@@ -128,7 +128,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		ItemStack itemOff = entityLiving.getHeldItemMainhand();
         if(notFull.getMaterial()!=Material.AIR)
 		{
-			if(!ConfigHandler.ai.breakableBlocks.canBreak(notFull.getBlock()))
+			if(!ConfigHandler.breakableBlocks.canBreak(notFull.getBlock()))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;
@@ -148,7 +148,7 @@ public class EntityAIBlockBreaking extends EntityAIBase{
 		else if(block.getMaterial()!=Material.AIR)
         {	
 			
-			if(!ConfigHandler.ai.breakableBlocks.canBreak(block.getBlock()))
+			if(!ConfigHandler.breakableBlocks.canBreak(block.getBlock()))
 			{
 				scanTick = (scanTick + 1)%passMax;
 				return null;

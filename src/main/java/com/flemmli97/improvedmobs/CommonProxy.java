@@ -8,6 +8,7 @@ import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 import com.flemmli97.improvedmobs.handler.tilecap.ITileOpened;
 import com.flemmli97.improvedmobs.handler.tilecap.TileCap;
 import com.flemmli97.improvedmobs.handler.tilecap.TileCapNetwork;
+import com.flemmli97.tenshilib.common.config.ConfigUtils.LoadState;
 
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.IThreadListener;
@@ -23,6 +24,7 @@ import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 public class CommonProxy {
 	
 	public void preInit(FMLPreInitializationEvent e) {
+		ConfigHandler.load(LoadState.PREINIT);
 		InitEntities.initEntities();
 		PacketHandler.registerPackets();
     }
@@ -30,12 +32,13 @@ public class CommonProxy {
     public void init(FMLInitializationEvent e) {
     	CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
 		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
-		ConfigHandler.integration.useScalingHealthMod=ConfigHandler.integration.useScalingHealthMod?Loader.isModLoaded("scalinghealth"):false;
-		if(ConfigHandler.general.enableDifficultyScaling && !ConfigHandler.integration.useScalingHealthMod)
+		ConfigHandler.useScalingHealthMod=ConfigHandler.useScalingHealthMod?Loader.isModLoaded("scalinghealth"):false;
+		if(ConfigHandler.enableDifficultyScaling && !ConfigHandler.useScalingHealthMod)
 			MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
     }
 
     public void postInit(FMLPostInitializationEvent e) {
+    	ConfigHandler.load(LoadState.POSTINIT);
 		ConfigHandler.initEquipment();
     }
     
