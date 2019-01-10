@@ -45,9 +45,9 @@ jar {
 }
 
 dependencies {
-  compile 'scaling-health:ScalingHealth-1.12.2:1.3.30:131'
-  compile 'silent-lib:SilentLib-1.12.2:3.0.6:154'
-  compile 'tenshilib:TenshiLib:1.12.2:1.0.0'
+  compile scalhealth_dep
+  compile sillib_dep
+  compile tenshilib_dep
 }
 
 processResources {
