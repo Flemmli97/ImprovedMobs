@@ -44,7 +44,7 @@ public class ConfigHandler {
 	public static TextFormatting color;
 	
 	//Integration
-	public static boolean useScalingHealthMod;
+	public static boolean useScalingHealthMod=true;
 
 	//AI
 	public static BreakableBlocks breakableBlocks = new BreakableBlocks(new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:spruce_door", "minecraft:birch_door", "minecraft:jungle_door", "minecraft:acacia_door", "minecraft:dark_oak_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"});
@@ -129,14 +129,14 @@ public class ConfigHandler {
         	if(form.isColor())
         		lst.add(form.name());
 		color = ConfigUtils.getEnumVal(config, "gui", "Difficulty color", "Textformatting codes for the display of the difficulty", TextFormatting.DARK_PURPLE, lst);
-		
+
 		ConfigCategory integration = config.getCategory("integration");
 		integration.setLanguageKey("improvedmobs.integration");
 		integration.setComment("Settings for mod integration");
-		prop = config.get("integration", "Use Scaling Health Mod", true);
+		prop = config.get("integration", "Use Scaling Health Mod", useScalingHealthMod);
 		prop.setComment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)");
-		useScalingHealthMod = prop.setRequiresMcRestart(true).getBoolean();
-
+		if(state==LoadState.PREINIT)
+			useScalingHealthMod = prop.setRequiresMcRestart(true).getBoolean();
 		ConfigCategory ai = config.getCategory("ai");
 		ai.setLanguageKey("improvedmobs.ai");
 		ai.setComment("Settings regarding custom ai for mobs");
