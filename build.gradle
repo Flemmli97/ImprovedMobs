@@ -26,6 +26,8 @@ minecraft {
 
     mappings = mcp_mapping
     makeObfSourceJar = false
+    replace 'tenshilib', "tenshilib@[${tenshilib_version},)"
+    replaceIn versionfile
     replace '${@VERSION}', modversion
     replaceIn versionfile
 }
@@ -47,7 +49,7 @@ jar {
 dependencies {
   compile scalhealth_dep
   compile sillib_dep
-  compile tenshilib_dep
+  compile "tenshilib:TenshiLib:1.12.2:${tenshilib_version}"
 }
 
 processResources {

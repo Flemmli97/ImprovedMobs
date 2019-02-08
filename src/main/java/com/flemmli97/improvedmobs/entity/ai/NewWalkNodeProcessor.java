@@ -211,6 +211,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor{
         }
     }
 
+	@Override
 	protected PathNodeType getPathNodeTypeRaw(IBlockAccess acc, int x, int y, int z)
     {
         BlockPos blockpos = new BlockPos(x, y, z);

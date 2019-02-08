@@ -28,7 +28,8 @@ public class EntityGuardianBoat extends EntityGuardian{
         this.tasks.addTask(9, new EntityAILookIdle(this));
 	}
 	
-    protected void applyEntityAttributes()
+    @Override
+	protected void applyEntityAttributes()
     {
         super.applyEntityAttributes();
         this.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).setBaseValue(64.0D);
@@ -36,6 +37,7 @@ public class EntityGuardianBoat extends EntityGuardian{
         this.getEntityAttribute(SharedMonsterAttributes.MAX_HEALTH).setBaseValue(5.0D);
     }
 
+	@Override
 	public void onLivingUpdate()
     {
 		if(this.getPassengers().isEmpty() || ((EntityMob)this.getPassengers().get(0)).getAttackTarget()==null)
@@ -121,6 +123,7 @@ public class EntityGuardianBoat extends EntityGuardian{
 		return false;
 	}
 
+	@Override
 	public boolean shouldDismountInWater(Entity rider)
     {
         return false;
