@@ -1,12 +1,14 @@
 package com.flemmli97.improvedmobs.handler;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIBlockBreaking;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIClimbLadder;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIRideBoat;
 import com.flemmli97.improvedmobs.entity.ai.EntityAISteal;
+import com.flemmli97.improvedmobs.entity.ai.EntityAITechGuns;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIUseItem;
 import com.flemmli97.improvedmobs.entity.ai.NewWalkNodeProcessor;
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
@@ -18,12 +20,15 @@ import com.flemmli97.improvedmobs.handler.tilecap.TileCapProvider;
 import com.flemmli97.tenshilib.common.config.ConfigUtils.LoadState;
 import com.flemmli97.tenshilib.common.events.PathFindInitEvent;
 import com.flemmli97.tenshilib.common.javahelper.ReflectionUtils;
+import com.google.common.collect.Lists;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
+import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
+import net.minecraft.entity.ai.EntityAITasks;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
@@ -50,6 +55,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.entity.EntityEvent.EntityConstructing;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
@@ -58,6 +64,8 @@ import net.minecraftforge.fml.client.event.ConfigChangedEvent.OnConfigChangedEve
 import net.minecraftforge.fml.common.ObfuscationReflectionHelper;
 import net.minecraftforge.fml.common.eventhandler.Event.Result;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import techguns.entities.ai.EntityAIRangedAttack;
+import techguns.items.guns.GenericGun;
 
 public class EventHandlerAI {
 		
@@ -158,16 +166,9 @@ public class EventHandlerAI {
 			this.targetClass=ObfuscationReflectionHelper.findField(EntityAINearestAttackableTarget.class, "field_75307_b");
 		if(this.shouldCheckSight==null)
 			this.shouldCheckSight=ObfuscationReflectionHelper.findField(EntityAITarget.class, "field_75297_f");
-		if(e.getEntity() instanceof EntityLiving && !e.getWorld().isRemote)
-		{
-			EntityLiving living= (EntityLiving) e.getEntity();
-			if(!GeneralHelperMethods.isMobInList(living, ConfigHandler.mobListLadderBlacklist, ConfigHandler.mobListLadderWhitelist))
-			{
-				if(!(living.getNavigator() instanceof PathNavigateClimber))
-					living.tasks.addTask(4, new EntityAIClimbLadder(living));
-			}
-		}
-	    if (e.getEntity() instanceof EntityMob && !e.getWorld().isRemote) 
+		if(e.getWorld().isRemote)
+			return;
+	    if (e.getEntity() instanceof EntityMob) 
 	    {    	
     		EntityMob mob= (EntityMob) e.getEntity();
     		boolean mobGriefing = mob.world.getGameRules().getBoolean("mobGriefing");
@@ -194,7 +195,7 @@ public class EventHandlerAI {
 			}
 	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist, ConfigHandler.mobListUseWhitelist))
 			{
-	    		mob.tasks.addTask(3, new EntityAIUseItem(mob, 15));
+	    		mob.tasks.addTask(1, new EntityAIUseItem(mob, 15));
 	    	}
 	    	if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListStealBlacklist, ConfigHandler.mobListStealWhitelist))
 			{
@@ -214,6 +215,16 @@ public class EventHandlerAI {
     				mob.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(mob, EntityVillager.class, mob.getTags().contains("Breaker")? false:mob.world.rand.nextFloat()<=0.5));
     		}
 	    }
+		if(e.getEntity() instanceof EntityLiving)
+		{
+			EntityLiving living= (EntityLiving) e.getEntity();
+			if(!GeneralHelperMethods.isMobInList(living, ConfigHandler.mobListLadderBlacklist, ConfigHandler.mobListLadderWhitelist))
+			{
+				if(!(living.getNavigator() instanceof PathNavigateClimber))
+					living.tasks.addTask(4, new EntityAIClimbLadder(living));
+			}
+    		EntityAITechGuns.applyAI(living);
+		}
 	}
 	
 	private void applyAttributesAndItems(EntityMob mob)
@@ -389,6 +400,42 @@ public class EventHandlerAI {
     			}
     		}
     }
+	
+	@SubscribeEvent
+	public void techGunsChange(LivingEquipmentChangeEvent event)
+	{
+		if(ConfigHandler.useTGunsMod && !event.getEntity().world.isRemote && event.getEntity() instanceof EntityMob && event.getSlot()==EntityEquipmentSlot.MAINHAND && event.getTo().getItem() instanceof GenericGun)
+		{
+			EntityMob mob = (EntityMob) event.getEntity();
+			boolean hadAI=false;
+			List<EntityAITechGuns> list = Lists.newArrayList();
+			for(EntityAITasks.EntityAITaskEntry entry : mob.tasks.taskEntries)
+			{
+				if(entry.action instanceof EntityAITechGuns)
+					list.add((EntityAITechGuns) entry.action);
+				if(entry.action instanceof EntityAIRangedAttack)
+					hadAI=true;
+			}
+			list.forEach(ai->{
+				mob.tasks.removeTask(ai);
+			});
+			//removeAttackAI(mob);
+			if(!hadAI)
+				EntityAITechGuns.applyAI(mob);
+		}
+	}
+	
+	public static void removeAttackAI(EntityMob mob)
+	{
+		List<EntityAIAttackMelee> list = Lists.newArrayList();
+		mob.tasks.taskEntries.forEach(entry->{
+			if(entry.action instanceof EntityAIAttackMelee)
+				list.add((EntityAIAttackMelee) entry.action);
+		});
+		list.forEach(ai->{
+			mob.tasks.removeTask(ai);
+		});
+	}
 	
 	//FakePlayer handler
 	/*@SubscribeEvent

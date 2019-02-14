@@ -49,6 +49,8 @@ jar {
 dependencies {
   compile scalhealth_dep
   compile sillib_dep
+  compile techguns_dep
+  compile reforged_dep
   compile "tenshilib:TenshiLib:1.12.2:${tenshilib_version}"
 }
 

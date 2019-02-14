@@ -249,47 +249,38 @@ public class GeneralHelperMethods {
 		{
     		int itemRand = mob.getRNG().nextInt(8);
     		ItemStack stack = ItemStack.EMPTY;
-    		EntityEquipmentSlot hand = EntityEquipmentSlot.MAINHAND;
     		switch(itemRand)
     		{
     			case 0:
-    				hand=EntityEquipmentSlot.OFFHAND;
     				stack=new ItemStack(Items.LAVA_BUCKET);
     				break;
     			case 1:
-    				hand=EntityEquipmentSlot.OFFHAND;
     				stack=new ItemStack(Items.SNOWBALL);
     				break;
     			case 2:
-    				hand=EntityEquipmentSlot.OFFHAND;
     				stack=new ItemStack(Items.ENDER_PEARL);
     				break;
     			case 3:
-    				hand=EntityEquipmentSlot.MAINHAND;
-    				stack=new ItemStack(Items.BOW);
+    				stack=new ItemStack(Items.SHIELD);
     				break;
     			case 4:
-    				hand=EntityEquipmentSlot.OFFHAND;
     				stack=new ItemStack(ItemBlock.getItemFromBlock(Blocks.TNT));
     				break;
     			case 5:
-    				hand=EntityEquipmentSlot.OFFHAND;
     				stack=new ItemStack(Items.FLINT_AND_STEEL);
     				break;
     			case 6:
-    				hand=EntityEquipmentSlot.OFFHAND;
     				stack=PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), PotionTypes.HARMING);
     				break;
     			case 7:
-    				hand=EntityEquipmentSlot.OFFHAND;
     				stack=new ItemStack(Items.ENCHANTED_BOOK);
     				break;
     		}
-    		if(!itemInList(stack.getItem(), ConfigHandler.itemUseBlackList) && mob.getItemStackFromSlot(hand).isEmpty())
+    		if(!itemInList(stack.getItem(), ConfigHandler.itemUseBlackList) && mob.getItemStackFromSlot(EntityEquipmentSlot.OFFHAND).isEmpty())
     		{
     			if(!ConfigHandler.shouldDropEquip)
     				stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-    			mob.setItemStackToSlot(hand, stack);
+    			mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack);
     		}
 		}
     }

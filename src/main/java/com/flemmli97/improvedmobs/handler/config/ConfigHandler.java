@@ -5,6 +5,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import org.silvercatcher.reforged.items.weapons.ItemBlowGun;
+import org.silvercatcher.reforged.items.weapons.ItemJavelin;
+
+import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
 import com.flemmli97.tenshilib.common.config.ConfigUtils;
 import com.flemmli97.tenshilib.common.config.ConfigUtils.LoadState;
@@ -14,12 +18,15 @@ import com.google.common.collect.Lists;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
+import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import techguns.items.guns.GenericGun;
 
 public class ConfigHandler {
 	
@@ -45,6 +52,8 @@ public class ConfigHandler {
 	
 	//Integration
 	public static boolean useScalingHealthMod=true;
+	public static boolean useTGunsMod=true;
+	public static boolean useReforgedMod=true;
 
 	//AI
 	public static BreakableBlocks breakableBlocks = new BreakableBlocks(new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:spruce_door", "minecraft:birch_door", "minecraft:jungle_door", "minecraft:acacia_door", "minecraft:dark_oak_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"});
@@ -67,7 +76,7 @@ public class ConfigHandler {
 	public static boolean targetVillager;
 	
 	//Equipment
-	public static String[] equipmentBlacklist;
+	public static String[] equipmentBlacklist = new String[] {"techguns:nucleardeathray", "techguns:grenadelauncher","techguns:tfg","techguns:guidedmissilelauncher","techguns:rocketlauncher"};
 	public static boolean equipmentWhitelist;
 	public static String[] armorMobBlacklist;
 	public static boolean armorMobWhiteList;
@@ -137,6 +146,14 @@ public class ConfigHandler {
 		prop.setComment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)");
 		if(state==LoadState.PREINIT)
 			useScalingHealthMod = prop.setRequiresMcRestart(true).getBoolean();
+		prop = config.get("integration", "Use Techguns Mod", useTGunsMod);
+		prop.setComment("Should mobs be able to use techguns weapons. (Requires techguns mod)");
+		if(state==LoadState.PREINIT)
+			useTGunsMod = prop.setRequiresMcRestart(true).getBoolean();
+		prop = config.get("integration", "Use Reforged Mod", useTGunsMod);
+		prop.setComment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)");
+		if(state==LoadState.PREINIT)
+			useReforgedMod = prop.setRequiresMcRestart(true).getBoolean();
 		ConfigCategory ai = config.getCategory("ai");
 		ai.setLanguageKey("improvedmobs.ai");
 		ai.setComment("Settings regarding custom ai for mobs");
@@ -164,7 +181,7 @@ public class ConfigHandler {
 		ConfigCategory equipment = config.getCategory("equipment");
 		equipment.setLanguageKey("improvedmobs.equipment");
 		equipment.setComment("Configs regarding mobs spawning with equipment");
-		equipmentBlacklist = config.getStringList("Equipment Blacklist", "equipment", new String[0], "Blacklist for mob equipments");
+		equipmentBlacklist = config.getStringList("Equipment Blacklist", "equipment", equipmentBlacklist, "Blacklist for mob equipments");
 		equipmentWhitelist = config.getBoolean("Equipment Whitelist", "equipment", false, "Use blacklist as whitelist");
 		armorMobBlacklist = config.getStringList("Armor Mob-Blacklist", "equipment", new String[0], "Blacklist for mobs, which shouldn't get armor equiped");
 		armorMobWhiteList = config.getBoolean("Armor Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
@@ -172,7 +189,7 @@ public class ConfigHandler {
 		baseEquipChanceAdd = config.getFloat("Additional Equipment Chance", "equipment", 0.3F, 0, 1, "Base chance for each additional armor pieces");
 		diffEquipAdd = ConfigUtils.getFloatConfig(config, "Equipment Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base equip chance");
 		baseWeaponChance = config.getFloat("Weapon Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have a weapon.");
-		diffWeaponChance = ConfigUtils.getFloatConfig(config, "Weapon Chance Add", "equipment", 0.4F, "Adds additional x*difficulty% to base weapon chance");
+		diffWeaponChance = ConfigUtils.getFloatConfig(config, "Weapon Chance Add", "equipment", 0.3F, "Adds additional x*difficulty% to base weapon chance");
 		baseEnchantChance = config.getFloat("Enchanting Chance", "equipment", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
 		diffEnchantAdd = ConfigUtils.getFloatConfig(config, "Enchanting Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base enchanting chance");
 		baseItemChance = config.getFloat("Item Equip Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have an item. Higher priority than weapons");
@@ -219,6 +236,21 @@ public class ConfigHandler {
 		for(Item item : ItemUtil.getList(EntityEquipmentSlot.MAINHAND))
 			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString())))
 				weapon.add(item);
+		ForgeRegistries.ITEMS.forEach(item->{
+			if((!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString()))))
+			{
+				if(ConfigHandler.useTGunsMod)
+					if(item instanceof GenericGun)
+						weapon.add(item);
+				if(ConfigHandler.useReforgedMod)
+					if(item instanceof ItemBlowGun || item instanceof ItemJavelin)
+						weapon.add(item);
+				if(item instanceof ItemBow)
+					weapon.add(item);
+			}
+		});
+		if(ConfigHandler.useReforgedMod)
+			AIUseHelper.initReforgedStuff();
 	}
 	
 	public static ItemStack randomWeapon()

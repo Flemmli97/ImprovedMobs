@@ -1,14 +1,32 @@
 package com.flemmli97.improvedmobs.handler.helper;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+
+import javax.annotation.Nullable;
+
+import org.apache.commons.lang3.tuple.Pair;
+import org.silvercatcher.reforged.api.ReforgedAdditions;
+import org.silvercatcher.reforged.entities.EntityBulletBlunderbuss;
+import org.silvercatcher.reforged.entities.EntityBulletMusket;
+import org.silvercatcher.reforged.entities.EntityCrossbowBolt;
+import org.silvercatcher.reforged.entities.EntityDart;
+import org.silvercatcher.reforged.entities.EntityJavelin;
+import org.silvercatcher.reforged.items.others.ItemDart;
+import org.silvercatcher.reforged.items.weapons.ItemBlowGun;
+import org.silvercatcher.reforged.items.weapons.ItemCrossbow;
+import org.silvercatcher.reforged.items.weapons.ItemJavelin;
+import org.silvercatcher.reforged.items.weapons.ItemMusket;
+import org.silvercatcher.reforged.util.Helpers;
 
 import com.flemmli97.improvedmobs.entity.EntityMobBullet;
 import com.flemmli97.improvedmobs.entity.EntityMobSplash;
 import com.flemmli97.improvedmobs.entity.EntitySnowBallNew;
 import com.flemmli97.improvedmobs.entity.EntityTntNew;
-import com.flemmli97.improvedmobs.handler.ItemType;
+import com.google.common.collect.Maps;
 
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockLiquid;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -18,8 +36,8 @@ import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.item.EntityEnderPearl;
 import net.minecraft.entity.monster.EntityMob;
-import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.projectile.EntityArrow;
+import net.minecraft.entity.projectile.EntityArrow.PickupStatus;
 import net.minecraft.entity.projectile.EntityEvokerFangs;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.entity.projectile.EntityTippedArrow;
@@ -28,9 +46,10 @@ import net.minecraft.init.Enchantments;
 import net.minecraft.init.Items;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.EntityEquipmentSlot;
+import net.minecraft.item.Item;
 import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemBlock;
-import net.minecraft.item.ItemBucket;
+import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemSplashPotion;
 import net.minecraft.item.ItemStack;
@@ -50,224 +69,6 @@ public class AIUseHelper {
 	private final static String[] potionEffects = new String[] {"minecraft:regeneration", "minecraft:speed", "minecraft:strength", "minecraft:invisibility", "minecraft:resistance", "minecraft:fire_resistance"};
 	//TODO building, stone, block;
 	//TODO fishing rod
-	
-	public static ItemType isItemApplicable(EntityLiving living)
-	{
-		ItemType type = ItemType.NOTHING;
-		ItemStack stackMain = living.getHeldItemMainhand();
-		ItemStack stackOff = living.getHeldItemOffhand();
-		boolean flagMain = false;
-		boolean flagOff = false;
-
-		if(stackMain !=null)
-		{
-			if(stackMain.getItem() instanceof ItemSplashPotion && AIUseHelper.isDamagePotion(stackMain))
-			{
-				type = ItemType.STRAFINGITEM;
-				flagMain=true;
-			}
-			else if(stackMain.getItem() == Items.ENDER_PEARL ||stackMain.getItem() == Items.LAVA_BUCKET || stackMain.getItem() == Items.BUCKET 
-					|| stackMain.getItem() == Items.FLINT_AND_STEEL)
-			{
-				type = ItemType.NONSTRAFINGITEM;
-				flagMain=true;
-			}
-			
-			else if(stackMain.getItem() == Items.SNOWBALL || stackMain.getItem() ==ItemBlock.getItemFromBlock(Blocks.TNT)||stackMain.getItem()==Items.ENCHANTED_BOOK)
-			{
-				type = ItemType.STRAFINGITEM;
-				flagMain=true;
-			}
-			else if(stackMain.getItem() == Items.BOW)
-			{
-				type = ItemType.BOW;
-				flagMain=true;
-			}
-			if(flagMain)
-			{
-				type.setHand(EnumHand.MAIN_HAND);
-				type.setItem(stackMain);
-			}
-		}
-		if(stackOff != null && !flagMain)
-		{
-			if(stackOff.getItem() instanceof ItemSplashPotion && AIUseHelper.isDamagePotion(stackOff))
-			{
-				type=ItemType.STRAFINGITEM;
-				flagOff=true;
-			}
-			else if(stackOff.getItem() == Items.ENDER_PEARL ||stackOff.getItem() == Items.LAVA_BUCKET || stackOff.getItem() == Items.BUCKET
-					|| stackOff.getItem() == Items.FLINT_AND_STEEL || stackOff.getItem() instanceof ItemShield)
-			{
-				type = ItemType.NONSTRAFINGITEM;
-				flagOff = true;
-			}
-			else if(stackOff.getItem() == Items.SNOWBALL || stackOff.getItem() == ItemBlock.getItemFromBlock(Blocks.TNT) ||stackOff.getItem()==Items.ENCHANTED_BOOK)
-			{
-				type = ItemType.STRAFINGITEM;
-				flagOff=true;
-			}
-			else if(stackOff.getItem() == Items.BOW)
-			{
-				if(stackMain !=null && stackMain.getItem() instanceof ItemArrow)
-				{
-					flagOff=false;
-					type=ItemType.BOW;
-					living.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stackOff.copy());
-					living.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stackMain.copy());
-					type.setHand(EnumHand.MAIN_HAND);
-					type.setItem(stackOff);
-				}
-				else
-				{
-					type = ItemType.BOW;
-					flagOff=true;
-				}
-			}
-			if(flagOff)
-			{
-				type.setHand(EnumHand.OFF_HAND);
-				type.setItem(stackOff);
-			}
-		}
-		return type;
-	}
-
-	public static void chooseAttack(EntityLiving theEntity, EntityLivingBase target)
-	{
-		ItemType type = AIUseHelper.isItemApplicable(theEntity);
-		double dis = theEntity.getPositionVector().distanceTo(target.getPositionVector());
-		if(type.getItem() == Items.SNOWBALL)
-		{
-			theEntity.world.playSound((EntityPlayer)null, theEntity.posX, theEntity.posY, theEntity.posZ, SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (theEntity.world.rand.nextFloat() * 0.4F + 0.8F));
-
-	        if (!theEntity.world.isRemote)
-	        {
-	            EntitySnowBallNew entitysnowball = new EntitySnowBallNew(theEntity.world, theEntity);
-	            entitysnowball.shoot(theEntity, theEntity.rotationPitch, theEntity.rotationYaw, 0.0F, 1.5F, 1.0F);
-	            theEntity.world.spawnEntity(entitysnowball);
-	        }		
-	    }
-		else if(type.getItem() == Items.ENDER_PEARL)
-		{
-			if(dis > 16.0)
-    			{
-				theEntity.world.playSound((EntityPlayer)null, theEntity.posX, theEntity.posY, theEntity.posZ, SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (theEntity.world.rand.nextFloat() * 0.4F + 0.8F));
-		        if (!theEntity.world.isRemote)
-		        {		        		
-		        		Vec3d v1= theEntity.getPositionVector().subtract(target.getPositionVector()).normalize().scale(16);
-		        		double x=0;
-		        		double y=0;
-		        		double z=0;
-		        		if(theEntity.getPositionVector().subtract(target.getPositionVector()).lengthVector() > 16)
-		        		{
-		        			x=v1.x;
-		        			y=v1.y;
-		        			z=v1.z;
-		        		}
-		        		EntityEnderPearl pearl = new EntityEnderPearl(theEntity.world, theEntity);
-			        setHeadingToPosition(pearl, target.posX-x, target.posY-y, target.posZ-z, 1.5F, 3.0F);
-		        		theEntity.world.spawnEntity(pearl);
-	        		}
-		   }		
-	    }
-		else if(type.getItem() instanceof ItemBucket)
-		{
-			if(type.getItem() == Items.LAVA_BUCKET)
-			{
-				if(dis < 8 && AIUseHelper.tryPlaceLava(theEntity.world, new BlockPos(target.posX-2+theEntity.world.rand.nextInt(4),target.posY-1+theEntity.world.rand.nextInt(2),target.posZ-2+theEntity.world.rand.nextInt(4))))
-				{
-					theEntity.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:fire_resistance"), 240, 1, true, false));
-				}
-			}
-			else if (type.getItem() == Items.BUCKET)
-			{
-				for(int i = -4;i<=4;i++)
-					for(int j = -4;j<= 4; j++)
-						for(int k = -1;k<=2;k++)
-						{
-							BlockPos pos = new BlockPos(theEntity).add(i, k, j);
-							IBlockState state = theEntity.world.getBlockState(pos);
-							Block block = state.getBlock();
-							if(block == Blocks.LAVA && ((Integer)state.getValue(BlockLiquid.LEVEL)).intValue() == 0)
-							{
-								theEntity.world.setBlockToAir(pos);
-								theEntity.setItemStackToSlot(type.getHand() == EnumHand.MAIN_HAND?EntityEquipmentSlot.MAINHAND : EntityEquipmentSlot.OFFHAND, new ItemStack(Items.LAVA_BUCKET));
-								return;
-							}
-						}
-			}
-	    }
-		else if(type.getItem() == Items.FLINT_AND_STEEL)
-		{
-			if(dis < theEntity.width + target.width + 0.5)
-			{
-				if(!target.isBurning())
-				{
-					target.setFire(4);
-				}
-			}
-		}
-		else if(type.getItem() instanceof ItemSplashPotion && AIUseHelper.isDamagePotion(type.getStack()))
-		{				
-			theEntity.world.playSound((EntityPlayer)null, theEntity.posX, theEntity.posY, theEntity.posZ, SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (theEntity.world.rand.nextFloat() * 0.4F + 0.8F));
-	        if (!theEntity.world.isRemote)
-	        {
-	        		EntityMobSplash entitypotion = new EntityMobSplash(theEntity.world, theEntity, type.getStack());
-	        		entitypotion.shoot(theEntity, theEntity.rotationPitch, theEntity.rotationYaw, -30.0F,  0.2F+(float)(dis*0.05), 1.2F);
-	        		theEntity.world.spawnEntity(entitypotion);
-			}
-		}
-		else if(type.getItem() == ItemBlock.getItemFromBlock(Blocks.TNT))
-		{
-	        if (!theEntity.world.isRemote)
-	        {
-				EntityTntNew tnt = new EntityTntNew(theEntity.world, theEntity.posX, theEntity.posY, theEntity.posZ, theEntity);
-				tnt.setHeadingFromThrower(theEntity, theEntity.rotationPitch, theEntity.rotationYaw, -20.0F, 0.2F+(float)(dis*0.05), 1.0F);
-				theEntity.world.spawnEntity(tnt);
-	        }
-		}
-		else if(type.getItem()==Items.ENCHANTED_BOOK)
-		{
-			if (!theEntity.world.isRemote)
-	        {
-				List<Entity> nearby = theEntity.world.getEntitiesWithinAABBExcludingEntity(theEntity, theEntity.getEntityBoundingBox().grow(8.0D));
-				List<Entity> nearTarget = theEntity.world.getEntitiesWithinAABBExcludingEntity(theEntity.getAttackTarget(), theEntity.getAttackTarget().getEntityBoundingBox().grow(2.0D));
-				if(nearby.isEmpty() || nearby.size()==1 && nearby.get(0) ==theEntity.getAttackTarget() || theEntity.world.rand.nextInt(3)<=1)
-				{
-					if(nearTarget.isEmpty())
-						for(int x = -1;x<=1;x++)
-							for(int z=-1;z<=1;z++)
-							{
-								if(x==0 || z==0)
-								{
-									EntityEvokerFangs fang = new EntityEvokerFangs(theEntity.world, target.posX+x+target.motionX, target.posY, target.posZ+z+target.motionZ, 0, 5, theEntity);
-									theEntity.world.spawnEntity(fang);
-								}
-							}
-					else
-					{
-                        EntityMobBullet entityBullet = new EntityMobBullet(theEntity.world, theEntity, theEntity.getAttackTarget(), theEntity.getHorizontalFacing().getAxis());
-                        theEntity.world.spawnEntity(entityBullet);
-					}
-				}
-				else
-				{
-					for(int i = 0; i < nearby.size();i++)
-					{
-						Entity entity = nearby.get(theEntity.world.rand.nextInt(nearby.size()));
-						if(entity instanceof EntityMob && entity!=theEntity.getAttackTarget())
-						{
-							EntityMob mob = (EntityMob) entity;
-							mob.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation(potionEffects[mob.world.rand.nextInt(6)]), 3600, 1));
-							theEntity.world.playSound((EntityPlayer)null, theEntity.posX, theEntity.posY, theEntity.posZ, SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.NEUTRAL, 2F, 1.0F);
-							return;
-						}
-					}
-				}
-	        }
-		}
-	}
 	
 	private static void setHeadingToPosition(EntityThrowable e ,double x, double y, double z, float velocity, float inaccuracy)
     {
@@ -351,5 +152,387 @@ public class AIUseHelper {
 				return true;
 		}
 		return false;
+	}
+	
+	private static final Map<Class<? extends Item>, ItemAI> clssMap = Maps.newHashMap();
+	private static final Map<Item, ItemAI> itemMap = Maps.newHashMap();
+
+	
+	
+	public static interface ItemAI
+	{
+		public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand);
+		
+		public int cooldown();
+		
+		public ItemType type();
+		
+		public Hand prefHand();
+		
+		public default boolean useHand() {return false;}
+		
+		public default int maxUseCount() {return 20;}
+	}
+	
+	@Nullable
+	public static Pair<ItemAI,EnumHand> getAI(EntityLiving entity)
+	{
+		ItemStack heldMain = entity.getHeldItemMainhand();
+		ItemStack heldOff = entity.getHeldItemOffhand();
+		if(heldMain.getItem() instanceof ItemArrow && heldOff.getItem() instanceof ItemBow)
+		{
+			entity.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, heldOff.copy());
+			entity.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, heldMain.copy());
+			heldMain = entity.getHeldItemMainhand();
+			heldOff = entity.getHeldItemOffhand();
+		}
+		ItemAI ai = null;
+		EnumHand hand = EnumHand.MAIN_HAND;
+		ai = itemMap.get(heldMain.getItem());
+		if(ai==null)
+		{
+			ai = itemMap.get(heldOff.getItem());
+			hand = EnumHand.OFF_HAND;
+		}
+		
+		if(ai==null)
+			for(Entry<Class<? extends Item>, ItemAI> entry : clssMap.entrySet())
+			{
+				if(entry.getKey().equals(heldMain.getItem().getClass().getSuperclass()) && entry.getValue().prefHand()!=Hand.OFF)
+				{
+					ai=entry.getValue();
+					hand = EnumHand.MAIN_HAND;
+					if(ai!=null)
+						break;
+				}
+				if(entry.getKey().equals(heldMain.getItem().getClass().getSuperclass()) && entry.getValue().prefHand()!=Hand.MAIN)
+				{
+					ai=entry.getValue();
+					hand = EnumHand.OFF_HAND;
+					if(ai!=null)
+						break;
+				}
+				if(entry.getKey().isAssignableFrom(heldMain.getItem().getClass()) && entry.getValue().prefHand()!=Hand.OFF)
+				{
+					ai=entry.getValue();
+					hand = EnumHand.MAIN_HAND;
+					if(ai!=null)
+						break;
+				}
+				if(entry.getKey().isAssignableFrom(heldOff.getItem().getClass()) && entry.getValue().prefHand()!=Hand.MAIN)
+				{
+					ai=entry.getValue();
+					hand = EnumHand.OFF_HAND;
+					if(ai!=null)
+						break;
+				}
+			}
+		return Pair.of(ai,hand);
+	}
+	
+	public static enum ItemType
+	{
+		NONSTRAFINGITEM,
+		STRAFINGITEM;
+	}
+	
+	public static enum Hand {
+
+		MAIN,
+		OFF,
+		BOTH;
+	}
+	
+	//Boomerang doesnt work. will crash
+	public static void initReforgedStuff()
+	{
+		itemMap.put(ReforgedAdditions.BLUNDERBUSS, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				Helpers.playSound(entity.world, entity, "shotgun_shoot", 1, 1);
+				for (int i = 1; i < 12; i++) {
+					entity.world.spawnEntity(new EntityBulletBlunderbuss(entity.world, entity, entity.getHeldItem(hand)));
+				}
+			}
+			@Override
+			public int cooldown() {return 60;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		clssMap.put(ItemMusket.class, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				Helpers.playSound(entity.world, entity, "musket_shoot", 1, 1);
+				if(!entity.world.isRemote) {
+					entity.world.spawnEntity(new EntityBulletMusket(entity.world, entity, entity.getHeldItem(hand)));
+				}
+			}
+			@Override
+			public int cooldown() {return 45;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		clssMap.put(ItemBlowGun.class, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				if(!entity.world.isRemote)
+				{
+					ItemStack stack = entity.getHeldItemOffhand();
+					EntityDart dart = null;
+					if(stack.getItem() instanceof ItemDart)
+					{
+						dart = new EntityDart(entity.world, entity, stack.copy());
+					}
+					else
+						dart = new EntityDart(entity.world, entity, new ItemStack(ReforgedAdditions.DART_NORMAL));
+					entity.world.spawnEntity(dart);
+				}
+			}
+			@Override
+			public int cooldown() {return 55;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.MAIN;}});
+		clssMap.put(ItemCrossbow.class, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				Helpers.playSound(entity.world, entity, "crossbow_shoot", 1, 1);
+				if(!entity.world.isRemote) {
+					EntityCrossbowBolt a = new EntityCrossbowBolt(entity.world, entity);
+					a.setAim(entity, entity.rotationPitch, entity.rotationYaw, 0.0F, ItemBow.getArrowVelocity(40) * 3.0F, 1.0F);
+					a.pickupStatus = PickupStatus.getByOrdinal(new Random().nextInt(2));
+					a.setDamage(8.0D);
+					entity.world.spawnEntity(a);
+				}
+			}
+			@Override
+			public int cooldown() {return 45;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		clssMap.put(ItemJavelin.class, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ARROW_SHOOT,
+						SoundCategory.MASTER, 0.5F, 0.4F / (entity.getRNG().nextFloat() * 0.4F + 0.8F));
+				if(!entity.world.isRemote) {
+					ItemStack stack = entity.getHeldItem(hand);
+					entity.world.spawnEntity(
+							new EntityJavelin(entity.world, entity, stack, stack.getMaxItemUseDuration() - entity.getItemInUseCount()));
+				}
+			}
+			@Override
+			public int cooldown() {return 35;}
+			@Override
+			public ItemType type() {return ItemType.NONSTRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+	}
+	
+	static
+	{
+		clssMap.put(ItemSplashPotion.class, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				ItemStack stack = entity.getHeldItem(hand);
+				if(AIUseHelper.isDamagePotion(stack))
+				{				
+					double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+			        if (!entity.world.isRemote)
+			        {
+			        		EntityMobSplash entitypotion = new EntityMobSplash(entity.world, entity, stack);
+			        		entitypotion.shoot(entity, entity.rotationPitch, entity.rotationYaw, -30.0F,  0.2F+(float)(dis*0.05), 1.2F);
+			        		entity.world.spawnEntity(entitypotion);
+					}
+				}
+			}
+			@Override
+			public int cooldown() {return 85;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		
+		itemMap.put(Items.SNOWBALL, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+		        if (!entity.world.isRemote)
+		        {
+		            EntitySnowBallNew entitysnowball = new EntitySnowBallNew(entity.world, entity);
+		            entitysnowball.shoot(entity, entity.rotationPitch, entity.rotationYaw, 0.0F, 1.5F, 1.0F);
+		            entity.world.spawnEntity(entitysnowball);
+		        }
+			}
+			@Override
+			public int cooldown() {return 25;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		
+		itemMap.put(Items.ENDER_PEARL, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
+				if(dis > 16.0)
+    			{
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+			        if (!entity.world.isRemote)
+			        {		        		
+		        		Vec3d v1= entity.getPositionVector().subtract(target.getPositionVector()).normalize().scale(16);
+		        		double x=0;
+		        		double y=0;
+		        		double z=0;
+		        		if(entity.getPositionVector().subtract(target.getPositionVector()).lengthVector() > 16)
+		        		{
+		        			x=v1.x;
+		        			y=v1.y;
+		        			z=v1.z;
+		        		}
+		        		EntityEnderPearl pearl = new EntityEnderPearl(entity.world, entity);
+		        		setHeadingToPosition(pearl, target.posX-x, target.posY-y, target.posZ-z, 1.5F, 3.0F);
+		        		entity.world.spawnEntity(pearl);
+	        		}
+			   }
+			}
+			@Override
+			public int cooldown() {return 35;}
+			@Override
+			public ItemType type() {return ItemType.NONSTRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		
+		itemMap.put(Items.LAVA_BUCKET, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
+				if(dis < 8 && AIUseHelper.tryPlaceLava(entity.world, new BlockPos(target.posX-2+entity.world.rand.nextInt(4),target.posY-1+entity.world.rand.nextInt(2),target.posZ-2+entity.world.rand.nextInt(4))))
+				{
+					entity.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:fire_resistance"), 240, 1, true, false));
+				}
+			}
+			@Override
+			public int cooldown() {return 80;}
+			@Override
+			public ItemType type() {return ItemType.NONSTRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		
+		itemMap.put(Items.FLINT_AND_STEEL, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
+				if(dis < entity.width + target.width + 0.5 && !target.isBurning())
+				{
+					target.setFire(4);
+				}
+			}
+			@Override
+			public int cooldown() {return 25;}
+			@Override
+			public ItemType type() {return ItemType.NONSTRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		
+		itemMap.put(ItemBlock.getItemFromBlock(Blocks.TNT), new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
+				if (!entity.world.isRemote)
+		        {
+					EntityTntNew tnt = new EntityTntNew(entity.world, entity.posX, entity.posY, entity.posZ, entity);
+					tnt.setHeadingFromThrower(entity, entity.rotationPitch, entity.rotationYaw, -20.0F, 0.2F+(float)(dis*0.05), 1.0F);
+					entity.world.spawnEntity(tnt);
+		        }
+			}
+			@Override
+			public int cooldown() {return 65;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		
+		itemMap.put(Items.ENCHANTED_BOOK, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				if (!entity.world.isRemote)
+		        {
+					List<Entity> nearby = entity.world.getEntitiesWithinAABBExcludingEntity(entity, entity.getEntityBoundingBox().grow(8.0D));
+					List<Entity> nearTarget = entity.world.getEntitiesWithinAABBExcludingEntity(entity.getAttackTarget(), entity.getAttackTarget().getEntityBoundingBox().grow(2.0D));
+					if(nearby.isEmpty() || nearby.size()==1 && nearby.get(0) ==entity.getAttackTarget() || entity.world.rand.nextInt(3)<=1)
+					{
+						if(nearTarget.isEmpty())
+							for(int x = -1;x<=1;x++)
+								for(int z=-1;z<=1;z++)
+								{
+									if(x==0 || z==0)
+									{
+										EntityEvokerFangs fang = new EntityEvokerFangs(entity.world, target.posX+x+target.motionX, target.posY, target.posZ+z+target.motionZ, 0, 5, entity);
+										entity.world.spawnEntity(fang);
+									}
+								}
+						else
+						{
+	                        EntityMobBullet entityBullet = new EntityMobBullet(entity.world, entity, entity.getAttackTarget(), entity.getHorizontalFacing().getAxis());
+	                        entity.world.spawnEntity(entityBullet);
+						}
+					}
+					else
+					{
+						for(int i = 0; i < nearby.size();i++)
+						{
+							Entity entityRand = nearby.get(entity.world.rand.nextInt(nearby.size()));
+							if(entityRand instanceof EntityMob && entityRand!=entity.getAttackTarget())
+							{
+								EntityMob mob = (EntityMob) entityRand;
+								mob.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation(potionEffects[mob.world.rand.nextInt(6)]), 3600, 1));
+								entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.NEUTRAL, 2F, 1.0F);
+								return;
+							}
+						}
+					}
+		        }
+			}
+			@Override
+			public int cooldown() {return 90;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}});
+		
+		clssMap.put(ItemBow.class, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+    			AIUseHelper.attackWithArrows(new EntityTippedArrow(entity.world, entity), entity, target, ItemBow.getArrowVelocity(entity.getItemInUseMaxCount()));
+			}
+			@Override
+			public int cooldown() {return 30;}
+			@Override
+			public ItemType type() {return ItemType.STRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.BOTH;}
+			@Override
+			public boolean useHand() {return true;}});
+		
+		clssMap.put(ItemShield.class, new ItemAI() {
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+			}
+			@Override
+			public int cooldown() {return 50;}
+			@Override
+			public ItemType type() {return ItemType.NONSTRAFINGITEM;}
+			@Override
+			public Hand prefHand() {return Hand.OFF;}
+			@Override
+			public boolean useHand() {return true;}
+			@Override
+			public int maxUseCount() {return 200;}});
 	}
 }

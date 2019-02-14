@@ -1,69 +1,82 @@
 package com.flemmli97.improvedmobs.entity.ai;
 
-import com.flemmli97.improvedmobs.handler.ItemType;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
+import com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemAI;
+import com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemType;
 
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAIAttackRanged;
 import net.minecraft.entity.ai.EntityAIAttackRangedBow;
 import net.minecraft.entity.ai.EntityAIBase;
-import net.minecraft.entity.projectile.EntityTippedArrow;
-import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemSplashPotion;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumHand;
 
 public class EntityAIUseItem extends EntityAIBase{
 	
 	private EntityLiving living;
-    double speedToTarget = 1;
-	private int attackCooldown=25;
-	private int itemUseCount;
 	private float maxAttackDistance;
     private int attackTime = -1;
     private int seeTime;
     private boolean strafingClockwise, strafingBackwards;
     private int strafingTime = -1;
-    private ItemType type;
-    private boolean hasBowAI;
+    private ItemAI ai;
+    private EnumHand hand;
+    private boolean hasBowAI, hasRangedAttack;
+    private ItemStack stackMain, stackOff;
+    
 	public EntityAIUseItem(EntityLiving entity, float maxDistance)
 	{
 		this.living=entity;
+		float follow = maxDistance;
+		if(entity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE)!=null)
+			follow = (float) entity.getEntityAttribute(SharedMonsterAttributes.FOLLOW_RANGE).getAttributeValue();
+		maxDistance = Math.min(follow-3, maxDistance);
         this.maxAttackDistance = maxDistance * maxDistance;
         this.setMutexBits(8);
         entity.tasks.taskEntries.forEach(entry->{
-        	if(entry.action instanceof EntityAIAttackRangedBow || entry.action instanceof EntityAIAttackRanged)
-        	{
-        		hasBowAI=true;
-        	}
+        	if(entry.action instanceof EntityAIAttackRangedBow)
+        		this.hasBowAI=true;
+        	if(entry.action instanceof EntityAIAttackRanged)
+        		this.hasRangedAttack=true;
         });
 	}
 	
 	@Override
 	public boolean shouldExecute() {
-		EntityLivingBase target = living.getAttackTarget();
+		EntityLivingBase target = this.living.getAttackTarget();
 		if (target == null||!target.isEntityAlive()||this.shouldNotExecute())
             return false;
-        else 
-        {
-    		ItemType type =	AIUseHelper.isItemApplicable(living);
-    		this.type = type;
-            return this.type!=ItemType.NOTHING;
-        }
+    	Pair<ItemAI, EnumHand> pair = AIUseHelper.getAI(this.living);
+		this.ai = pair.getKey();
+		this.hand= pair.getValue();
+        return this.ai!=null;
 	}
 	
 	@Override
 	public void startExecuting() {
-		this.itemUseCount = this.type.getItem().getMaxItemUseDuration(this.type.getStack());
+		this.setMutexBits(this.ai.type()==ItemType.NONSTRAFINGITEM?8:3);
+		this.stackMain=this.living.getHeldItemMainhand();
+		this.stackOff=this.living.getHeldItemOffhand();
 	}
 
 	@Override
 	public boolean shouldContinueExecuting()
     {
-        return this.shouldExecute();
+		EntityLivingBase target = this.living.getAttackTarget();
+		if (target == null||!target.isEntityAlive()||this.shouldNotExecute())
+            return false;
+		if(this.stackMain!=this.living.getHeldItemMainhand() || this.stackOff!=this.living.getHeldItemOffhand())
+		{
+			Pair<ItemAI, EnumHand> pair = AIUseHelper.getAI(this.living);
+			this.ai = pair.getKey();
+			this.hand= pair.getValue();
+		}
+        return this.ai!=null;
     }
 
 	@Override
@@ -71,7 +84,9 @@ public class EntityAIUseItem extends EntityAIBase{
 		this.seeTime = 0;
         this.attackTime = -1;
         this.living.resetActiveHand();
-        this.type=null;
+        this.ai=null;
+        this.stackMain=null;
+        this.stackOff=null;
 	}
 
 	@Override
@@ -79,41 +94,39 @@ public class EntityAIUseItem extends EntityAIBase{
 		EntityLivingBase target = this.living.getAttackTarget();
 		if(target!=null)
 		{
-            boolean flag = this.living.getEntitySenses().canSee(target);
-            if(type == ItemType.BOW || type ==ItemType.STRAFINGITEM)
-            		this.moveStrafing(target, flag);
-            if (this.living.isHandActive()|| this.itemUseCount==0 || type.getItem() instanceof ItemSplashPotion)
+			boolean flag = this.living.getEntitySenses().canSee(target);
+			if(this.ai.type() ==ItemType.STRAFINGITEM)
+        		this.moveStrafing(target, flag);
+			
+            if (this.living.isHandActive() || !this.ai.useHand())
             {
-                if (!flag && this.seeTime < -60)
+            	if (!flag && this.seeTime < -60)
                 {
                     this.living.resetActiveHand();                  
                 }
-                else if (flag)
+            	else if (flag)
                 {
-                    int i = this.living.getItemInUseMaxCount();
-                    if(this.itemUseCount==0|| type.getItem() instanceof ItemSplashPotion)
-                    {
-                    		if(--this.attackTime <= 0 && this.seeTime >= -60)
-                    		{                                  			
-                    			AIUseHelper.chooseAttack(this.living, target);
-                        		this.attackTime = this.setAttackCooldown(this.type.getStack());
-                    		}	
-                    }
-                    else if ((this.type == ItemType.BOW && i >= 20) ||i >= this.itemUseCount)
-                    {
-                		if(this.type ==ItemType.BOW)
-                			AIUseHelper.attackWithArrows(new EntityTippedArrow(living.world, living), living, target, ItemBow.getArrowVelocity(i));
-                		else
-                			AIUseHelper.chooseAttack(this.living, target);
-                		
-                		this.living.resetActiveHand();
-                		this.attackTime = this.attackCooldown;
+            		if(this.ai.useHand())
+            		{
+            			int i = this.living.getItemInUseMaxCount();
+                        if (i >= this.ai.maxUseCount())
+                        {
+                            this.living.resetActiveHand();
+                            this.ai.attack(this.living, target, this.hand);
+                            this.attackTime = this.ai.cooldown()*(this.hasRangedAttack?2:1);
+                        }
+            		}
+            		else if (--this.attackTime <= 0)
+                    {                        
+                        this.ai.attack(this.living, target, this.hand);
+                        this.living.resetActiveHand();
+                        this.attackTime = this.ai.cooldown()*(this.hasRangedAttack?2:1);
                     }
                 }
             }
-            else if (--this.attackTime <= 0 && this.seeTime >= -60)
+            else if (--this.attackTime < 0 && this.seeTime >= -60)
             {
-        			this.living.setActiveHand(this.type.getHand());
+    			this.living.setActiveHand(this.hand);
             }
 		}
 	}
@@ -144,7 +157,7 @@ public class EntityAIUseItem extends EntityAIBase{
         }
         else
         {
-            this.living.getNavigator().tryMoveToEntityLiving(target, this.speedToTarget);
+            this.living.getNavigator().tryMoveToEntityLiving(target, 1);
             this.strafingTime = -1;
         }
 
@@ -183,33 +196,11 @@ public class EntityAIUseItem extends EntityAIBase{
         }
 	}
 	
-	private int setAttackCooldown(ItemStack stack)
-	{
-		int cooldown = 25;
-		if(stack.getItem() == Item.getItemFromBlock(Blocks.TNT))
-		{
-			cooldown=65;
-		}
-		else if(stack.getItem() instanceof ItemSplashPotion)
-		{
-			cooldown=85;
-		}
-		else if(stack.getItem() == Items.LAVA_BUCKET)
-		{
-			cooldown=80;
-		}
-		else if(stack.getItem() == Items.ENCHANTED_BOOK)
-		{
-			cooldown=90;
-		}
-		return cooldown;
-	}
-	
 	/**
 	 * Specific mobs here. like for skeletons with bows
 	 */
 	private boolean shouldNotExecute()
 	{
-		return this.hasBowAI && this.living.getHeldItemMainhand().getItem() instanceof ItemBow;
+		return this.hasBowAI && this.living.getHeldItemMainhand().getItem()==Items.BOW;
 	}
 }
