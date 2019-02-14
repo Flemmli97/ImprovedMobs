@@ -1,0 +1,6 @@
+Improved Mobs 1.4.0
+================
+
+- Revamped item use ai to make adding stuff easier
+- Added techguns mod support. All Mobs are now able to use guns
+- Added Reforged mod support. Mobs are now able to use items (except the boomerang since it crashes)
