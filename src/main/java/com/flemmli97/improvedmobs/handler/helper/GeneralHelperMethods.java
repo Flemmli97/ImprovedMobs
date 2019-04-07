@@ -36,6 +36,10 @@ public class GeneralHelperMethods {
 		for(int i = 0;i< list.length;i++)
 		{
 			String classPath=null;
+			if(list[i].startsWith("@"))
+			{
+				return EntityList.getKey(living).getResourceDomain().equals(list[i].substring(1));
+			}
 			if(list[i].endsWith("*"))
 			{
 				classPath = list[i].substring(0, list[i].length()-1) + living.getClass().getSimpleName();
@@ -302,7 +306,7 @@ public class GeneralHelperMethods {
     public static boolean itemInList(Item item, String[] list)
     {
     	for(String s : list)
-    		if(item.getRegistryName().toString().equals(s))
+    		if(item.getRegistryName().toString().equals(s) || (s.startsWith("@") && item.getRegistryName().getResourceDomain().equals(s.substring(1))))
     			return true;
     	return false;
     }
