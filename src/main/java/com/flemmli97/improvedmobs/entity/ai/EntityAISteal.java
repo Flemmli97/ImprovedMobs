@@ -67,8 +67,12 @@ public class EntityAISteal extends EntityAIMoveToBlock{
 			if(!inv.isEmpty())
 			{
 				ItemStack drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
-				while(drop.isEmpty())
+				int tries = 0;
+				while(drop.isEmpty() && tries<7)
+				{
 					drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
+					tries++;
+				}
 				return drop;
 			}
 			return ItemStack.EMPTY;
