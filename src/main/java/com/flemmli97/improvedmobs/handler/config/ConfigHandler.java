@@ -56,7 +56,7 @@ public class ConfigHandler {
 	public static boolean useReforgedMod=true;
 
 	//AI
-	public static BreakableBlocks breakableBlocks = new BreakableBlocks(new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "minecraft:wooden_door", "minecraft:spruce_door", "minecraft:birch_door", "minecraft:jungle_door", "minecraft:acacia_door", "minecraft:dark_oak_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"});
+	public static BreakableBlocks breakableBlocks = new BreakableBlocks(new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "BlockDoor","!minecraft:iron_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"});
 	public static boolean breakingAsBlacklist;
 	public static boolean useBlockBreakSound;
 	public static float breakerChance;
