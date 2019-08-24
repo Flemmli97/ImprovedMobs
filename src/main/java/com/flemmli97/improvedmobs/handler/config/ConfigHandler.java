@@ -166,7 +166,7 @@ public class ConfigHandler {
 		mobListBreakWhitelist = config.getBoolean("Breaker Whitelist", "ai", false, "Use the AI Blacklist as Whitelist");
 		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
 			breakingItem.readFromString(config.getString("Breaking item", "ai", "minecraft:diamond_pickaxe", "Item which will be given to mobs who can break blocks. Set to nothing to not give any items."));
-		itemUseBlackList = config.getStringList("Item Blacklist", "ai", new String[0], "Blacklist for items given to mobs.");
+		itemUseBlackList = config.getStringList("Item Blacklist", "ai", new String[0], "Blacklist for items given to mobs. Use @[modid] to add all items from that mod");
 		mobListUseBlacklist = config.getStringList("Item Mob-Blacklist", "ai", new String[0], "Blacklist for mobs which can't use items");
 		mobListUseWhitelist = config.getBoolean("Item Mob-Whitelist", "ai", false, "Treat Item Mob-Blacklist as Whitelist");
 		mobListLadderBlacklist = config.getStringList("Ladder Blacklist", "ai", new String[] {"minecraft:creeper"}, "Blacklist for entities which can't climb ladder");
