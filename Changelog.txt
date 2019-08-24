@@ -1,7 +1,9 @@
 Improved Mobs 1.4.1
 ================
+- Hopefully fix #15
 - Added breaking point in stealing ai.
 - Added mod blacklist support
+- Improved the breakable blocks black/whitelist. Look at the description to see if you need to update your list
 
 Improved Mobs 1.4.0
 ================
