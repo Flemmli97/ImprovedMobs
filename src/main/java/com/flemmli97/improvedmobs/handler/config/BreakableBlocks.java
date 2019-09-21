@@ -8,10 +8,12 @@ import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
 import net.minecraft.init.Blocks;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class BreakableBlocks implements IConfigArrayValue{
+public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks>{
 	
 	private List<String> blocks = Lists.newArrayList();
 	private String[] configString;
@@ -30,89 +32,56 @@ public class BreakableBlocks implements IConfigArrayValue{
 	}
 
 	@Override
-	public IConfigArrayValue readFromString(String[] arr) {
+	public BreakableBlocks readFromString(String[] arr) {
 		this.blocks.clear();
 		this.configString=arr;
 		for(String s : arr)
 		{
 			List<String> blackList = Lists.newArrayList();
-			if(s.startsWith("!"))
-			{
-				s = s.substring(1);
-				if(s.contains(":"))
-					blackList.add(s);
-				else
-				{
-					Class<?> clss = null;
-					try 
-					{
-						clss = Class.forName("net.minecraft.block."+s);
-					} 
-					catch (ClassNotFoundException e) 
-					{
-						try 
-						{
-							clss = Class.forName(s);
-						} catch (ClassNotFoundException e1) {
-							ImprovedMobs.logger.error("Couldn't find class for "+s);
-						}
-					}
-					if(clss!=null)
-						for(Block block : ForgeRegistries.BLOCKS)
-						{
-							if(clss.isInstance(block))
-								blackList.add(block.getRegistryName().toString());
-						}
-					else
-					{
-						OreDictionary.getOres(s).forEach(stack->{
-							Block block = Block.getBlockFromItem(stack.getItem());
-							if(block!=Blocks.AIR)
-								blackList.add(block.getRegistryName().toString());
-						});;
-					}
-				}
-			}
-			else
-			{
-				if(s.contains(":"))
-					this.blocks.add(s);
-				else
-				{
-					Class<?> clss = null;
-					try 
-					{
-						clss = Class.forName("net.minecraft.block."+s);
-					} 
-					catch (ClassNotFoundException e) 
-					{
-						try 
-						{
-							clss = Class.forName(s);
-						} catch (ClassNotFoundException e1) {
-							ImprovedMobs.logger.error("Couldn't find class for "+s);
-						}
-					}
-					if(clss!=null)
-						for(Block block : ForgeRegistries.BLOCKS)
-						{
-							if(clss.isInstance(block))
-								this.blocks.add(block.getRegistryName().toString());
-						}
-					else
-					{
-						OreDictionary.getOres(s).forEach(stack->{
-							Block block = Block.getBlockFromItem(stack.getItem());
-							if(block!=Blocks.AIR)
-								this.blocks.add(block.getRegistryName().toString());
-						});;
-					}
-				}
-			}
+			addBlocks(s, blackList);
+			addBlocks(s, this.blocks);
 			this.blocks.removeAll(blackList);
 		}
-		System.out.println(this.blocks);
 		return this;
+	}
+	
+	private static void addBlocks(String s, List<String> list)
+	{
+		if(s.contains(":"))
+			list.add(s);
+		else
+		{
+			NonNullList<ItemStack> ores = OreDictionary.getOres(s);
+			if(!ores.isEmpty())
+			{
+				OreDictionary.getOres(s).forEach(stack->{
+					Block block = Block.getBlockFromItem(stack.getItem());
+					if(block!=Blocks.AIR)
+						list.add(block.getRegistryName().toString());
+				});
+				return;
+			}
+			Class<?> clss = null;
+			try 
+			{
+				clss = Class.forName("net.minecraft.block."+s);
+			} 
+			catch (ClassNotFoundException e) 
+			{
+				try 
+				{
+					clss = Class.forName(s);
+				} catch (ClassNotFoundException e1) {
+					ImprovedMobs.logger.error("Couldn't find class for "+s);
+				}
+			}
+			if(clss!=null)
+				for(Block block : ForgeRegistries.BLOCKS)
+				{
+					if(clss.isInstance(block))
+						list.add(block.getRegistryName().toString());
+				}
+		}
 	}
 
 	@Override

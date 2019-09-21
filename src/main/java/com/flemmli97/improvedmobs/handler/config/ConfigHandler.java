@@ -74,6 +74,7 @@ public class ConfigHandler {
 	public static boolean mobListBoatWhitelist;
 	public static float neutralAggressiv;
 	public static boolean targetVillager;
+	public static MobClassMapConfig autoTargets = new MobClassMapConfig(new String[] {});
 	
 	//Equipment
 	public static String[] equipmentBlacklist = new String[] {"techguns:nucleardeathray", "techguns:grenadelauncher","techguns:tfg","techguns:guidedmissilelauncher","techguns:rocketlauncher"};
@@ -101,7 +102,8 @@ public class ConfigHandler {
 	public static float speedMax;
 	public static float knockbackIncrease;
 	public static float knockbackMax;
-	
+	public static float magicResIncrease;
+	public static float magicResMax;
 	public static void load(LoadState state)
 	{
 		if(config==null)
@@ -177,7 +179,8 @@ public class ConfigHandler {
 		mobListBoatWhitelist = config.getBoolean("Boat Whitelist", "ai", false, "Treat Boat Blacklist as Whitelist");
 		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "ai", 0.2F, 0, 1, "Chance for neutral mobs to be aggressive"); 
 		targetVillager = config.getBoolean("Villager Target", "ai", true, "Should mobs target villagers? RIP Villagers");
-		
+		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
+			autoTargets.readFromString(config.getStringList("Auto Target List", "ai", autoTargets.writeToString(), "List for of pairs containing which mobs auto target others. Syntax is " + autoTargets.usage()+" where the class name is the target"));
 		ConfigCategory equipment = config.getCategory("equipment");
 		equipment.setLanguageKey("improvedmobs.equipment");
 		equipment.setComment("Configs regarding mobs spawning with equipment");
@@ -208,6 +211,8 @@ public class ConfigHandler {
 		speedMax = config.getFloat("Max Speed", "attributes", 0.1F, 0, 1, "Maximum increase in speed."); 
 		knockbackIncrease = ConfigUtils.getFloatConfig(config, "Knockback Increase", "attributes", 1.0F, "Knockback will be increased by difficulty*0.002*x. Set to 0 to disable."); 
 		knockbackMax = config.getFloat("Max Knockback", "attributes", 0.5F, 0, 1, "Maximum increase in knockback."); 
+		magicResIncrease = ConfigUtils.getFloatConfig(config, "Magic Resistance Increase", "attributes", 1.0F, "Magic resistance will be increased by difficulty*0.0016*x. Set to 0 to disable."); 
+		magicResMax = config.getFloat("Max Magic Resistance", "attributes", 0.4F, 0, 1, "Maximum increase in magic resistance. Magic reduction is percentage"); 
 		
 		config.save();
 	}

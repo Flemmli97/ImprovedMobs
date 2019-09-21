@@ -13,6 +13,7 @@ import com.flemmli97.improvedmobs.entity.ai.EntityAIUseItem;
 import com.flemmli97.improvedmobs.entity.ai.NewWalkNodeProcessor;
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
+import com.flemmli97.improvedmobs.handler.helper.MagicResistance;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 import com.flemmli97.improvedmobs.handler.packet.PathDebugging;
 import com.flemmli97.improvedmobs.handler.tilecap.ITileOpened;
@@ -22,6 +23,8 @@ import com.flemmli97.tenshilib.common.events.PathFindInitEvent;
 import com.flemmli97.tenshilib.common.javahelper.ReflectionUtils;
 import com.google.common.collect.Lists;
 
+import net.minecraft.entity.EntityCreature;
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityOwnable;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -57,6 +60,7 @@ import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract;
@@ -72,8 +76,8 @@ public class EventHandlerAI {
 	public static final ResourceLocation TileCap = new ResourceLocation(ImprovedMobs.MODID, "openedFlag");
 	public static final String breaker = ImprovedMobs.MODID+":Breaker";
 	private static final String modifyArmor = ImprovedMobs.MODID+":InitArmor";
-	private static final String modifiyHeld = ImprovedMobs.MODID+":InitHeld";
-	private static final String modifiyAttributes = ImprovedMobs.MODID+":InitAttr";
+	private static final String modifyHeld = ImprovedMobs.MODID+":InitHeld";
+	private static final String modifyAttributes = ImprovedMobs.MODID+":InitAttr";
 
 	@SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<TileEntity> event)
@@ -128,11 +132,12 @@ public class EventHandlerAI {
 				}
 				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist, ConfigHandler.mobListUseWhitelist))
 				{
-					mob.getEntityData().setBoolean(modifiyHeld, false);	
+					mob.getEntityData().setBoolean(modifyHeld, false);	
 				}
 				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList, ConfigHandler.mobAttributeWhitelist))
 				{
-					mob.getEntityData().setBoolean(modifiyAttributes, false);	
+					mob.getEntityData().setBoolean(modifyAttributes, false);
+					MagicResistance.apply(mob);
 				}
 			}
 		}
@@ -215,6 +220,13 @@ public class EventHandlerAI {
     				mob.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(mob, EntityVillager.class, mob.getTags().contains("Breaker")? false:mob.world.rand.nextFloat()<=0.5));
     		}
 	    }
+		if(e.getEntity() instanceof EntityCreature)
+		{
+			EntityCreature creat = (EntityCreature) e.getEntity();
+    		Class<? extends EntityLiving> clss = ConfigHandler.autoTargets.get(EntityList.getKey(creat));
+    		if(clss!=null)
+    			this.addAutoTargetAI(creat, clss);
+		}
 		if(e.getEntity() instanceof EntityLiving)
 		{
 			EntityLiving living= (EntityLiving) e.getEntity();
@@ -225,6 +237,11 @@ public class EventHandlerAI {
 			}
     		EntityAITechGuns.applyAI(living);
 		}
+	}
+	
+	private <T extends EntityLiving> void addAutoTargetAI(EntityCreature c, Class<T> clss)
+	{
+		c.targetTasks.addTask(3, new EntityAINearestAttackableTarget<T>(c, clss, c.getTags().contains("Breaker")? false:true));
 	}
 	
 	private void applyAttributesAndItems(EntityMob mob)
@@ -238,15 +255,15 @@ public class EventHandlerAI {
 				GeneralHelperMethods.enchantGear(mob);
 			mob.getEntityData().setBoolean(modifyArmor, true);
 		}
-		if(mob.getEntityData().hasKey(modifiyHeld) && !mob.getEntityData().getBoolean(modifiyHeld))
+		if(mob.getEntityData().hasKey(modifyHeld) && !mob.getEntityData().getBoolean(modifyHeld))
 		{
 			if(ConfigHandler.baseItemChance!=0)
 				GeneralHelperMethods.equipItem(mob);
 			if(ConfigHandler.baseWeaponChance!=0)
 				GeneralHelperMethods.equipWeapon(mob);
-			mob.getEntityData().setBoolean(modifiyHeld, true);
+			mob.getEntityData().setBoolean(modifyHeld, true);
 		}
-		if(mob.getEntityData().hasKey(modifiyAttributes) && !mob.getEntityData().getBoolean(modifiyAttributes))
+		if(mob.getEntityData().hasKey(modifyAttributes) && !mob.getEntityData().getBoolean(modifyAttributes))
 		{
 			if(ConfigHandler.healthIncrease!=0 && !ConfigHandler.useScalingHealthMod)
 			{
@@ -259,7 +276,9 @@ public class EventHandlerAI {
 				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease*0.0008, ConfigHandler.speedMax,  false);
 			if(ConfigHandler.knockbackIncrease!=0)
 				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease*0.002, ConfigHandler.knockbackMax,  false);
-			mob.getEntityData().setBoolean(modifiyAttributes, true);
+			if(ConfigHandler.magicResIncrease!=0)
+				GeneralHelperMethods.modifyAttr(mob, MagicResistance.MAGIC_RES, ConfigHandler.magicResIncrease*0.0016, ConfigHandler.magicResMax, false);
+			mob.getEntityData().setBoolean(modifyAttributes, true);
 		}
 	}
 	
@@ -276,6 +295,13 @@ public class EventHandlerAI {
 				PacketHandler.sendToAllAround(new PathDebugging(EnumParticleTypes.HEART.getParticleID(), path.getFinalPathPoint().x,path.getFinalPathPoint().y,path.getFinalPathPoint().z), 0, e.getEntityLiving().posX, e.getEntityLiving().posY, e.getEntityLiving().posZ, 64);
 			}
 		}
+	}
+	
+	@SubscribeEvent
+	public void magicEvent(LivingHurtEvent e)
+	{
+		if(e.getEntity() instanceof EntityMob)
+			e.setAmount(MagicResistance.handleMagicRes((EntityMob) e.getEntity(), e.getSource(), e.getAmount()));
 	}
 	
 	@SubscribeEvent
