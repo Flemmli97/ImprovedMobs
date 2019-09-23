@@ -13,7 +13,7 @@ import com.flemmli97.improvedmobs.entity.ai.EntityAIUseItem;
 import com.flemmli97.improvedmobs.entity.ai.NewWalkNodeProcessor;
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
-import com.flemmli97.improvedmobs.handler.helper.MagicResistance;
+import com.flemmli97.improvedmobs.handler.helper.IMAttributes;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 import com.flemmli97.improvedmobs.handler.packet.PathDebugging;
 import com.flemmli97.improvedmobs.handler.tilecap.ITileOpened;
@@ -51,6 +51,7 @@ import net.minecraft.pathfinding.PathNavigateClimber;
 import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.tileentity.TileEntity;
+import net.minecraft.util.DamageSource;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
@@ -137,7 +138,7 @@ public class EventHandlerAI {
 				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList, ConfigHandler.mobAttributeWhitelist))
 				{
 					mob.getEntityData().setBoolean(modifyAttributes, false);
-					MagicResistance.apply(mob);
+					IMAttributes.apply(mob);
 				}
 			}
 		}
@@ -277,7 +278,10 @@ public class EventHandlerAI {
 			if(ConfigHandler.knockbackIncrease!=0)
 				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease*0.002, ConfigHandler.knockbackMax,  false);
 			if(ConfigHandler.magicResIncrease!=0)
-				GeneralHelperMethods.modifyAttr(mob, MagicResistance.MAGIC_RES, ConfigHandler.magicResIncrease*0.0016, ConfigHandler.magicResMax, false);
+				GeneralHelperMethods.modifyAttr(mob, IMAttributes.MAGIC_RES, ConfigHandler.magicResIncrease*0.0016, ConfigHandler.magicResMax, false);
+			if(ConfigHandler.projectileIncrease!=0)
+				GeneralHelperMethods.modifyAttr(mob, IMAttributes.PROJ_BOOST, ConfigHandler.projectileIncrease*0.008, ConfigHandler.projectileMax, false);
+			
 			mob.getEntityData().setBoolean(modifyAttributes, true);
 		}
 	}
@@ -298,14 +302,20 @@ public class EventHandlerAI {
 	}
 	
 	@SubscribeEvent
-	public void magicEvent(LivingHurtEvent e)
+	public void hurtEvent(LivingHurtEvent e)
 	{
+		DamageSource source = e.getSource();
+		if(source.isProjectile() && source.getTrueSource() instanceof EntityMob)
+			e.setAmount((float) (e.getAmount()*(1+((EntityMob) source.getTrueSource()).getEntityAttribute(IMAttributes.PROJ_BOOST).getAttributeValue())));
 		if(e.getEntity() instanceof EntityMob)
-			e.setAmount(MagicResistance.handleMagicRes((EntityMob) e.getEntity(), e.getSource(), e.getAmount()));
+		{
+			if(e.getSource().isMagicDamage())
+				e.setAmount((float) (e.getAmount()*(1-((EntityMob) e.getEntity()).getEntityAttribute(IMAttributes.MAGIC_RES).getAttributeValue())));
+		}
 	}
 	
 	@SubscribeEvent
-	public void friendlyFire(LivingAttackEvent e)
+	public void attackEvent(LivingAttackEvent e)
 	{
 		if(!ConfigHandler.friendlyFire &&e.getEntityLiving() instanceof IEntityOwnable && !e.getEntityLiving().world.isRemote)
 		{

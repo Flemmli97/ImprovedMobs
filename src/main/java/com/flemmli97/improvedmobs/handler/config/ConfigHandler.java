@@ -104,6 +104,9 @@ public class ConfigHandler {
 	public static float knockbackMax;
 	public static float magicResIncrease;
 	public static float magicResMax;
+	public static float projectileIncrease;
+	public static float projectileMax;
+	
 	public static void load(LoadState state)
 	{
 		if(config==null)
@@ -213,6 +216,8 @@ public class ConfigHandler {
 		knockbackMax = config.getFloat("Max Knockback", "attributes", 0.5F, 0, 1, "Maximum increase in knockback."); 
 		magicResIncrease = ConfigUtils.getFloatConfig(config, "Magic Resistance Increase", "attributes", 1.0F, "Magic resistance will be increased by difficulty*0.0016*x. Set to 0 to disable."); 
 		magicResMax = config.getFloat("Max Magic Resistance", "attributes", 0.4F, 0, 1, "Maximum increase in magic resistance. Magic reduction is percentage"); 
+		projectileIncrease = ConfigUtils.getFloatConfig(config, "Projectile Damage Increase", "attributes", 1.0F, "Projectile Damage will be multiplied by 1+difficulty*0.008*x. Set to 0 to disable."); 
+		projectileMax = ConfigUtils.getFloatConfig(config, "Max Projectile Damage", "attributes", 2F, "Projectile damage will be multiplied by maximum of this."); 
 		
 		config.save();
 	}
