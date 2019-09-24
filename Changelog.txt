@@ -1,3 +1,10 @@
+Improved Mobs 1.5.0
+================
+- Added magic resistance properties to mobs. Reduces all magic damage by x %.
+- Added auto targeting options to mobs to make mobs able to target other mobs. e.g. all zombies attack skeletons.
+	Default is not used so you need to configure it yourself.
+- Added projectile damage boosting since just increased attack damage of mobs dont apply to fired projectiles.
+
 Improved Mobs 1.4.1
 ================
 - Hopefully fix #15
