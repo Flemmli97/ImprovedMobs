@@ -1,5 +1,9 @@
 Improved Mobs 1.5.0
 ================
+- fix additional armor not equiping
+
+Improved Mobs 1.5.0
+================
 - Added magic resistance properties to mobs. Reduces all magic damage by x %.
 - Added auto targeting options to mobs to make mobs able to target other mobs. e.g. all zombies attack skeletons.
 	Default is not used so you need to configure it yourself.
