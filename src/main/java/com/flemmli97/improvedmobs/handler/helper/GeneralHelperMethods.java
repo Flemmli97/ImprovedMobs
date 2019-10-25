@@ -22,6 +22,7 @@ import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionUtils;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
@@ -44,8 +45,9 @@ public class GeneralHelperMethods {
 			{
 				classPath = list[i].substring(0, list[i].length()-1) + living.getClass().getSimpleName();
 			}
+			ResourceLocation res;
 			if((classPath!=null && living.getClass().getName().equals(classPath)) || 
-					(EntityList.getEntityString(living)!=null && EntityList.getEntityString(living).equals(list[i])))
+					((res = EntityList.getKey(living))!=null && res.toString().equals(list[i])))
 					{
 						return true;
 					}

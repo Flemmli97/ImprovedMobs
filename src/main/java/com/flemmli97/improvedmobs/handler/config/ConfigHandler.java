@@ -286,4 +286,178 @@ public class ConfigHandler {
 		catch(IllegalArgumentException e){}
 		return ItemStack.EMPTY;
 	}
+	
+	//Change to weighted item system?
+
+	/*private static Map<String,WeightedItemstackList> equips = Maps.newLinkedHashMap();
+	
+	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+
+	public static class WeightedItemstack extends WeightedRandom.Item
+	{
+		private Item item;
+		public WeightedItemstack(Item item, int itemWeightIn) {
+			super(itemWeightIn);
+			this.item= item;
+		}
+		
+		public ItemStack getItem()
+		{
+			return new ItemStack(this.item);
+		}
+		
+		@Override
+		public boolean equals(Object other)
+		{
+			if(other == this)
+				return true;
+			if(other instanceof WeightedItemstack)
+				return ((WeightedItemstack) other).item.getRegistryName().equals(this.item.getRegistryName());
+			return false;
+		}
+		
+		@Override
+		public int hashCode()
+		{
+			return this.item.getRegistryName().hashCode();
+		}
+	}
+	
+	public static class WeightedItemstackList 
+	{
+		private List<WeightedItemstack> list;
+		private int totalWeight;
+		
+		public WeightedItemstackList(List<WeightedItemstack> list)
+		{
+			this.list=list;
+			this.calculateTotalWeight();
+		}
+		
+		private void calculateTotalWeight()
+		{
+			this.totalWeight = WeightedRandom.getTotalWeight(this.list);
+		}
+		
+		public WeightedItemstackList add(WeightedItemstack item)
+		{
+			if(this.list.contains(item))
+				this.list.remove(item);
+			this.list.add(item);
+			this.calculateTotalWeight();
+			return this;
+		}
+	}
+	
+	public static ItemStack getEquip(EntityLiving e, EntityEquipmentSlot slot)
+	{
+		WeightedItemstackList eq = null;
+		switch(slot)
+		{
+			case CHEST:
+				eq = equips.get("chest");
+				break;
+			case FEET:
+				eq = equips.get("feet");
+				break;
+			case HEAD:
+				eq = equips.get("head");
+				break;
+			case LEGS:
+				eq = equips.get("legs");
+				break;
+			case MAINHAND:
+				eq = equips.get("weapon");
+				break;
+			case OFFHAND:
+				eq = equips.get("utils");
+				break;
+		}
+		if(eq==null || eq.list.isEmpty() || eq.totalWeight==0)
+			return ItemStack.EMPTY;
+		return WeightedRandom.getRandomItem(e.world.rand, eq.list, (int)Math.max(1, eq.totalWeight*(1-250/DifficultyData.getDifficulty(e.world, e)))).getItem();
+	}
+	
+	public static void initEquip()
+	{
+		try
+		{
+			for(Item item : ItemUtil.getList(EntityEquipmentSlot.FEET))
+					equips.compute("feet", (s,l)->
+					l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+						l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+			for(Item item : ItemUtil.getList(EntityEquipmentSlot.CHEST))
+				equips.compute("chest", (s,l)->
+				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+			for(Item item : ItemUtil.getList(EntityEquipmentSlot.HEAD))
+				equips.compute("head", (s,l)->
+				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+			for(Item item : ItemUtil.getList(EntityEquipmentSlot.LEGS))
+				equips.compute("legs", (s,l)->
+				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+			for(Item item : ItemUtil.getList(EntityEquipmentSlot.MAINHAND))
+				equips.compute("weapon", (s,l)->
+				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+			ForgeRegistries.ITEMS.forEach(item->{
+				{
+					if(ConfigHandler.useTGunsMod)
+						if(item instanceof GenericGun)
+							equips.compute("weapon", (s,l)->
+							l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+								l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+					if(ConfigHandler.useReforgedMod)
+						if(item instanceof ItemBlowGun || item instanceof ItemJavelin)
+							equips.compute("weapon", (s,l)->
+							l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+								l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+					if(item instanceof ItemBow)
+						equips.compute("weapon", (s,l)->
+						l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
+							l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+				}
+			});
+			if(ConfigHandler.useReforgedMod)
+				AIUseHelper.initReforgedStuff();
+			
+			
+			File conf = new File(config.getConfigFile().getParentFile(), "equipment.json");
+			if(!conf.exists())
+			{
+				conf.createNewFile();
+			}
+			else
+			{
+				FileReader reader = new FileReader(conf);
+				JsonObject obj = GSON.fromJson(reader, JsonObject.class);
+				reader.close();
+				for(String key : equips.keySet())
+				{
+					JsonArray arr = (JsonArray) obj.get(key);
+					arr.forEach(el->{
+						JsonObject o = (JsonObject) el;
+						Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(o.get("item").getAsString()));
+						int weight = o.get("weight").getAsInt();
+						boolean isZero = weight==0 || item==null;
+						equips.compute(key, (s,l)->
+						l==null?new WeightedItemstackList(isZero?Lists.newArrayList():Lists.newArrayList(new WeightedItemstack(item, weight))):
+							l.add(new WeightedItemstack(item, weight)));
+					});
+				}
+			}
+			
+		}
+		catch(IOException e)
+		{
+			
+		}
+	}
+	
+	private static int getDefaultWeight(Item item)
+	{
+		return 0;
+	}*/
 }
