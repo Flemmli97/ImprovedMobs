@@ -105,7 +105,7 @@ public class GeneralHelperMethods {
 				while(!chance && tries < maxTries)
 				{
 			        chest = ConfigHandler.getEquipment(EntityEquipmentSlot.CHEST);
-			        chance = chest.isEmpty()&&mob.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
+			        chance = !chest.isEmpty()&&mob.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(chest)+time);
 			        if(chance)
 			        {
 			        	if(!ConfigHandler.shouldDropEquip)
@@ -124,7 +124,7 @@ public class GeneralHelperMethods {
 				while(!chance && tries < maxTries)
 				{
 			        legs = ConfigHandler.getEquipment(EntityEquipmentSlot.LEGS);
-			        chance = legs.isEmpty()&&mob.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
+			        chance = !legs.isEmpty()&&mob.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(legs)+time);
 			        if(chance)
 			        {
 			        	if(!ConfigHandler.shouldDropEquip)
@@ -143,7 +143,7 @@ public class GeneralHelperMethods {
 				while(!chance && tries < maxTries)
 				{
 			        feet = ConfigHandler.getEquipment(EntityEquipmentSlot.FEET);
-			        chance = feet.isEmpty()&&mob.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
+			        chance = !feet.isEmpty()&&mob.getRNG().nextFloat()<(GeneralHelperMethods.calculateArmorRarityChance(feet)+time);
 			        if(chance)
 			        {
 			        	if(!ConfigHandler.shouldDropEquip)
