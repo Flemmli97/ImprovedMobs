@@ -1,4 +1,4 @@
-Improved Mobs 1.5.0
+Improved Mobs 1.5.1
 ================
 - fix additional armor not equiping
 
