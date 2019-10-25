@@ -35,22 +35,16 @@ public class GeneralHelperMethods {
 		if(reverse)
 			return !isMobInList(living, list, false);
 		for(int i = 0;i< list.length;i++)
-		{
-			String classPath=null;
+		{			
+			ResourceLocation res = EntityList.getKey(living);
 			if(list[i].startsWith("@"))
 			{
-				return EntityList.getKey(living).getResourceDomain().equals(list[i].substring(1));
+				return res!=null && res.getResourceDomain().equals(list[i].substring(1));
 			}
-			if(list[i].endsWith("*"))
+			if(res!=null && res.toString().equals(list[i]))
 			{
-				classPath = list[i].substring(0, list[i].length()-1) + living.getClass().getSimpleName();
+				return true;
 			}
-			ResourceLocation res;
-			if((classPath!=null && living.getClass().getName().equals(classPath)) || 
-					((res = EntityList.getKey(living))!=null && res.toString().equals(list[i])))
-					{
-						return true;
-					}
 		}
 		return false;
 	}

@@ -171,7 +171,7 @@ public class ConfigHandler {
 		mobListBreakWhitelist = config.getBoolean("Breaker Whitelist", "ai", false, "Use the AI Blacklist as Whitelist");
 		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
 			breakingItem.readFromString(config.getString("Breaking item", "ai", "minecraft:diamond_pickaxe", "Item which will be given to mobs who can break blocks. Set to nothing to not give any items."));
-		itemUseBlackList = config.getStringList("Item Blacklist", "ai", new String[0], "Blacklist for items given to mobs. Use @[modid] to add all items from that mod");
+		itemUseBlackList = config.getStringList("Item Blacklist", "ai", new String[0], "Blacklist for usable items given to mobs. (Not weapons but e.g. tnt)");
 		mobListUseBlacklist = config.getStringList("Item Mob-Blacklist", "ai", new String[0], "Blacklist for mobs which can't use items");
 		mobListUseWhitelist = config.getBoolean("Item Mob-Whitelist", "ai", false, "Treat Item Mob-Blacklist as Whitelist");
 		mobListLadderBlacklist = config.getStringList("Ladder Blacklist", "ai", new String[] {"minecraft:creeper"}, "Blacklist for entities which can't climb ladder");
@@ -187,7 +187,7 @@ public class ConfigHandler {
 		ConfigCategory equipment = config.getCategory("equipment");
 		equipment.setLanguageKey("improvedmobs.equipment");
 		equipment.setComment("Configs regarding mobs spawning with equipment");
-		equipmentBlacklist = config.getStringList("Equipment Blacklist", "equipment", equipmentBlacklist, "Blacklist for mob equipments");
+		equipmentBlacklist = config.getStringList("Equipment Blacklist", "equipment", equipmentBlacklist, "Blacklist for mob equipments. Use the modid to add all items from that mod");
 		equipmentWhitelist = config.getBoolean("Equipment Whitelist", "equipment", false, "Use blacklist as whitelist");
 		armorMobBlacklist = config.getStringList("Armor Mob-Blacklist", "equipment", new String[0], "Blacklist for mobs, which shouldn't get armor equiped");
 		armorMobWhiteList = config.getBoolean("Armor Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
@@ -220,6 +220,8 @@ public class ConfigHandler {
 		projectileMax = ConfigUtils.getFloatConfig(config, "Max Projectile Damage", "attributes", 2F, "Projectile damage will be multiplied by maximum of this."); 
 		
 		config.save();
+		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
+			initEquipment();
 	}
 	
 	private static List<Item> boots = Lists.newArrayList();
@@ -228,26 +230,27 @@ public class ConfigHandler {
 	private static List<Item> helmet = Lists.newArrayList();
 	private static List<Item> weapon = Lists.newArrayList();
 	
-	public static void initEquipment()
+	private static void initEquipment()
 	{
 		List<String> conf = Arrays.asList(ConfigHandler.equipmentBlacklist);
+		
 		for(Item item : ItemUtil.getList(EntityEquipmentSlot.FEET))
-			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString())))
+			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
 				boots.add(item);
 		for(Item item : ItemUtil.getList(EntityEquipmentSlot.CHEST))
-			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString())))
+			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
 				chest.add(item);
 		for(Item item : ItemUtil.getList(EntityEquipmentSlot.HEAD))
-			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString())))
+			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
 				helmet.add(item);
 		for(Item item : ItemUtil.getList(EntityEquipmentSlot.LEGS))
-			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString())))
+			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
 				legs.add(item);
 		for(Item item : ItemUtil.getList(EntityEquipmentSlot.MAINHAND))
-			if(!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString())))
+			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
 				weapon.add(item);
 		ForgeRegistries.ITEMS.forEach(item->{
-			if((!conf.contains(item.getRegistryName().toString()) || (ConfigHandler.equipmentWhitelist && conf.contains(item.getRegistryName().toString()))))
+			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
 			{
 				if(ConfigHandler.useTGunsMod)
 					if(item instanceof GenericGun)
@@ -261,6 +264,13 @@ public class ConfigHandler {
 		});
 		if(ConfigHandler.useReforgedMod)
 			AIUseHelper.initReforgedStuff();
+	}
+	
+	private static boolean whiteListed(Item item, List<String> list, boolean whiteList) 
+	{
+		if(whiteList)
+			return list.contains(item.getRegistryName().toString()) || list.contains(item.getRegistryName().getResourceDomain());
+		return !(list.contains(item.getRegistryName().toString()) || list.contains(item.getRegistryName().getResourceDomain()));
 	}
 	
 	public static ItemStack randomWeapon()

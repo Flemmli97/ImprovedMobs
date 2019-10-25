@@ -5,6 +5,8 @@ Improved Mobs 1.5.0
 	Default is not used so you need to configure it yourself.
 - Added projectile damage boosting since just increased attack damage of mobs dont apply to fired projectiles.
 - Fix for entity registry names not working for black/whitelist (#20)
+- Fix item blacklist not actually using modids.
+- Removed class names from mob lists. Dont use them, use registry names!
 
 Improved Mobs 1.4.1
 ================

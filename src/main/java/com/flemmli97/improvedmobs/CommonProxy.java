@@ -41,7 +41,6 @@ public class CommonProxy {
 
     public void postInit(FMLPostInitializationEvent e) {
     	ConfigHandler.load(LoadState.POSTINIT);
-		ConfigHandler.initEquipment();
     }
     
     public IThreadListener getListener(MessageContext ctx) {
