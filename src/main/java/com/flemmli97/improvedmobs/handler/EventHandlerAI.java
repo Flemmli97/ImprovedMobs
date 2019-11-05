@@ -32,6 +32,8 @@ import net.minecraft.entity.ai.EntityAIAttackMelee;
 import net.minecraft.entity.ai.EntityAINearestAttackableTarget;
 import net.minecraft.entity.ai.EntityAITarget;
 import net.minecraft.entity.ai.EntityAITasks;
+import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
@@ -306,14 +308,20 @@ public class EventHandlerAI {
 	{
 		DamageSource source = e.getSource();
 		if(source.isProjectile() && source.getTrueSource() instanceof EntityMob)
-			e.setAmount((float) (e.getAmount()*(1+((EntityMob) source.getTrueSource()).getEntityAttribute(IMAttributes.PROJ_BOOST).getAttributeValue())));
+			e.setAmount((float) (e.getAmount()*(1+this.getAttValue((EntityMob) source.getTrueSource(), IMAttributes.PROJ_BOOST))));
 		if(e.getEntity() instanceof EntityMob)
 		{
 			if(e.getSource().isMagicDamage())
-				e.setAmount((float) (e.getAmount()*(1-((EntityMob) e.getEntity()).getEntityAttribute(IMAttributes.MAGIC_RES).getAttributeValue())));
+				e.setAmount((float) (e.getAmount()*(1-this.getAttValue((EntityMob) e.getEntity(), IMAttributes.MAGIC_RES))));
 		}
 	}
 	
+	private double getAttValue(EntityMob mob, IAttribute att) {
+	    IAttributeInstance inst = mob.getEntityAttribute(att);
+	    if(inst!=null)
+	        return inst.getAttributeValue();
+	    return 0;
+	}
 	@SubscribeEvent
 	public void attackEvent(LivingAttackEvent e)
 	{

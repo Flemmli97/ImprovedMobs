@@ -31,7 +31,7 @@ public class GeneralHelperMethods {
 	public static boolean isMobInList(EntityLiving living, String[] list, boolean reverse)
 	{
 		if(living instanceof EntityGuardianBoat)
-			return true;
+			return !reverse;
 		if(reverse)
 			return !isMobInList(living, list, false);
 		for(int i = 0;i< list.length;i++)
