@@ -275,6 +275,8 @@ public class ConfigHandler {
 	
 	public static ItemStack randomWeapon()
 	{
+	    if(weapon.isEmpty())
+	        return ItemStack.EMPTY;
 		return new ItemStack(weapon.get(new Random().nextInt(weapon.size())));
 	}
 	
@@ -294,7 +296,7 @@ public class ConfigHandler {
 		}
 		//In case list is empty
 		catch(IllegalArgumentException e){}
-		return ItemStack.EMPTY;
+		    return ItemStack.EMPTY;
 	}
 	
 	//Change to weighted item system?
