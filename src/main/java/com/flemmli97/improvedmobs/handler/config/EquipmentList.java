@@ -30,6 +30,7 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
+import net.minecraft.init.PotionTypes;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -39,6 +40,7 @@ import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -55,7 +57,8 @@ public class EquipmentList {
         WeightedItemstackList eq = equips.get(slot);
         if(eq==null || eq.list.isEmpty() || eq.totalWeight==0)
             return ItemStack.EMPTY;
-        int totalWeight = eq.totalWeight;//(int)Math.max(1, eq.totalWeight*(1-DifficultyData.getDifficulty(e.world, e)/250f));
+        //int totalWeight = (int)Math.max(1, eq.totalWeight*(1-Math.max(DifficultyData.getDifficulty(e.world, e)/312f,0.8)));
+        int totalWeight = eq.totalWeight;
         return WeightedRandom.getRandomItem(e.world.rand, eq.list, totalWeight).getItem();
     }
     
@@ -176,7 +179,6 @@ public class EquipmentList {
             for(EntityEquipmentSlot key : EntityEquipmentSlot.values())
             {
                 JsonObject eq = confObj.has(key.toString())?(JsonObject) confObj.get(key.toString()):new JsonObject();
-                System.out.println(equips.get(key));
                 equips.get(key).list.forEach(w->eq.addProperty(w.item.getRegistryName().toString(), w.itemWeight));
                 
                 //Sort json object
@@ -204,7 +206,7 @@ public class EquipmentList {
         return item.getRegistryName().getResourceDomain().equals("mobbattle");
     }
     
-    private static Field techGunDmg;
+    private static Field techGunDmg, techgunAIAttackTime, techgunAIBurstCount, techgunAIburstAttackTime;
     private static final List<String> defaultZeroWeight = Lists.newArrayList("techguns:nucleardeathray", "techguns:grenadelauncher","techguns:tfg","techguns:guidedmissilelauncher","techguns:rocketlauncher");
     private static int getDefaultWeight(Item item)
     {
@@ -236,8 +238,19 @@ public class EquipmentList {
             float range = ((GenericGun)item).getAI_attackRange();
             if(techGunDmg==null)
                 techGunDmg=ReflectionUtils.getField(GenericGun.class, "damageMin");
+            if(techgunAIAttackTime==null)
+                techgunAIAttackTime=ReflectionUtils.getField(GenericGun.class, "AI_attackTime");
+            if(techgunAIBurstCount==null)
+                techgunAIBurstCount=ReflectionUtils.getField(GenericGun.class, "AI_burstCount");
+            if(techgunAIburstAttackTime==null)
+                techgunAIburstAttackTime=ReflectionUtils.getField(GenericGun.class, "AI_burstAttackTime");
+                
             float dmg = ReflectionUtils.getFieldValue(techGunDmg, ((GenericGun)item));
-            weight-=2*(range*0.75+dmg*12)+450;
+            int attackTime = ReflectionUtils.getFieldValue(techgunAIAttackTime, ((GenericGun)item));
+            int burstCount = ReflectionUtils.getFieldValue(techgunAIBurstCount, ((GenericGun)item));
+            int burstAttackTime = ReflectionUtils.getFieldValue(techgunAIburstAttackTime, ((GenericGun)item));
+            
+            weight-=2*(range*0.75+dmg*14+attackTime*0.1+burstCount*13+burstAttackTime*9)+300;
         }
         else {
             if(item==Items.FLINT_AND_STEEL)
@@ -283,6 +296,8 @@ public class EquipmentList {
         
         public ItemStack getItem()
         {
+            if(this.item==Items.SPLASH_POTION)
+                return PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), PotionTypes.HARMING);
             return new ItemStack(this.item);
         }
         
