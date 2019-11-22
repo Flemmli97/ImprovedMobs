@@ -1,3 +1,14 @@
+Improved Mobs 1.5.3
+================
+- Changed the equipment picker to a weighted based configurable list instead of internal coded values (equipment.json)
+- Config changes. You should backup and delete your config.
+	- "itemUseBlackList" removed. Use the weighted list
+	- "equipmentBlacklist" changed to "equipmentModBlacklist". To blacklist all items from a mod. For individual items use the weighted list
+		- "equipmentWhitelist" changed to "equipmentModWhitelist"
+	- "armorMobBlacklist" changed to "equipMobBlacklist". Applies to all equipment (armor, held items) instead of just armor.
+		- "armorMobWhiteList" changed to "equipMobWhiteList"
+	- "baseItemChanceAdd" added for "baseItemChance". Applies to off hand items. Like ender pearls
+
 Improved Mobs 1.5.2
 ================
 - fix #21 and #22

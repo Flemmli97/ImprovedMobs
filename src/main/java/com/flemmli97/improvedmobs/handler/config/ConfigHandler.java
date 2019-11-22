@@ -1,32 +1,19 @@
 package com.flemmli97.improvedmobs.handler.config;
 
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Random;
 
-import org.silvercatcher.reforged.items.weapons.ItemBlowGun;
-import org.silvercatcher.reforged.items.weapons.ItemJavelin;
-
-import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
 import com.flemmli97.tenshilib.common.config.ConfigUtils;
 import com.flemmli97.tenshilib.common.config.ConfigUtils.LoadState;
-import com.flemmli97.tenshilib.common.item.ItemUtil;
 import com.google.common.collect.Lists;
 
 import net.minecraft.init.Items;
-import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemStack;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.common.Loader;
-import net.minecraftforge.fml.common.registry.ForgeRegistries;
-import techguns.items.guns.GenericGun;
 
 public class ConfigHandler {
 	
@@ -63,7 +50,6 @@ public class ConfigHandler {
 	public static String[] mobListBreakBlacklist;
 	public static boolean mobListBreakWhitelist;
 	public static ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
-	public static String[] itemUseBlackList;
 	public static String[] mobListUseBlacklist;
 	public static boolean mobListUseWhitelist;
 	public static String[] mobListLadderBlacklist;
@@ -77,10 +63,10 @@ public class ConfigHandler {
 	public static MobClassMapConfig autoTargets = new MobClassMapConfig(new String[] {});
 	
 	//Equipment
-	public static String[] equipmentBlacklist = new String[] {"techguns:nucleardeathray", "techguns:grenadelauncher","techguns:tfg","techguns:guidedmissilelauncher","techguns:rocketlauncher"};
-	public static boolean equipmentWhitelist;
-	public static String[] armorMobBlacklist;
-	public static boolean armorMobWhiteList;
+	public static String[] equipmentModBlacklist = new String[0];
+	public static boolean equipmentModWhitelist;
+	public static String[] equipMobBlacklist;
+	public static boolean equipMobWhiteList;
 	public static float baseEquipChance;
 	public static float baseEquipChanceAdd;
 	public static float diffEquipAdd;
@@ -89,6 +75,7 @@ public class ConfigHandler {
 	public static float baseEnchantChance;
 	public static float diffEnchantAdd;
 	public static float baseItemChance;
+	public static float baseItemChanceAdd;
 	public static boolean shouldDropEquip;
 	
 	//Attributes
@@ -171,7 +158,6 @@ public class ConfigHandler {
 		mobListBreakWhitelist = config.getBoolean("Breaker Whitelist", "ai", false, "Use the AI Blacklist as Whitelist");
 		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
 			breakingItem.readFromString(config.getString("Breaking item", "ai", "minecraft:diamond_pickaxe", "Item which will be given to mobs who can break blocks. Set to nothing to not give any items."));
-		itemUseBlackList = config.getStringList("Item Blacklist", "ai", new String[0], "Blacklist for usable items given to mobs. (Not weapons but e.g. tnt)");
 		mobListUseBlacklist = config.getStringList("Item Mob-Blacklist", "ai", new String[0], "Blacklist for mobs which can't use items");
 		mobListUseWhitelist = config.getBoolean("Item Mob-Whitelist", "ai", false, "Treat Item Mob-Blacklist as Whitelist");
 		mobListLadderBlacklist = config.getStringList("Ladder Blacklist", "ai", new String[] {"minecraft:creeper"}, "Blacklist for entities which can't climb ladder");
@@ -187,10 +173,10 @@ public class ConfigHandler {
 		ConfigCategory equipment = config.getCategory("equipment");
 		equipment.setLanguageKey("improvedmobs.equipment");
 		equipment.setComment("Configs regarding mobs spawning with equipment");
-		equipmentBlacklist = config.getStringList("Equipment Blacklist", "equipment", equipmentBlacklist, "Blacklist for mob equipments. Use the modid to add all items from that mod");
-		equipmentWhitelist = config.getBoolean("Equipment Whitelist", "equipment", false, "Use blacklist as whitelist");
-		armorMobBlacklist = config.getStringList("Armor Mob-Blacklist", "equipment", new String[0], "Blacklist for mobs, which shouldn't get armor equiped");
-		armorMobWhiteList = config.getBoolean("Armor Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
+		equipmentModBlacklist = config.getStringList("Item Blacklist", "equipment", equipmentModBlacklist, "Blacklist for mods. Add modid to prevent items from that mod being used. (For individual items use the equipment.json)");
+		equipmentModWhitelist = config.getBoolean("Item Whitelist", "equipment", false, "Use blacklist as whitelist");
+		equipMobBlacklist = config.getStringList("Equipment Mob-Blacklist", "equipment", new String[0], "Blacklist for mobs, which shouldn't get items equipped");
+		equipMobWhiteList = config.getBoolean("Equipment Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
 		baseEquipChance = config.getFloat("Equipment Chance", "equipment", 0.1F, 0, 1, "Base chance that a mob can have one piece of armor");
 		baseEquipChanceAdd = config.getFloat("Additional Equipment Chance", "equipment", 0.3F, 0, 1, "Base chance for each additional armor pieces");
 		diffEquipAdd = ConfigUtils.getFloatConfig(config, "Equipment Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base equip chance");
@@ -198,7 +184,8 @@ public class ConfigHandler {
 		diffWeaponChance = ConfigUtils.getFloatConfig(config, "Weapon Chance Add", "equipment", 0.3F, "Adds additional x*difficulty% to base weapon chance");
 		baseEnchantChance = config.getFloat("Enchanting Chance", "equipment", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
 		diffEnchantAdd = ConfigUtils.getFloatConfig(config, "Enchanting Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base enchanting chance");
-		baseItemChance = config.getFloat("Item Equip Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have an item. Higher priority than weapons");
+		baseItemChance = config.getFloat("Item Equip Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have an item in offhand.");
+		baseItemChance = ConfigUtils.getFloatConfig(config, "Item Chance add", "equipment", 0.2F, "Adds additional x*difficulty% to base item chance");
 		shouldDropEquip = config.getBoolean("Should drop equipment", "equipment", false, "Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)");
 
 		ConfigCategory attributes = config.getCategory("attributes");
@@ -220,256 +207,8 @@ public class ConfigHandler {
 		projectileMax = ConfigUtils.getFloatConfig(config, "Max Projectile Damage", "attributes", 2F, "Projectile damage will be multiplied by maximum of this."); 
 		
 		config.save();
-		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
-			initEquipment();
-	}
-	
-	private static List<Item> boots = Lists.newArrayList();
-	private static List<Item> legs = Lists.newArrayList();
-	private static List<Item> chest = Lists.newArrayList();
-	private static List<Item> helmet = Lists.newArrayList();
-	private static List<Item> weapon = Lists.newArrayList();
-	
-	private static void initEquipment()
-	{
-		List<String> conf = Arrays.asList(ConfigHandler.equipmentBlacklist);
-		
-		for(Item item : ItemUtil.getList(EntityEquipmentSlot.FEET))
-			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
-				boots.add(item);
-		for(Item item : ItemUtil.getList(EntityEquipmentSlot.CHEST))
-			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
-				chest.add(item);
-		for(Item item : ItemUtil.getList(EntityEquipmentSlot.HEAD))
-			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
-				helmet.add(item);
-		for(Item item : ItemUtil.getList(EntityEquipmentSlot.LEGS))
-			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
-				legs.add(item);
-		for(Item item : ItemUtil.getList(EntityEquipmentSlot.MAINHAND))
-			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
-				weapon.add(item);
-		ForgeRegistries.ITEMS.forEach(item->{
-			if(whiteListed(item, conf, ConfigHandler.equipmentWhitelist))
-			{
-				if(ConfigHandler.useTGunsMod)
-					if(item instanceof GenericGun)
-						weapon.add(item);
-				if(ConfigHandler.useReforgedMod)
-					if(item instanceof ItemBlowGun || item instanceof ItemJavelin)
-						weapon.add(item);
-				if(item instanceof ItemBow)
-					weapon.add(item);
-			}
-		});
-		if(ConfigHandler.useReforgedMod)
-			AIUseHelper.initReforgedStuff();
-	}
-	
-	private static boolean whiteListed(Item item, List<String> list, boolean whiteList) 
-	{
-		if(whiteList)
-			return list.contains(item.getRegistryName().toString()) || list.contains(item.getRegistryName().getResourceDomain());
-		return !(list.contains(item.getRegistryName().toString()) || list.contains(item.getRegistryName().getResourceDomain()));
-	}
-	
-	public static ItemStack randomWeapon()
-	{
-	    if(weapon.isEmpty())
-	        return ItemStack.EMPTY;
-		return new ItemStack(weapon.get(new Random().nextInt(weapon.size())));
-	}
-	
-	@SuppressWarnings("incomplete-switch")
-	public static ItemStack getEquipment(EntityEquipmentSlot slot)
-	{
-		Random rand = new Random();
-		try
-		{
-	        switch(slot)
-	        {
-				case CHEST: return new ItemStack(chest.get(rand.nextInt(chest.size())));
-				case FEET: return new ItemStack(boots.get(rand.nextInt(boots.size())));
-				case HEAD: return new ItemStack(helmet.get(rand.nextInt(helmet.size())));
-				case LEGS: return new ItemStack(legs.get(rand.nextInt(legs.size())));
-	        }
-		}
-		//In case list is empty
-		catch(IllegalArgumentException e){}
-		    return ItemStack.EMPTY;
-	}
-	
-	//Change to weighted item system?
-
-	/*private static Map<String,WeightedItemstackList> equips = Maps.newLinkedHashMap();
-	
-	public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-
-	public static class WeightedItemstack extends WeightedRandom.Item
-	{
-		private Item item;
-		public WeightedItemstack(Item item, int itemWeightIn) {
-			super(itemWeightIn);
-			this.item= item;
-		}
-		
-		public ItemStack getItem()
-		{
-			return new ItemStack(this.item);
-		}
-		
-		@Override
-		public boolean equals(Object other)
-		{
-			if(other == this)
-				return true;
-			if(other instanceof WeightedItemstack)
-				return ((WeightedItemstack) other).item.getRegistryName().equals(this.item.getRegistryName());
-			return false;
-		}
-		
-		@Override
-		public int hashCode()
-		{
-			return this.item.getRegistryName().hashCode();
+		if(state==LoadState.SYNC||state==LoadState.POSTINIT) {
+			EquipmentList.initEquip(config.getConfigFile().getParentFile());
 		}
 	}
-	
-	public static class WeightedItemstackList 
-	{
-		private List<WeightedItemstack> list;
-		private int totalWeight;
-		
-		public WeightedItemstackList(List<WeightedItemstack> list)
-		{
-			this.list=list;
-			this.calculateTotalWeight();
-		}
-		
-		private void calculateTotalWeight()
-		{
-			this.totalWeight = WeightedRandom.getTotalWeight(this.list);
-		}
-		
-		public WeightedItemstackList add(WeightedItemstack item)
-		{
-			if(this.list.contains(item))
-				this.list.remove(item);
-			this.list.add(item);
-			this.calculateTotalWeight();
-			return this;
-		}
-	}
-	
-	public static ItemStack getEquip(EntityLiving e, EntityEquipmentSlot slot)
-	{
-		WeightedItemstackList eq = null;
-		switch(slot)
-		{
-			case CHEST:
-				eq = equips.get("chest");
-				break;
-			case FEET:
-				eq = equips.get("feet");
-				break;
-			case HEAD:
-				eq = equips.get("head");
-				break;
-			case LEGS:
-				eq = equips.get("legs");
-				break;
-			case MAINHAND:
-				eq = equips.get("weapon");
-				break;
-			case OFFHAND:
-				eq = equips.get("utils");
-				break;
-		}
-		if(eq==null || eq.list.isEmpty() || eq.totalWeight==0)
-			return ItemStack.EMPTY;
-		return WeightedRandom.getRandomItem(e.world.rand, eq.list, (int)Math.max(1, eq.totalWeight*(1-250/DifficultyData.getDifficulty(e.world, e)))).getItem();
-	}
-	
-	public static void initEquip()
-	{
-		try
-		{
-			for(Item item : ItemUtil.getList(EntityEquipmentSlot.FEET))
-					equips.compute("feet", (s,l)->
-					l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-						l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-			for(Item item : ItemUtil.getList(EntityEquipmentSlot.CHEST))
-				equips.compute("chest", (s,l)->
-				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-			for(Item item : ItemUtil.getList(EntityEquipmentSlot.HEAD))
-				equips.compute("head", (s,l)->
-				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-			for(Item item : ItemUtil.getList(EntityEquipmentSlot.LEGS))
-				equips.compute("legs", (s,l)->
-				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-			for(Item item : ItemUtil.getList(EntityEquipmentSlot.MAINHAND))
-				equips.compute("weapon", (s,l)->
-				l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-					l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-			ForgeRegistries.ITEMS.forEach(item->{
-				{
-					if(ConfigHandler.useTGunsMod)
-						if(item instanceof GenericGun)
-							equips.compute("weapon", (s,l)->
-							l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-								l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-					if(ConfigHandler.useReforgedMod)
-						if(item instanceof ItemBlowGun || item instanceof ItemJavelin)
-							equips.compute("weapon", (s,l)->
-							l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-								l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-					if(item instanceof ItemBow)
-						equips.compute("weapon", (s,l)->
-						l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))):
-							l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-				}
-			});
-			if(ConfigHandler.useReforgedMod)
-				AIUseHelper.initReforgedStuff();
-			
-			
-			File conf = new File(config.getConfigFile().getParentFile(), "equipment.json");
-			if(!conf.exists())
-			{
-				conf.createNewFile();
-			}
-			else
-			{
-				FileReader reader = new FileReader(conf);
-				JsonObject obj = GSON.fromJson(reader, JsonObject.class);
-				reader.close();
-				for(String key : equips.keySet())
-				{
-					JsonArray arr = (JsonArray) obj.get(key);
-					arr.forEach(el->{
-						JsonObject o = (JsonObject) el;
-						Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(o.get("item").getAsString()));
-						int weight = o.get("weight").getAsInt();
-						boolean isZero = weight==0 || item==null;
-						equips.compute(key, (s,l)->
-						l==null?new WeightedItemstackList(isZero?Lists.newArrayList():Lists.newArrayList(new WeightedItemstack(item, weight))):
-							l.add(new WeightedItemstack(item, weight)));
-					});
-				}
-			}
-			
-		}
-		catch(IOException e)
-		{
-			
-		}
-	}
-	
-	private static int getDefaultWeight(Item item)
-	{
-		return 0;
-	}*/
 }

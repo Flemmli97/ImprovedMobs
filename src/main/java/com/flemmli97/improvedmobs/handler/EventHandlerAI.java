@@ -79,7 +79,6 @@ public class EventHandlerAI {
 	public static final ResourceLocation TileCap = new ResourceLocation(ImprovedMobs.MODID, "openedFlag");
 	public static final String breaker = ImprovedMobs.MODID+":Breaker";
 	private static final String modifyArmor = ImprovedMobs.MODID+":InitArmor";
-	private static final String modifyHeld = ImprovedMobs.MODID+":InitHeld";
 	private static final String modifyAttributes = ImprovedMobs.MODID+":InitAttr";
 
 	@SubscribeEvent
@@ -129,13 +128,9 @@ public class EventHandlerAI {
 			if(!(e.getEntity() instanceof IEntityOwnable))
 			{
 				EntityMob mob = (EntityMob) e.getEntity();
-				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.armorMobBlacklist, ConfigHandler.armorMobWhiteList))
+				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.equipMobBlacklist, ConfigHandler.equipMobWhiteList))
 				{
 					mob.getEntityData().setBoolean(modifyArmor, false);	
-				}
-				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListUseBlacklist, ConfigHandler.mobListUseWhitelist))
-				{
-					mob.getEntityData().setBoolean(modifyHeld, false);	
 				}
 				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList, ConfigHandler.mobAttributeWhitelist))
 				{
@@ -252,19 +247,10 @@ public class EventHandlerAI {
 		if(mob.getEntityData().hasKey(modifyArmor) && !mob.getEntityData().getBoolean(modifyArmor))
 		{
 			//List<IRecipe> r= CraftingManager.getInstance().getRecipeList(); for further things maybe	
-			if(ConfigHandler.baseEquipChance!=0 )
-				GeneralHelperMethods.tryEquipArmor(mob);
+			GeneralHelperMethods.equipMob(mob);
 			if(ConfigHandler.baseEnchantChance!=0)
 				GeneralHelperMethods.enchantGear(mob);
 			mob.getEntityData().setBoolean(modifyArmor, true);
-		}
-		if(mob.getEntityData().hasKey(modifyHeld) && !mob.getEntityData().getBoolean(modifyHeld))
-		{
-			if(ConfigHandler.baseItemChance!=0)
-				GeneralHelperMethods.equipItem(mob);
-			if(ConfigHandler.baseWeaponChance!=0)
-				GeneralHelperMethods.equipWeapon(mob);
-			mob.getEntityData().setBoolean(modifyHeld, true);
 		}
 		if(mob.getEntityData().hasKey(modifyAttributes) && !mob.getEntityData().getBoolean(modifyAttributes))
 		{

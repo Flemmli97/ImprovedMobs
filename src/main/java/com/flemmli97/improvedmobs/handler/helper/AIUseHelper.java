@@ -158,7 +158,6 @@ public class AIUseHelper {
 	private static final Map<Item, ItemAI> itemMap = Maps.newHashMap();
 
 	
-	
 	public static interface ItemAI
 	{
 		public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand);
@@ -174,6 +173,22 @@ public class AIUseHelper {
 		public default int maxUseCount() {return 20;}
 	}
 	
+	@Nullable
+	public static ItemAI getAI(Item item) {
+	    ItemAI ai = itemMap.get(item);
+	    if(ai==null) {
+	        for(Class<? extends Item> clss : clssMap.keySet())
+            {
+                if(clss.isAssignableFrom(item.getClass())) {
+                    ai = clssMap.get(clss);
+                    break;
+                }
+            }
+	    }
+	    return ai;
+	}
+
+	   
 	@Nullable
 	public static Pair<ItemAI,EnumHand> getAI(EntityLiving entity)
 	{
@@ -198,34 +213,34 @@ public class AIUseHelper {
 		if(ai==null)
 			for(Entry<Class<? extends Item>, ItemAI> entry : clssMap.entrySet())
 			{
-				if(entry.getKey().equals(heldMain.getItem().getClass().getSuperclass()) && entry.getValue().prefHand()!=Hand.OFF)
-				{
-					ai=entry.getValue();
-					hand = EnumHand.MAIN_HAND;
-					if(ai!=null)
-						break;
-				}
-				if(entry.getKey().equals(heldMain.getItem().getClass().getSuperclass()) && entry.getValue().prefHand()!=Hand.MAIN)
-				{
-					ai=entry.getValue();
-					hand = EnumHand.OFF_HAND;
-					if(ai!=null)
-						break;
-				}
-				if(entry.getKey().isAssignableFrom(heldMain.getItem().getClass()) && entry.getValue().prefHand()!=Hand.OFF)
-				{
-					ai=entry.getValue();
-					hand = EnumHand.MAIN_HAND;
-					if(ai!=null)
-						break;
-				}
-				if(entry.getKey().isAssignableFrom(heldOff.getItem().getClass()) && entry.getValue().prefHand()!=Hand.MAIN)
-				{
-					ai=entry.getValue();
-					hand = EnumHand.OFF_HAND;
-					if(ai!=null)
-						break;
-				}
+			    if(entry.getKey().equals(heldMain.getItem().getClass().getSuperclass()) && entry.getValue().prefHand()!=Hand.OFF)
+                {
+                    ai=entry.getValue();
+                    hand = EnumHand.MAIN_HAND;
+                    if(ai!=null)
+                        break;
+                }
+                if(entry.getKey().equals(heldMain.getItem().getClass().getSuperclass()) && entry.getValue().prefHand()!=Hand.MAIN)
+                {
+                    ai=entry.getValue();
+                    hand = EnumHand.OFF_HAND;
+                    if(ai!=null)
+                        break;
+                }
+                if(entry.getKey().isAssignableFrom(heldMain.getItem().getClass()) && entry.getValue().prefHand()!=Hand.OFF)
+                {
+                    ai=entry.getValue();
+                    hand = EnumHand.MAIN_HAND;
+                    if(ai!=null)
+                        break;
+                }
+                if(entry.getKey().isAssignableFrom(heldOff.getItem().getClass()) && entry.getValue().prefHand()!=Hand.MAIN)
+                {
+                    ai=entry.getValue();
+                    hand = EnumHand.OFF_HAND;
+                    if(ai!=null)
+                        break;
+                }
 			}
 		return Pair.of(ai,hand);
 	}
