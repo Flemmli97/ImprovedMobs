@@ -20,7 +20,7 @@ import net.minecraft.world.World;
 public class EntityTntNew extends EntityTNTPrimed{
 
     private int fuse;
-    private static final DataParameter<Integer> FUSENEW = EntityDataManager.<Integer>createKey(EntityTNTPrimed.class, DataSerializers.VARINT);
+    private static final DataParameter<Integer> FUSENEW = EntityDataManager.<Integer>createKey(EntityTntNew.class, DataSerializers.VARINT);
     private EntityLivingBase tntPlacedBy;
 
 	public EntityTntNew(World worldIn) {
