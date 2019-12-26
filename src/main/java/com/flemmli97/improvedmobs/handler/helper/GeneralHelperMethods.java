@@ -4,12 +4,14 @@ import com.flemmli97.improvedmobs.entity.EntityGuardianBoat;
 import com.flemmli97.improvedmobs.handler.DifficultyData;
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.config.EquipmentList;
+import com.flemmli97.tenshilib.common.javahelper.MathUtils;
 
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.Enchantments;
@@ -202,6 +204,8 @@ public class GeneralHelperMethods {
 		{
 			value = Math.min(value, max-1);
 			value = oldValue*(1+value);
+			if(att==SharedMonsterAttributes.MAX_HEALTH)
+			    value = ConfigHandler.roundHP>0?MathUtils.roundTo(value, ConfigHandler.roundHP):value;
 			mob.getAttributeMap().getAttributeInstance(att).setBaseValue(value);
 		}
 		else

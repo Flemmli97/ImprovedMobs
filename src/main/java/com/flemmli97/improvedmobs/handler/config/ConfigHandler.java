@@ -199,6 +199,7 @@ public class ConfigHandler {
 		mobAttributeWhitelist = config.getBoolean("Attribute Whitelist", "attributes", false, "Treat Attribute Blacklist as Whitelist");
 		healthIncrease = ConfigUtils.getFloatConfig(config, "Health Increase Multiplier", "attributes", 1.0F, "Health will be multiplied by difficulty*0.016*x. Set to 0 to disable.");
 		healthMax = ConfigUtils.getFloatConfig(config, "Max Health Increase", "attributes", 5.0F, "Health will be multiplied by at maximum this. Set to 0 means no limit");
+	    roundHP = ConfigUtils.getFloatConfig(config, "Round HP", "attributes", 0.5F, "Round health to the nearest x. Set to 0 to disable.");
 		damageIncrease = ConfigUtils.getFloatConfig(config, "Damage Increase Multiplier", "attributes", 1.0F, "Damage will be multiplied by difficulty*0.008*x. Set to 0 to disable.");
 		damageMax = ConfigUtils.getFloatConfig(config, "Max Damage Increase", "attributes", 3.0F, "Damage will be multiplied by at maximum this. Set to 0 means no limit. ");
 		speedIncrease = ConfigUtils.getFloatConfig(config, "Speed Increase", "attributes", 1.0F, "Speed will be increased by difficulty*0.0008*x. Set to 0 to disable."); 
