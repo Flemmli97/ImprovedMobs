@@ -1,13 +1,12 @@
 package com.flemmli97.improvedmobs.handler;
 
-import org.lwjgl.opengl.GL11;
-
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.packet.PacketDifficulty;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.FontRenderer;
+import net.minecraft.client.renderer.GlStateManager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
 import net.minecraftforge.client.event.RenderGameOverlayEvent;
@@ -68,12 +67,16 @@ public class DifficultyHandler {
 		DifficultyData data = DifficultyData.get(Minecraft.getMinecraft().player.world);
 		if(data!=null)
 		{
+		    GlStateManager.pushMatrix();
 			FontRenderer font = Minecraft.getMinecraft().fontRenderer;
-			GL11.glColor4f(1.0F, 1.0F, 1.0F, 1.0F);
-			GL11.glDisable(GL11.GL_LIGHTING);
+			float scale = ConfigHandler.scale;
+			GlStateManager.scale(scale,scale,scale);
+			GlStateManager.color(1, 1, 1,1);
+			GlStateManager.disableLighting();
 			//int x = ConfigHandler.gui.guiX+e.getResolution().getScaledWidth()/2;
 			//int y = ConfigHandler.gui.guiY+e.getResolution().getScaledHeight();
 			font.drawString(ConfigHandler.color+"Difficulty "+String.format(java.util.Locale.US,"%.1f", data.getDifficulty()), ConfigHandler.guiX, ConfigHandler.guiY, 0);
+			GlStateManager.popMatrix();
 		}
     }
 }

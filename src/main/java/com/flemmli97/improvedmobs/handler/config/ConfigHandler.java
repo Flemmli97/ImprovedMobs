@@ -36,6 +36,7 @@ public class ConfigHandler {
 	public static int guiX;
 	public static int guiY;
 	public static TextFormatting color;
+	public static float scale;
 	
 	//Integration
 	public static boolean useScalingHealthMod=true;
@@ -83,6 +84,7 @@ public class ConfigHandler {
 	public static boolean mobAttributeWhitelist;
 	public static float healthIncrease;
 	public static float healthMax;
+	public static float roundHP;
 	public static float damageIncrease;
 	public static float damageMax;
 	public static float speedIncrease;
@@ -130,7 +132,9 @@ public class ConfigHandler {
         	if(form.isColor())
         		lst.add(form.name());
 		color = ConfigUtils.getEnumVal(config, "gui", "Difficulty color", "Textformatting codes for the display of the difficulty", TextFormatting.DARK_PURPLE, lst);
+		scale = config.getFloat("Text Scale", "gui", 1, 0, 5, "Scaling of the difficulty text"); 
 
+		
 		ConfigCategory integration = config.getCategory("integration");
 		integration.setLanguageKey("improvedmobs.integration");
 		integration.setComment("Settings for mod integration");
