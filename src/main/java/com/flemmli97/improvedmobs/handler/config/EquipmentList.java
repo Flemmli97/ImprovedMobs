@@ -18,6 +18,7 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemAI;
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemType;
+import com.flemmli97.tenshilib.api.config.ExtendedItemStackWrapper;
 import com.flemmli97.tenshilib.common.item.ItemUtil;
 import com.flemmli97.tenshilib.common.javahelper.ReflectionUtils;
 import com.google.common.collect.Lists;
@@ -40,6 +41,9 @@ import net.minecraft.item.ItemPotion;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
+import net.minecraft.nbt.JsonToNBT;
+import net.minecraft.nbt.NBTException;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
@@ -152,6 +156,9 @@ public class EquipmentList {
             }
             else
             {
+                //Clear and read all from config
+                equips.clear();
+                
                 FileReader reader = new FileReader(conf);
                 confObj = GSON.fromJson(reader, JsonObject.class);
                 
@@ -163,11 +170,10 @@ public class EquipmentList {
                     {
                         JsonObject obj = (JsonObject) confObj.get(key.toString());
                         obj.entrySet().forEach(ent->{
-                            Item item = ForgeRegistries.ITEMS.getValue(new ResourceLocation(ent.getKey()));
                             int weight = ent.getValue().getAsInt();
                             equips.compute(key, (s,l)->
-                            l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, weight))):
-                                l.add(new WeightedItemstack(item, weight)));
+                            l==null?new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(ent.getKey(), weight))):
+                                l.add(new WeightedItemstack(ent.getKey(), weight)));
                         });
                     }
                 }
@@ -179,7 +185,7 @@ public class EquipmentList {
             for(EntityEquipmentSlot key : EntityEquipmentSlot.values())
             {
                 JsonObject eq = confObj.has(key.toString())?(JsonObject) confObj.get(key.toString()):new JsonObject();
-                equips.get(key).list.forEach(w->eq.addProperty(w.item.getRegistryName().toString(), w.itemWeight));
+                equips.get(key).list.forEach(w->eq.addProperty(w.configString, w.itemWeight));
                 
                 //Sort json object
                 JsonObject sorted = new JsonObject();
@@ -288,17 +294,39 @@ public class EquipmentList {
     
     public static class WeightedItemstack extends WeightedRandom.Item implements Comparable<WeightedItemstack>
     {
-        private Item item;
-        public WeightedItemstack(Item item, int itemWeightIn) {
-            super(itemWeightIn);
-            this.item= item;
+        private ExtendedItemStackWrapper item;
+        public final String configString; //Cause else nbt value order can be different
+        public WeightedItemstack(Item item, int itemWeight) {
+            super(itemWeight);
+            this.item= new ExtendedItemStackWrapper(item);
+            this.configString=item.getRegistryName().toString();
+            
+        }
+        
+        public WeightedItemstack(String item, int itemWeight) {
+            super(itemWeight);
+            this.configString=item;
+            String itemReg = item;
+            NBTTagCompound nbt = null;
+            if(item.contains("{"))
+            {
+                int idx = item.indexOf("{");
+                itemReg = item.substring(0, idx);
+                try {
+                    nbt = JsonToNBT.getTagFromJson(item.substring(idx));
+                } catch (NBTException e) {
+                    ImprovedMobs.logger.error("Error reading nbt from config %s", item.substring(idx));
+                    e.printStackTrace();
+                }
+            }
+            this.item=new ExtendedItemStackWrapper(ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemReg))).setNBT(nbt);
         }
         
         public ItemStack getItem()
         {
-            if(this.item==Items.SPLASH_POTION)
+            if(this.item.getItem()==Items.SPLASH_POTION)
                 return PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), PotionTypes.HARMING);
-            return new ItemStack(this.item);
+            return this.item.getStack();
         }
         
         @Override
@@ -306,25 +334,31 @@ public class EquipmentList {
         {
             if(other == this)
                 return true;
-            if(other instanceof WeightedItemstack)
-                return ((WeightedItemstack) other).item.getRegistryName().equals(this.item.getRegistryName());
+            if(other instanceof WeightedItemstack) {
+                WeightedItemstack oth = (WeightedItemstack) other;
+                if(!this.item.getItem().getRegistryName().equals(oth.item.getItem().getRegistryName()))
+                    return false;
+                if(this.item.getTag()==null && oth.item.getTag()!=null)
+                    return false;
+                return this.item.getTag()==null || this.item.getTag().equals(oth.item.getTag());
+            }
             return false;
         }
         
         @Override
         public int hashCode()
         {
-            return this.item.getRegistryName().hashCode();
+            return (this.item.getItem().getRegistryName() + (this.item.getTag()!=null?this.item.getTag().toString():"")).hashCode();
         }
 
         @Override
         public int compareTo(WeightedItemstack o) {
-            return this.item.getRegistryName().toString().compareTo(o.item.getRegistryName().toString());
+            return this.item.getItem().getRegistryName().toString().compareTo(o.item.getItem().getRegistryName().toString());
         }
         
         @Override
         public String toString() {
-            return String.format("Item: %s; Weight: %d", this.item.getRegistryName().toString(), this.itemWeight);
+            return String.format("Item: %s; Weight: %d", this.item.getItem().getRegistryName().toString(), this.itemWeight);
         }
     }
     
@@ -345,7 +379,7 @@ public class EquipmentList {
         }
         
         public void finishList() {
-            list.removeIf(w->w.itemWeight==0 || this.modBlacklist(w.item));
+            list.removeIf(w->w.itemWeight==0 || this.modBlacklist(w.item.getItem()));
             this.calculateTotalWeight();
         }
         
@@ -364,7 +398,7 @@ public class EquipmentList {
         
         public WeightedItemstackList add(WeightedItemstack item)
         {
-            if(item.item==Items.AIR || item.item==null)
+            if(item.item.getItem()==Items.AIR || item.item==null)
                 return this;
             if(this.list.contains(item))
                 this.list.remove(item);

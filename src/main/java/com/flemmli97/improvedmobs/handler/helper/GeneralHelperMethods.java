@@ -93,7 +93,7 @@ public class GeneralHelperMethods {
         {
             if(mob.getHeldItemMainhand().isEmpty())
             {
-                ItemStack stack = EquipmentList.getEquip(mob, EntityEquipmentSlot.MAINHAND);//ConfigHandler.randomWeapon();
+                ItemStack stack = EquipmentList.getEquip(mob, EntityEquipmentSlot.MAINHAND);
                 if(!ConfigHandler.shouldDropEquip)
                     stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                 mob.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
