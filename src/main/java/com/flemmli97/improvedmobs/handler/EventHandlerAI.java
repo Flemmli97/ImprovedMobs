@@ -215,11 +215,11 @@ public class EventHandlerAI {
                     creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, creature.getTags().contains("Breaker") ? false : creature.world.rand.nextFloat() <= 0.5));
             }
             if (ConfigHandler.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= ConfigHandler.neutralAggressiv)
-                if (creature instanceof EntityEnderman || creature instanceof EntityPigZombie) {
+                if (neutral) {
                     creature.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(creature, EntityPlayer.class, creature.getTags().contains("Breaker") ? false : creature.world.rand.nextFloat() <= 0.5));
                     if (villager)
                         creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, creature.getTags().contains("Breaker") ? false : creature.world.rand.nextFloat() <= 0.5));
-                }
+                }            
             Class<? extends EntityLiving> clss = ConfigHandler.autoTargets.get(EntityList.getKey(creature));
             if (clss != null)
                 this.addAutoTargetAI(creature, clss);
