@@ -6,8 +6,8 @@ import net.minecraft.util.EnumFacing;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.Capability.IStorage;
 
-public class TileCapNetwork implements IStorage<ITileOpened>{
-	
+public class TileCapNetwork implements IStorage<ITileOpened> {
+
 	@Override
 	public NBTBase writeNBT(Capability<ITileOpened> capability, ITileOpened instance, EnumFacing side) {
 		NBTTagCompound compound = new NBTTagCompound();

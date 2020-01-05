@@ -19,40 +19,37 @@ import net.minecraftforge.fml.common.event.FMLServerStartingEvent;
 @Mod(modid = ImprovedMobs.MODID, name = ImprovedMobs.MODNAME, version = ImprovedMobs.VERSION, guiFactory = "com.flemmli97.improvedmobs.GuiFactory", dependencies = "required:tenshilib;")
 public class ImprovedMobs {
 
-    public static final String MODID = "improvedmobs";
-    public static final String MODNAME = "Improved Mobs";
-    public static final String VERSION = "${@VERSION}";
-    public static final Logger logger = LogManager.getLogger(ImprovedMobs.MODID);
-        
-    @Instance
-    public static ImprovedMobs instance = new ImprovedMobs();
-        
-     
-    @SidedProxy(clientSide="com.flemmli97.improvedmobs.ClientProxy", serverSide="com.flemmli97.improvedmobs.CommonProxy")
-    public static CommonProxy proxy;
+	public static final String MODID = "improvedmobs";
+	public static final String MODNAME = "Improved Mobs";
+	public static final String VERSION = "${@VERSION}";
+	public static final Logger logger = LogManager.getLogger(ImprovedMobs.MODID);
 
-    @EventHandler
-    public void preInit(FMLPreInitializationEvent e) {
-        proxy.preInit(e);
-    }
+	@Instance
+	public static ImprovedMobs instance = new ImprovedMobs();
 
-    @EventHandler
-    public void init(FMLInitializationEvent e) {
-        proxy.init(e);
-    }
+	@SidedProxy(clientSide = "com.flemmli97.improvedmobs.ClientProxy", serverSide = "com.flemmli97.improvedmobs.CommonProxy")
+	public static CommonProxy proxy;
 
-    @EventHandler
-    public void postInit(FMLPostInitializationEvent e) {
-        proxy.postInit(e);
-    }
-    
-    @EventHandler
-    public void serverLoad(FMLServerStartingEvent event)
-    {
-    	if(ConfigHandler.enableDifficultyScaling)
-    		event.registerServerCommand(new CommandIMDifficulty());
-    	if(!event.getServer().getWorld(0).getGameRules().hasRule("doIMDifficulty"))
-    		event.getServer().getWorld(0).getGameRules().addGameRule("doIMDifficulty", "true", ValueType.BOOLEAN_VALUE);
-    }
+	@EventHandler
+	public void preInit(FMLPreInitializationEvent e) {
+		proxy.preInit(e);
+	}
+
+	@EventHandler
+	public void init(FMLInitializationEvent e) {
+		proxy.init(e);
+	}
+
+	@EventHandler
+	public void postInit(FMLPostInitializationEvent e) {
+		proxy.postInit(e);
+	}
+
+	@EventHandler
+	public void serverLoad(FMLServerStartingEvent event) {
+		if(ConfigHandler.enableDifficultyScaling)
+			event.registerServerCommand(new CommandIMDifficulty());
+		if(!event.getServer().getWorld(0).getGameRules().hasRule("doIMDifficulty"))
+			event.getServer().getWorld(0).getGameRules().addGameRule("doIMDifficulty", "true", ValueType.BOOLEAN_VALUE);
+	}
 }
-    

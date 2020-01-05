@@ -22,32 +22,32 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
 
 public class CommonProxy {
-	
+
 	public void preInit(FMLPreInitializationEvent e) {
 		ConfigHandler.load(LoadState.PREINIT);
 		InitEntities.initEntities();
 		PacketHandler.registerPackets();
-    }
+	}
 
-    public void init(FMLInitializationEvent e) {
-    	CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
+	public void init(FMLInitializationEvent e) {
+		CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
 		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
-		ConfigHandler.useScalingHealthMod=ConfigHandler.useScalingHealthMod?Loader.isModLoaded("scalinghealth"):false;
-		ConfigHandler.useTGunsMod=ConfigHandler.useTGunsMod?Loader.isModLoaded("techguns"):false;
-		ConfigHandler.useReforgedMod=ConfigHandler.useReforgedMod?Loader.isModLoaded("reforged"):false;
+		ConfigHandler.useScalingHealthMod = ConfigHandler.useScalingHealthMod ? Loader.isModLoaded("scalinghealth") : false;
+		ConfigHandler.useTGunsMod = ConfigHandler.useTGunsMod ? Loader.isModLoaded("techguns") : false;
+		ConfigHandler.useReforgedMod = ConfigHandler.useReforgedMod ? Loader.isModLoaded("reforged") : false;
 		if(ConfigHandler.enableDifficultyScaling && !ConfigHandler.useScalingHealthMod)
 			MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
-    }
+	}
 
-    public void postInit(FMLPostInitializationEvent e) {
-    	ConfigHandler.load(LoadState.POSTINIT);
-    }
-    
-    public IThreadListener getListener(MessageContext ctx) {
-    	return (WorldServer) ctx.getServerHandler().player.world;
-    }
-    
-    public EntityPlayer getPlayerEntity(MessageContext ctx) {
-      	 return ctx.getServerHandler().player;
-      	}
+	public void postInit(FMLPostInitializationEvent e) {
+		ConfigHandler.load(LoadState.POSTINIT);
+	}
+
+	public IThreadListener getListener(MessageContext ctx) {
+		return (WorldServer) ctx.getServerHandler().player.world;
+	}
+
+	public EntityPlayer getPlayerEntity(MessageContext ctx) {
+		return ctx.getServerHandler().player;
+	}
 }

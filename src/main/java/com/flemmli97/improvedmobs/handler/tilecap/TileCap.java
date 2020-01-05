@@ -3,11 +3,12 @@ package com.flemmli97.improvedmobs.handler.tilecap;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 
-public class TileCap implements ITileOpened  {
+public class TileCap implements ITileOpened {
 
-	private boolean opened=false;
+	private boolean opened = false;
 
-	public TileCap() {}
+	public TileCap() {
+	}
 
 	@Override
 	public boolean playerOpened() {
@@ -16,7 +17,7 @@ public class TileCap implements ITileOpened  {
 
 	@Override
 	public void setOpened(TileEntity tile) {
-		this.opened=true;		
+		this.opened = true;
 		tile.markDirty();
 	}
 
@@ -27,6 +28,6 @@ public class TileCap implements ITileOpened  {
 
 	@Override
 	public void readFromNBT(NBTTagCompound nbt) {
-		this.opened=nbt.getBoolean("HasBeenOpened");
+		this.opened = nbt.getBoolean("HasBeenOpened");
 	}
 }

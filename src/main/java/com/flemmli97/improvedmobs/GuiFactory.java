@@ -10,12 +10,11 @@ import net.minecraft.client.gui.GuiScreen;
 import net.minecraftforge.fml.client.IModGuiFactory;
 import net.minecraftforge.fml.client.config.GuiConfig;
 
-
-public class GuiFactory implements IModGuiFactory{
-
+public class GuiFactory implements IModGuiFactory {
 
 	@Override
-	public void initialize(Minecraft minecraftInstance) {}
+	public void initialize(Minecraft minecraftInstance) {
+	}
 
 	@Override
 	public boolean hasConfigGui() {

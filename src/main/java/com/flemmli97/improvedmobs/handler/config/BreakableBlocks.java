@@ -13,19 +13,17 @@ import net.minecraft.util.NonNullList;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
 import net.minecraftforge.oredict.OreDictionary;
 
-public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks>{
-	
+public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
+
 	private List<String> blocks = Lists.newArrayList();
 	private String[] configString;
-	public BreakableBlocks(String[] strings)
-	{	
+
+	public BreakableBlocks(String[] strings) {
 		this.readFromString(strings);
 	}
-	
-	public boolean canBreak(Block block)
-	{
-		if(ConfigHandler.breakingAsBlacklist)
-		{
+
+	public boolean canBreak(Block block) {
+		if(ConfigHandler.breakingAsBlacklist){
 			return !blocks.contains(block.getRegistryName().toString());
 		}
 		return blocks.contains(block.getRegistryName().toString());
@@ -34,9 +32,8 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks>{
 	@Override
 	public BreakableBlocks readFromString(String[] arr) {
 		this.blocks.clear();
-		this.configString=arr;
-		for(String s : arr)
-		{
+		this.configString = arr;
+		for(String s : arr){
 			List<String> blackList = Lists.newArrayList();
 			addBlocks(s, blackList);
 			addBlocks(s, this.blocks);
@@ -44,40 +41,32 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks>{
 		}
 		return this;
 	}
-	
-	private static void addBlocks(String s, List<String> list)
-	{
+
+	private static void addBlocks(String s, List<String> list) {
 		if(s.contains(":"))
 			list.add(s);
-		else
-		{
+		else{
 			NonNullList<ItemStack> ores = OreDictionary.getOres(s);
-			if(!ores.isEmpty())
-			{
-				OreDictionary.getOres(s).forEach(stack->{
+			if(!ores.isEmpty()){
+				OreDictionary.getOres(s).forEach(stack -> {
 					Block block = Block.getBlockFromItem(stack.getItem());
-					if(block!=Blocks.AIR)
+					if(block != Blocks.AIR)
 						list.add(block.getRegistryName().toString());
 				});
 				return;
 			}
 			Class<?> clss = null;
-			try 
-			{
-				clss = Class.forName("net.minecraft.block."+s);
-			} 
-			catch (ClassNotFoundException e) 
-			{
-				try 
-				{
+			try{
+				clss = Class.forName("net.minecraft.block." + s);
+			}catch(ClassNotFoundException e){
+				try{
 					clss = Class.forName(s);
-				} catch (ClassNotFoundException e1) {
-					ImprovedMobs.logger.error("Couldn't find class for "+s);
+				}catch(ClassNotFoundException e1){
+					ImprovedMobs.logger.error("Couldn't find class for " + s);
 				}
 			}
-			if(clss!=null)
-				for(Block block : ForgeRegistries.BLOCKS)
-				{
+			if(clss != null)
+				for(Block block : ForgeRegistries.BLOCKS){
 					if(clss.isInstance(block))
 						list.add(block.getRegistryName().toString());
 				}
