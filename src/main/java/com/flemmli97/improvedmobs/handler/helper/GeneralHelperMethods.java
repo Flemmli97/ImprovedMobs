@@ -13,7 +13,6 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -50,77 +49,80 @@ public class GeneralHelperMethods {
     	return (item != null && (item.getItem().canHarvestBlock(block, item))) || block.getMaterial().isToolNotRequired();
     }
 	
-	public static void equipMob(EntityMob mob)
+	public static void equipArmor(EntityLiving living)
     {
 	    if(ConfigHandler.baseEquipChance!=0) {
-    	    float time = DifficultyData.getDifficulty(mob.world, mob)*ConfigHandler.diffEquipAdd*0.01F;
-    	    if(mob.getRNG().nextFloat() < (ConfigHandler.baseEquipChance+time) )
+    	    float time = DifficultyData.getDifficulty(living.world, living)*ConfigHandler.diffEquipAdd*0.01F;
+    	    if(living.getRNG().nextFloat() < (ConfigHandler.baseEquipChance+time) )
             {
-    	        ItemStack helmet = EquipmentList.getEquip(mob, EntityEquipmentSlot.HEAD);
+    	        ItemStack helmet = EquipmentList.getEquip(living, EntityEquipmentSlot.HEAD);
     	        if(!helmet.isEmpty()) {
     	            if(!ConfigHandler.shouldDropEquip)
                         helmet.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-                    mob.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
+                    living.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
     	        }
-    	        if(ConfigHandler.baseEquipChanceAdd!=0 &&mob.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
+    	        if(ConfigHandler.baseEquipChanceAdd!=0 &&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
                 {
-    	            ItemStack chest = EquipmentList.getEquip(mob, EntityEquipmentSlot.CHEST);
+    	            ItemStack chest = EquipmentList.getEquip(living, EntityEquipmentSlot.CHEST);
     	            if(!chest.isEmpty()) {
     	                if(!ConfigHandler.shouldDropEquip)
     	                    chest.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-    	                mob.setItemStackToSlot(EntityEquipmentSlot.CHEST, chest);
+    	                living.setItemStackToSlot(EntityEquipmentSlot.CHEST, chest);
     	            }
                 }
-    	        if(ConfigHandler.baseEquipChanceAdd!=0 &&mob.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
+    	        if(ConfigHandler.baseEquipChanceAdd!=0 &&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
                 {
-                    ItemStack legs = EquipmentList.getEquip(mob, EntityEquipmentSlot.LEGS);
+                    ItemStack legs = EquipmentList.getEquip(living, EntityEquipmentSlot.LEGS);
                     if(!legs.isEmpty()) {
                         if(!ConfigHandler.shouldDropEquip)
                             legs.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-                        mob.setItemStackToSlot(EntityEquipmentSlot.LEGS, legs);
+                        living.setItemStackToSlot(EntityEquipmentSlot.LEGS, legs);
                     }
                 }
-    	        if(ConfigHandler.baseEquipChanceAdd!=0 &&mob.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
+    	        if(ConfigHandler.baseEquipChanceAdd!=0 &&living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd+time) )
                 {
-                    ItemStack boots = EquipmentList.getEquip(mob, EntityEquipmentSlot.FEET);
+                    ItemStack boots = EquipmentList.getEquip(living, EntityEquipmentSlot.FEET);
                     if(!boots.isEmpty()) {
                         if(!ConfigHandler.shouldDropEquip)
                             boots.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-                        mob.setItemStackToSlot(EntityEquipmentSlot.FEET, boots);
+                        living.setItemStackToSlot(EntityEquipmentSlot.FEET, boots);
                     }
                 }
             }
 	    }
-	    if(ConfigHandler.baseWeaponChance!=0 && mob.getRNG().nextFloat() < (ConfigHandler.baseWeaponChance+(DifficultyData.getDifficulty(mob.world, mob)*ConfigHandler.diffWeaponChance*0.01F)))
-        {
-            if(mob.getHeldItemMainhand().isEmpty())
-            {
-                ItemStack stack = EquipmentList.getEquip(mob, EntityEquipmentSlot.MAINHAND);
-                if(!ConfigHandler.shouldDropEquip)
-                    stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-                mob.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
-            }
-        }
-        if(ConfigHandler.baseItemChance!=0 && mob.getRNG().nextFloat() < (ConfigHandler.baseItemChance+(DifficultyData.getDifficulty(mob.world, mob)*ConfigHandler.baseItemChanceAdd*0.01F)))
-        {
-            if(mob.getHeldItemOffhand().isEmpty())
-            {
-                ItemStack stack = EquipmentList.getEquip(mob, EntityEquipmentSlot.OFFHAND);
-                if(!ConfigHandler.shouldDropEquip)
-                    stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-                mob.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack);
-            }
-        }
     }
+	
+	public static void equipHeld(EntityLiving living) {
+	    if(ConfigHandler.baseWeaponChance!=0 && living.getRNG().nextFloat() < (ConfigHandler.baseWeaponChance+(DifficultyData.getDifficulty(living.world, living)*ConfigHandler.diffWeaponChance*0.01F)))
+	        {
+	            if(living.getHeldItemMainhand().isEmpty())
+	            {
+	                ItemStack stack = EquipmentList.getEquip(living, EntityEquipmentSlot.MAINHAND);
+	                if(!ConfigHandler.shouldDropEquip)
+	                    stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+	                living.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
+	            }
+	        }
+	        if(ConfigHandler.baseItemChance!=0 && living.getRNG().nextFloat() < (ConfigHandler.baseItemChance+(DifficultyData.getDifficulty(living.world, living)*ConfigHandler.baseItemChanceAdd*0.01F)))
+	        {
+	            if(living.getHeldItemOffhand().isEmpty())
+	            {
+	                ItemStack stack = EquipmentList.getEquip(living, EntityEquipmentSlot.OFFHAND);
+	                if(!ConfigHandler.shouldDropEquip)
+	                    stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+	                living.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack);
+	            }
+	        }
+	}
     
-    public static void enchantGear(EntityMob mob)
+    public static void enchantGear(EntityLiving living)
     {
 		for (EntityEquipmentSlot entityequipmentslot : EntityEquipmentSlot.values())
         {
-    		ItemStack itemstack = mob.getItemStackFromSlot(entityequipmentslot);
-            if (!itemstack.isEmpty() && mob.getRNG().nextFloat() < (ConfigHandler.baseEnchantChance+(DifficultyData.getDifficulty(mob.world, mob)*ConfigHandler.diffEnchantAdd*0.01F)))
+    		ItemStack itemstack = living.getItemStackFromSlot(entityequipmentslot);
+            if (!itemstack.isEmpty() && living.getRNG().nextFloat() < (ConfigHandler.baseEnchantChance+(DifficultyData.getDifficulty(living.world, living)*ConfigHandler.diffEnchantAdd*0.01F)))
             {
-                EnchantmentHelper.addRandomEnchantment(mob.getRNG(), itemstack, 5 + mob.getRNG().nextInt(25), true);
+                EnchantmentHelper.addRandomEnchantment(living.getRNG(), itemstack, 5 + living.getRNG().nextInt(25), true);
             }
         }
     } 
@@ -196,23 +198,23 @@ public class GeneralHelperMethods {
         }
     }
     
-    public static void modifyAttr(EntityMob mob, IAttribute att, double value, double max, boolean multiply)
+    public static void modifyAttr(EntityLiving living, IAttribute att, double value, double max, boolean multiply)
     {
-		double oldValue = mob.getAttributeMap().getAttributeInstance(att).getBaseValue();
-		value *= DifficultyData.getDifficulty(mob.world, mob);
+		double oldValue = living.getAttributeMap().getAttributeInstance(att).getBaseValue();
+		value *= DifficultyData.getDifficulty(living.world, living);
 		if(multiply)
 		{
 			value = Math.min(value, max-1);
 			value = oldValue*(1+value);
 			if(att==SharedMonsterAttributes.MAX_HEALTH)
 			    value = ConfigHandler.roundHP>0?MathUtils.roundTo(value, ConfigHandler.roundHP):value;
-			mob.getAttributeMap().getAttributeInstance(att).setBaseValue(value);
+			living.getAttributeMap().getAttributeInstance(att).setBaseValue(value);
 		}
 		else
 		{
     		value = Math.min(value, max);
 			value = oldValue+value;
-			mob.getAttributeMap().getAttributeInstance(att).setBaseValue(value);;
+			living.getAttributeMap().getAttributeInstance(att).setBaseValue(value);;
 		}
     }
 }

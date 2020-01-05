@@ -12,6 +12,7 @@ import com.flemmli97.improvedmobs.entity.ai.EntityAITechGuns;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIUseItem;
 import com.flemmli97.improvedmobs.entity.ai.NewWalkNodeProcessor;
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
+import com.flemmli97.improvedmobs.handler.config.EntityModifyFlagConfig;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
 import com.flemmli97.improvedmobs.handler.helper.IMAttributes;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
@@ -38,7 +39,6 @@ import net.minecraft.entity.item.EntityItem;
 import net.minecraft.entity.monster.EntityEnderman;
 import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.monster.EntityPigZombie;
-import net.minecraft.entity.monster.EntityZombie;
 import net.minecraft.entity.passive.EntityVillager;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Enchantments;
@@ -54,6 +54,7 @@ import net.minecraft.pathfinding.PathNavigateGround;
 import net.minecraft.pathfinding.PathNavigateSwimmer;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.EnumSkyBlock;
@@ -79,7 +80,8 @@ public class EventHandlerAI {
 	public static final ResourceLocation TileCap = new ResourceLocation(ImprovedMobs.MODID, "openedFlag");
 	public static final String breaker = ImprovedMobs.MODID+":Breaker";
 	private static final String modifyArmor = ImprovedMobs.MODID+":InitArmor";
-	private static final String modifyAttributes = ImprovedMobs.MODID+":InitAttr";
+        private static final String modifyHeld = ImprovedMobs.MODID+":InitHeld";
+	private static final String modifyAttributes = ImprovedMobs.MODID+":InitAttr"; 
 
 	@SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<TileEntity> event)
@@ -116,29 +118,57 @@ public class EventHandlerAI {
 	
 	@SubscribeEvent
 	public void entityProps(EntityConstructing e) {
-		if (e.getEntity() instanceof EntityMob && e.getEntity().world!=null && !e.getEntity().world.isRemote)
-		{
-			if(!GeneralHelperMethods.isMobInList((EntityMob) e.getEntity(), ConfigHandler.mobListBreakBlacklist, ConfigHandler.mobListBreakWhitelist))
-			{
-				if(ConfigHandler.breakerChance!=0 &&e.getEntity().world.rand.nextFloat()<ConfigHandler.breakerChance)
-				{
-					e.getEntity().addTag(breaker);
-				}
-			}
-			if(!(e.getEntity() instanceof IEntityOwnable))
-			{
-				EntityMob mob = (EntityMob) e.getEntity();
-				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.equipMobBlacklist, ConfigHandler.equipMobWhiteList))
-				{
-					mob.getEntityData().setBoolean(modifyArmor, false);	
-				}
-				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList, ConfigHandler.mobAttributeWhitelist))
-				{
-					mob.getEntityData().setBoolean(modifyAttributes, false);
-					IMAttributes.apply(mob);
-				}
-			}
-		}
+	    if(e.getEntity().world!=null && !e.getEntity().world.isRemote) {
+	        if(e.getEntity() instanceof EntityLiving) {
+	            EntityLiving living = (EntityLiving) e.getEntity();
+	            if(!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, ConfigHandler.mobListBreakWhitelist)) {
+	                if(ConfigHandler.breakerChance!=0 &&e.getEntity().world.rand.nextFloat()<ConfigHandler.breakerChance)
+                        {
+	                    e.getEntity().addTag(breaker);
+                        }
+	            }
+	            if(!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, ConfigHandler.armorMobWhitelist)) 
+
+	            {
+	                living.getEntityData().setBoolean(modifyArmor, false); 
+                }
+	            if(!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, ConfigHandler.heldMobWhitelist)) 
+
+                    {
+                        living.getEntityData().setBoolean(modifyHeld, false); 
+                }
+	            if(!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, ConfigHandler.mobAttributeWhitelist)) 
+                {
+                    living.getEntityData().setBoolean(modifyAttributes, false);
+                    IMAttributes.apply(living);
+                }
+	        }
+	        
+	        
+    		/*if (e.getEntity() instanceof EntityMob)
+    		{
+                EntityMob mob = (EntityMob) e.getEntity();
+    			if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobListBreakBlacklist, ConfigHandler.mobListBreakWhitelist))
+    			{
+    				if(ConfigHandler.breakerChance!=0 &&e.getEntity().world.rand.nextFloat()<ConfigHandler.breakerChance)
+    				{
+    					e.getEntity().addTag(breaker);
+    				}
+    			}
+    			if(!(e.getEntity() instanceof IEntityOwnable))
+    			{
+    				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.equipMobBlacklist, ConfigHandler.equipMobWhiteList))
+    				{
+    					mob.getEntityData().setBoolean(modifyArmor, false);	
+    				}
+    				if(!GeneralHelperMethods.isMobInList(mob, ConfigHandler.mobAttributeBlackList, ConfigHandler.mobAttributeWhitelist))
+    				{
+    					mob.getEntityData().setBoolean(modifyAttributes, false);
+    					IMAttributes.apply(mob);
+    				}
+    			}
+    		}*/
+	    }
 	}
 	
 	@SubscribeEvent
@@ -171,7 +201,77 @@ public class EventHandlerAI {
 			this.shouldCheckSight=ObfuscationReflectionHelper.findField(EntityAITarget.class, "field_75297_f");
 		if(e.getWorld().isRemote)
 			return;
-	    if (e.getEntity() instanceof EntityMob) 
+		
+		if(e.getEntity() instanceof EntityLiving) {
+		    EntityLiving living = (EntityLiving) e.getEntity();
+		    boolean mobGriefing = living.world.getGameRules().getBoolean("mobGriefing");
+		    this.applyAttributesAndItems(living);
+		    if(living.getTags().contains(breaker))
+            {
+		        living.targetTasks.taskEntries.forEach(t->{if(t.action instanceof EntityAINearestAttackableTarget)
+                {
+                    EntityAINearestAttackableTarget<?> aiNearestTarget = (EntityAINearestAttackableTarget<?>) t.action;
+                    Class<?> targetCls = ReflectionUtils.getFieldValue(this.targetClass, aiNearestTarget);
+                    if(targetCls == EntityPlayer.class)
+                    {
+                        ReflectionUtils.setFieldValue(this.shouldCheckSight, aiNearestTarget, false);
+                    }
+                }});
+                if(mobGriefing)
+                {
+                    living.tasks.addTask(1, new EntityAIBlockBreaking(living));
+                    ItemStack stack = ConfigHandler.breakingItem.getStack();
+                    if(!ConfigHandler.shouldDropEquip)
+                        stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                    living.setItemStackToSlot(EntityEquipmentSlot.OFFHAND, stack);
+                }
+            }
+		    if(!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, ConfigHandler.mobListUseWhitelist))
+            {
+                living.tasks.addTask(1, new EntityAIUseItem(living, 15));
+                EntityAITechGuns.applyAI(living);
+            }
+            if(living instanceof EntityCreature && mobGriefing && !ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.STEAL, ConfigHandler.mobListStealWhitelist))
+            {
+                living.tasks.addTask(5, new EntityAISteal((EntityCreature) living));
+            }
+            if(!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, ConfigHandler.mobListBoatWhitelist))
+            {
+                if(!(living.canBreatheUnderwater() || living.getNavigator() instanceof PathNavigateSwimmer))
+                    living.tasks.addTask(6, new EntityAIRideBoat(living));
+            }
+            if(!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, ConfigHandler.mobListLadderWhitelist))
+            {
+                if(!(living.getNavigator() instanceof PathNavigateClimber))
+                    living.tasks.addTask(4, new EntityAIClimbLadder(living));
+            }
+		}
+		if(e.getEntity() instanceof EntityCreature) {
+		    EntityCreature creature = (EntityCreature) e.getEntity();
+		    if(creature.world.getGameRules().getBoolean("mobGriefing") && !ConfigHandler.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, ConfigHandler.mobListStealWhitelist))
+            {
+		        creature.tasks.addTask(5, new EntityAISteal(creature));
+            }
+		    boolean villager = false;
+		    boolean neutral = creature instanceof EntityEnderman || creature instanceof EntityPigZombie;
+            if(!ConfigHandler.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, ConfigHandler.targetVillagerWhitelist))
+            {
+                villager = true;
+                if(!neutral)
+                    creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, creature.getTags().contains("Breaker")? false:creature.world.rand.nextFloat()<=0.5));
+            }
+            if(ConfigHandler.neutralAggressiv!=0 && creature.world.rand.nextFloat() <= ConfigHandler.neutralAggressiv)
+                if(creature instanceof EntityEnderman || creature instanceof EntityPigZombie) {
+                    creature.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(creature, EntityPlayer.class, creature.getTags().contains("Breaker")? false:creature.world.rand.nextFloat()<=0.5));
+                    if(villager)
+                        creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, creature.getTags().contains("Breaker")? false:creature.world.rand.nextFloat()<=0.5));
+                }
+            Class<? extends EntityLiving> clss = ConfigHandler.autoTargets.get(EntityList.getKey(creature));
+            if(clss!=null)
+                this.addAutoTargetAI(creature, clss);
+		}
+		
+	    /*if (e.getEntity() instanceof EntityMob) 
 	    {    	
     		EntityMob mob= (EntityMob) e.getEntity();
     		boolean mobGriefing = mob.world.getGameRules().getBoolean("mobGriefing");
@@ -234,7 +334,7 @@ public class EventHandlerAI {
 					living.tasks.addTask(4, new EntityAIClimbLadder(living));
 			}
     		EntityAITechGuns.applyAI(living);
-		}
+		}*/
 	}
 	
 	private <T extends EntityLiving> void addAutoTargetAI(EntityCreature c, Class<T> clss)
@@ -242,35 +342,41 @@ public class EventHandlerAI {
 		c.targetTasks.addTask(3, new EntityAINearestAttackableTarget<T>(c, clss, c.getTags().contains("Breaker")? false:true));
 	}
 	
-	private void applyAttributesAndItems(EntityMob mob)
+	private void applyAttributesAndItems(EntityLiving living)
 	{
-		if(mob.getEntityData().hasKey(modifyArmor) && !mob.getEntityData().getBoolean(modifyArmor))
+		if(living.getEntityData().hasKey(modifyArmor) && !living.getEntityData().getBoolean(modifyArmor))
 		{
 			//List<IRecipe> r= CraftingManager.getInstance().getRecipeList(); for further things maybe	
-			GeneralHelperMethods.equipMob(mob);
-			if(ConfigHandler.baseEnchantChance!=0)
-				GeneralHelperMethods.enchantGear(mob);
-			mob.getEntityData().setBoolean(modifyArmor, true);
+			GeneralHelperMethods.equipArmor(living);
+			
+			living.getEntityData().setBoolean(modifyArmor, true);
 		}
-		if(mob.getEntityData().hasKey(modifyAttributes) && !mob.getEntityData().getBoolean(modifyAttributes))
+		if(living.getEntityData().hasKey(modifyHeld) && !living.getEntityData().getBoolean(modifyHeld))
+		{
+			GeneralHelperMethods.equipHeld(living);
+			living.getEntityData().setBoolean(modifyHeld, true);
+		}
+		if(ConfigHandler.baseEnchantChance!=0)
+			GeneralHelperMethods.enchantGear(living);
+		if(living.getEntityData().hasKey(modifyAttributes) && !living.getEntityData().getBoolean(modifyAttributes))
 		{
 			if(ConfigHandler.healthIncrease!=0 && !ConfigHandler.useScalingHealthMod)
 			{
-				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease*0.016, ConfigHandler.healthMax,  true);
-				mob.setHealth(mob.getMaxHealth());
+				GeneralHelperMethods.modifyAttr(living, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease*0.016, ConfigHandler.healthMax,  true);
+				living.setHealth(living.getMaxHealth());
 			}
 			if(ConfigHandler.damageIncrease!=0 && !ConfigHandler.useScalingHealthMod)
-				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease*0.008, ConfigHandler.damageMax,  true);
+				GeneralHelperMethods.modifyAttr(living, SharedMonsterAttributes.ATTACK_DAMAGE, ConfigHandler.damageIncrease*0.008, ConfigHandler.damageMax,  true);
 			if(ConfigHandler.speedIncrease!=0)
-				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease*0.0008, ConfigHandler.speedMax,  false);
+				GeneralHelperMethods.modifyAttr(living, SharedMonsterAttributes.MOVEMENT_SPEED, ConfigHandler.speedIncrease*0.0008, ConfigHandler.speedMax,  false);
 			if(ConfigHandler.knockbackIncrease!=0)
-				GeneralHelperMethods.modifyAttr(mob, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease*0.002, ConfigHandler.knockbackMax,  false);
+				GeneralHelperMethods.modifyAttr(living, SharedMonsterAttributes.KNOCKBACK_RESISTANCE, ConfigHandler.knockbackIncrease*0.002, ConfigHandler.knockbackMax,  false);
 			if(ConfigHandler.magicResIncrease!=0)
-				GeneralHelperMethods.modifyAttr(mob, IMAttributes.MAGIC_RES, ConfigHandler.magicResIncrease*0.0016, ConfigHandler.magicResMax, false);
+				GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, ConfigHandler.magicResIncrease*0.0016, ConfigHandler.magicResMax, false);
 			if(ConfigHandler.projectileIncrease!=0)
-				GeneralHelperMethods.modifyAttr(mob, IMAttributes.PROJ_BOOST, ConfigHandler.projectileIncrease*0.008, ConfigHandler.projectileMax, false);
+				GeneralHelperMethods.modifyAttr(living, IMAttributes.PROJ_BOOST, ConfigHandler.projectileIncrease*0.008, ConfigHandler.projectileMax, false);
 			
-			mob.getEntityData().setBoolean(modifyAttributes, true);
+			living.getEntityData().setBoolean(modifyAttributes, true);
 		}
 	}
 	
@@ -338,7 +444,7 @@ public class EventHandlerAI {
 	@SubscribeEvent
     public void equipPet(EntityInteract e)
     {
-    		if(e.getTarget() instanceof EntityLiving && e.getTarget() instanceof IEntityOwnable && !e.getTarget().world.isRemote && e.getEntityPlayer().isSneaking() &&
+    		if(e.getHand()==EnumHand.MAIN_HAND && e.getTarget() instanceof EntityLiving && e.getTarget() instanceof IEntityOwnable && !e.getTarget().world.isRemote && e.getEntityPlayer().isSneaking() &&
     				!GeneralHelperMethods.isMobInList((EntityLiving) e.getTarget(), ConfigHandler.petArmorBlackList, ConfigHandler.petWhiteList))
     		{
     			IEntityOwnable pet = (IEntityOwnable) e.getTarget();
@@ -347,80 +453,25 @@ public class EventHandlerAI {
 	    			EntityLiving living = (EntityLiving) e.getTarget();
 	    			
 	    			ItemStack heldItem = e.getEntityPlayer().getHeldItemMainhand();
-	    			if(heldItem != null && heldItem.getItem() instanceof ItemArmor)
+	    			if(heldItem.getItem() instanceof ItemArmor)
 	    			{
 	    				ItemArmor armor = (ItemArmor) heldItem.getItem();
 	    				EntityEquipmentSlot type = armor.armorType;
 	    				switch(type)
 	    				{
 	    					case HEAD:
-	    		    				ItemStack helmet = living.getItemStackFromSlot(EntityEquipmentSlot.HEAD);
-	    		    				if(helmet != null && !e.getEntityPlayer().capabilities.isCreativeMode)
-	    		    				{
-	    		    					EntityItem entityitem = new EntityItem(living.world, living.posX, living.posY, living.posZ, helmet);
-	    		    		            entityitem.setNoPickupDelay();
-	    		    		            living.world.spawnEntity(entityitem);
-	    		    				}
-		    					living.setItemStackToSlot(EntityEquipmentSlot.HEAD, heldItem.copy());
-	
-		    					if(!e.getEntityPlayer().capabilities.isCreativeMode)
-		    					{
-		    						heldItem.setCount(heldItem.getCount()-1);
-			    					if(heldItem.getCount()==0 && !e.getEntityPlayer().capabilities.isCreativeMode)
-			    						e.getEntityPlayer().setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
-		    					}
+	                              this.equipPetItem(e.getEntityPlayer(), living, heldItem, EntityEquipmentSlot.HEAD);
 	    					break;
 	    					case CHEST:
-			    				ItemStack chest = living.getItemStackFromSlot(EntityEquipmentSlot.CHEST);
-			    				
-			    				if(chest != null&& !e.getEntityPlayer().capabilities.isCreativeMode)
-			    				{
-			    					EntityItem entityitem = new EntityItem(living.world, living.posX, living.posY, living.posZ, chest);
-			    		            entityitem.setNoPickupDelay();
-			    		            living.world.spawnEntity(entityitem);
-			    				}
-		    					living.setItemStackToSlot(EntityEquipmentSlot.CHEST, heldItem.copy());
-		
-		    					if(!e.getEntityPlayer().capabilities.isCreativeMode)
-		    					{
-		    						heldItem.setCount(heldItem.getCount()-1);
-			    					if(heldItem.getCount()==0 && !e.getEntityPlayer().capabilities.isCreativeMode)
-			    						e.getEntityPlayer().setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
-		    					}
+	                             this.equipPetItem(e.getEntityPlayer(), living, heldItem, EntityEquipmentSlot.CHEST);
+
 						break;
 	    					case LEGS:
-			    				ItemStack leggs = living.getItemStackFromSlot(EntityEquipmentSlot.LEGS);
-			    				if(leggs != null&& !e.getEntityPlayer().capabilities.isCreativeMode)
-			    				{
-			    					EntityItem entityitem = new EntityItem(living.world, living.posX, living.posY, living.posZ, leggs);
-			    		            entityitem.setNoPickupDelay();
-			    		            living.world.spawnEntity(entityitem);
-			    				}
-	    					living.setItemStackToSlot(EntityEquipmentSlot.LEGS, heldItem.copy());
-	
-	    					if(!e.getEntityPlayer().capabilities.isCreativeMode)
-	    					{
-	    						heldItem.setCount(heldItem.getCount()-1);
-		    					if(heldItem.getCount()==0 && !e.getEntityPlayer().capabilities.isCreativeMode)
-		    						e.getEntityPlayer().setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
-	    					}
+                                this.equipPetItem(e.getEntityPlayer(), living, heldItem, EntityEquipmentSlot.LEGS);
 						break;
 	    					case FEET:
-			    				ItemStack boots = living.getItemStackFromSlot(EntityEquipmentSlot.FEET);
-			    				if(boots != null&& !e.getEntityPlayer().capabilities.isCreativeMode)
-			    				{
-			    					EntityItem entityitem = new EntityItem(living.world, living.posX, living.posY, living.posZ, boots);
-			    		            entityitem.setNoPickupDelay();
-			    		            living.world.spawnEntity(entityitem);
-			    				}
-	    					living.setItemStackToSlot(EntityEquipmentSlot.FEET, heldItem.copy());
-	
-	    					if(!e.getEntityPlayer().capabilities.isCreativeMode)
-	    					{
-	    						heldItem.setCount(heldItem.getCount()-1);
-		    					if(heldItem.getCount()==0 && !e.getEntityPlayer().capabilities.isCreativeMode)
-		    						e.getEntityPlayer().setItemStackToSlot(EntityEquipmentSlot.MAINHAND, ItemStack.EMPTY);
-	    					}
+	    					    this.equipPetItem(e.getEntityPlayer(), living, heldItem, EntityEquipmentSlot.FEET);
+			    				
 						break;
 						default:
 							break;
@@ -430,6 +481,19 @@ public class EventHandlerAI {
     			}
     		}
     }
+	
+	private void equipPetItem(EntityPlayer player, EntityLiving living, ItemStack stack, EntityEquipmentSlot slot) {
+	    ItemStack current = living.getItemStackFromSlot(slot);
+        if(!current.isEmpty() && !player.capabilities.isCreativeMode)
+        {
+            EntityItem entityitem = new EntityItem(living.world, living.posX, living.posY, living.posZ, current);
+            entityitem.setNoPickupDelay();
+            living.world.spawnEntity(entityitem);
+        }
+        living.setItemStackToSlot(slot, stack.copy());
+        if(!player.capabilities.isCreativeMode)
+            stack.shrink(1);
+	}
 	
 	@SubscribeEvent
 	public void techGunsChange(LivingEquipmentChangeEvent event)
@@ -466,29 +530,4 @@ public class EventHandlerAI {
 			mob.tasks.removeTask(ai);
 		});
 	}
-	
-	//FakePlayer handler
-	/*@SubscribeEvent
-	public void projectile(EntityJoinWorldEvent event)
-	{
-		if(event.getEntity() instanceof EntityThrowable)
-		{
-			EntityThrowable projectile = (EntityThrowable) event.getEntity();
-			Entity shooter = ((EntityThrowable)event.getEntity()).getThrower();
-			if(shooter instanceof FakePlayer && shooter.getTags().contains(FakePlayerHandler.fakeID))
-			{
-				NBTTagCompound entityNBT = projectile.writeToNBT(new NBTTagCompound());
-				entityNBT.setString("ownerName", shooter.getName());
-				projectile.readFromNBT(entityNBT);
-			}
-		}
-		else if(event.getEntity() instanceof EntityArrow)
-		{
-			Entity shooter = ((EntityArrow)event.getEntity()).shootingEntity;
-			if(shooter instanceof FakePlayer && shooter.getTags().contains(FakePlayerHandler.fakeID))
-			{
-				((EntityArrow)event.getEntity()).shootingEntity=((WorldServer)event.getWorld()).getEntityFromUuid(UUID.fromString(shooter.getName()));
-			}
-		}
-	}*/
 }

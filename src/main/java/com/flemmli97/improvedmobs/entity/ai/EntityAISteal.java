@@ -4,10 +4,9 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.handler.tilecap.ITileOpened;
 import com.flemmli97.improvedmobs.handler.tilecap.TileCapProvider;
 
-import net.minecraft.entity.EntityLiving;
+import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.ai.EntityAIMoveToBlock;
 import net.minecraft.entity.item.EntityItem;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.init.SoundEvents;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
@@ -21,9 +20,9 @@ import net.minecraft.world.World;
 
 public class EntityAISteal extends EntityAIMoveToBlock{
 
-	EntityLiving living;	
+    private EntityCreature living;	
 	private int stealDelay;
-	public EntityAISteal(EntityMob living)
+	public EntityAISteal(EntityCreature living)
 	{
 		super(living, 1, 8);
 		this.living=living;

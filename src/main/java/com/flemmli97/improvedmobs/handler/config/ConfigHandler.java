@@ -29,6 +29,18 @@ public class ConfigHandler {
 	public static String[] petArmorBlackList;
 	public static boolean petWhiteList;
 	
+	//Black-WhiteList
+	public static EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
+	public static boolean mobAttributeWhitelist;
+	public static boolean armorMobWhitelist;
+	public static boolean heldMobWhitelist;
+	public static boolean mobListBreakWhitelist;
+	public static boolean mobListUseWhitelist;
+    public static boolean mobListLadderWhitelist;
+	public static boolean mobListStealWhitelist;
+	public static boolean mobListBoatWhitelist;
+	public static boolean targetVillagerWhitelist;
+	
 	//Debug
 	public static boolean debugPath;
 
@@ -48,26 +60,13 @@ public class ConfigHandler {
 	public static boolean breakingAsBlacklist;
 	public static boolean useBlockBreakSound;
 	public static float breakerChance;
-	public static String[] mobListBreakBlacklist;
-	public static boolean mobListBreakWhitelist;
 	public static ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
-	public static String[] mobListUseBlacklist;
-	public static boolean mobListUseWhitelist;
-	public static String[] mobListLadderBlacklist;
-	public static boolean mobListLadderWhitelist;
-	public static String[] mobListStealBlacklist;
-	public static boolean mobListStealWhitelist;
-	public static String[] mobListBoatBlacklist;
-	public static boolean mobListBoatWhitelist;
 	public static float neutralAggressiv;
-	public static boolean targetVillager;
-	public static MobClassMapConfig autoTargets = new MobClassMapConfig(new String[] {});
+	public static MobClassMapConfig autoTargets = new MobClassMapConfig(new String[0]);
 	
 	//Equipment
 	public static String[] equipmentModBlacklist = new String[0];
 	public static boolean equipmentModWhitelist;
-	public static String[] equipMobBlacklist;
-	public static boolean equipMobWhiteList;
 	public static float baseEquipChance;
 	public static float baseEquipChanceAdd;
 	public static float diffEquipAdd;
@@ -80,8 +79,6 @@ public class ConfigHandler {
 	public static boolean shouldDropEquip;
 	
 	//Attributes
-	public static String[] mobAttributeBlackList;
-	public static boolean mobAttributeWhitelist;
 	public static float healthIncrease;
 	public static float healthMax;
 	public static float roundHP;
@@ -117,6 +114,24 @@ public class ConfigHandler {
 		petArmorBlackList = config.getStringList("Pet Blacklist", "general", new String[0], "Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.");
 		petWhiteList = config.getBoolean("Pet Whitelist", "general", false, "Treat pet blacklist as whitelist");
 
+		ConfigCategory list = config.getCategory("list");
+		list.setLanguageKey("improvedmobs.list");
+		list.setComment("Black/Whitelist for various stuff");
+		if(state==LoadState.SYNC||state==LoadState.POSTINIT) {
+			if(entityBlacklist==null)
+	    		entityBlacklist = new EntityModifyFlagConfig();
+	    	entityBlacklist.readFromString(config.getStringList("More Entities", "list", entityBlacklist.writeToString(), "By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage: " + entityBlacklist.usage()));
+		}
+		mobAttributeWhitelist = config.getBoolean("Attribute Whitelist", "list", false, "Treat ATTRIBUTES flags as whitelist");
+		armorMobWhitelist = config.getBoolean("Armor Equip Whitelist", "list", false, "Treat ARMOR flags as whitelist");
+		heldMobWhitelist = config.getBoolean("Held Equip Whitelist", "list", false, "Treat HELDITEMS flags as whitelist");
+		mobListBreakWhitelist = config.getBoolean("Breaker Whitelist", "list", false, "Treat BLOCKBREAK flags as whitelist");
+		mobListUseWhitelist = config.getBoolean("Item Use Whitelist", "list", false, "Treat USEITEM flags as whitelist");
+		mobListLadderWhitelist = config.getBoolean("Ladder Whitelist", "list", false, "Treat LADDER flags as whitelist");
+		mobListStealWhitelist = config.getBoolean("Steal Whitelist", "list", false, "Treat STEAL flags as whitelist");
+		mobListBoatWhitelist = config.getBoolean("Boat Whitelist", "list", false, "Treat SWIMMRIDE flags as whitelist");
+		targetVillagerWhitelist = config.getBoolean("Villager Whitelist", "list", false, "Treat TARGETVILLAGER flags as whitelist");
+
 		ConfigCategory debug = config.getCategory("debug");
 		debug.setLanguageKey("improvedmobs.debug");
 		debug.setComment("Debugging");
@@ -150,6 +165,7 @@ public class ConfigHandler {
 		prop.setComment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)");
 		if(state==LoadState.PREINIT)
 			useReforgedMod = prop.setRequiresMcRestart(true).getBoolean();
+		
 		ConfigCategory ai = config.getCategory("ai");
 		ai.setLanguageKey("improvedmobs.ai");
 		ai.setComment("Settings regarding custom ai for mobs");
@@ -158,29 +174,17 @@ public class ConfigHandler {
 		breakingAsBlacklist = config.getBoolean("Block as Blacklist", "ai", false, "Treat Block Whitelist as Blocklist");
 		useBlockBreakSound = config.getBoolean("Sound", "ai", false, "Use the block breaking sound instead of a knocking sound");
 		breakerChance = config.getFloat("Breaker Chance", "ai", 0.3F, 0, 1, "Chance for a mob to be able to break blocks."); 
-		mobListBreakBlacklist = config.getStringList("Breaker Blacklist", "ai", new String[]{"minecraft:creeper"}, "Blacklist for mobs, which can never break blocks");
-		mobListBreakWhitelist = config.getBoolean("Breaker Whitelist", "ai", false, "Use the AI Blacklist as Whitelist");
 		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
 			breakingItem.readFromString(config.getString("Breaking item", "ai", "minecraft:diamond_pickaxe", "Item which will be given to mobs who can break blocks. Set to nothing to not give any items."));
-		mobListUseBlacklist = config.getStringList("Item Mob-Blacklist", "ai", new String[0], "Blacklist for mobs which can't use items");
-		mobListUseWhitelist = config.getBoolean("Item Mob-Whitelist", "ai", false, "Treat Item Mob-Blacklist as Whitelist");
-		mobListLadderBlacklist = config.getStringList("Ladder Blacklist", "ai", new String[] {"minecraft:creeper"}, "Blacklist for entities which can't climb ladder");
-		mobListLadderWhitelist = config.getBoolean("Ladder Whitelist", "ai", false, "Treat Ladder Blacklist as Whitelist");
-		mobListStealBlacklist = config.getStringList("Steal Blacklist", "ai", new String[0], "Blacklist for mobs who can't steal from inventory");
-		mobListStealWhitelist = config.getBoolean("Steal Whitelist", "ai", false, "Treat Steal Blacklist as Whitelist");
-		mobListBoatBlacklist = config.getStringList("Boat Blacklist", "ai", new String[0], "Blacklist for mobs who can't ride a boat");
-		mobListBoatWhitelist = config.getBoolean("Boat Whitelist", "ai", false, "Treat Boat Blacklist as Whitelist");
 		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "ai", 0.2F, 0, 1, "Chance for neutral mobs to be aggressive"); 
-		targetVillager = config.getBoolean("Villager Target", "ai", true, "Should mobs target villagers? RIP Villagers");
 		if(state==LoadState.SYNC||state==LoadState.POSTINIT)
 			autoTargets.readFromString(config.getStringList("Auto Target List", "ai", autoTargets.writeToString(), "List for of pairs containing which mobs auto target others. Syntax is " + autoTargets.usage()+" where the class name is the target"));
+		
 		ConfigCategory equipment = config.getCategory("equipment");
 		equipment.setLanguageKey("improvedmobs.equipment");
 		equipment.setComment("Configs regarding mobs spawning with equipment");
 		equipmentModBlacklist = config.getStringList("Item Blacklist", "equipment", equipmentModBlacklist, "Blacklist for mods. Add modid to prevent items from that mod being used. (For individual items use the equipment.json)");
 		equipmentModWhitelist = config.getBoolean("Item Whitelist", "equipment", false, "Use blacklist as whitelist");
-		equipMobBlacklist = config.getStringList("Equipment Mob-Blacklist", "equipment", new String[0], "Blacklist for mobs, which shouldn't get items equipped");
-		equipMobWhiteList = config.getBoolean("Equipment Mob-Whitelist", "equipment", false, "Use blacklist as whitelist");
 		baseEquipChance = config.getFloat("Equipment Chance", "equipment", 0.1F, 0, 1, "Base chance that a mob can have one piece of armor");
 		baseEquipChanceAdd = config.getFloat("Additional Equipment Chance", "equipment", 0.3F, 0, 1, "Base chance for each additional armor pieces");
 		diffEquipAdd = ConfigUtils.getFloatConfig(config, "Equipment Addition", "equipment", 0.3F,  "Adds additional x*difficulty% to base equip chance");
@@ -195,8 +199,6 @@ public class ConfigHandler {
 		ConfigCategory attributes = config.getCategory("attributes");
 		attributes.setLanguageKey("improvedmobs.attributes");
 		attributes.setComment("Settings for attribute modifiers");
-		mobAttributeBlackList = config.getStringList("Attribute Blacklist", "attributes", new String[0], "Blacklist for mobs which should not have their attributes modified");
-		mobAttributeWhitelist = config.getBoolean("Attribute Whitelist", "attributes", false, "Treat Attribute Blacklist as Whitelist");
 		healthIncrease = ConfigUtils.getFloatConfig(config, "Health Increase Multiplier", "attributes", 1.0F, "Health will be multiplied by difficulty*0.016*x. Set to 0 to disable.");
 		healthMax = ConfigUtils.getFloatConfig(config, "Max Health Increase", "attributes", 5.0F, "Health will be multiplied by at maximum this. Set to 0 means no limit");
 	    roundHP = ConfigUtils.getFloatConfig(config, "Round HP", "attributes", 0.5F, "Round health to the nearest x. Set to 0 to disable.");
@@ -211,8 +213,8 @@ public class ConfigHandler {
 		projectileIncrease = ConfigUtils.getFloatConfig(config, "Projectile Damage Increase", "attributes", 1.0F, "Projectile Damage will be multiplied by 1+difficulty*0.008*x. Set to 0 to disable."); 
 		projectileMax = ConfigUtils.getFloatConfig(config, "Max Projectile Damage", "attributes", 2F, "Projectile damage will be multiplied by maximum of this."); 
 		
-		config.save();
 		if(state==LoadState.SYNC||state==LoadState.POSTINIT) {
+		    config.save();
 			EquipmentList.initEquip(config.getConfigFile().getParentFile());
 		}
 	}
