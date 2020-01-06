@@ -3,6 +3,8 @@ package com.flemmli97.improvedmobs.handler.config;
 import java.io.File;
 import java.util.List;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
+import com.flemmli97.improvedmobs.handler.config.EquipmentList.InvalidItemNameException;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
 import com.flemmli97.tenshilib.common.config.ConfigUtils;
 import com.flemmli97.tenshilib.common.config.ConfigUtils.LoadState;
@@ -212,7 +214,11 @@ public class ConfigHandler {
 
 		if(state == LoadState.SYNC || state == LoadState.POSTINIT){
 			config.save();
-			EquipmentList.initEquip(config.getConfigFile().getParentFile());
+			try{
+				EquipmentList.initEquip(config.getConfigFile().getParentFile());
+			}catch(InvalidItemNameException e){
+				ImprovedMobs.logger.error("Error with item names: ", e);
+			}
 		}
 	}
 }

@@ -65,7 +65,7 @@ public class EquipmentList {
 		return WeightedRandom.getRandomItem(e.world.rand, eq.list, totalWeight).getItem();
 	}
 
-	public static void initEquip(File confFolder) {
+	public static void initEquip(File confFolder) throws InvalidItemNameException {
 		try{
 			//Init default values
 			ForgeRegistries.ITEMS.forEach(item -> {
@@ -128,22 +128,25 @@ public class EquipmentList {
 
 				FileReader reader = new FileReader(conf);
 				confObj = GSON.fromJson(reader, JsonObject.class);
-				if(confObj==null)
+				if(confObj == null)
 					confObj = new JsonObject();
 				reader.close();
 				//Read and update from config
+				List<String> errors = Lists.newArrayList();
 				for(EntityEquipmentSlot key : EntityEquipmentSlot.values()){
 					if(confObj.has(key.toString())){
 						JsonObject obj = (JsonObject) confObj.get(key.toString());
 						if(!obj.entrySet().isEmpty())
 							obj.entrySet().forEach(ent -> {
 								int weight = ent.getValue().getAsInt();
-								equips.compute(key, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(ent.getKey(), weight))) : l.add(new WeightedItemstack(ent.getKey(), weight)));
+								equips.compute(key, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(ent.getKey(), weight, errors))) : l.add(new WeightedItemstack(ent.getKey(), weight, errors)));
 							});
 						else
 							equips.put(key, new WeightedItemstackList(Lists.newArrayList()));
 					}
 				}
+				if(!errors.isEmpty()) 
+					throw new InvalidItemNameException("Invalid item names for following values: " + errors);
 			}
 			for(EntityEquipmentSlot key : EntityEquipmentSlot.values()){
 				JsonObject eq = confObj.has(key.toString()) ? (JsonObject) confObj.get(key.toString()) : new JsonObject();
@@ -264,7 +267,7 @@ public class EquipmentList {
 
 		}
 
-		public WeightedItemstack(String item, int itemWeight) {
+		public WeightedItemstack(String item, int itemWeight, List<String> errors) {
 			super(itemWeight);
 			this.configString = item;
 			String itemReg = item;
@@ -279,7 +282,13 @@ public class EquipmentList {
 					e.printStackTrace();
 				}
 			}
-			this.item = new ExtendedItemStackWrapper(ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemReg))).setNBT(nbt);
+			Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemReg));
+			if(it == null){
+				errors.add(itemReg);
+				this.item = new ExtendedItemStackWrapper(Items.AIR);
+			}
+			else
+				this.item = new ExtendedItemStackWrapper(it).setNBT(nbt);
 		}
 
 		public ItemStack getItem() {
@@ -363,6 +372,18 @@ public class EquipmentList {
 		@Override
 		public String toString() {
 			return String.format("TotalWeight: %d ; [%s]", this.totalWeight, this.list.toString());
+		}
+	}
+	
+	public static class InvalidItemNameException extends Exception{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = -6736627280613384759L;
+		
+		public InvalidItemNameException(String message) {
+			super(message);
 		}
 	}
 }

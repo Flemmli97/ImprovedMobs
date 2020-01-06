@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.config.EquipmentList;
+import com.flemmli97.improvedmobs.handler.config.EquipmentList.InvalidItemNameException;
 import com.flemmli97.improvedmobs.handler.packet.PacketDifficulty;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
 
@@ -12,10 +13,9 @@ import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
 import net.minecraft.command.ICommandSender;
-import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.command.WrongUsageException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.util.text.TextFormatting;
 
 public class CommandIMDifficulty implements ICommand {
@@ -49,45 +49,41 @@ public class CommandIMDifficulty implements ICommand {
 	@Override
 	public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
 		if(args.length < 1){
-			((EntityPlayer) sender.getCommandSenderEntity())
-					.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: /" + this.getUsage(sender)));
+			throw new WrongUsageException(TextFormatting.RED + "Usage: /" + this.getUsage(sender));
 		}else{
 			if(args[0].equals("reloadJson")){
-				EquipmentList.initEquip(ConfigHandler.config.getConfigFile().getParentFile());
-				((EntityPlayer) sender.getCommandSenderEntity()).sendMessage(new TextComponentString("Reloaded all .json files"));
+				try{
+					EquipmentList.initEquip(ConfigHandler.config.getConfigFile().getParentFile());
+					CommandBase.notifyCommandListener(sender, this, "Reloaded all .json files");
+				}catch(InvalidItemNameException e){
+					CommandBase.notifyCommandListener(sender, this, TextFormatting.RED + e.getMessage());
+				}
 			}else if(args[0].equals("difficulty")){
 				if(args.length < 2){
-					((EntityPlayer) sender.getCommandSenderEntity())
-							.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: /" + this.getUsage(sender)));
+					CommandBase.notifyCommandListener(sender, this, TextFormatting.RED + "Usage: /" + this.getUsage(sender));
 					return;
 				}
 				String s = args[1];
 				try{
 					float f = Float.parseFloat(args[2]);
 					if(f * 10 % 1 != 0){
-						((EntityPlayer) sender.getCommandSenderEntity())
-								.sendMessage(new TextComponentString(TextFormatting.RED + "Too many decimals. Only 1 supported"));
+						CommandBase.notifyCommandListener(sender, this, TextFormatting.RED + "Too many decimals. Only 1 supported");
 						return;
 					}
 					if(s.equals("set")){
 						DifficultyData data = DifficultyData.get(server.getEntityWorld());
 						data.setDifficulty(f);
 						PacketHandler.sendToAll(new PacketDifficulty(data));
-						if(sender.getCommandSenderEntity() instanceof EntityPlayer)
-							((EntityPlayer) sender.getCommandSenderEntity()).sendMessage(new TextComponentString("Set difficulty to " + f));
+						CommandBase.notifyCommandListener(sender, this, "Set difficulty to " + f);
 					}else if(s.equals("add")){
 						DifficultyData data = DifficultyData.get(server.getEntityWorld());
 						data.addDifficulty(f);
 						PacketHandler.sendToAll(new PacketDifficulty(data));
-						if(sender.getCommandSenderEntity() instanceof EntityPlayer)
-							((EntityPlayer) sender.getCommandSenderEntity())
-									.sendMessage(new TextComponentString("Added " + f + " to the difficulty"));
+						CommandBase.notifyCommandListener(sender, this, "Added " + f + " to the difficulty");
 					}else
-						((EntityPlayer) sender.getCommandSenderEntity())
-								.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: /" + this.getUsage(sender)));
+						throw new WrongUsageException(TextFormatting.RED + "Usage: /" + this.getUsage(sender));
 				}catch(NumberFormatException e){
-					((EntityPlayer) sender.getCommandSenderEntity())
-							.sendMessage(new TextComponentString(TextFormatting.RED + "Usage: /" + this.getUsage(sender)));
+					throw new WrongUsageException(TextFormatting.RED + "Usage: /" + this.getUsage(sender));
 				}
 			}
 		}
