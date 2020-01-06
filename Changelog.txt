@@ -1,3 +1,9 @@
+Improved Mobs 1.6.1
+================
+- Fix empty list in equipment.json crash (#25)
+- Made it so wrong item names errors instead of crashing
+- Fix unneccessary casts in command
+
 Improved Mobs 1.6.0
 ================
 - Updated the command. Now possible to reload equipment.json ingame.
