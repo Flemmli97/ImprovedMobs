@@ -128,23 +128,23 @@ public class EquipmentList {
 
 				FileReader reader = new FileReader(conf);
 				confObj = GSON.fromJson(reader, JsonObject.class);
-
+				if(confObj==null)
+					confObj = new JsonObject();
 				reader.close();
 				//Read and update from config
 				for(EntityEquipmentSlot key : EntityEquipmentSlot.values()){
 					if(confObj.has(key.toString())){
 						JsonObject obj = (JsonObject) confObj.get(key.toString());
-						obj.entrySet().forEach(ent -> {
-							int weight = ent.getValue().getAsInt();
-							equips.compute(key, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(ent.getKey(), weight))) : l.add(new WeightedItemstack(ent.getKey(), weight)));
-						});
+						if(!obj.entrySet().isEmpty())
+							obj.entrySet().forEach(ent -> {
+								int weight = ent.getValue().getAsInt();
+								equips.compute(key, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(ent.getKey(), weight))) : l.add(new WeightedItemstack(ent.getKey(), weight)));
+							});
+						else
+							equips.put(key, new WeightedItemstackList(Lists.newArrayList()));
 					}
 				}
-
-				conf.delete();
-				conf.createNewFile();
 			}
-			JsonWriter wr = GSON.newJsonWriter(new FileWriter(conf));
 			for(EntityEquipmentSlot key : EntityEquipmentSlot.values()){
 				JsonObject eq = confObj.has(key.toString()) ? (JsonObject) confObj.get(key.toString()) : new JsonObject();
 				equips.get(key).list.forEach(w -> eq.addProperty(w.configString, w.itemWeight));
@@ -159,6 +159,9 @@ public class EquipmentList {
 				confObj.add(key.toString(), sorted);
 				equips.get(key).finishList();
 			}
+			conf.delete();
+			conf.createNewFile();
+			JsonWriter wr = GSON.newJsonWriter(new FileWriter(conf));
 			GSON.toJson(confObj, JsonObject.class, wr);
 			wr.close();
 		}catch(IOException e){
