@@ -1,3 +1,7 @@
+Improved Mobs 1.6.2
+================
+- Fix ridden guardian boats crashing with non EntityMob 
+
 Improved Mobs 1.6.1
 ================
 - Fix empty list in equipment.json crash (#25)
