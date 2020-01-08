@@ -1,13 +1,15 @@
 package com.flemmli97.improvedmobs.entity;
 
+import java.util.List;
+
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.EntityAILookIdle;
 import net.minecraft.entity.ai.EntityAIWander;
 import net.minecraft.entity.monster.EntityGuardian;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.util.DamageSource;
@@ -39,21 +41,20 @@ public class EntityGuardianBoat extends EntityGuardian {
 
 	@Override
 	public void onLivingUpdate() {
-		if(this.getPassengers().isEmpty() || ((EntityMob) this.getPassengers().get(0)).getAttackTarget() == null){
+		List<Entity> passengers = this.getPassengers();
+		EntityLiving passenger = !passengers.isEmpty() && passengers.get(0)instanceof EntityLiving?(EntityLiving)passengers.get(0):null;
+		if(passenger==null || passenger.getAttackTarget() == null){
 			timeWithoutPassenger++;
 			if(timeWithoutPassenger > 500)
 				this.attackEntityFrom(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
 		}else
 			timeWithoutPassenger = 0;
-		if(!this.getPassengers().isEmpty()){
-			if(this.getPassengers().get(0) instanceof EntityMob){
-				EntityLivingBase target = ((EntityMob) this.getPassengers().get(0)).getAttackTarget();
-				((EntityMob) this.getPassengers().get(0))
-						.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:water_breathing"), 10, 1, false, false));
-				if(target != null){
-					this.getNavigator().clearPath();
-					this.getNavigator().tryMoveToXYZ(target.posX, target.posY, target.posZ, 1);
-				}
+		if(passenger!=null){
+			EntityLivingBase target = passenger.getAttackTarget();
+			passenger.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:water_breathing"), 10, 1, false, false));
+			if(target != null){
+				this.getNavigator().clearPath();
+				this.getNavigator().tryMoveToXYZ(target.posX, target.posY, target.posZ, 1);
 			}
 		}
 		if(this.isInWater()){
@@ -71,11 +72,10 @@ public class EntityGuardianBoat extends EntityGuardian {
 			this.motionZ = facing.z;
 		}
 		if(this.isOnLand()){
-			if(!this.getPassengers().isEmpty()){
-				((EntityMob) this.getPassengers().get(0))
-						.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:resistance"), 2, 4, false, false));
-				((EntityMob) this.getPassengers().get(0)).getNavigator().clearPath();
-				this.dismountEntity(this.getPassengers().get(0));
+			if(passenger!=null){
+				passenger.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:resistance"), 2, 4, false, false));
+				passenger.getNavigator().clearPath();
+				this.dismountEntity(passenger);
 			}
 			this.attackEntityFrom(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
 		}
