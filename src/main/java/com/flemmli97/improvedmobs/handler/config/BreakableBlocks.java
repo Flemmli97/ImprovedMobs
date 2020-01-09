@@ -6,7 +6,10 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.IConfigArrayValue;
 import com.google.common.collect.Lists;
 
+import CoroUtil.block.BlockRepairingBlock;
 import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.init.Blocks;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.NonNullList;
@@ -22,11 +25,13 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
 		this.readFromString(strings);
 	}
 
-	public boolean canBreak(Block block) {
+	public boolean canBreak(IBlockState state) {
+		if(state.getMaterial() == Material.AIR || ConfigHandler.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock)
+			return false;
 		if(ConfigHandler.breakingAsBlacklist){
-			return !blocks.contains(block.getRegistryName().toString());
+			return !blocks.contains(state.getBlock().getRegistryName().toString());
 		}
-		return blocks.contains(block.getRegistryName().toString());
+		return blocks.contains(state.getBlock().getRegistryName().toString());
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package com.flemmli97.improvedmobs.entity.ai;
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.helper.GeneralHelperMethods;
 
+import CoroUtil.block.TileEntityRepairingBlock;
 import net.minecraft.block.SoundType;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
@@ -61,9 +62,7 @@ public class EntityAIBlockBreaking extends EntityAIBase {
 	@Override
 	public boolean shouldContinueExecuting() {
 		//double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
-		return target != null && living != null && target.isEntityAlive() && living.isEntityAlive() && markedLoc != null && entityPos != null
-				&& entityPos.equals(living.getPosition())/*motion<maxMotion*/ && living.getDistance(target) > 1D
-				&& (target.onGround || !living.canEntityBeSeen(target));
+		return target != null && living != null && target.isEntityAlive() && living.isEntityAlive() && markedLoc != null && entityPos != null && entityPos.equals(living.getPosition())/*motion<maxMotion*/ && living.getDistance(target) > 1D && (target.onGround || !living.canEntityBeSeen(target));
 	}
 
 	@Override
@@ -89,15 +88,17 @@ public class EntityAIBlockBreaking extends EntityAIBase {
 			ItemStack item = living.getHeldItemMainhand();
 			ItemStack itemOff = living.getHeldItemOffhand();
 			boolean canHarvest = GeneralHelperMethods.canHarvest(state, item) || GeneralHelperMethods.canHarvest(state, itemOff);
-			living.world.destroyBlock(markedLoc, canHarvest);
+			if(ConfigHandler.useCoroUtil)
+				TileEntityRepairingBlock.replaceBlockAndBackup(living.world, markedLoc, ConfigHandler.repairTick);
+			else
+				living.world.destroyBlock(markedLoc, canHarvest);
 			markedLoc = null;
 			living.getNavigator().setPath(living.getNavigator().getPathToEntityLiving(target), 1D);
 		}else{
 			if(digTimer % 5 == 0){
 				SoundType sound = state.getBlock().getSoundType(state, living.world, markedLoc, living);
 				living.getNavigator().setPath(living.getNavigator().getPathToPos(markedLoc), 1D);
-				living.world.playSound(null, markedLoc, ConfigHandler.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.BLOCK_NOTE_BASS,
-						SoundCategory.BLOCKS, 2F, 0.5F);
+				living.world.playSound(null, markedLoc, ConfigHandler.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.BLOCK_NOTE_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
 				living.swingArm(EnumHand.MAIN_HAND);
 				living.getLookHelper().setLookPosition(markedLoc.getX(), markedLoc.getY(), markedLoc.getZ(), 0.0F, 0.0F);
 				living.world.sendBlockBreakProgress(living.getEntityId(), markedLoc, (int) (str) * digTimer * 10);
@@ -119,33 +120,14 @@ public class EntityAIBlockBreaking extends EntityAIBase {
 		IBlockState block = entityLiving.world.getBlockState(frontCheck.add(x, y, z));
 		ItemStack item = entityLiving.getHeldItemMainhand();
 		ItemStack itemOff = entityLiving.getHeldItemOffhand();
-		if(notFull.getMaterial() != Material.AIR){
-			if(!ConfigHandler.breakableBlocks.canBreak(notFull.getBlock())){
-				scanTick = (scanTick + 1) % passMax;
-				return null;
-			}
-			if(GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff)){
-				scanTick = 0;
-				i = new BlockPos(partBlockCheck.getX() + x, partBlockCheck.getY() + y, frontCheck.getZ() + z);
-				return i;
-			}else{
-				scanTick = (scanTick + 1) % passMax;
-				return null;
-			}
-		}else if(block.getMaterial() != Material.AIR){
-
-			if(!ConfigHandler.breakableBlocks.canBreak(block.getBlock())){
-				scanTick = (scanTick + 1) % passMax;
-				return null;
-			}
-			if(GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff)){
-				scanTick = 0;
-				i = new BlockPos(frontCheck.getX() + x, frontCheck.getY() + y, frontCheck.getZ() + z);
-				return i;
-			}else{
-				scanTick = (scanTick + 1) % passMax;
-				return null;
-			}
+		if(ConfigHandler.breakableBlocks.canBreak(notFull) && (GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff))){
+			scanTick = 0;
+			i = new BlockPos(partBlockCheck.getX() + x, partBlockCheck.getY() + y, frontCheck.getZ() + z);
+			return i;
+		}else if(ConfigHandler.breakableBlocks.canBreak(block) && (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff))){
+			scanTick = 0;
+			i = new BlockPos(frontCheck.getX() + x, frontCheck.getY() + y, frontCheck.getZ() + z);
+			return i;
 		}
 		scanTick = (scanTick + 1) % passMax;
 		return null;

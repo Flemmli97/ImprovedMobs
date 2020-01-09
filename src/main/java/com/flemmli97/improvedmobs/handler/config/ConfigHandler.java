@@ -56,6 +56,7 @@ public class ConfigHandler {
 	public static boolean useScalingHealthMod = true;
 	public static boolean useTGunsMod = true;
 	public static boolean useReforgedMod = true;
+	public static boolean useCoroUtil = true;
 
 	//AI
 	public static BreakableBlocks breakableBlocks = new BreakableBlocks(new String[] {"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "BlockDoor", "!minecraft:iron_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"});
@@ -65,6 +66,7 @@ public class ConfigHandler {
 	public static ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
 	public static float neutralAggressiv;
 	public static MobClassMapConfig autoTargets = new MobClassMapConfig(new String[0]);
+	public static int repairTick = 200;
 
 	//Equipment
 	public static String[] equipmentModBlacklist = new String[0];
@@ -152,18 +154,24 @@ public class ConfigHandler {
 		ConfigCategory integration = config.getCategory("integration");
 		integration.setLanguageKey("improvedmobs.integration");
 		integration.setComment("Settings for mod integration");
-		prop = config.get("integration", "Use Scaling Health Mod", useScalingHealthMod);
-		prop.setComment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)");
-		if(state == LoadState.PREINIT)
+
+		if(state == LoadState.PREINIT){
+			prop = config.get("integration", "Use Scaling Health Mod", useScalingHealthMod);
+			prop.setComment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)");
 			useScalingHealthMod = prop.setRequiresMcRestart(true).getBoolean();
-		prop = config.get("integration", "Use Techguns Mod", useTGunsMod);
-		prop.setComment("Should mobs be able to use techguns weapons. (Requires techguns mod)");
-		if(state == LoadState.PREINIT)
+
+			prop = config.get("integration", "Use Techguns Mod", useTGunsMod);
+			prop.setComment("Should mobs be able to use techguns weapons. (Requires techguns mod)");
 			useTGunsMod = prop.setRequiresMcRestart(true).getBoolean();
-		prop = config.get("integration", "Use Reforged Mod", useTGunsMod);
-		prop.setComment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)");
-		if(state == LoadState.PREINIT)
+
+			prop = config.get("integration", "Use Reforged Mod", useReforgedMod);
+			prop.setComment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)");
 			useReforgedMod = prop.setRequiresMcRestart(true).getBoolean();
+
+			prop = config.get("integration", "Use CoroUtils Mod", useCoroUtil);
+			prop.setComment("Should the coroutils repair block be used. (Requires coroutils mod)");
+			useCoroUtil = prop.setRequiresMcRestart(true).getBoolean();
+		}
 
 		ConfigCategory ai = config.getCategory("ai");
 		ai.setLanguageKey("improvedmobs.ai");
@@ -178,6 +186,7 @@ public class ConfigHandler {
 		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "ai", 0.2F, 0, 1, "Chance for neutral mobs to be aggressive");
 		if(state == LoadState.SYNC || state == LoadState.POSTINIT)
 			autoTargets.readFromString(config.getStringList("Auto Target List", "ai", autoTargets.writeToString(), "List for of pairs containing which mobs auto target others. Syntax is " + autoTargets.usage() + " where the class name is the target"));
+		repairTick = config.get("ai", "Repair Ticks", 500, "Delay for the coroutil repair block. Coroutil integration needs to be enabled.").getInt();
 
 		ConfigCategory equipment = config.getCategory("equipment");
 		equipment.setLanguageKey("improvedmobs.equipment");

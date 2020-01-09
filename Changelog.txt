@@ -1,6 +1,9 @@
 Improved Mobs 1.6.3
 ================
 - Fix attribute nullpointer crash (#28)
+- Added CoroUtil repairing block support. Broken blocks by mobs now regen after a while
+- Changed pathfinding ai: Mobs now prioritize paths where they dont have to break blocks. 
+	Fixes problems where e.g. dirt is added to break list and mobs digging through the land
 
 Improved Mobs 1.6.2
 ================

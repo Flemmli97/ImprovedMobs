@@ -35,6 +35,7 @@ public class CommonProxy {
 		ConfigHandler.useScalingHealthMod = ConfigHandler.useScalingHealthMod ? Loader.isModLoaded("scalinghealth") : false;
 		ConfigHandler.useTGunsMod = ConfigHandler.useTGunsMod ? Loader.isModLoaded("techguns") : false;
 		ConfigHandler.useReforgedMod = ConfigHandler.useReforgedMod ? Loader.isModLoaded("reforged") : false;
+		ConfigHandler.useCoroUtil = ConfigHandler.useCoroUtil ? Loader.isModLoaded("coroutil") : false;
 		if(ConfigHandler.enableDifficultyScaling && !ConfigHandler.useScalingHealthMod)
 			MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
 	}
