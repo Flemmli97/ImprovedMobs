@@ -13,6 +13,7 @@ import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.SharedMonsterAttributes;
 import net.minecraft.entity.ai.attributes.IAttribute;
+import net.minecraft.entity.ai.attributes.IAttributeInstance;
 import net.minecraft.init.Enchantments;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.ItemStack;
@@ -165,18 +166,21 @@ public class GeneralHelperMethods {
 	}
 
 	public static void modifyAttr(EntityLiving living, IAttribute att, double value, double max, boolean multiply) {
-		double oldValue = living.getAttributeMap().getAttributeInstance(att).getBaseValue();
+		IAttributeInstance inst = living.getAttributeMap().getAttributeInstance(att);
+		if(inst==null)
+			return;
+		double oldValue = inst.getBaseValue();
 		value *= DifficultyData.getDifficulty(living.world, living);
 		if(multiply){
 			value = Math.min(value, max - 1);
 			value = oldValue * (1 + value);
 			if(att == SharedMonsterAttributes.MAX_HEALTH)
 				value = ConfigHandler.roundHP > 0 ? MathUtils.roundTo(value, ConfigHandler.roundHP) : value;
-			living.getAttributeMap().getAttributeInstance(att).setBaseValue(value);
+				inst.setBaseValue(value);
 		}else{
 			value = Math.min(value, max);
 			value = oldValue + value;
-			living.getAttributeMap().getAttributeInstance(att).setBaseValue(value);
+			inst.setBaseValue(value);
 		}
 	}
 }
