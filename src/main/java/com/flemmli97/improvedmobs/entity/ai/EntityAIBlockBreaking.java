@@ -118,7 +118,7 @@ public class EntityAIBlockBreaking extends EntityAIBase {
 		IBlockState notFull = entityLiving.world.getBlockState(partBlockCheck.add(x, y, z));
 		IBlockState block = entityLiving.world.getBlockState(frontCheck.add(x, y, z));
 		ItemStack item = entityLiving.getHeldItemMainhand();
-		ItemStack itemOff = entityLiving.getHeldItemMainhand();
+		ItemStack itemOff = entityLiving.getHeldItemOffhand();
 		if(notFull.getMaterial() != Material.AIR){
 			if(!ConfigHandler.breakableBlocks.canBreak(notFull.getBlock())){
 				scanTick = (scanTick + 1) % passMax;
