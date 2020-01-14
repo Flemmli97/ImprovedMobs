@@ -24,7 +24,7 @@ public class EntityAISteal extends EntityAIMoveToBlock {
 	private int stealDelay;
 
 	public EntityAISteal(EntityCreature living) {
-		super(living, 1, 8);
+		super(living, 1, 9);
 		this.living = living;
 	}
 
@@ -62,7 +62,7 @@ public class EntityAISteal extends EntityAIMoveToBlock {
 			if(!inv.isEmpty()){
 				ItemStack drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
 				int tries = 0;
-				while(drop.isEmpty() && tries < 7){
+				while(drop.isEmpty() && tries < 10){
 					drop = inv.decrStackSize(this.living.getRNG().nextInt(inv.getSizeInventory()), 1);
 					tries++;
 				}

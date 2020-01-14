@@ -118,10 +118,8 @@ public class EventHandlerAI {
         if (e.getEntity().world != null && !e.getEntity().world.isRemote) {
             if (e.getEntity() instanceof EntityLiving) {
                 EntityLiving living = (EntityLiving) e.getEntity();
-                if (!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, ConfigHandler.mobListBreakWhitelist)) {
-                    if (ConfigHandler.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < ConfigHandler.breakerChance) {
-                        e.getEntity().addTag(breaker);
-                    }
+                if (DifficultyData.getDifficulty(living.world, living)>=ConfigHandler.difficultyBreak && ConfigHandler.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < ConfigHandler.breakerChance&& !ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, ConfigHandler.mobListBreakWhitelist)) {
+                    e.getEntity().addTag(breaker);
                 }
                 if (!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, ConfigHandler.armorMobWhitelist)) {
                     living.getEntityData().setBoolean(modifyArmor, false);
@@ -163,10 +161,9 @@ public class EventHandlerAI {
             this.shouldCheckSight = ObfuscationReflectionHelper.findField(EntityAITarget.class, "field_75297_f");
         if (e.getWorld().isRemote)
             return;
-
+        boolean mobGriefing = e.getWorld().getGameRules().getBoolean("mobGriefing");
         if (e.getEntity() instanceof EntityLiving) {
             EntityLiving living = (EntityLiving) e.getEntity();
-            boolean mobGriefing = living.world.getGameRules().getBoolean("mobGriefing");
             this.applyAttributesAndItems(living);
             if (living.getTags().contains(breaker)) {
                 living.targetTasks.taskEntries.forEach(t -> {
@@ -190,9 +187,6 @@ public class EventHandlerAI {
                 living.tasks.addTask(1, new EntityAIUseItem(living, 15));
                 EntityAITechGuns.applyAI(living);
             }
-            if (living instanceof EntityCreature && mobGriefing && !ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.STEAL, ConfigHandler.mobListStealWhitelist)) {
-                living.tasks.addTask(5, new EntityAISteal((EntityCreature) living));
-            }
             if (!ConfigHandler.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, ConfigHandler.mobListBoatWhitelist)) {
                 if (!(living.canBreatheUnderwater() || living.getNavigator() instanceof PathNavigateSwimmer))
                     living.tasks.addTask(6, new EntityAIRideBoat(living));
@@ -204,8 +198,8 @@ public class EventHandlerAI {
         }
         if (e.getEntity() instanceof EntityCreature) {
             EntityCreature creature = (EntityCreature) e.getEntity();
-            if (creature.world.getGameRules().getBoolean("mobGriefing") && !ConfigHandler.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, ConfigHandler.mobListStealWhitelist)) {
-                creature.tasks.addTask(5, new EntityAISteal(creature));
+            if (DifficultyData.getDifficulty(creature.world, creature)>=ConfigHandler.difficultySteal && mobGriefing  && ConfigHandler.stealerChance != 0 && e.getEntity().world.rand.nextFloat() < ConfigHandler.stealerChance && !ConfigHandler.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, ConfigHandler.mobListStealWhitelist)) {
+            	creature.tasks.addTask(5, new EntityAISteal(creature));
             }
             boolean villager = false;
             boolean neutral = creature instanceof EntityEnderman || creature instanceof EntityPigZombie;

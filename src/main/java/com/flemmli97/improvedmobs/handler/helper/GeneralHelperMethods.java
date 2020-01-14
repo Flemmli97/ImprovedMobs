@@ -84,7 +84,8 @@ public class GeneralHelperMethods {
 	}
 
 	public static void equipHeld(EntityLiving living) {
-		if(ConfigHandler.baseWeaponChance != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseWeaponChance + (DifficultyData.getDifficulty(living.world, living) * ConfigHandler.diffWeaponChance * 0.01F))){
+		float add = DifficultyData.getDifficulty(living.world, living) * ConfigHandler.diffWeaponChance * 0.01F;
+		if(ConfigHandler.baseWeaponChance != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseWeaponChance + add)){
 			if(living.getHeldItemMainhand().isEmpty()){
 				ItemStack stack = EquipmentList.getEquip(living, EntityEquipmentSlot.MAINHAND);
 				if(!ConfigHandler.shouldDropEquip)
@@ -92,7 +93,7 @@ public class GeneralHelperMethods {
 				living.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
 			}
 		}
-		if(ConfigHandler.baseItemChance != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseItemChance + (DifficultyData.getDifficulty(living.world, living) * ConfigHandler.baseItemChanceAdd * 0.01F))){
+		if(ConfigHandler.baseItemChance != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseItemChance + add)){
 			if(living.getHeldItemOffhand().isEmpty()){
 				ItemStack stack = EquipmentList.getEquip(living, EntityEquipmentSlot.OFFHAND);
 				if(!ConfigHandler.shouldDropEquip)

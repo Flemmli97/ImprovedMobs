@@ -63,10 +63,14 @@ public class ConfigHandler {
 	public static boolean breakingAsBlacklist;
 	public static boolean useBlockBreakSound;
 	public static float breakerChance;
+	public static float stealerChance;
+	public static boolean breakTileEntities;
 	public static ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
 	public static float neutralAggressiv;
 	public static MobClassMapConfig autoTargets = new MobClassMapConfig(new String[0]);
 	public static int repairTick = 200;
+	public static float difficultyBreak;
+	public static float difficultySteal;
 
 	//Equipment
 	public static String[] equipmentModBlacklist = new String[0];
@@ -181,12 +185,16 @@ public class ConfigHandler {
 		breakingAsBlacklist = config.getBoolean("Block as Blacklist", "ai", false, "Treat Block Whitelist as Blocklist");
 		useBlockBreakSound = config.getBoolean("Sound", "ai", false, "Use the block breaking sound instead of a knocking sound");
 		breakerChance = config.getFloat("Breaker Chance", "ai", 0.3F, 0, 1, "Chance for a mob to be able to break blocks.");
+		stealerChance = config.getFloat("Stealer Chance", "ai", 0.5F, 0, 1, "Chance for a mob to be able to steal items.");
 		if(state == LoadState.SYNC || state == LoadState.POSTINIT)
 			breakingItem.readFromString(config.getString("Breaking item", "ai", "minecraft:diamond_pickaxe", "Item which will be given to mobs who can break blocks. Set to nothing to not give any items."));
+		breakTileEntities = config.getBoolean("Break Tiles", "ai", true, "Should mobs be able to break tile entities? Evaluated before the break list");
 		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "ai", 0.2F, 0, 1, "Chance for neutral mobs to be aggressive");
 		if(state == LoadState.SYNC || state == LoadState.POSTINIT)
 			autoTargets.readFromString(config.getStringList("Auto Target List", "ai", autoTargets.writeToString(), "List for of pairs containing which mobs auto target others. Syntax is " + autoTargets.usage() + " where the class name is the target"));
 		repairTick = config.get("ai", "Repair Ticks", 500, "Delay for the coroutil repair block. Coroutil integration needs to be enabled.").getInt();
+		difficultyBreak = ConfigUtils.getFloatConfig(config, "Difficulty Break AI", "ai", 0, "Difficulty at which mobs are able to break blocks");
+		difficultySteal = ConfigUtils.getFloatConfig(config, "Difficulty Steal AI", "ai", 0, "Difficulty at which mobs are able to steal items");
 
 		ConfigCategory equipment = config.getCategory("equipment");
 		equipment.setLanguageKey("improvedmobs.equipment");
