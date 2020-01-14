@@ -145,7 +145,7 @@ public class EquipmentList {
 							equips.put(key, new WeightedItemstackList(Lists.newArrayList()));
 					}
 				}
-				if(!errors.isEmpty()) 
+				if(!errors.isEmpty())
 					throw new InvalidItemNameException("Invalid item names for following values: " + errors);
 			}
 			for(EntityEquipmentSlot key : EntityEquipmentSlot.values()){
@@ -286,8 +286,7 @@ public class EquipmentList {
 			if(it == null){
 				errors.add(itemReg);
 				this.item = new ExtendedItemStackWrapper(Items.AIR);
-			}
-			else
+			}else
 				this.item = new ExtendedItemStackWrapper(it).setNBT(nbt);
 		}
 
@@ -374,14 +373,14 @@ public class EquipmentList {
 			return String.format("TotalWeight: %d ; [%s]", this.totalWeight, this.list.toString());
 		}
 	}
-	
-	public static class InvalidItemNameException extends Exception{
+
+	public static class InvalidItemNameException extends Exception {
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = -6736627280613384759L;
-		
+
 		public InvalidItemNameException(String message) {
 			super(message);
 		}

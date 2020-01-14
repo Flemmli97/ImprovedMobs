@@ -51,8 +51,7 @@ public class EntityMobSplash extends EntityPotion {
 
 		if(!listEntity.isEmpty()){
 			for(EntityLivingBase entitylivingbase : listEntity){
-				if(entitylivingbase.canBeHitWithPotion() && this.getThrower() != null && this.getThrower() instanceof EntityLiving
-						&& ((EntityLiving) this.getThrower()).getAttackTarget() == entitylivingbase){
+				if(entitylivingbase.canBeHitWithPotion() && this.getThrower() != null && this.getThrower() instanceof EntityLiving && ((EntityLiving) this.getThrower()).getAttackTarget() == entitylivingbase){
 					double d0 = this.getDistanceSq(entitylivingbase);
 
 					if(d0 < 16.0D){
@@ -71,8 +70,7 @@ public class EntityMobSplash extends EntityPotion {
 								int i = (int) (d1 * potioneffect.getDuration() + 0.5D);
 
 								if(i > 20){
-									entitylivingbase.addPotionEffect(new PotionEffect(potion, i, potioneffect.getAmplifier(),
-											potioneffect.getIsAmbient(), potioneffect.doesShowParticles()));
+									entitylivingbase.addPotionEffect(new PotionEffect(potion, i, potioneffect.getAmplifier(), potioneffect.getIsAmbient(), potioneffect.doesShowParticles()));
 								}
 							}
 						}

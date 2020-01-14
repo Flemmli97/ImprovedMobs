@@ -30,7 +30,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 
 	private boolean canBreakBlocks = false;
 	private boolean breakableFlag = false;
-	
+
 	private PathNodeType getPathNodeType(EntityLiving entitylivingIn, int x, int y, int z) {
 		this.breakableFlag = false;
 		return this.getPathNodeType(this.blockaccess, x, y, z, entitylivingIn, this.entitySizeX, this.entitySizeY, this.entitySizeZ, this.getCanOpenDoors(), this.getCanEnterDoors());
@@ -209,11 +209,10 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 			if(this.entity.posY > blockpos.getY() + 0.8)
 				return this.defaultNode(acc, iblockstate, blockpos, block);
 			else if(this.entity.posY <= blockpos.getY() + 1 && this.entity.posY >= blockpos.getY()){
-				if(this.entity.world.collidesWithAnyBlock(aabb) || (block instanceof BlockDoor && iblockstate.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER)) {
+				if(this.entity.world.collidesWithAnyBlock(aabb) || (block instanceof BlockDoor && iblockstate.getValue(BlockDoor.HALF) == BlockDoor.EnumDoorHalf.LOWER)){
 					this.breakableFlag = true;
 					return PathNodeType.WALKABLE;
-				}
-				else
+				}else
 					return this.defaultNode(acc, iblockstate, blockpos, block);
 			}
 			return PathNodeType.OPEN;

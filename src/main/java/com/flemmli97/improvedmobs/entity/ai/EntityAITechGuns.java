@@ -83,8 +83,7 @@ public class EntityAITechGuns extends EntityAIBase {
 
 	@Override
 	public void updateTask() {
-		double d0 = this.entityHost.getDistanceSq(this.attackTarget.posX, this.attackTarget.posY/*this.attackTarget.boundingBox.minY TODO??*/,
-				this.attackTarget.posZ);
+		double d0 = this.entityHost.getDistanceSq(this.attackTarget.posX, this.attackTarget.posY/*this.attackTarget.boundingBox.minY TODO??*/, this.attackTarget.posZ);
 		boolean targetInSight = this.entityHost.getEntitySenses().canSee(this.attackTarget);
 
 		if(targetInSight){
@@ -127,13 +126,11 @@ public class EntityAITechGuns extends EntityAIBase {
 				this.rangedAttackTime = shotDelay;
 			}else{
 				burstCount = maxBurstCount;
-				this.rangedAttackTime = MathHelper
-						.floor(f * (float) (this.maxRangedAttackTime - this.attackTimeVariance) + (float) this.attackTimeVariance);
+				this.rangedAttackTime = MathHelper.floor(f * (float) (this.maxRangedAttackTime - this.attackTimeVariance) + (float) this.attackTimeVariance);
 			}
 		}else if(this.rangedAttackTime < 0){
 			f = MathHelper.sqrt(d0) / this.attackRange;
-			this.rangedAttackTime = MathHelper
-					.floor(f * (float) (this.maxRangedAttackTime - this.attackTimeVariance) + (float) this.attackTimeVariance);
+			this.rangedAttackTime = MathHelper.floor(f * (float) (this.maxRangedAttackTime - this.attackTimeVariance) + (float) this.attackTimeVariance);
 		}
 	}
 
@@ -183,8 +180,7 @@ public class EntityAITechGuns extends EntityAIBase {
 		if(item instanceof GenericGun){
 			GenericGun gun = ((GenericGun) item);
 			int time = ReflectionUtils.getFieldValue(AI_attackTime, gun);
-			e.tasks.addTask(0, new EntityAITechGuns(e, time / 3, time, gun.getAI_attackRange(), ReflectionUtils.getFieldValue(AI_burstCount, gun),
-					ReflectionUtils.getFieldValue(AI_burstAttackTime, gun)));
+			e.tasks.addTask(0, new EntityAITechGuns(e, time / 3, time, gun.getAI_attackRange(), ReflectionUtils.getFieldValue(AI_burstCount, gun), ReflectionUtils.getFieldValue(AI_burstAttackTime, gun)));
 		}
 	}
 }

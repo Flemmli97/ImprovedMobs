@@ -87,12 +87,8 @@ public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFla
 
 	@Override
 	public String usage() {
-		String[] str = new String[] {
-				"<entity registry name> followed by any of:", 
-				"[" + ArrayUtils.arrayToString(Flags.values()) + "].",
-				"Leave empty to apply them all and REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
-				"example: minecraft:sheep|REVERSE|ATTRIBUTES will add sheep to attributes modification (since default is a blacklist)",
-				"or minecraft:sheep|ATTRIBUTES will add sheep to everything except attributes"};
+		String[] str = new String[] {"<entity registry name> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Leave empty to apply them all and REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
+				"example: minecraft:sheep|REVERSE|ATTRIBUTES will add sheep to attributes modification (since default is a blacklist)", "or minecraft:sheep|ATTRIBUTES will add sheep to everything except attributes"};
 		return String.join("\n", str) + "\n";
 	}
 

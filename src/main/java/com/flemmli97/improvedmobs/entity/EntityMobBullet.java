@@ -37,8 +37,7 @@ public class EntityMobBullet extends EntityShulkerBullet {
 	@Override
 	protected void bulletHit(RayTraceResult result) {
 		if(result.entityHit == null){
-			((WorldServer) this.world).spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX, this.posY, this.posZ, 2, 0.2D, 0.2D, 0.2D, 0.0D,
-					new int[0]);
+			((WorldServer) this.world).spawnParticle(EnumParticleTypes.EXPLOSION_LARGE, this.posX, this.posY, this.posZ, 2, 0.2D, 0.2D, 0.2D, 0.0D, new int[0]);
 			this.playSound(SoundEvents.ENTITY_SHULKER_BULLET_HIT, 1.0F, 1.0F);
 			this.setDead();
 		}else{

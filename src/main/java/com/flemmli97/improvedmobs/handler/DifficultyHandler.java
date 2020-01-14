@@ -64,8 +64,7 @@ public class DifficultyHandler {
 			GlStateManager.disableLighting();
 			//int x = ConfigHandler.gui.guiX+e.getResolution().getScaledWidth()/2;
 			//int y = ConfigHandler.gui.guiY+e.getResolution().getScaledHeight();
-			font.drawString(ConfigHandler.color + "Difficulty " + String.format(java.util.Locale.US, "%.1f", data.getDifficulty()),
-					ConfigHandler.guiX, ConfigHandler.guiY, 0);
+			font.drawString(ConfigHandler.color + "Difficulty " + String.format(java.util.Locale.US, "%.1f", data.getDifficulty()), ConfigHandler.guiX, ConfigHandler.guiY, 0);
 			GlStateManager.popMatrix();
 		}
 	}

@@ -42,14 +42,14 @@ public class EntityGuardianBoat extends EntityGuardian {
 	@Override
 	public void onLivingUpdate() {
 		List<Entity> passengers = this.getPassengers();
-		EntityLiving passenger = !passengers.isEmpty() && passengers.get(0)instanceof EntityLiving?(EntityLiving)passengers.get(0):null;
-		if(passenger==null || passenger.getAttackTarget() == null){
+		EntityLiving passenger = !passengers.isEmpty() && passengers.get(0) instanceof EntityLiving ? (EntityLiving) passengers.get(0) : null;
+		if(passenger == null || passenger.getAttackTarget() == null){
 			timeWithoutPassenger++;
 			if(timeWithoutPassenger > 500)
 				this.attackEntityFrom(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
 		}else
 			timeWithoutPassenger = 0;
-		if(passenger!=null){
+		if(passenger != null){
 			EntityLivingBase target = passenger.getAttackTarget();
 			passenger.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:water_breathing"), 10, 1, false, false));
 			if(target != null){
@@ -72,7 +72,7 @@ public class EntityGuardianBoat extends EntityGuardian {
 			this.motionZ = facing.z;
 		}
 		if(this.isOnLand()){
-			if(passenger!=null){
+			if(passenger != null){
 				passenger.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:resistance"), 2, 4, false, false));
 				passenger.getNavigator().clearPath();
 				this.dismountEntity(passenger);

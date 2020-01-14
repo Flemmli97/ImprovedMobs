@@ -168,7 +168,7 @@ public class GeneralHelperMethods {
 
 	public static void modifyAttr(EntityLiving living, IAttribute att, double value, double max, boolean multiply) {
 		IAttributeInstance inst = living.getAttributeMap().getAttributeInstance(att);
-		if(inst==null)
+		if(inst == null)
 			return;
 		double oldValue = inst.getBaseValue();
 		value *= DifficultyData.getDifficulty(living.world, living);
@@ -177,7 +177,7 @@ public class GeneralHelperMethods {
 			value = oldValue * (1 + value);
 			if(att == SharedMonsterAttributes.MAX_HEALTH)
 				value = ConfigHandler.roundHP > 0 ? MathUtils.roundTo(value, ConfigHandler.roundHP) : value;
-				inst.setBaseValue(value);
+			inst.setBaseValue(value);
 		}else{
 			value = Math.min(value, max);
 			value = oldValue + value;

@@ -32,8 +32,7 @@ public class EntityAIClimbLadder extends EntityAIBase {
 			int y = this.path.getPathPointFromIndex(i).y;//this.living.getPosition().getY();
 			PathPoint pointNext = this.path.getPathPointFromIndex(i + 1);
 			IBlockState down = this.living.world.getBlockState(this.living.getPosition().down());
-			if(pointNext.y < y
-					|| (pointNext.y == y && !down.getBlock().isLadder(down, this.living.world, this.living.getPosition().down(), this.living)))
+			if(pointNext.y < y || (pointNext.y == y && !down.getBlock().isLadder(down, this.living.world, this.living.getPosition().down(), this.living)))
 				this.living.motionY = -0.15;
 			else
 				this.living.motionY = 0.15;

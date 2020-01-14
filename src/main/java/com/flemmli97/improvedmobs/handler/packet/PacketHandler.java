@@ -42,8 +42,7 @@ public class PacketHandler {
 	}
 
 	public static final void sendToAllAround(IMessage message, TileEntity tileEntity, double range) {
-		sendToAllAround(message, tileEntity.getWorld().provider.getDimension(), tileEntity.getPos().getX() + 0.5D, tileEntity.getPos().getY() + 0.5D,
-				tileEntity.getPos().getZ() + 0.5D, range);
+		sendToAllAround(message, tileEntity.getWorld().provider.getDimension(), tileEntity.getPos().getX() + 0.5D, tileEntity.getPos().getY() + 0.5D, tileEntity.getPos().getZ() + 0.5D, range);
 	}
 
 	public static final void sendToDimension(IMessage message, int dimensionId) {
