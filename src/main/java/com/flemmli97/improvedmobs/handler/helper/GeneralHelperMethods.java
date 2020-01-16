@@ -49,34 +49,17 @@ public class GeneralHelperMethods {
 		if(ConfigHandler.baseEquipChance != 0){
 			float time = DifficultyData.getDifficulty(living.world, living) * ConfigHandler.diffEquipAdd * 0.01F;
 			if(living.getRNG().nextFloat() < (ConfigHandler.baseEquipChance + time)){
-				ItemStack helmet = EquipmentList.getEquip(living, EntityEquipmentSlot.HEAD);
-				if(!helmet.isEmpty()){
-					if(!ConfigHandler.shouldDropEquip)
-						helmet.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-					living.setItemStackToSlot(EntityEquipmentSlot.HEAD, helmet);
-				}
-				if(ConfigHandler.baseEquipChanceAdd != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd + time)){
-					ItemStack chest = EquipmentList.getEquip(living, EntityEquipmentSlot.CHEST);
-					if(!chest.isEmpty()){
-						if(!ConfigHandler.shouldDropEquip)
-							chest.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-						living.setItemStackToSlot(EntityEquipmentSlot.CHEST, chest);
-					}
-				}
-				if(ConfigHandler.baseEquipChanceAdd != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd + time)){
-					ItemStack legs = EquipmentList.getEquip(living, EntityEquipmentSlot.LEGS);
-					if(!legs.isEmpty()){
-						if(!ConfigHandler.shouldDropEquip)
-							legs.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-						living.setItemStackToSlot(EntityEquipmentSlot.LEGS, legs);
-					}
-				}
-				if(ConfigHandler.baseEquipChanceAdd != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd + time)){
-					ItemStack boots = EquipmentList.getEquip(living, EntityEquipmentSlot.FEET);
-					if(!boots.isEmpty()){
-						if(!ConfigHandler.shouldDropEquip)
-							boots.addEnchantment(Enchantments.VANISHING_CURSE, 1);
-						living.setItemStackToSlot(EntityEquipmentSlot.FEET, boots);
+				for(EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
+					if(slot.getSlotType()==EntityEquipmentSlot.Type.HAND)
+						continue;
+					boolean shouldAdd = slot == EntityEquipmentSlot.HEAD || (ConfigHandler.baseEquipChanceAdd != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd + time));
+					if(shouldAdd && living.getItemStackFromSlot(slot).isEmpty()) {
+						ItemStack equip = EquipmentList.getEquip(living, slot);
+						if(!equip.isEmpty()){
+							if(!ConfigHandler.shouldDropEquip)
+								equip.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+							living.setItemStackToSlot(slot, equip);
+						}
 					}
 				}
 			}
