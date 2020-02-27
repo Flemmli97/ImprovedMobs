@@ -1,3 +1,9 @@
+Improved Mobs 1.6.5
+================
+- Changed potions to use Potion#isBadEffect instead of checking only for instant damage
+- Fix auto target only working for one pair
+- Difficulty will not increase without online players anymore
+
 Improved Mobs 1.6.4
 ================
 - Changed it so armor only equips if the slot is empty (to prevent item overrides)

@@ -49,11 +49,11 @@ public class GeneralHelperMethods {
 		if(ConfigHandler.baseEquipChance != 0){
 			float time = DifficultyData.getDifficulty(living.world, living) * ConfigHandler.diffEquipAdd * 0.01F;
 			if(living.getRNG().nextFloat() < (ConfigHandler.baseEquipChance + time)){
-				for(EntityEquipmentSlot slot : EntityEquipmentSlot.values()) {
-					if(slot.getSlotType()==EntityEquipmentSlot.Type.HAND)
+				for(EntityEquipmentSlot slot : EntityEquipmentSlot.values()){
+					if(slot.getSlotType() == EntityEquipmentSlot.Type.HAND)
 						continue;
 					boolean shouldAdd = slot == EntityEquipmentSlot.HEAD || (ConfigHandler.baseEquipChanceAdd != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseEquipChanceAdd + time));
-					if(shouldAdd && living.getItemStackFromSlot(slot).isEmpty()) {
+					if(shouldAdd && living.getItemStackFromSlot(slot).isEmpty()){
 						ItemStack equip = EquipmentList.getEquip(living, slot);
 						if(!equip.isEmpty()){
 							if(!ConfigHandler.shouldDropEquip)
