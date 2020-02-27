@@ -2,10 +2,13 @@ package com.flemmli97.improvedmobs.entity;
 
 import java.util.List;
 
+import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.projectile.EntityPotion;
+import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
+import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.potion.Potion;
 import net.minecraft.potion.PotionEffect;
 import net.minecraft.potion.PotionType;
@@ -31,6 +34,25 @@ public class EntityMobSplash extends EntityPotion {
 
 	@Override
 	protected void onImpact(RayTraceResult result) {
+
+		if(!this.world.isRemote){
+			ItemStack itemstack = this.getPotion();
+			PotionType potiontype = PotionUtils.getPotionFromItem(itemstack);
+			List<PotionEffect> list = PotionUtils.getEffectsFromStack(itemstack);
+
+			if(!list.isEmpty()){
+				if(this.getPotion().getItem() == Items.LINGERING_POTION){
+					this.makeAreaOfEffectCloud(itemstack, potiontype);
+				}else{
+					this.applySplashPotion(result, list);
+				}
+			}
+
+			int i = potiontype.hasInstantEffect() ? 2007 : 2002;
+			this.world.playEvent(i, new BlockPos(this), PotionUtils.getColor(itemstack));
+			this.setDead();
+		}
+
 		if(!this.world.isRemote){
 			ItemStack itemstack = this.getPotion();
 			PotionType potiontype = PotionUtils.getPotionFromItem(itemstack);
@@ -43,6 +65,28 @@ public class EntityMobSplash extends EntityPotion {
 			this.world.playEvent(i, new BlockPos(this), PotionUtils.getColor(itemstack));
 			this.setDead();
 		}
+	}
+
+	private void makeAreaOfEffectCloud(ItemStack p_190542_1_, PotionType p_190542_2_) {
+		EntityAreaEffectCloud entityareaeffectcloud = new EntityAreaEffectCloud(this.world, this.posX, this.posY, this.posZ);
+		entityareaeffectcloud.setOwner(this.getThrower());
+		entityareaeffectcloud.setRadius(3.0F);
+		entityareaeffectcloud.setRadiusOnUse(-0.5F);
+		entityareaeffectcloud.setWaitTime(10);
+		entityareaeffectcloud.setRadiusPerTick(-entityareaeffectcloud.getRadius() / (float) entityareaeffectcloud.getDuration());
+		entityareaeffectcloud.setPotion(p_190542_2_);
+
+		for(PotionEffect potioneffect : PotionUtils.getFullEffectsFromItem(p_190542_1_)){
+			entityareaeffectcloud.addEffect(new PotionEffect(potioneffect));
+		}
+
+		NBTTagCompound nbttagcompound = p_190542_1_.getTagCompound();
+
+		if(nbttagcompound != null && nbttagcompound.hasKey("CustomPotionColor", 99)){
+			entityareaeffectcloud.setColor(nbttagcompound.getInteger("CustomPotionColor"));
+		}
+
+		this.world.spawnEntity(entityareaeffectcloud);
 	}
 
 	private void applySplashPotion(RayTraceResult result, List<PotionEffect> list) {

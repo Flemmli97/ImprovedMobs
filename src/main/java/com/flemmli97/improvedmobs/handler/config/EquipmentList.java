@@ -31,7 +31,6 @@ import com.google.gson.stream.JsonWriter;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.init.PotionTypes;
 import net.minecraft.inventory.EntityEquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemArmor;
@@ -44,7 +43,6 @@ import net.minecraft.item.ItemTool;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
@@ -82,12 +80,19 @@ public class EquipmentList {
 				if(ai != null){
 					switch(ai.prefHand()){
 						case BOTH:
+
 							if(ai.type() == ItemType.NONSTRAFINGITEM){
 								WeightedItemstack val = new WeightedItemstack(item, getDefaultWeight(item));
 								if(!equips.get(EntityEquipmentSlot.MAINHAND).list.contains(val))
 									equips.compute(EntityEquipmentSlot.OFFHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(val)) : l.add(val));
-							}else
-								equips.compute(EntityEquipmentSlot.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+							}else{
+								if(item == Items.SPLASH_POTION){
+									String potionItem = item.getRegistryName().toString() + "{Potion:\"minecraft:harming\"}";
+									equips.compute(EntityEquipmentSlot.MAINHAND,
+											(s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(potionItem, getDefaultWeight(item), Lists.newArrayList()))) : l.add(new WeightedItemstack(potionItem, getDefaultWeight(item), Lists.newArrayList())));
+								}else
+									equips.compute(EntityEquipmentSlot.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
+							}
 							break;
 						case MAIN:
 							equips.compute(EntityEquipmentSlot.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
@@ -291,8 +296,6 @@ public class EquipmentList {
 		}
 
 		public ItemStack getItem() {
-			if(this.item.getItem() == Items.SPLASH_POTION)
-				return PotionUtils.addPotionToItemStack(new ItemStack(Items.SPLASH_POTION), PotionTypes.HARMING);
 			return this.item.getStack();
 		}
 

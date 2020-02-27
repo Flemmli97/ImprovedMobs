@@ -50,6 +50,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemArrow;
 import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemBow;
+import net.minecraft.item.ItemLingeringPotion;
 import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemSplashPotion;
 import net.minecraft.item.ItemStack;
@@ -132,13 +133,12 @@ public class AIUseHelper {
 		}
 	}
 
-	private static boolean isDamagePotion(ItemStack stack) {
-		List<PotionEffect> effects = PotionUtils.getEffectsFromStack(stack);
-		if(effects.size() == 1){
-			if(effects.get(0).getPotion() == Potion.getPotionFromResourceLocation("minecraft:instant_damage"))
-				return true;
+	private static boolean isBadPotion(ItemStack stack) {
+		for(PotionEffect effect : PotionUtils.getEffectsFromStack(stack)){
+			if(!effect.getPotion().isBadEffect())
+				return false;
 		}
-		return false;
+		return true;
 	}
 
 	private static final Map<Class<? extends Item>, ItemAI> clssMap = Maps.newHashMap();
@@ -382,7 +382,39 @@ public class AIUseHelper {
 			@Override
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
 				ItemStack stack = entity.getHeldItem(hand);
-				if(AIUseHelper.isDamagePotion(stack)){
+				if(AIUseHelper.isBadPotion(stack)){
+					double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
+					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+					if(!entity.world.isRemote){
+						EntityMobSplash entitypotion = new EntityMobSplash(entity.world, entity, stack);
+						entitypotion.shoot(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
+						entity.world.spawnEntity(entitypotion);
+					}
+				}
+			}
+
+			@Override
+			public int cooldown() {
+				return 85;
+			}
+
+			@Override
+			public ItemType type() {
+				return ItemType.STRAFINGITEM;
+			}
+
+			@Override
+			public Hand prefHand() {
+				return Hand.BOTH;
+			}
+		});
+
+		clssMap.put(ItemLingeringPotion.class, new ItemAI() {
+
+			@Override
+			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
+				ItemStack stack = entity.getHeldItem(hand);
+				if(AIUseHelper.isBadPotion(stack)){
 					double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
 					if(!entity.world.isRemote){
