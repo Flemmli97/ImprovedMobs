@@ -30,6 +30,7 @@ public class DifficultyHandler {
 	@SubscribeEvent
 	public void increaseDifficulty(WorldTickEvent e) {
 		if(e.phase == Phase.END && e.world != null && !e.world.isRemote && e.world.provider.getDimension() == 0){
+			boolean noPlayers = e.world.getMinecraftServer().getPlayerList().getPlayers().isEmpty();
 			DifficultyData data = DifficultyData.get(e.world);
 			if(ConfigHandler.shouldPunishTimeSkip){
 				long timeDiff = (int) Math.abs(e.world.getWorldTime() - data.getPrevTime());
@@ -39,11 +40,11 @@ public class DifficultyHandler {
 						i *= 2400;
 					else
 						i *= 2400 + 2400;
-					data.increaseDifficultyBy(e.world.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0, e.world.getWorldTime());
+					data.increaseDifficultyBy(noPlayers ? 0 : e.world.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0, e.world.getWorldTime());
 				}
 			}else{
 				if(e.world.getWorldTime() - data.getPrevTime() > 2400){
-					data.increaseDifficultyBy(e.world.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0, e.world.getWorldTime());
+					data.increaseDifficultyBy(noPlayers ? 0 : e.world.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0, e.world.getWorldTime());
 				}
 			}
 		}
