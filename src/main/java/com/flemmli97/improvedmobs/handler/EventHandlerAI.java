@@ -216,15 +216,16 @@ public class EventHandlerAI {
 					if(villager)
 						creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, creature.getTags().contains("Breaker") ? false : creature.world.rand.nextFloat() <= 0.5));
 				}
-			Class<? extends EntityLiving> clss = ConfigHandler.autoTargets.get(EntityList.getKey(creature));
-			if(clss != null)
-				this.addAutoTargetAI(creature, clss);
+			List<Class<? extends EntityLiving>> clssL = ConfigHandler.autoTargets.get(EntityList.getKey(creature));
+			if(clssL != null)
+				creature.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityLiving>(creature, EntityLiving.class, 10, creature.getTags().contains("Breaker") ? false : true, false, (living)->clssL.contains(living.getClass())));
+				//clssL.forEach(clss -> this.addAutoTargetAI(creature, clss));
 		}
 	}
 
-	private <T extends EntityLiving> void addAutoTargetAI(EntityCreature c, Class<T> clss) {
+	/*private <T extends EntityLiving> void addAutoTargetAI(EntityCreature c, Class<T> clss) {
 		c.targetTasks.addTask(3, new EntityAINearestAttackableTarget<T>(c, clss, c.getTags().contains("Breaker") ? false : true));
-	}
+	}*/
 
 	private void applyAttributesAndItems(EntityLiving living) {
 		if(living.getEntityData().hasKey(modifyArmor) && !living.getEntityData().getBoolean(modifyArmor)){

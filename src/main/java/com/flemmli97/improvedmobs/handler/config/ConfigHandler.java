@@ -191,7 +191,7 @@ public class ConfigHandler {
 		breakTileEntities = config.getBoolean("Break Tiles", "ai", true, "Should mobs be able to break tile entities? Evaluated before the break list");
 		neutralAggressiv = config.getFloat("Neutral Aggressive Chance", "ai", 0.2F, 0, 1, "Chance for neutral mobs to be aggressive");
 		if(state == LoadState.SYNC || state == LoadState.POSTINIT)
-			autoTargets.readFromString(config.getStringList("Auto Target List", "ai", autoTargets.writeToString(), "List for of pairs containing which mobs auto target others. Syntax is " + autoTargets.usage() + " where the class name is the target"));
+			autoTargets.readFromString(config.getStringList("Auto Target List", "ai", autoTargets.writeToString(), "List for of pairs containing which mobs auto target others. Syntax is " + autoTargets.usage()));
 		repairTick = config.get("ai", "Repair Ticks", 500, "Delay for the coroutil repair block. Coroutil integration needs to be enabled.").getInt();
 		difficultyBreak = ConfigUtils.getFloatConfig(config, "Difficulty Break AI", "ai", 0, "Difficulty at which mobs are able to break blocks");
 		difficultySteal = ConfigUtils.getFloatConfig(config, "Difficulty Steal AI", "ai", 0, "Difficulty at which mobs are able to steal items");
