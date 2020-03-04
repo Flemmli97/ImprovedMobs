@@ -290,7 +290,7 @@ public class EquipmentList {
 			Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemReg));
 			if(it == null){
 				errors.add(itemReg);
-				this.item = new ExtendedItemStackWrapper(Items.AIR);
+				this.item = null;
 			}else
 				this.item = new ExtendedItemStackWrapper(it).setNBT(nbt);
 		}
@@ -363,7 +363,7 @@ public class EquipmentList {
 		}
 
 		public WeightedItemstackList add(WeightedItemstack item) {
-			if(item.item.getItem() == Items.AIR || item.item == null)
+			if(item.item == null)
 				return this;
 			if(this.list.contains(item))
 				this.list.remove(item);
