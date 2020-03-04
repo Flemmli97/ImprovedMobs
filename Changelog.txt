@@ -1,3 +1,7 @@
+Improved Mobs 1.6.6
+================
+- Fix "minecraft:air" not being valid for equipment
+
 Improved Mobs 1.6.5
 ================
 - Changed potions to use Potion#isBadEffect instead of checking only for instant damage
