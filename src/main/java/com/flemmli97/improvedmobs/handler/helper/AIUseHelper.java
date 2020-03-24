@@ -675,7 +675,7 @@ public class AIUseHelper {
 
 			@Override
 			public int cooldown() {
-				return 50;
+				return 75;
 			}
 
 			@Override
@@ -695,7 +695,7 @@ public class AIUseHelper {
 
 			@Override
 			public int maxUseCount() {
-				return 200;
+				return 150;
 			}
 		});
 	}
