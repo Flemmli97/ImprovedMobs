@@ -1,6 +1,8 @@
 Improved Mobs 1.6.6
 ================
 - Fix "minecraft:air" not being valid for equipment
+- Fix default entity list
+- Added a difficulty increase delay for the start of a world
 
 Improved Mobs 1.6.5
 ================

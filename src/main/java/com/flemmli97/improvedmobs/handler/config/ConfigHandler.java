@@ -23,6 +23,8 @@ public class ConfigHandler {
 
 	//General
 	public static boolean enableDifficultyScaling;
+	public static int difficultyDelay;
+	public static boolean ignorePlayers;
 	public static String[] mobListLight;
 	public static boolean mobListLightBlackList;
 	public static int light;
@@ -32,7 +34,7 @@ public class ConfigHandler {
 	public static boolean petWhiteList;
 
 	//Black-WhiteList
-	public static EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
+	public static EntityModifyFlagConfig entityBlacklist;
 	public static boolean mobAttributeWhitelist;
 	public static boolean armorMobWhitelist;
 	public static boolean heldMobWhitelist;
@@ -112,6 +114,8 @@ public class ConfigHandler {
 		Property prop = config.get("general", "Enable difficulty scaling", true);
 		prop.setComment("Disable/Enables the whole difficulty scaling of this mod");
 		enableDifficultyScaling = prop.setRequiresMcRestart(true).getBoolean();
+		difficultyDelay = ConfigUtils.getIntConfig(config, "Difficulty Delay", "general", 0, 0, "Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks");
+		ignorePlayers = config.getBoolean("Ignore Players", "general", false, "Wether difficulty should only increase with at least one online players or not");
 		mobListLight = config.getStringList("Light list", "general", new String[0], "Mobs to include for the new light spawning rules.");
 		mobListLightBlackList = config.getBoolean("Light list blacklist", "general", false, "Turn the list list whitelist to blacklist");
 		light = config.getInt("Light", "general", 7, 0, 15, "Light level, blocks can have at max, so mobs can spawn on them.");
