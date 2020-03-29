@@ -695,7 +695,7 @@ public class AIUseHelper {
 
 			@Override
 			public int maxUseCount() {
-				return 150;
+				return 125;
 			}
 		});
 	}

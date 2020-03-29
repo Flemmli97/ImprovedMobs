@@ -37,6 +37,7 @@ import net.minecraft.item.ItemArmor;
 import net.minecraft.item.ItemAxe;
 import net.minecraft.item.ItemBow;
 import net.minecraft.item.ItemPotion;
+import net.minecraft.item.ItemShield;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.ItemSword;
 import net.minecraft.item.ItemTool;
@@ -229,8 +230,8 @@ public class EquipmentList {
 		}else{
 			if(item == Items.FLINT_AND_STEEL)
 				weight = 700;
-			else if(item == Items.SHIELD)
-				weight = 950;
+			else if(item instanceof ItemShield)
+				weight = 850;
 			else if(item == Items.LAVA_BUCKET)
 				weight = 400;
 			else if(item == Items.ENDER_PEARL)

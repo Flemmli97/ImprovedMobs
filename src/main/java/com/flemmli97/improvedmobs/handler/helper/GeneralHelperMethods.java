@@ -76,6 +76,7 @@ public class GeneralHelperMethods {
 				living.setItemStackToSlot(EntityEquipmentSlot.MAINHAND, stack);
 			}
 		}
+		add = DifficultyData.getDifficulty(living.world, living) * ConfigHandler.diffItemChanceAdd * 0.01F;
 		if(ConfigHandler.baseItemChance != 0 && living.getRNG().nextFloat() < (ConfigHandler.baseItemChance + add)){
 			if(living.getHeldItemOffhand().isEmpty()){
 				ItemStack stack = EquipmentList.getEquip(living, EntityEquipmentSlot.OFFHAND);

@@ -85,7 +85,7 @@ public class ConfigHandler {
 	public static float baseEnchantChance;
 	public static float diffEnchantAdd;
 	public static float baseItemChance;
-	public static float baseItemChanceAdd;
+	public static float diffItemChanceAdd;
 	public static boolean shouldDropEquip;
 
 	//Attributes
@@ -213,7 +213,7 @@ public class ConfigHandler {
 		baseEnchantChance = config.getFloat("Enchanting Chance", "equipment", 0.2F, 0, 1, "Base chance for each armor pieces to get enchanted.");
 		diffEnchantAdd = ConfigUtils.getFloatConfig(config, "Enchanting Addition", "equipment", 0.3F, "Adds additional x*difficulty% to base enchanting chance");
 		baseItemChance = config.getFloat("Item Equip Chance", "equipment", 0.05F, 0, 1, "Chance for mobs to have an item in offhand.");
-		baseItemChance = ConfigUtils.getFloatConfig(config, "Item Chance add", "equipment", 0.2F, "Adds additional x*difficulty% to base item chance");
+		diffItemChanceAdd = ConfigUtils.getFloatConfig(config, "Item Chance add", "equipment", 0.2F, "Adds additional x*difficulty% to base item chance");
 		shouldDropEquip = config.getBoolean("Should drop equipment", "equipment", false, "Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)");
 
 		ConfigCategory attributes = config.getCategory("attributes");
