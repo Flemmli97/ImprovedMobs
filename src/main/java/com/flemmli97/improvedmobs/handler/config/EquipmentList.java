@@ -338,6 +338,7 @@ public class EquipmentList {
 
 		public WeightedItemstackList(List<WeightedItemstack> list) {
 			this.list = list;
+			this.list.removeIf(w->w.item==null);
 			this.calculateTotalWeight();
 		}
 
