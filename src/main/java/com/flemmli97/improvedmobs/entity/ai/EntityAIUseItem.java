@@ -6,6 +6,7 @@ import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemAI;
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemType;
 
+import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.SharedMonsterAttributes;
@@ -38,10 +39,11 @@ public class EntityAIUseItem extends EntityAIBase {
 		this.maxAttackDistance = maxDistance * maxDistance;
 		this.setMutexBits(8);
 		entity.tasks.taskEntries.forEach(entry -> {
-			if(entry.action instanceof EntityAIAttackRangedBow)
+			if(entry.action instanceof EntityAIAttackRangedBow || EntityList.getKey(this.living).toString().equals("primitivemobs:skeleton_warrior"))
 				this.hasBowAI = true;
 			if(entry.action instanceof EntityAIAttackRanged)
 				this.hasRangedAttack = true;
+			
 		});
 	}
 
