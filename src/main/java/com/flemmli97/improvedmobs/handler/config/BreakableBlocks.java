@@ -26,7 +26,7 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
 	}
 
 	public boolean canBreak(IBlockState state) {
-		if(state.getMaterial() == Material.AIR || ConfigHandler.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock)
+		if(state.getMaterial() == Material.AIR || (ConfigHandler.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
 			return false;
 		if(!ConfigHandler.breakTileEntities && state.getBlock().hasTileEntity(state))
 			return false;
@@ -40,12 +40,14 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
 	public BreakableBlocks readFromString(String[] arr) {
 		this.blocks.clear();
 		this.configString = arr;
+		List<String> blackList = Lists.newArrayList();
 		for(String s : arr){
-			List<String> blackList = Lists.newArrayList();
-			addBlocks(s, blackList);
-			addBlocks(s, this.blocks);
-			this.blocks.removeAll(blackList);
+			if(s.startsWith("!"))
+				addBlocks(s, blackList);
+			else
+				addBlocks(s, this.blocks);
 		}
+		this.blocks.removeAll(blackList);
 		return this;
 	}
 
