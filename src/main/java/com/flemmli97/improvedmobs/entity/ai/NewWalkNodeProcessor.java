@@ -8,15 +8,18 @@ import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.google.common.collect.Lists;
 
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockCactus;
 import net.minecraft.block.BlockDoor;
 import net.minecraft.block.BlockFence;
 import net.minecraft.block.BlockFenceGate;
+import net.minecraft.block.BlockFire;
+import net.minecraft.block.BlockLilyPad;
 import net.minecraft.block.BlockRailBase;
+import net.minecraft.block.BlockTrapDoor;
 import net.minecraft.block.BlockWall;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
-import net.minecraft.init.Blocks;
 import net.minecraft.pathfinding.PathNodeType;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.pathfinding.WalkNodeProcessor;
@@ -203,7 +206,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 		BlockPos blockpos = new BlockPos(x, y, z);
 		IBlockState iblockstate = acc.getBlockState(blockpos);
 		Block block = iblockstate.getBlock();
-		if(this.entity != null && this.canBreakBlocks && ConfigHandler.breakableBlocks.canBreak(iblockstate)){
+		if(this.entity != null && this.canBreakBlocks() && ConfigHandler.breakableBlocks.canBreak(iblockstate)){
 			double d1 = (double) this.entity.width / 2.0D;
 			AxisAlignedBB aabb = new AxisAlignedBB((double) x - d1 + 0.5D, (double) y + 1.001D, (double) z - d1 + 0.5D, (double) x + d1 + 0.5D, (double) ((float) y + 1 + this.entity.height), (double) z + d1 + 0.5D);
 			if(this.entity.posY > blockpos.getY() + 0.8)
@@ -230,39 +233,36 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 		if(type != null)
 			return type;
 
-		if(material == Material.AIR){
+		if(material == Material.AIR || iblockstate.getCollisionBoundingBox(acc, blockpos) == Block.NULL_AABB)
 			return PathNodeType.OPEN;
-		}else if(iblockstate.getCollisionBoundingBox(acc, blockpos) == Block.NULL_AABB){
-			return PathNodeType.OPEN;
-		}else if(block != Blocks.TRAPDOOR && block != Blocks.IRON_TRAPDOOR && block != Blocks.WATERLILY){
-			if(block == Blocks.FIRE){
-				return PathNodeType.DAMAGE_FIRE;
-			}else if(block == Blocks.CACTUS){
-				return PathNodeType.DAMAGE_CACTUS;
-			}else if(block instanceof BlockDoor && material == Material.WOOD && !((Boolean) iblockstate.getValue(BlockDoor.OPEN)).booleanValue()){
-				return PathNodeType.DOOR_WOOD_CLOSED;
-			}else if(block instanceof BlockDoor && material == Material.IRON && !((Boolean) iblockstate.getValue(BlockDoor.OPEN)).booleanValue()){
-				return PathNodeType.DOOR_IRON_CLOSED;
-			}else if(block instanceof BlockDoor && ((Boolean) iblockstate.getValue(BlockDoor.OPEN)).booleanValue()){
-				return PathNodeType.DOOR_OPEN;
-			}else if(block instanceof BlockRailBase){
-				return PathNodeType.RAIL;
-			}else if(this.isFence(acc, iblockstate, blockpos, block))
-				return PathNodeType.FENCE;
-			else{
-				if(material == Material.WATER){
-					return PathNodeType.WATER;
-				}else if(material == Material.LAVA){
-					return PathNodeType.LAVA;
-				}else{
-					return block.isPassable(acc, blockpos) ? PathNodeType.OPEN : PathNodeType.BLOCKED;
-				}
-			}
-		}else{
+		else if(block instanceof BlockTrapDoor || block instanceof BlockLilyPad)
 			return PathNodeType.TRAPDOOR;
-		}
+		else if(block instanceof BlockFire)
+			return PathNodeType.DAMAGE_FIRE;
+		else if(block instanceof BlockCactus)
+			return PathNodeType.DAMAGE_CACTUS;
+		else if(block instanceof BlockDoor)
+			return this.getDoorType(iblockstate);
+		else if(block instanceof BlockRailBase)
+			return PathNodeType.RAIL;
+		else if(this.isFence(acc, iblockstate, blockpos, block))
+			return PathNodeType.FENCE;
+		else if(material == Material.WATER)
+			return PathNodeType.WATER;
+		else if(material == Material.LAVA)
+			return PathNodeType.LAVA;
+		else
+			return block.isPassable(acc, blockpos) ? PathNodeType.OPEN : PathNodeType.BLOCKED;
 	}
 
+	public boolean canBreakBlocks() {
+		return this.canBreakBlocks;
+	}
+
+	public void setBreakBlocks(boolean flag) {
+		this.canBreakBlocks = flag;
+	}
+	
 	//For some block not extending fences but having a bigger collision box
 	private boolean isFence(IBlockAccess acc, IBlockState iblockstate, BlockPos blockpos, Block block) {
 		if(block instanceof BlockFence || block instanceof BlockWall || (block instanceof BlockFenceGate && !((Boolean) iblockstate.getValue(BlockFenceGate.OPEN)).booleanValue())){
@@ -276,11 +276,14 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 		return false;
 	}
 
-	public boolean canBreakBlocks() {
-		return this.canBreakBlocks;
-	}
-
-	public void setBreakBlocks(boolean flag) {
-		this.canBreakBlocks = flag;
+	private PathNodeType getDoorType(IBlockState state) {
+		boolean open = state.getValue(BlockDoor.OPEN);
+		if(!open){
+			if(state.getMaterial() == Material.WOOD)
+				return PathNodeType.DOOR_WOOD_CLOSED;
+			else
+				return PathNodeType.DOOR_IRON_CLOSED;
+		}
+		return PathNodeType.DOOR_OPEN;
 	}
 }

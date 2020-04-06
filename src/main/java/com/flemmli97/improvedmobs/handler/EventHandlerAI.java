@@ -108,6 +108,7 @@ public class EventHandlerAI {
 			EntityLiving entity = ReflectionUtils.getFieldValue(this.entity, event.getNavigator());
 			walkNode.setBreakBlocks(entity.getTags().contains(EventHandlerAI.breaker));
 			walkNode.setCanEnterDoors(true);
+			walkNode.setCanOpenDoors(true);
 			ReflectionUtils.setFieldValue(this.nodeProcessor, event.getNavigator(), walkNode);
 			event.setPathFinder(new PathFinder(walkNode));
 		}

@@ -5,6 +5,8 @@ Improved Mobs 1.6.7
 - Nerfed shield default weight
 - Fix nullpointer crash with wrong registry name in equipment.json
 - Dont run item ai for primitive mobs skeleton warrior
+- Fix block break list not working
+- Fix entities not walking through doors
 
 Improved Mobs 1.6.6
 ================
