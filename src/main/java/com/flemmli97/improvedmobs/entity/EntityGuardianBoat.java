@@ -1,7 +1,5 @@
 package com.flemmli97.improvedmobs.entity;
 
-import java.util.List;
-
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -17,6 +15,8 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
+import java.util.List;
+
 public class EntityGuardianBoat extends EntityGuardian {
 
 	private int timeWithoutPassenger;
@@ -25,8 +25,8 @@ public class EntityGuardianBoat extends EntityGuardian {
 	public EntityGuardianBoat(World worldIn) {
 		super(worldIn);
 		this.experienceValue = 0;
-		this.tasks.taskEntries.removeAll(this.tasks.taskEntries);
-		this.targetTasks.taskEntries.removeAll(this.targetTasks.taskEntries);
+		this.tasks.taskEntries.clear();
+		this.targetTasks.taskEntries.clear();
 		this.tasks.addTask(7, new EntityAIWander(this, 1.0D, 80));
 		this.tasks.addTask(9, new EntityAILookIdle(this));
 	}
@@ -44,11 +44,11 @@ public class EntityGuardianBoat extends EntityGuardian {
 		List<Entity> passengers = this.getPassengers();
 		EntityLiving passenger = !passengers.isEmpty() && passengers.get(0) instanceof EntityLiving ? (EntityLiving) passengers.get(0) : null;
 		if(passenger == null || passenger.getAttackTarget() == null){
-			timeWithoutPassenger++;
-			if(timeWithoutPassenger > 500)
+			this.timeWithoutPassenger++;
+			if(this.timeWithoutPassenger > 500)
 				this.attackEntityFrom(DamageSource.OUT_OF_WORLD, Float.MAX_VALUE);
 		}else
-			timeWithoutPassenger = 0;
+			this.timeWithoutPassenger = 0;
 		if(passenger != null){
 			EntityLivingBase target = passenger.getAttackTarget();
 			passenger.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation("minecraft:water_breathing"), 10, 1, false, false));

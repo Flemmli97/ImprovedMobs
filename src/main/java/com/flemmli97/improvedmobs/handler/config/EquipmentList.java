@@ -1,19 +1,5 @@
 package com.flemmli97.improvedmobs.handler.config;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.silvercatcher.reforged.items.weapons.ItemBlowGun;
-import org.silvercatcher.reforged.items.weapons.ItemBlunderbuss;
-import org.silvercatcher.reforged.items.weapons.ItemCrossbow;
-import org.silvercatcher.reforged.items.weapons.ItemJavelin;
-
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper;
 import com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemAI;
@@ -27,27 +13,31 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
 import net.minecraft.inventory.EntityEquipmentSlot;
-import net.minecraft.item.Item;
-import net.minecraft.item.ItemArmor;
-import net.minecraft.item.ItemAxe;
-import net.minecraft.item.ItemBow;
-import net.minecraft.item.ItemPotion;
-import net.minecraft.item.ItemShield;
-import net.minecraft.item.ItemStack;
-import net.minecraft.item.ItemSword;
-import net.minecraft.item.ItemTool;
+import net.minecraft.item.*;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.nbt.NBTException;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+import org.silvercatcher.reforged.items.weapons.ItemBlowGun;
+import org.silvercatcher.reforged.items.weapons.ItemBlunderbuss;
+import org.silvercatcher.reforged.items.weapons.ItemCrossbow;
+import org.silvercatcher.reforged.items.weapons.ItemJavelin;
 import techguns.items.guns.GenericGun;
+
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class EquipmentList {
 
@@ -284,7 +274,7 @@ public class EquipmentList {
 				try{
 					nbt = JsonToNBT.getTagFromJson(item.substring(idx));
 				}catch(NBTException e){
-					ImprovedMobs.logger.error("Error reading nbt from config %s", item.substring(idx));
+					ImprovedMobs.logger.error("Error reading nbt from config {}", item.substring(idx));
 					e.printStackTrace();
 				}
 			}
@@ -347,7 +337,7 @@ public class EquipmentList {
 		}
 
 		public void finishList() {
-			list.removeIf(w -> w.itemWeight == 0 || this.modBlacklist(w.item.getItem()));
+			this.list.removeIf(w -> w.itemWeight == 0 || this.modBlacklist(w.item.getItem()));
 			this.calculateTotalWeight();
 		}
 

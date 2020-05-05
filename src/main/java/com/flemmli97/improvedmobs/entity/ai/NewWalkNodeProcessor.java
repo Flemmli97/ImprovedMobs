@@ -74,12 +74,12 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 			pathOptions[i++] = pathpoint3;
 		}
 		IBlockState ladderCheck = this.blockaccess.getBlockState(new BlockPos(currentPoint.x, currentPoint.y + 1, currentPoint.z));
-		if(ladderUp != null && !ladderUp.visited && ladderUp.distanceTo(targetPoint) < maxDistance && ladderCheck.getBlock().isLadder(ladderCheck, this.blockaccess, new BlockPos(currentPoint.x, currentPoint.y + 1, currentPoint.z), entity)){
+		if(ladderUp != null && !ladderUp.visited && ladderUp.distanceTo(targetPoint) < maxDistance && ladderCheck.getBlock().isLadder(ladderCheck, this.blockaccess, new BlockPos(currentPoint.x, currentPoint.y + 1, currentPoint.z), this.entity)){
 			pathOptions[i++] = ladderUp;
 		}
 
 		IBlockState ladderCheckDown = this.blockaccess.getBlockState(new BlockPos(currentPoint.x, currentPoint.y - 1, currentPoint.z));
-		if(ladderDown != null && !ladderDown.visited && ladderDown.distanceTo(targetPoint) < maxDistance && ladderCheckDown.getBlock().isLadder(ladderCheckDown, this.blockaccess, new BlockPos(currentPoint.x, currentPoint.y - 1, currentPoint.z), entity)){
+		if(ladderDown != null && !ladderDown.visited && ladderDown.distanceTo(targetPoint) < maxDistance && ladderCheckDown.getBlock().isLadder(ladderCheckDown, this.blockaccess, new BlockPos(currentPoint.x, currentPoint.y - 1, currentPoint.z), this.entity)){
 			pathOptions[i++] = ladderDown;
 		}
 
@@ -136,7 +136,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 		if(d0 - p_186332_5_ > 1.125D)
 			return null;
 		else{
-			breakableFlag = false;
+            this.breakableFlag = false;
 			PathNodeType pathnodetype = this.getPathNodeType(this.entity, x, y, z);
 			float f = this.entity.getPathPriority(pathnodetype);
 			double d1 = this.entity.width / 2.0D;
@@ -221,7 +221,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 			return PathNodeType.OPEN;
 		}else{
 			if(this.entity != null)
-				if(block.isLadder(iblockstate, acc, blockpos, entity))
+				if(block.isLadder(iblockstate, acc, blockpos, this.entity))
 					return PathNodeType.WALKABLE;
 			return this.defaultNode(acc, iblockstate, blockpos, block);
 		}

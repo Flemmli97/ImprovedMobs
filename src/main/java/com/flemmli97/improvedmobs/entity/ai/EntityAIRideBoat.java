@@ -16,7 +16,7 @@ public class EntityAIRideBoat extends EntityAIBase {
 
 	@Override
 	public boolean shouldExecute() {
-		if(living.isInWater() && !living.isRiding() && living.getAttackTarget() != null){
+		if(this.living.isInWater() && !this.living.isRiding() && this.living.getAttackTarget() != null){
 			if(this.wait == 40)
 				return true;
 			if(this.wait < 40)

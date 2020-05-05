@@ -28,16 +28,16 @@ public class PathDebugging implements IMessage {
 	@Override
 	public void fromBytes(ByteBuf buf) {
 		NBTTagCompound compound = ByteBufUtils.readTag(buf);
-		x = compound.getIntArray("pos")[0];
-		y = compound.getIntArray("pos")[1];
-		z = compound.getIntArray("pos")[2];
-		id = compound.getIntArray("pos")[3];
+        this.x = compound.getIntArray("pos")[0];
+        this.y = compound.getIntArray("pos")[1];
+        this.z = compound.getIntArray("pos")[2];
+        this.id = compound.getIntArray("pos")[3];
 	}
 
 	@Override
 	public void toBytes(ByteBuf buf) {
 		NBTTagCompound compound = new NBTTagCompound();
-		compound.setIntArray("pos", new int[] {x, y, z, id});
+		compound.setIntArray("pos", new int[] {this.x, this.y, this.z, this.id});
 		ByteBufUtils.writeTag(buf, compound);
 	}
 

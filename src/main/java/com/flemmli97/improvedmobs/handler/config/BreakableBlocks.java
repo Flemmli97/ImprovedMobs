@@ -31,9 +31,9 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
 		if(!ConfigHandler.breakTileEntities && state.getBlock().hasTileEntity(state))
 			return false;
 		if(ConfigHandler.breakingAsBlacklist){
-			return !blocks.contains(state.getBlock().getRegistryName().toString());
+			return !this.blocks.contains(state.getBlock().getRegistryName().toString());
 		}
-		return blocks.contains(state.getBlock().getRegistryName().toString());
+		return this.blocks.contains(state.getBlock().getRegistryName().toString());
 	}
 
 	@Override

@@ -27,7 +27,7 @@ public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
 
 	@Nullable
 	public List<Class<? extends EntityLiving>> get(ResourceLocation res) {
-		return map.get(res);
+		return this.map.get(res);
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
 				}
 			}
 			if(clss != null)
-				map.put(new ResourceLocation(sub[0]), this.add(map.getOrDefault(new ResourceLocation(sub[0]), Lists.newArrayList()), clss));
+                this.map.put(new ResourceLocation(sub[0]), this.add(this.map.getOrDefault(new ResourceLocation(sub[0]), Lists.newArrayList()), clss));
 		}
 		return this;
 	}
@@ -76,7 +76,7 @@ public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
 	@Override
 	public String[] writeToString() {
 		List<String> l = Lists.newArrayList();
-		for(Entry<ResourceLocation, List<Class<? extends EntityLiving>>> ent : map.entrySet()){
+		for(Entry<ResourceLocation, List<Class<? extends EntityLiving>>> ent : this.map.entrySet()){
 			for(Class<? extends EntityLiving> clss : ent.getValue()){
 				l.add(ent.getKey().toString() + "-" + clss.getName());
 			}

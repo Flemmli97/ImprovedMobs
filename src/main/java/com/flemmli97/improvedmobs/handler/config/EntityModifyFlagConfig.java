@@ -1,12 +1,8 @@
 package com.flemmli97.improvedmobs.handler.config;
 
-import java.util.EnumSet;
-import java.util.Map;
-
 import com.flemmli97.tenshilib.api.config.IConfigArrayValue;
 import com.flemmli97.tenshilib.common.javahelper.ArrayUtils;
 import com.google.common.collect.Maps;
-
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.IEntityOwnable;
@@ -16,6 +12,9 @@ import net.minecraft.entity.monster.EntitySlime;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fml.common.registry.EntityEntry;
 import net.minecraftforge.fml.common.registry.ForgeRegistries;
+
+import java.util.EnumSet;
+import java.util.Map;
 
 public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFlagConfig> {
 
@@ -32,7 +31,7 @@ public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFla
 				if(!IEntityOwnable.class.isAssignableFrom(entry.getEntityClass()))
 					continue;
 			ResourceLocation res = entry.getRegistryName();
-			map.put(res.toString(), EnumSet.of(Flags.ALL));
+            this.map.put(res.toString(), EnumSet.of(Flags.ALL));
 		}
 	}
 
@@ -52,7 +51,7 @@ public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFla
 
 	@Override
 	public EntityModifyFlagConfig readFromString(String[] s) {
-		map.clear();
+        this.map.clear();
 		for(String val : s){
 			String[] subs = val.split("\\|");
 
@@ -64,22 +63,22 @@ public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFla
 				for(int i = 1; i < subs.length; i++)
 					set.add(Flags.valueOf(subs[i].trim()));
 			}
-			map.put(subs[0].trim(), set);
+            this.map.put(subs[0].trim(), set);
 		}
 		return this;
 	}
 
 	@Override
 	public String[] writeToString() {
-		String[] s = new String[map.size()];
+		String[] s = new String[this.map.size()];
 		int id = 0;
-		for(String key : map.keySet()){
-			String val = key;
-			for(Flags f : map.get(key)){
+		for(String key : this.map.keySet()){
+			StringBuilder val = new StringBuilder(key);
+			for(Flags f : this.map.get(key)){
 				if(f != Flags.ALL)
-					val += "|" + f.name();
+					val.append("|").append(f.name());
 			}
-			s[id] = val;
+			s[id] = val.toString();
 			id++;
 		}
 		return s;

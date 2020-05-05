@@ -120,12 +120,12 @@ public class EntityAITechGuns extends EntityAIBase {
 
 			this.attackEntityWithRangedAttack(this.attackTarget, f1);
 
-			if(maxBurstCount > 0)
-				burstCount--;
-			if(burstCount > 0){
-				this.rangedAttackTime = shotDelay;
+			if(this.maxBurstCount > 0)
+                this.burstCount--;
+			if(this.burstCount > 0){
+				this.rangedAttackTime = this.shotDelay;
 			}else{
-				burstCount = maxBurstCount;
+                this.burstCount = this.maxBurstCount;
 				this.rangedAttackTime = MathHelper.floor(f * (float) (this.maxRangedAttackTime - this.attackTimeVariance) + (float) this.attackTimeVariance);
 			}
 		}else if(this.rangedAttackTime < 0){
