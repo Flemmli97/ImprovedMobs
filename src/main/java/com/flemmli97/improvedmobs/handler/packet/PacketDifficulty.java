@@ -35,13 +35,7 @@ public class PacketDifficulty implements IMessage {
 
 		@Override
 		public IMessage onMessage(PacketDifficulty msg, MessageContext ctx) {
-			ImprovedMobs.proxy.getListener(ctx).addScheduledTask(new Runnable() {
-
-				@Override
-				public void run() {
-					DifficultyData.get(ImprovedMobs.proxy.getPlayerEntity(ctx).world).readFromNBT(msg.compound);
-				}
-			});
+			ImprovedMobs.proxy.getListener(ctx).addScheduledTask(() -> DifficultyData.get(ImprovedMobs.proxy.getPlayerEntity(ctx).world).readFromNBT(msg.compound));
 			return null;
 		}
 	}

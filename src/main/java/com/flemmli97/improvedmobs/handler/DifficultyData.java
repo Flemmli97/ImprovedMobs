@@ -13,7 +13,7 @@ import net.silentchaos512.scalinghealth.config.Config;
 
 public class DifficultyData extends WorldSavedData {
 
-	private static String identifier = "Difficulty";
+	private static final String identifier = "Difficulty";
 	private float difficultyLevel;
 	private long prevTime;
 

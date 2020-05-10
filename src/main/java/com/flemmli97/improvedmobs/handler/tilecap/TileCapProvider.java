@@ -21,7 +21,7 @@ public class TileCapProvider implements ICapabilitySerializable<NBTBase> {
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing) {
 		if(capability == OpenedCap)
-			return OpenedCap.<T>cast(this.instance);
+			return OpenedCap.cast(this.instance);
 		else
 			return null;
 	}

@@ -1,12 +1,7 @@
 package com.flemmli97.improvedmobs.entity;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-
 import net.minecraft.enchantment.EnchantmentProtection;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
@@ -24,6 +19,10 @@ import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class MobExplosion extends Explosion {
 
@@ -47,7 +46,7 @@ public class MobExplosion extends Explosion {
 
 	public MobExplosion(World worldIn, Entity entityIn, double x, double y, double z, float size, boolean flaming, boolean smoking) {
 		super(worldIn, entityIn, x, y, z, size, flaming, smoking);
-		this.playerKnockbackMap = Maps.<EntityPlayer, Vec3d>newHashMap();
+		this.playerKnockbackMap = Maps.newHashMap();
 		this.worldObj = worldIn;
 		this.exploder = entityIn;
 		this.explosionSize = size;
@@ -58,7 +57,7 @@ public class MobExplosion extends Explosion {
 
 	@Override
 	public void doExplosionA() {
-		Set<BlockPos> set = Sets.<BlockPos>newHashSet();
+		Set<BlockPos> set = Sets.newHashSet();
 		for(int j = 0; j < 16; ++j){
 			for(int k = 0; k < 16; ++k){
 				for(int l = 0; l < 16; ++l){
@@ -104,19 +103,17 @@ public class MobExplosion extends Explosion {
 		net.minecraftforge.event.ForgeEventFactory.onExplosionDetonate(this.worldObj, this, list, f3);
 		Vec3d vec3d = new Vec3d(this.explosionX, this.explosionY, this.explosionZ);
 
-		for(int k2 = 0; k2 < list.size(); ++k2){
-			Entity entity = (Entity) list.get(k2);
-
-			if(!entity.isImmuneToExplosions() && this.getExplosivePlacedBy() instanceof EntityLiving && (entity == ((EntityLiving) this.getExplosivePlacedBy()).getAttackTarget())){
+		for (Entity entity : list) {
+			if (!entity.isImmuneToExplosions() && this.getExplosivePlacedBy() instanceof EntityLiving && (entity == ((EntityLiving) this.getExplosivePlacedBy()).getAttackTarget())) {
 				double d12 = entity.getDistance(this.explosionX, this.explosionY, this.explosionZ) / f3;
 
-				if(d12 <= 1.0D){
+				if (d12 <= 1.0D) {
 					double d5 = entity.posX - this.explosionX;
 					double d7 = entity.posY + entity.getEyeHeight() - this.explosionY;
 					double d9 = entity.posZ - this.explosionZ;
 					double d13 = MathHelper.sqrt(d5 * d5 + d7 * d7 + d9 * d9);
 
-					if(d13 != 0.0D){
+					if (d13 != 0.0D) {
 						d5 = d5 / d13;
 						d7 = d7 / d13;
 						d9 = d9 / d13;
@@ -125,7 +122,7 @@ public class MobExplosion extends Explosion {
 						entity.attackEntityFrom(DamageSource.causeExplosionDamage(this), ((int) ((d10 * d10 + d10) / 2.0D * 7.0D * f3 + 1.0D)));
 						double d11 = 1.0D;
 
-						if(entity instanceof EntityLivingBase){
+						if (entity instanceof EntityLivingBase) {
 							d11 = EnchantmentProtection.getBlastDamageReduction((EntityLivingBase) entity, d10);
 						}
 
@@ -133,10 +130,10 @@ public class MobExplosion extends Explosion {
 						entity.motionY += d7 * d11;
 						entity.motionZ += d9 * d11;
 
-						if(entity instanceof EntityPlayer){
+						if (entity instanceof EntityPlayer) {
 							EntityPlayer entityplayer = (EntityPlayer) entity;
 
-							if(!entityplayer.isSpectator() && (!entityplayer.isCreative() || !entityplayer.capabilities.isFlying)){
+							if (!entityplayer.isSpectator() && (!entityplayer.isCreative() || !entityplayer.capabilities.isFlying)) {
 								this.playerKnockbackMap.put(entityplayer, new Vec3d(d5 * d10, d7 * d10, d9 * d10));
 							}
 						}
@@ -148,8 +145,8 @@ public class MobExplosion extends Explosion {
 
 	@Override
 	public void doExplosionB(boolean spawnParticles) {
-		this.worldObj.playSound((EntityPlayer) null, this.explosionX, this.explosionY, this.explosionZ, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
-		this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D, new int[0]);
+		this.worldObj.playSound(null, this.explosionX, this.explosionY, this.explosionZ, SoundEvents.ENTITY_GENERIC_EXPLODE, SoundCategory.BLOCKS, 4.0F, (1.0F + (this.worldObj.rand.nextFloat() - this.worldObj.rand.nextFloat()) * 0.2F) * 0.7F);
+		this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_HUGE, this.explosionX, this.explosionY, this.explosionZ, 1.0D, 0.0D, 0.0D);
 
 		for(BlockPos blockpos : this.getAffectedBlockPositions()){
 			if(spawnParticles){
@@ -168,8 +165,8 @@ public class MobExplosion extends Explosion {
 				d3 = d3 * d7;
 				d4 = d4 * d7;
 				d5 = d5 * d7;
-				this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (d0 + this.explosionX) / 2.0D, (d1 + this.explosionY) / 2.0D, (d2 + this.explosionZ) / 2.0D, d3, d4, d5, new int[0]);
-				this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5, new int[0]);
+				this.worldObj.spawnParticle(EnumParticleTypes.EXPLOSION_NORMAL, (d0 + this.explosionX) / 2.0D, (d1 + this.explosionY) / 2.0D, (d2 + this.explosionZ) / 2.0D, d3, d4, d5);
+				this.worldObj.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, d0, d1, d2, d3, d4, d5);
 			}
 		}
 	}

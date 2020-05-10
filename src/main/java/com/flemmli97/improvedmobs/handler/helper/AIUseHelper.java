@@ -1,43 +1,14 @@
 package com.flemmli97.improvedmobs.handler.helper;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Random;
 
-import javax.annotation.Nullable;
-
-import org.apache.commons.lang3.tuple.Pair;
-import org.silvercatcher.reforged.api.ReforgedAdditions;
-import org.silvercatcher.reforged.entities.EntityBulletBlunderbuss;
-import org.silvercatcher.reforged.entities.EntityBulletMusket;
-import org.silvercatcher.reforged.entities.EntityCrossbowBolt;
-import org.silvercatcher.reforged.entities.EntityDart;
-import org.silvercatcher.reforged.entities.EntityJavelin;
-import org.silvercatcher.reforged.items.others.ItemDart;
-import org.silvercatcher.reforged.items.weapons.ItemBlowGun;
-import org.silvercatcher.reforged.items.weapons.ItemCrossbow;
-import org.silvercatcher.reforged.items.weapons.ItemJavelin;
-import org.silvercatcher.reforged.items.weapons.ItemMusket;
-import org.silvercatcher.reforged.util.Helpers;
-
-import com.flemmli97.improvedmobs.entity.EntityMobBullet;
-import com.flemmli97.improvedmobs.entity.EntityMobSplash;
-import com.flemmli97.improvedmobs.entity.EntitySnowBallNew;
-import com.flemmli97.improvedmobs.entity.EntityTntNew;
 import com.google.common.collect.Maps;
-
 import net.minecraft.block.BlockLiquid;
-import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
-import net.minecraft.entity.item.EntityEnderPearl;
-import net.minecraft.entity.monster.EntityMob;
 import net.minecraft.entity.projectile.EntityArrow;
-import net.minecraft.entity.projectile.EntityArrow.PickupStatus;
 import net.minecraft.entity.projectile.EntityEvokerFangs;
 import net.minecraft.entity.projectile.EntityThrowable;
 import net.minecraft.entity.projectile.EntityTippedArrow;
@@ -64,6 +35,11 @@ import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.EnumDifficulty;
 import net.minecraft.world.World;
+import org.apache.commons.lang3.tuple.Pair;
+
+import javax.annotation.Nullable;
+import java.util.Map;
+import java.util.Random;
 
 public class AIUseHelper {
 
@@ -82,7 +58,7 @@ public class AIUseHelper {
 		if(target.height < 0.5)
 			d1 = target.getEntityBoundingBox().minY - arrow.posY;
 		double d2 = target.posZ - theEntity.posZ;
-		double d3 = (double) MathHelper.sqrt(d0 * d0 + d2 * d2);
+		double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
 		arrow.shoot(d0, d1 + d3 * 0.20000000298023224D, d2, 1.6F, (float) (14 - theEntity.world.getDifficulty().getDifficultyId() * 4));
 		int i = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.POWER, theEntity);
 		int j = EnchantmentHelper.getMaxEnchantmentLevel(Enchantments.PUNCH, theEntity);
@@ -116,7 +92,7 @@ public class AIUseHelper {
 
 	private static boolean tryPlaceLava(World worldIn, BlockPos posIn) {
 		IBlockState iblockstate = worldIn.getBlockState(posIn);
-		Material material = iblockstate.getMaterial();
+		net.minecraft.block.material.Material material = iblockstate.getMaterial();
 		boolean flag = !material.isSolid();
 		boolean flag1 = iblockstate.getBlock().isReplaceable(worldIn, posIn);
 
@@ -141,8 +117,8 @@ public class AIUseHelper {
 		return true;
 	}
 
-	private static final Map<Class<? extends Item>, ItemAI> clssMap = Maps.newHashMap();
-	private static final Map<Item, ItemAI> itemMap = Maps.newHashMap();
+	private static final java.util.Map<Class<? extends net.minecraft.item.Item>, com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemAI> clssMap = Maps.newHashMap();
+	private static final java.util.Map<net.minecraft.item.Item, com.flemmli97.improvedmobs.handler.helper.AIUseHelper.ItemAI> itemMap = Maps.newHashMap();
 
 	public static interface ItemAI {
 
@@ -196,7 +172,7 @@ public class AIUseHelper {
 		}
 
 		if(ai == null)
-			for(Entry<Class<? extends Item>, ItemAI> entry : clssMap.entrySet()){
+			for(Map.Entry<Class<? extends Item>, ItemAI> entry : clssMap.entrySet()){
 				if(entry.getKey().equals(heldMain.getItem().getClass().getSuperclass()) && entry.getValue().prefHand() != Hand.OFF){
 					ai = entry.getValue();
 					hand = EnumHand.MAIN_HAND;
@@ -227,25 +203,25 @@ public class AIUseHelper {
 
 	public static enum ItemType {
 		NONSTRAFINGITEM,
-		STRAFINGITEM;
+		STRAFINGITEM
 	}
 
 	public static enum Hand {
 
 		MAIN,
 		OFF,
-		BOTH;
+		BOTH
 	}
 
 	//Boomerang doesnt work. will crash
 	public static void initReforgedStuff() {
-		itemMap.put(ReforgedAdditions.BLUNDERBUSS, new ItemAI() {
+		itemMap.put(org.silvercatcher.reforged.api.ReforgedAdditions.BLUNDERBUSS, new ItemAI() {
 
 			@Override
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
-				Helpers.playSound(entity.world, entity, "shotgun_shoot", 1, 1);
+				org.silvercatcher.reforged.util.Helpers.playSound(entity.world, entity, "shotgun_shoot", 1, 1);
 				for(int i = 1; i < 12; i++){
-					entity.world.spawnEntity(new EntityBulletBlunderbuss(entity.world, entity, entity.getHeldItem(hand)));
+					entity.world.spawnEntity(new org.silvercatcher.reforged.entities.EntityBulletBlunderbuss(entity.world, entity, entity.getHeldItem(hand)));
 				}
 			}
 
@@ -264,13 +240,13 @@ public class AIUseHelper {
 				return Hand.BOTH;
 			}
 		});
-		clssMap.put(ItemMusket.class, new ItemAI() {
+		clssMap.put(org.silvercatcher.reforged.items.weapons.ItemMusket.class, new ItemAI() {
 
 			@Override
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
-				Helpers.playSound(entity.world, entity, "musket_shoot", 1, 1);
+				org.silvercatcher.reforged.util.Helpers.playSound(entity.world, entity, "musket_shoot", 1, 1);
 				if(!entity.world.isRemote){
-					entity.world.spawnEntity(new EntityBulletMusket(entity.world, entity, entity.getHeldItem(hand)));
+					entity.world.spawnEntity(new org.silvercatcher.reforged.entities.EntityBulletMusket(entity.world, entity, entity.getHeldItem(hand)));
 				}
 			}
 
@@ -289,17 +265,17 @@ public class AIUseHelper {
 				return Hand.BOTH;
 			}
 		});
-		clssMap.put(ItemBlowGun.class, new ItemAI() {
+		clssMap.put(org.silvercatcher.reforged.items.weapons.ItemBlowGun.class, new ItemAI() {
 
 			@Override
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
 				if(!entity.world.isRemote){
 					ItemStack stack = entity.getHeldItemOffhand();
-					EntityDart dart = null;
-					if(stack.getItem() instanceof ItemDart){
-						dart = new EntityDart(entity.world, entity, stack.copy());
+					org.silvercatcher.reforged.entities.EntityDart dart = null;
+					if(stack.getItem() instanceof org.silvercatcher.reforged.items.others.ItemDart){
+						dart = new org.silvercatcher.reforged.entities.EntityDart(entity.world, entity, stack.copy());
 					}else
-						dart = new EntityDart(entity.world, entity, new ItemStack(ReforgedAdditions.DART_NORMAL));
+						dart = new org.silvercatcher.reforged.entities.EntityDart(entity.world, entity, new ItemStack(org.silvercatcher.reforged.api.ReforgedAdditions.DART_NORMAL));
 					entity.world.spawnEntity(dart);
 				}
 			}
@@ -319,15 +295,15 @@ public class AIUseHelper {
 				return Hand.MAIN;
 			}
 		});
-		clssMap.put(ItemCrossbow.class, new ItemAI() {
+		clssMap.put(org.silvercatcher.reforged.items.weapons.ItemCrossbow.class, new ItemAI() {
 
 			@Override
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
-				Helpers.playSound(entity.world, entity, "crossbow_shoot", 1, 1);
+				org.silvercatcher.reforged.util.Helpers.playSound(entity.world, entity, "crossbow_shoot", 1, 1);
 				if(!entity.world.isRemote){
-					EntityCrossbowBolt a = new EntityCrossbowBolt(entity.world, entity);
+					org.silvercatcher.reforged.entities.EntityCrossbowBolt a = new org.silvercatcher.reforged.entities.EntityCrossbowBolt(entity.world, entity);
 					a.setAim(entity, entity.rotationPitch, entity.rotationYaw, 0.0F, ItemBow.getArrowVelocity(40) * 3.0F, 1.0F);
-					a.pickupStatus = PickupStatus.getByOrdinal(new Random().nextInt(2));
+					a.pickupStatus = EntityArrow.PickupStatus.getByOrdinal(new Random().nextInt(2));
 					a.setDamage(8.0D);
 					entity.world.spawnEntity(a);
 				}
@@ -348,14 +324,14 @@ public class AIUseHelper {
 				return Hand.BOTH;
 			}
 		});
-		clssMap.put(ItemJavelin.class, new ItemAI() {
+		clssMap.put(org.silvercatcher.reforged.items.weapons.ItemJavelin.class, new ItemAI() {
 
 			@Override
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ARROW_SHOOT, SoundCategory.MASTER, 0.5F, 0.4F / (entity.getRNG().nextFloat() * 0.4F + 0.8F));
 				if(!entity.world.isRemote){
 					ItemStack stack = entity.getHeldItem(hand);
-					entity.world.spawnEntity(new EntityJavelin(entity.world, entity, stack, stack.getMaxItemUseDuration() - entity.getItemInUseCount()));
+					entity.world.spawnEntity(new org.silvercatcher.reforged.entities.EntityJavelin(entity.world, entity, stack, stack.getMaxItemUseDuration() - entity.getItemInUseCount()));
 				}
 			}
 
@@ -386,7 +362,7 @@ public class AIUseHelper {
 					double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
 					if(!entity.world.isRemote){
-						EntityMobSplash entitypotion = new EntityMobSplash(entity.world, entity, stack);
+						com.flemmli97.improvedmobs.entity.EntityMobSplash entitypotion = new com.flemmli97.improvedmobs.entity.EntityMobSplash(entity.world, entity, stack);
 						entitypotion.shoot(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
 						entity.world.spawnEntity(entitypotion);
 					}
@@ -418,7 +394,7 @@ public class AIUseHelper {
 					double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
 					entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
 					if(!entity.world.isRemote){
-						EntityMobSplash entitypotion = new EntityMobSplash(entity.world, entity, stack);
+						com.flemmli97.improvedmobs.entity.EntityMobSplash entitypotion = new com.flemmli97.improvedmobs.entity.EntityMobSplash(entity.world, entity, stack);
 						entitypotion.shoot(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
 						entity.world.spawnEntity(entitypotion);
 					}
@@ -447,7 +423,7 @@ public class AIUseHelper {
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
 				entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
 				if(!entity.world.isRemote){
-					EntitySnowBallNew entitysnowball = new EntitySnowBallNew(entity.world, entity);
+					com.flemmli97.improvedmobs.entity.EntitySnowBallNew entitysnowball = new com.flemmli97.improvedmobs.entity.EntitySnowBallNew(entity.world, entity);
 					entitysnowball.shoot(entity, entity.rotationPitch, entity.rotationYaw, 0.0F, 1.5F, 1.0F);
 					entity.world.spawnEntity(entitysnowball);
 				}
@@ -486,7 +462,7 @@ public class AIUseHelper {
 							y = v1.y;
 							z = v1.z;
 						}
-						EntityEnderPearl pearl = new EntityEnderPearl(entity.world, entity);
+						net.minecraft.entity.item.EntityEnderPearl pearl = new net.minecraft.entity.item.EntityEnderPearl(entity.world, entity);
 						setHeadingToPosition(pearl, target.posX - x, target.posY - y, target.posZ - z, 1.5F, 3.0F);
 						entity.world.spawnEntity(pearl);
 					}
@@ -567,7 +543,7 @@ public class AIUseHelper {
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
 				double dis = entity.getPositionVector().distanceTo(target.getPositionVector());
 				if(!entity.world.isRemote){
-					EntityTntNew tnt = new EntityTntNew(entity.world, entity.posX, entity.posY, entity.posZ, entity);
+					com.flemmli97.improvedmobs.entity.EntityTntNew tnt = new com.flemmli97.improvedmobs.entity.EntityTntNew(entity.world, entity.posX, entity.posY, entity.posZ, entity);
 					tnt.setHeadingFromThrower(entity, entity.rotationPitch, entity.rotationYaw, -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
 					entity.world.spawnEntity(tnt);
 				}
@@ -594,8 +570,8 @@ public class AIUseHelper {
 			@Override
 			public void attack(EntityLiving entity, EntityLivingBase target, EnumHand hand) {
 				if(!entity.world.isRemote){
-					List<Entity> nearby = entity.world.getEntitiesWithinAABBExcludingEntity(entity, entity.getEntityBoundingBox().grow(8.0D));
-					List<Entity> nearTarget = entity.world.getEntitiesWithinAABBExcludingEntity(entity.getAttackTarget(), entity.getAttackTarget().getEntityBoundingBox().grow(2.0D));
+					java.util.List<net.minecraft.entity.Entity> nearby = entity.world.getEntitiesWithinAABBExcludingEntity(entity, entity.getEntityBoundingBox().grow(8.0D));
+					java.util.List<net.minecraft.entity.Entity> nearTarget = entity.world.getEntitiesWithinAABBExcludingEntity(entity.getAttackTarget(), entity.getAttackTarget().getEntityBoundingBox().grow(2.0D));
 					if(nearby.isEmpty() || nearby.size() == 1 && nearby.get(0) == entity.getAttackTarget() || entity.world.rand.nextInt(3) <= 1){
 						if(nearTarget.isEmpty())
 							for(int x = -1; x <= 1; x++)
@@ -606,14 +582,14 @@ public class AIUseHelper {
 									}
 								}
 						else{
-							EntityMobBullet entityBullet = new EntityMobBullet(entity.world, entity, entity.getAttackTarget(), entity.getHorizontalFacing().getAxis());
+							com.flemmli97.improvedmobs.entity.EntityMobBullet entityBullet = new com.flemmli97.improvedmobs.entity.EntityMobBullet(entity.world, entity, entity.getAttackTarget(), entity.getHorizontalFacing().getAxis());
 							entity.world.spawnEntity(entityBullet);
 						}
 					}else{
 						for(int i = 0; i < nearby.size(); i++){
 							Entity entityRand = nearby.get(entity.world.rand.nextInt(nearby.size()));
-							if(entityRand instanceof EntityMob && entityRand != entity.getAttackTarget()){
-								EntityMob mob = (EntityMob) entityRand;
+							if(entityRand instanceof net.minecraft.entity.monster.EntityMob && entityRand != entity.getAttackTarget()){
+								net.minecraft.entity.monster.EntityMob mob = (net.minecraft.entity.monster.EntityMob) entityRand;
 								mob.addPotionEffect(new PotionEffect(Potion.getPotionFromResourceLocation(potionEffects[mob.world.rand.nextInt(6)]), 3600, 1));
 								entity.world.playSound(null, entity.posX, entity.posY, entity.posZ, SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.NEUTRAL, 2F, 1.0F);
 								return;

@@ -2,7 +2,6 @@ package com.flemmli97.improvedmobs.entity;
 
 import com.flemmli97.improvedmobs.handler.packet.ExplosionPacket;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.MoverType;
@@ -14,13 +13,12 @@ import net.minecraft.network.datasync.DataSerializers;
 import net.minecraft.network.datasync.EntityDataManager;
 import net.minecraft.util.EnumParticleTypes;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
 public class EntityTntNew extends EntityTNTPrimed {
 
 	private int fuse;
-	private static final DataParameter<Integer> FUSENEW = EntityDataManager.<Integer>createKey(EntityTntNew.class, DataSerializers.VARINT);
+	private static final DataParameter<Integer> FUSENEW = EntityDataManager.createKey(EntityTntNew.class, DataSerializers.VARINT);
 	private EntityLivingBase tntPlacedBy;
 
 	public EntityTntNew(World worldIn) {
@@ -112,7 +110,7 @@ public class EntityTntNew extends EntityTNTPrimed {
 			}
 		}else{
 			this.handleWaterMovement();
-			this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D, new int[0]);
+			this.world.spawnParticle(EnumParticleTypes.SMOKE_NORMAL, this.posX, this.posY + 0.5D, this.posZ, 0.0D, 0.0D, 0.0D);
 		}
 	}
 
@@ -122,7 +120,7 @@ public class EntityTntNew extends EntityTNTPrimed {
 		explosion.doExplosionB(true);
 		for(EntityPlayer entityplayer : this.world.playerEntities){
 			if(entityplayer instanceof EntityPlayerMP && entityplayer.getDistanceSq(this.posX, this.posY + (this.height / 16.0F), this.posZ) < 4096.0D){
-				PacketHandler.sendTo(new ExplosionPacket(this.posX, this.posY, this.posZ, 5.0F, explosion.getAffectedBlockPositions(), (Vec3d) explosion.getPlayerKnockbackMap().get(entityplayer)), (EntityPlayerMP) entityplayer);
+				PacketHandler.sendTo(new ExplosionPacket(this.posX, this.posY, this.posZ, 5.0F, explosion.getAffectedBlockPositions(), explosion.getPlayerKnockbackMap().get(entityplayer)), (EntityPlayerMP) entityplayer);
 			}
 		}
 	}
@@ -150,7 +148,7 @@ public class EntityTntNew extends EntityTNTPrimed {
 	 */
 	@Override
 	public int getFuseDataManager() {
-		return ((Integer) this.dataManager.get(FUSENEW)).intValue();
+		return this.dataManager.get(FUSENEW);
 	}
 
 	@Override

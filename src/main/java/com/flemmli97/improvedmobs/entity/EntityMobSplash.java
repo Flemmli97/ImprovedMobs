@@ -1,7 +1,5 @@
 package com.flemmli97.improvedmobs.entity;
 
-import java.util.List;
-
 import net.minecraft.entity.EntityAreaEffectCloud;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
@@ -17,6 +15,8 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.World;
+
+import java.util.List;
 
 public class EntityMobSplash extends EntityPotion {
 
@@ -91,7 +91,7 @@ public class EntityMobSplash extends EntityPotion {
 
 	private void applySplashPotion(RayTraceResult result, List<PotionEffect> list) {
 		AxisAlignedBB axisalignedbb = this.getEntityBoundingBox().grow(4.0D, 2.0D, 4.0D);
-		List<EntityLivingBase> listEntity = this.world.<EntityLivingBase>getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb);
+		List<EntityLivingBase> listEntity = this.world.getEntitiesWithinAABB(EntityLivingBase.class, axisalignedbb);
 
 		if(!listEntity.isEmpty()){
 			for(EntityLivingBase entitylivingbase : listEntity){

@@ -1,12 +1,7 @@
 package com.flemmli97.improvedmobs.entity.ai;
 
-import java.lang.reflect.Field;
-
-import javax.annotation.Nullable;
-
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.tenshilib.common.javahelper.ReflectionUtils;
-
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.entity.ai.EntityAIBase;
@@ -14,6 +9,9 @@ import net.minecraft.item.Item;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.EnumDifficulty;
 import techguns.items.guns.GenericGun;
+
+import javax.annotation.Nullable;
+import java.lang.reflect.Field;
 
 /**
  * Credit goes to pWn3d1337:
@@ -43,7 +41,7 @@ public class EntityAITechGuns extends EntityAIBase {
 
 	public EntityAITechGuns(EntityLiving shooter, int attackTimeVariance, int attackTime, float attackRange, int maxBurstCount, int shotDelay) {
 		this.rangedAttackTime = -1;
-		this.entityHost = (EntityLiving) shooter;
+		this.entityHost = shooter;
 		this.attackTimeVariance = attackTimeVariance;
 		this.maxRangedAttackTime = attackTime;
 		this.attackRange = attackRange;

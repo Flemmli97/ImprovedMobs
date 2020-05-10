@@ -29,12 +29,12 @@ public class GeneralHelperMethods {
 			return !reverse;
 		if(reverse)
 			return !isMobInList(living, list, false);
-		for(int i = 0; i < list.length; i++){
+		for (String s : list) {
 			ResourceLocation res = EntityList.getKey(living);
-			if(list[i].startsWith("@")){
-				return res != null && res.getResourceDomain().equals(list[i].substring(1));
+			if (s.startsWith("@")) {
+				return res != null && res.getResourceDomain().equals(s.substring(1));
 			}
-			if(res != null && res.toString().equals(list[i])){
+			if (res != null && res.toString().equals(s)) {
 				return true;
 			}
 		}
@@ -161,11 +161,11 @@ public class GeneralHelperMethods {
 			value = oldValue * (1 + value);
 			if(att == SharedMonsterAttributes.MAX_HEALTH)
 				value = ConfigHandler.roundHP > 0 ? MathUtils.roundTo(value, ConfigHandler.roundHP) : value;
-			inst.setBaseValue(value);
 		}else{
 			value = Math.min(value, max);
 			value = oldValue + value;
-			inst.setBaseValue(value);
 		}
+		inst.setBaseValue(value);
+
 	}
 }

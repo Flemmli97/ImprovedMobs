@@ -1,19 +1,17 @@
 package com.flemmli97.improvedmobs.handler.packet;
 
-import java.util.List;
-
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.entity.MobExplosion;
 import com.google.common.collect.Lists;
-
 import io.netty.buffer.ByteBuf;
-import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessage;
 import net.minecraftforge.fml.common.network.simpleimpl.IMessageHandler;
 import net.minecraftforge.fml.common.network.simpleimpl.MessageContext;
+
+import java.util.List;
 
 public class ExplosionPacket implements IMessage {
 
@@ -45,12 +43,12 @@ public class ExplosionPacket implements IMessage {
 
 	@Override
 	public void fromBytes(ByteBuf buf) {
-		this.posX = (double) buf.readDouble();
-		this.posY = (double) buf.readDouble();
-		this.posZ = (double) buf.readDouble();
+		this.posX = buf.readDouble();
+		this.posY = buf.readDouble();
+		this.posZ = buf.readDouble();
 		this.strength = buf.readFloat();
 		int i = buf.readInt();
-		this.affectedBlockPositions = Lists.<BlockPos>newArrayListWithCapacity(i);
+		this.affectedBlockPositions = Lists.newArrayListWithCapacity(i);
 		int j = (int) this.posX;
 		int k = (int) this.posY;
 		int l = (int) this.posZ;
@@ -97,7 +95,7 @@ public class ExplosionPacket implements IMessage {
 		@Override
 		public IMessage onMessage(ExplosionPacket msg, MessageContext ctx) {
 			EntityPlayer player = ImprovedMobs.proxy.getPlayerEntity(ctx);
-			MobExplosion explosion = new MobExplosion(player.world, (Entity) null, msg.posX, msg.posY, msg.posZ, msg.strength, msg.affectedBlockPositions);
+			MobExplosion explosion = new MobExplosion(player.world, null, msg.posX, msg.posY, msg.posZ, msg.strength, msg.affectedBlockPositions);
 			explosion.doExplosionB(true);
 			player.motionX += msg.motionX;
 			player.motionY += msg.motionY;

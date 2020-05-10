@@ -1,14 +1,11 @@
 package com.flemmli97.improvedmobs.handler;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.flemmli97.improvedmobs.handler.config.EquipmentList;
 import com.flemmli97.improvedmobs.handler.config.EquipmentList.InvalidItemNameException;
 import com.flemmli97.improvedmobs.handler.packet.PacketDifficulty;
 import com.flemmli97.improvedmobs.handler.packet.PacketHandler;
-
+import com.google.common.collect.Lists;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommand;
@@ -18,9 +15,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextFormatting;
 
+import java.util.List;
+
 public class CommandIMDifficulty implements ICommand {
 
-	private final List<String> aliases = new ArrayList<String>();
+	private final List<String> aliases = Lists.newArrayList();
 
 	public CommandIMDifficulty() {
 		this.aliases.add("improvedMobs");
@@ -98,10 +97,10 @@ public class CommandIMDifficulty implements ICommand {
 	@Override
 	public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
 		if(args.length == 1){
-			return CommandBase.getListOfStringsMatchingLastWord(args, new String[] {"reloadJson", "difficulty"});
+			return CommandBase.getListOfStringsMatchingLastWord(args, "reloadJson", "difficulty");
 		}
 		if(args.length == 2 && args[0].equals("difficulty")){
-			return CommandBase.getListOfStringsMatchingLastWord(args, new String[] {"set", "add"});
+			return CommandBase.getListOfStringsMatchingLastWord(args, "set", "add");
 		}
 		return null;
 	}

@@ -211,10 +211,10 @@ public class EquipmentList {
 			if(techgunAIburstAttackTime == null)
 				techgunAIburstAttackTime = ReflectionUtils.getField(GenericGun.class, "AI_burstAttackTime");
 
-			float dmg = ReflectionUtils.getFieldValue(techGunDmg, ((GenericGun) item));
-			int attackTime = ReflectionUtils.getFieldValue(techgunAIAttackTime, ((GenericGun) item));
-			int burstCount = ReflectionUtils.getFieldValue(techgunAIBurstCount, ((GenericGun) item));
-			int burstAttackTime = ReflectionUtils.getFieldValue(techgunAIburstAttackTime, ((GenericGun) item));
+			float dmg = ReflectionUtils.getFieldValue(techGunDmg, item);
+			int attackTime = ReflectionUtils.getFieldValue(techgunAIAttackTime, item);
+			int burstCount = ReflectionUtils.getFieldValue(techgunAIBurstCount, item);
+			int burstAttackTime = ReflectionUtils.getFieldValue(techgunAIburstAttackTime, item);
 
 			weight -= 2 * (range * 0.75 + dmg * 14 + attackTime * 0.1 + burstCount * 13 + burstAttackTime * 9) + 300;
 		}else{
@@ -357,8 +357,7 @@ public class EquipmentList {
 		public WeightedItemstackList add(WeightedItemstack item) {
 			if(item.item == null)
 				return this;
-			if(this.list.contains(item))
-				this.list.remove(item);
+			this.list.remove(item);
 			this.list.add(item);
 			return this;
 		}

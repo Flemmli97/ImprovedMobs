@@ -105,7 +105,7 @@ public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFla
 		TARGETVILLAGER,
 		//TARGETPLAYER,
 		//TARGETHURT,
-		REVERSE;
+		REVERSE
 
 	}
 }

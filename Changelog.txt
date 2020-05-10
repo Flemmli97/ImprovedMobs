@@ -1,3 +1,7 @@
+Improved Mobs 1.6.8
+================
+- Fix items getting enchanted every world load
+
 Improved Mobs 1.6.7
 ================
 - Nerfed shield usage from mobs

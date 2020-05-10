@@ -1,8 +1,5 @@
 package com.flemmli97.improvedmobs.handler;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIBlockBreaking;
 import com.flemmli97.improvedmobs.entity.ai.EntityAIClimbLadder;
@@ -23,7 +20,6 @@ import com.flemmli97.tenshilib.common.config.ConfigUtils.LoadState;
 import com.flemmli97.tenshilib.common.events.PathFindInitEvent;
 import com.flemmli97.tenshilib.common.javahelper.ReflectionUtils;
 import com.google.common.collect.Lists;
-
 import net.minecraft.entity.EntityCreature;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
@@ -75,6 +71,9 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import techguns.entities.ai.EntityAIRangedAttack;
 import techguns.items.guns.GenericGun;
 
+import java.lang.reflect.Field;
+import java.util.List;
+
 public class EventHandlerAI {
 
 	public static final ResourceLocation TileCap = new ResourceLocation(ImprovedMobs.MODID, "openedFlag");
@@ -82,6 +81,7 @@ public class EventHandlerAI {
 	private static final String modifyArmor = ImprovedMobs.MODID + ":InitArmor";
 	private static final String modifyHeld = ImprovedMobs.MODID + ":InitHeld";
 	private static final String modifyAttributes = ImprovedMobs.MODID + ":InitAttr";
+	private static final String enchanted = ImprovedMobs.MODID + ":Enchanted";
 
 	@SubscribeEvent
 	public void attachCapability(AttachCapabilitiesEvent<TileEntity> event) {
@@ -144,10 +144,8 @@ public class EventHandlerAI {
 				int light = e.getWorld().getLightFor(EnumSkyBlock.BLOCK, e.getEntity().getPosition());
 				if(light >= ConfigHandler.light){
 					e.setResult(Result.DENY);
-					return;
 				}else{
 					e.setResult(Result.ALLOW);
-					return;
 				}
 			}
 		}
@@ -209,17 +207,17 @@ public class EventHandlerAI {
 			if(!ConfigHandler.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, ConfigHandler.targetVillagerWhitelist)){
 				villager = true;
 				if(!neutral)
-					creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, creature.getTags().contains("Breaker") ? false : creature.world.rand.nextFloat() <= 0.5));
+					creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
 			}
 			if(ConfigHandler.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= ConfigHandler.neutralAggressiv)
 				if(neutral){
-					creature.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(creature, EntityPlayer.class, creature.getTags().contains("Breaker") ? false : creature.world.rand.nextFloat() <= 0.5));
+					creature.targetTasks.addTask(1, new EntityAINearestAttackableTarget<EntityPlayer>(creature, EntityPlayer.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
 					if(villager)
-						creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, creature.getTags().contains("Breaker") ? false : creature.world.rand.nextFloat() <= 0.5));
+						creature.targetTasks.addTask(2, new EntityAINearestAttackableTarget<EntityVillager>(creature, EntityVillager.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
 				}
 			List<Class<? extends EntityLiving>> clssL = ConfigHandler.autoTargets.get(EntityList.getKey(creature));
 			if(clssL != null)
-				creature.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityLiving>(creature, EntityLiving.class, 10, creature.getTags().contains("Breaker") ? false : true, false, (living)->clssL.contains(living.getClass())));
+				creature.targetTasks.addTask(3, new EntityAINearestAttackableTarget<EntityLiving>(creature, EntityLiving.class, 10, !creature.getTags().contains("Breaker"), false, (living)->clssL.contains(living.getClass())));
 				//clssL.forEach(clss -> this.addAutoTargetAI(creature, clss));
 		}
 	}
@@ -230,7 +228,7 @@ public class EventHandlerAI {
 
 	private void applyAttributesAndItems(EntityLiving living) {
 		if(living.getEntityData().hasKey(modifyArmor) && !living.getEntityData().getBoolean(modifyArmor)){
-			//List<IRecipe> r= CraftingManager.getInstance().getRecipeList(); for further things maybe	
+			//List<IRecipe> r= CraftingManager.getInstance().getRecipeList(); for further things maybe
 			GeneralHelperMethods.equipArmor(living);
 			living.getEntityData().setBoolean(modifyArmor, true);
 		}
@@ -238,8 +236,10 @@ public class EventHandlerAI {
 			GeneralHelperMethods.equipHeld(living);
 			living.getEntityData().setBoolean(modifyHeld, true);
 		}
-		if(ConfigHandler.baseEnchantChance != 0)
+		if(ConfigHandler.baseEnchantChance != 0 && !living.getEntityData().hasKey(enchanted)) {
 			GeneralHelperMethods.enchantGear(living);
+			living.getEntityData().setBoolean(enchanted, true);
+		}
 		if(living.getEntityData().hasKey(modifyAttributes) && !living.getEntityData().getBoolean(modifyAttributes)){
 			if(ConfigHandler.healthIncrease != 0 && !ConfigHandler.useScalingHealthMod){
 				GeneralHelperMethods.modifyAttr(living, SharedMonsterAttributes.MAX_HEALTH, ConfigHandler.healthIncrease * 0.016, ConfigHandler.healthMax, true);
@@ -304,7 +304,7 @@ public class EventHandlerAI {
 	public void openTile(PlayerInteractEvent.RightClickBlock e) {
 		if(!e.getWorld().isRemote && !e.getEntityPlayer().isSneaking()){
 			TileEntity tile = e.getWorld().getTileEntity(e.getPos());
-			if(tile != null && tile instanceof IInventory){
+			if(tile instanceof IInventory){
 				ITileOpened cap = tile.getCapability(TileCapProvider.OpenedCap, null);
 				if(cap != null)
 					cap.setOpened(tile);
@@ -369,9 +369,7 @@ public class EventHandlerAI {
 				if(entry.action instanceof EntityAIRangedAttack)
 					hadAI = true;
 			}
-			list.forEach(ai -> {
-				mob.tasks.removeTask(ai);
-			});
+			list.forEach(mob.tasks::removeTask);
 			//removeAttackAI(mob);
 			if(!hadAI)
 				EntityAITechGuns.applyAI(mob);
@@ -384,8 +382,6 @@ public class EventHandlerAI {
 			if(entry.action instanceof EntityAIAttackMelee)
 				list.add((EntityAIAttackMelee) entry.action);
 		});
-		list.forEach(ai -> {
-			mob.tasks.removeTask(ai);
-		});
+		list.forEach(mob.tasks::removeTask);
 	}
 }

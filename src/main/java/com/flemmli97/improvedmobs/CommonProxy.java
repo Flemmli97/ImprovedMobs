@@ -32,10 +32,10 @@ public class CommonProxy {
 	public void init(FMLInitializationEvent e) {
 		CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
 		MinecraftForge.EVENT_BUS.register(new EventHandlerAI());
-		ConfigHandler.useScalingHealthMod = ConfigHandler.useScalingHealthMod ? Loader.isModLoaded("scalinghealth") : false;
-		ConfigHandler.useTGunsMod = ConfigHandler.useTGunsMod ? Loader.isModLoaded("techguns") : false;
-		ConfigHandler.useReforgedMod = ConfigHandler.useReforgedMod ? Loader.isModLoaded("reforged") : false;
-		ConfigHandler.useCoroUtil = ConfigHandler.useCoroUtil ? Loader.isModLoaded("coroutil") : false;
+		ConfigHandler.useScalingHealthMod = ConfigHandler.useScalingHealthMod && Loader.isModLoaded("scalinghealth");
+		ConfigHandler.useTGunsMod = ConfigHandler.useTGunsMod && Loader.isModLoaded("techguns");
+		ConfigHandler.useReforgedMod = ConfigHandler.useReforgedMod && Loader.isModLoaded("reforged");
+		ConfigHandler.useCoroUtil = ConfigHandler.useCoroUtil && Loader.isModLoaded("coroutil");
 		if(ConfigHandler.enableDifficultyScaling && !ConfigHandler.useScalingHealthMod)
 			MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
 	}

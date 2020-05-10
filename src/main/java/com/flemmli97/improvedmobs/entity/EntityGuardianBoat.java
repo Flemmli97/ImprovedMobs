@@ -104,8 +104,7 @@ public class EntityGuardianBoat extends EntityGuardian {
 
 	private boolean isOnLand() {
 		if(this.world.getBlockState(this.getPosition()).getMaterial() != Material.WATER){
-			if(this.world.getBlockState(this.getPosition().down()).getMaterial().isSolid())
-				return true;
+			return this.world.getBlockState(this.getPosition().down()).getMaterial().isSolid();
 		}
 		return false;
 	}

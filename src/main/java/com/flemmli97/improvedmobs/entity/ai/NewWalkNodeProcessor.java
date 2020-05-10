@@ -1,22 +1,8 @@
 package com.flemmli97.improvedmobs.entity.ai;
 
-import java.util.List;
-
-import javax.annotation.Nullable;
-
 import com.flemmli97.improvedmobs.handler.config.ConfigHandler;
 import com.google.common.collect.Lists;
-
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockCactus;
-import net.minecraft.block.BlockDoor;
-import net.minecraft.block.BlockFence;
-import net.minecraft.block.BlockFenceGate;
-import net.minecraft.block.BlockFire;
-import net.minecraft.block.BlockLilyPad;
-import net.minecraft.block.BlockRailBase;
-import net.minecraft.block.BlockTrapDoor;
-import net.minecraft.block.BlockWall;
+import net.minecraft.block.*;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.entity.EntityLiving;
@@ -28,6 +14,9 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.IBlockAccess;
+
+import javax.annotation.Nullable;
+import java.util.List;
 
 public class NewWalkNodeProcessor extends WalkNodeProcessor {
 
@@ -147,8 +136,8 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 				if(this.breakableFlag)
 					pathpoint.costMalus++;
 			}
-			if(pathnodetype == PathNodeType.WALKABLE)
-				return pathpoint;
+			if(pathnodetype == PathNodeType.WALKABLE) {
+			}
 			else{
 				if(pathpoint == null && p_186332_4_ > 0 && pathnodetype != PathNodeType.FENCE && pathnodetype != PathNodeType.TRAPDOOR){
 					pathpoint = this.getSafePoint(x, y + 1, z, p_186332_4_ - 1, p_186332_5_, facing);
@@ -196,8 +185,8 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 							return null;
 					}
 				}
-				return pathpoint;
 			}
+			return pathpoint;
 		}
 	}
 
@@ -208,7 +197,7 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 		Block block = iblockstate.getBlock();
 		if(this.entity != null && this.canBreakBlocks() && ConfigHandler.breakableBlocks.canBreak(iblockstate)){
 			double d1 = (double) this.entity.width / 2.0D;
-			AxisAlignedBB aabb = new AxisAlignedBB((double) x - d1 + 0.5D, (double) y + 1.001D, (double) z - d1 + 0.5D, (double) x + d1 + 0.5D, (double) ((float) y + 1 + this.entity.height), (double) z + d1 + 0.5D);
+			AxisAlignedBB aabb = new AxisAlignedBB((double) x - d1 + 0.5D, (double) y + 1.001D, (double) z - d1 + 0.5D, (double) x + d1 + 0.5D, (float) y + 1 + this.entity.height, (double) z + d1 + 0.5D);
 			if(this.entity.posY > blockpos.getY() + 0.8)
 				return this.defaultNode(acc, iblockstate, blockpos, block);
 			else if(this.entity.posY <= blockpos.getY() + 1 && this.entity.posY >= blockpos.getY()){
@@ -265,11 +254,11 @@ public class NewWalkNodeProcessor extends WalkNodeProcessor {
 	
 	//For some block not extending fences but having a bigger collision box
 	private boolean isFence(IBlockAccess acc, IBlockState iblockstate, BlockPos blockpos, Block block) {
-		if(block instanceof BlockFence || block instanceof BlockWall || (block instanceof BlockFenceGate && !((Boolean) iblockstate.getValue(BlockFenceGate.OPEN)).booleanValue())){
+		if(block instanceof BlockFence || block instanceof BlockWall || (block instanceof BlockFenceGate && !iblockstate.getValue(BlockFenceGate.OPEN))){
 			return true;
 		}else if(this.entity != null){
 			AxisAlignedBB collision2 = new AxisAlignedBB(0, 0, 0, 1, 1, 1).offset(blockpos.up());
-			List<AxisAlignedBB> list = Lists.<AxisAlignedBB>newArrayList();
+			List<AxisAlignedBB> list = Lists.newArrayList();
 			iblockstate.addCollisionBoxToList(this.entity.world, blockpos, collision2, list, null, false);
 			return !list.isEmpty();
 		}
