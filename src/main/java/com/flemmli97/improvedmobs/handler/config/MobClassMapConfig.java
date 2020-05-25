@@ -1,21 +1,19 @@
 package com.flemmli97.improvedmobs.handler.config;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.Predicate;
-
-import javax.annotation.Nullable;
-
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.IConfigArrayValue;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityList;
 import net.minecraft.entity.EntityLiving;
 import net.minecraft.util.ResourceLocation;
+
+import javax.annotation.Nullable;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.function.Predicate;
 
 public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
 
@@ -32,8 +30,9 @@ public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
 
 	@Override
 	public MobClassMapConfig readFromString(String[] ss) {
+		this.map.clear();
 		for(String s : ss){
-			String[] sub = s.split("-");
+			String[] sub = s.replace(" ", "").split("-");
 			Class<? extends EntityLiving> clss = null;
 			try{
 				clss = this.findClass(sub[1]);
@@ -86,7 +85,7 @@ public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
 
 	@Override
 	public String usage() {
-		return "[mob id]-[mob id or class name] where second value is the target.\n e.g. minecraft:zombie - minecraft:skeleton makes all zombies target skeletons";
+		return "[mob id]-[mob id or class name] where second value is the target.\n e.g. minecraft:zombie-minecraft:skeleton makes all zombies target skeletons";
 	}
 
 }
