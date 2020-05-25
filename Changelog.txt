@@ -1,3 +1,8 @@
+Improved Mobs 1.6.9
+================
+- Made auto target config ignore whitespaces
+- Fix auto target not resetting after config change
+
 Improved Mobs 1.6.8
 ================
 - Fix items getting enchanted every world load
