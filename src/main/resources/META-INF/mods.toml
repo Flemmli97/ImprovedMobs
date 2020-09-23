@@ -1,0 +1,21 @@
+modLoader="javafml"
+loaderVersion="[28,)"
+license="All rights reserved"
+issueTrackerURL="https://github.com/Flemmli97/ImprovedMobs/issues"
+displayURL="https://github.com/Flemmli97/ImprovedMobs"
+# logoFile=""
+credits=""
+authors="Flemmli97"
+[[mods]] 
+  modId="improvedmobs"
+  version="${file.jarVersion}"
+  displayName="Improved Mobs Mod"
+  # updateJSONURL=""
+  authors="Flemmli97"
+  description='''Improved AI and customizations for mobs.'''
+[[dependency.improvedmobs]]
+  modId="minecraft"
+  mandatory=true
+  versionRange="[1.16.1,1.16.3]"
+  ordering="NONE"
+  side="BOTH"

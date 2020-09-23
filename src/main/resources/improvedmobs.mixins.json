@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.flemmli97.improvedmobs.mixin",
+  "refmap": "tenshilib.refmap.json",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "GoalSelectorMixin",
+    "NearestTargetGoalMixin",
+    "PathFinderMixin",
+    "TargetGoalMixin"
+  ],
+  "server": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
