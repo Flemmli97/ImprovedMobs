@@ -4,6 +4,9 @@ bin
 .project
 .settings
 
+#intellij
+.idea
+
 #vs
 .vscode
 
