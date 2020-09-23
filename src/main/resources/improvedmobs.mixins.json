@@ -8,7 +8,9 @@
     "GoalSelectorMixin",
     "NearestTargetGoalMixin",
     "PathFinderMixin",
-    "TargetGoalMixin"
+    "TargetGoalMixin",
+    "PotionEntityMixin",
+    "TNTEntityMixin"
   ],
   "server": [
   ],

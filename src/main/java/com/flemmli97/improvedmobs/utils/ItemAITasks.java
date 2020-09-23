@@ -1,13 +1,19 @@
 package com.flemmli97.improvedmobs.utils;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.google.common.collect.Maps;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.EnderPearlEntity;
+import net.minecraft.entity.item.TNTEntity;
+import net.minecraft.entity.monster.DrownedEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
+import net.minecraft.entity.projectile.PotionEntity;
+import net.minecraft.entity.projectile.ShulkerBulletEntity;
+import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.BowItem;
@@ -19,6 +25,7 @@ import net.minecraft.item.ShieldItem;
 import net.minecraft.item.SplashPotionItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -116,9 +123,11 @@ public class ItemAITasks {
                     double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
                     entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
                     if (!entity.world.isRemote) {
-                        //EntityMobSplash entitypotion = new EntityMobSplash(entity.world, entity, stack);
-                        //entitypotion.shoot(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
-                        //entity.world.addEntity(entitypotion);
+                        PotionEntity potion = new PotionEntity(entity.world, entity);
+                        potion.setItem(stack);
+                        potion.setProperties(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
+                        potion.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
+                        entity.world.addEntity(potion);
                     }
                 }
             }
@@ -148,9 +157,11 @@ public class ItemAITasks {
                     double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
                     entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
                     if (!entity.world.isRemote) {
-                        //EntityMobSplash entitypotion = new EntityMobSplash(entity.world, entity, stack);
-                        //entitypotion.shoot(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
-                        //entity.world.spawnEntity(entitypotion);
+                        PotionEntity potion = new PotionEntity(entity.world, entity);
+                        potion.setItem(stack);
+                        potion.setProperties(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
+                        potion.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
+                        entity.world.addEntity(potion);
                     }
                 }
             }
@@ -177,9 +188,10 @@ public class ItemAITasks {
             public void attack(MobEntity entity, LivingEntity target, Hand hand) {
                 entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
                 if (!entity.world.isRemote) {
-                    //com.flemmli97.improvedmobs.entity.EntitySnowBallNew entitysnowball = new com.flemmli97.improvedmobs.entity.EntitySnowBallNew(entity.world, entity);
-                    //entitysnowball.shoot(entity, entity.rotationPitch, entity.rotationYaw, 0.0F, 1.5F, 1.0F);
-                    //entity.world.spawnEntity(entitysnowball);
+                    SnowballEntity snowball = new SnowballEntity(entity.world, entity);
+                    snowball.setProperties(entity, entity.rotationPitch, entity.rotationYaw, 0, 1.5F, 1.0F);
+                    snowball.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
+                    entity.world.addEntity(snowball);
                 }
             }
 
@@ -203,8 +215,8 @@ public class ItemAITasks {
 
             @Override
             public void attack(MobEntity entity, LivingEntity target, Hand hand) {
-                double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
-                if (dis > 16.0) {
+                double dis = entity.getPositionVec().squareDistanceTo(target.getPositionVec());
+                if (dis > 49.0) {
                     entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
                     if (!entity.world.isRemote) {
                         Vector3d v1 = entity.getPositionVec().subtract(target.getPositionVec()).normalize().scale(16);
@@ -297,9 +309,10 @@ public class ItemAITasks {
             public void attack(MobEntity entity, LivingEntity target, Hand hand) {
                 double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
                 if (!entity.world.isRemote) {
-                    //com.flemmli97.improvedmobs.entity.EntityTntNew tnt = new com.flemmli97.improvedmobs.entity.EntityTntNew(entity.world, entity.getX(), entity.getY(), entity.getZ(), entity);
-                    //tnt.setHeadingFromThrower(entity, entity.rotationPitch, entity.rotationYaw, -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
-                    //entity.world.spawnEntity(tnt);
+                    TNTEntity tnt = new TNTEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), entity);
+                    ((ITNTThrowable)tnt).shootFromEntity(entity, entity.rotationPitch, entity.rotationYaw, -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
+                    tnt.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
+                    entity.world.addEntity(tnt);
                 }
             }
 
@@ -316,6 +329,38 @@ public class ItemAITasks {
             @Override
             public UsableHand prefHand() {
                 return UsableHand.BOTH;
+            }
+        });
+        itemMap.put(Items.TRIDENT, new ItemAI() {
+
+            @Override
+            public void attack(MobEntity entity, LivingEntity target, Hand hand) {
+                AIUtils.tridentAttack(entity, target);
+            }
+
+            @Override
+            public int cooldown() {
+                return 65;
+            }
+
+            @Override
+            public ItemType type() {
+                return ItemType.NONSTRAFINGITEM;
+            }
+
+            @Override
+            public UsableHand prefHand() {
+                return UsableHand.BOTH;
+            }
+
+            @Override
+            public boolean useHand() {
+                return true;
+            }
+
+            @Override
+            public int maxUseCount() {
+                return 40;
             }
         });
 
@@ -337,8 +382,9 @@ public class ItemAITasks {
                                     }
                                 }
                         else {
-                            //com.flemmli97.improvedmobs.entity.EntityMobBullet entityBullet = new com.flemmli97.improvedmobs.entity.EntityMobBullet(entity.world, entity, entity.getAttackTarget(), entity.getHorizontalFacing().getAxis());
-                            //entity.world.spawnEntity(entityBullet);
+                            ShulkerBulletEntity bullet = new ShulkerBulletEntity(entity.world, entity, target, entity.getHorizontalFacing().getAxis());
+                            bullet.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
+                            entity.world.addEntity(bullet);
                         }
                     } else {
                         for (int i = 0; i < nearby.size(); i++) {
@@ -374,7 +420,7 @@ public class ItemAITasks {
 
             @Override
             public void attack(MobEntity entity, LivingEntity target, Hand hand) {
-                AIUtils.attackWithArrows(new ArrowEntity(entity.world, entity), entity, target, BowItem.getArrowVelocity(entity.getItemInUseMaxCount()));
+                AIUtils.attackWithArrows(entity, target, BowItem.getArrowVelocity(entity.getItemInUseMaxCount()));
             }
 
             @Override

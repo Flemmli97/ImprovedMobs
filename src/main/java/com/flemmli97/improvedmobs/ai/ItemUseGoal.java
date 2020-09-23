@@ -1,12 +1,16 @@
 package com.flemmli97.improvedmobs.ai;
 
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
+import net.minecraft.client.renderer.entity.DrownedRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.monster.DrownedEntity;
+import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
+import net.minecraft.item.TridentItem;
 import net.minecraft.util.Hand;
 import org.apache.commons.lang3.tuple.Pair;
 

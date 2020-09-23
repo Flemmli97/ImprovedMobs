@@ -42,7 +42,7 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
         List<String> blackList = Lists.newArrayList();
         for (String s : arr) {
             if (s.startsWith("!"))
-                addBlocks(s, blackList);
+                addBlocks(s.substring(1), blackList);
             else
                 addBlocks(s, this.blocks);
         }

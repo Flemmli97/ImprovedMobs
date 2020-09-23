@@ -13,11 +13,13 @@ import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
+import com.flemmli97.improvedmobs.utils.AIUtils;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import com.flemmli97.improvedmobs.utils.IMAttributes;
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -26,6 +28,7 @@ import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
 import net.minecraft.entity.ai.goal.RandomWalkingGoal;
 import net.minecraft.entity.item.ItemEntity;
+import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.GuardianEntity;
@@ -33,10 +36,13 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.PotionEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.ClimberPathNavigator;
 import net.minecraft.pathfinding.Path;
@@ -45,6 +51,8 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.DamageSource;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.EntityRayTraceResult;
+import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.server.ServerWorld;
@@ -57,6 +65,7 @@ import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -344,7 +353,31 @@ public class EventHandler {
 
     @SubscribeEvent
     public void projectileImpact(ProjectileImpactEvent e) {
+        if(e.getEntity() instanceof ProjectileEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.thrownEntityID)){
+            Entity thrower = ((ProjectileEntity)e.getEntity()).getOwner();
+            if(thrower instanceof MobEntity){
+                if(e.getEntity() instanceof PotionEntity){
+                    return;
+                }
+                else if(e.getRayTraceResult().getType() == RayTraceResult.Type.ENTITY){
+                    EntityRayTraceResult res = (EntityRayTraceResult) e.getRayTraceResult();
+                    if(!res.getEntity().equals(((MobEntity) thrower).getAttackTarget()))
+                        e.setCanceled(true);
+                }
+            }
+        }
+    }
 
+    @SubscribeEvent
+    public void explosion(ExplosionEvent.Detonate event){
+        if(event.getExplosion().getExploder() instanceof TNTEntity && event.getExplosion().getExploder().getPersistentData().contains(ImprovedMobs.thrownEntityID)){
+            LivingEntity igniter = event.getExplosion().getExplosivePlacedBy();
+            if(igniter instanceof MobEntity){
+                event.getAffectedBlocks().clear();
+                if(((MobEntity) igniter).getAttackTarget()!=null)
+                    event.getAffectedEntities().removeIf(e->!e.equals(((MobEntity) igniter).getAttackTarget()));
+            }
+        }
     }
 
     /*public static void removeAttackAI(MonsterEntity mob) {

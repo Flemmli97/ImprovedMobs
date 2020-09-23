@@ -18,11 +18,14 @@ public class Config {
 
         public int guiX;
         public int guiY;
-        public TextFormatting color;
-        public float scale;
+        public TextFormatting color = TextFormatting.DARK_PURPLE;
+        public float scale = 1;
 
         public ClientConfig(ForgeConfigSpec.Builder builder) {
-            //showTeamParticleTypes = builder.translation("conf.mobbattle.particle").define("showTeamParticle", true);
+            /*guiX = builder.translation("").define("", 0).get();
+            guiY = builder.translation("").define("", 0).get();
+            color = builder.translation("").defineEnum("", TextFormatting.DARK_PURPLE).get();
+            scale = builder.translation("").define("", 0).get();*/
         }
     }
 
@@ -39,6 +42,8 @@ public class Config {
         public boolean friendlyFire;
         public String[] petArmorBlackList = new String[0];
         public boolean petWhiteList;
+
+        public boolean doIMDifficulty = true;
 
         //Black-WhiteList
         public EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
