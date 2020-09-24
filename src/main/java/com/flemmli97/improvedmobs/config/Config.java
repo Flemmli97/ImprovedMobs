@@ -8,121 +8,103 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class Config {
 
-    public static final ForgeConfigSpec clientSpec;
-    public static final ClientConfig clientConf;
-
-    public static final ForgeConfigSpec commonSpec;
-    public static final ServerConfig commonConf;
-
     public static class ClientConfig {
 
-        public int guiX;
-        public int guiY;
-        public TextFormatting color = TextFormatting.DARK_PURPLE;
-        public float scale = 1;
+        public static int guiX;
+        public static int guiY;
+        public static TextFormatting color = TextFormatting.DARK_PURPLE;
+        public static float scale = 1;
 
-        public ClientConfig(ForgeConfigSpec.Builder builder) {
-            /*guiX = builder.translation("").define("", 0).get();
-            guiY = builder.translation("").define("", 0).get();
-            color = builder.translation("").defineEnum("", TextFormatting.DARK_PURPLE).get();
-            scale = builder.translation("").define("", 0).get();*/
+        public static void load(boolean reload){
+            guiX = ConfigSpecs.clientConf.guiX.get();
+            guiY = ConfigSpecs.clientConf.guiY.get();
+            color = ConfigSpecs.clientConf.color.get();
+            scale = ConfigSpecs.clientConf.scale.get();
         }
     }
 
     public static class ServerConfig {
 
         //General
-        public boolean enableDifficultyScaling = true;
-        public int difficultyDelay;
-        public boolean ignorePlayers;
-        public String[] mobListLight = new String[0];
-        public boolean mobListLightBlackList;
-        public int light;
-        public boolean shouldPunishTimeSkip;
-        public boolean friendlyFire;
-        public String[] petArmorBlackList = new String[0];
-        public boolean petWhiteList;
+        public static boolean enableDifficultyScaling = true;
+        public static int difficultyDelay;
+        public static boolean ignorePlayers;
+        public static String[] mobListLight = new String[0];
+        public static boolean mobListLightBlackList;
+        public static int light;
+        public static boolean shouldPunishTimeSkip;
+        public static boolean friendlyFire;
+        public static String[] petArmorBlackList = new String[0];
+        public static boolean petWhiteList;
 
-        public boolean doIMDifficulty = true;
+        public static boolean doIMDifficulty = true;
 
         //Black-WhiteList
-        public EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
-        public boolean mobAttributeWhitelist;
-        public boolean armorMobWhitelist;
-        public boolean heldMobWhitelist;
-        public boolean mobListBreakWhitelist;
-        public boolean mobListUseWhitelist;
-        public boolean mobListLadderWhitelist;
-        public boolean mobListStealWhitelist;
-        public boolean mobListBoatWhitelist;
-        public boolean targetVillagerWhitelist;
+        public static EntityModifyFlagConfig entityBlacklist;// = new EntityModifyFlagConfig();
+        public static boolean mobAttributeWhitelist;
+        public static boolean armorMobWhitelist;
+        public static boolean heldMobWhitelist;
+        public static boolean mobListBreakWhitelist;
+        public static boolean mobListUseWhitelist;
+        public static boolean mobListLadderWhitelist;
+        public static boolean mobListStealWhitelist;
+        public static boolean mobListBoatWhitelist;
+        public static boolean targetVillagerWhitelist;
 
         //Debug
-        public boolean debugPath;
+        public static boolean debugPath;
 
         //Integration
-        public boolean useScalingHealthMod = true;
-        public boolean useTGunsMod = true;
-        public boolean useReforgedMod = true;
-        public boolean useCoroUtil = true;
+        public static boolean useScalingHealthMod = true;
+        public static boolean useTGunsMod = true;
+        public static boolean useReforgedMod = true;
+        public static boolean useCoroUtil = true;
 
         //AI
-        public BreakableBlocks breakableBlocks = new BreakableBlocks(new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "DoorBlock", "!minecraft:iron_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"});
-        public boolean breakingAsBlacklist;
-        public boolean useBlockBreakSound;
-        public float breakerChance = 1;
-        public float stealerChance= 1;
-        public boolean breakTileEntities;
-        public ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
-        public float neutralAggressiv;
-        public MobClassMapConfig autoTargets = new MobClassMapConfig(new String[0]);
-        public int repairTick = 200;
-        public float difficultyBreak;
-        public float difficultySteal;
+        public static BreakableBlocks breakableBlocks;// = new BreakableBlocks(new String[]{"minecraft:glass", "minecraft:stained_glass", "minecraft:fence_gate", "DoorBlock", "!minecraft:iron_door", "minecraft:glass_pane", "minecraft:stained_glass_pane"});
+        public static boolean breakingAsBlacklist;
+        public static boolean useBlockBreakSound;
+        public static float breakerChance = 1;
+        public static float stealerChance= 1;
+        public static boolean breakTileEntities;
+        public static ItemWrapper breakingItem;// = new ItemWrapper(Items.DIAMOND_PICKAXE);
+        public static float neutralAggressiv;
+        public static MobClassMapConfig autoTargets;// = new MobClassMapConfig(new String[0]);
+        public static int repairTick = 200;
+        public static float difficultyBreak;
+        public static float difficultySteal;
 
         //Equipment
-        public String[] equipmentModBlacklist = new String[0];
-        public boolean equipmentModWhitelist;
-        public float baseEquipChance;
-        public float baseEquipChanceAdd;
-        public float diffEquipAdd;
-        public float baseWeaponChance;
-        public float diffWeaponChance;
-        public float baseEnchantChance;
-        public float diffEnchantAdd;
-        public float baseItemChance;
-        public float diffItemChanceAdd;
-        public boolean shouldDropEquip;
+        public static String[] equipmentModBlacklist = new String[0];
+        public static boolean equipmentModWhitelist;
+        public static float baseEquipChance;
+        public static float baseEquipChanceAdd;
+        public static float diffEquipAdd;
+        public static float baseWeaponChance;
+        public static float diffWeaponChance;
+        public static float baseEnchantChance;
+        public static float diffEnchantAdd;
+        public static float baseItemChance;
+        public static float diffItemChanceAdd;
+        public static boolean shouldDropEquip;
 
         //Attributes
-        public float healthIncrease;
-        public float healthMax;
-        public float roundHP;
-        public float damageIncrease;
-        public float damageMax;
-        public float speedIncrease;
-        public float speedMax;
-        public float knockbackIncrease;
-        public float knockbackMax;
-        public float magicResIncrease;
-        public float magicResMax;
-        public float projectileIncrease;
-        public float projectileMax;
+        public static float healthIncrease;
+        public static float healthMax;
+        public static float roundHP;
+        public static float damageIncrease;
+        public static float damageMax;
+        public static float speedIncrease;
+        public static float speedMax;
+        public static float knockbackIncrease;
+        public static float knockbackMax;
+        public static float magicResIncrease;
+        public static float magicResMax;
+        public static float projectileIncrease;
+        public static float projectileMax;
 
-        public ServerConfig(ForgeConfigSpec.Builder builder) {
-            //autoAddAI = builder.comment("Auto target mobs from other teams (if e.g. done per command)").translation("conf.mobbattle.addai")
-            //        .define("autoAddAI", true);
-            //builder.pop();
+        public static void load(boolean reload){
+
         }
-    }
-
-    static {
-        Pair<ClientConfig, ForgeConfigSpec> specPair1 = new ForgeConfigSpec.Builder().configure(ClientConfig::new);
-        clientSpec = specPair1.getRight();
-        clientConf = specPair1.getLeft();
-
-        Pair<ServerConfig, ForgeConfigSpec> specPair2 = new ForgeConfigSpec.Builder().configure(ServerConfig::new);
-        commonSpec = specPair2.getRight();
-        commonConf = specPair2.getLeft();
     }
 }

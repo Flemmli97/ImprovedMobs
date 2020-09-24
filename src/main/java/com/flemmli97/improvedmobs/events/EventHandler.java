@@ -68,6 +68,7 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 import java.util.List;
@@ -96,7 +97,7 @@ public class EventHandler {
     /*@SubscribeEvent
     public void config(OnConfigChangedEvent event) {
         if(event.getModID().equals(ImprovedMobs.MODID))
-            Config.commonConf.load(LoadState.SYNC);
+            Config.ServerConfig.load(LoadState.SYNC);
     }*/
 
     @SubscribeEvent
@@ -104,17 +105,17 @@ public class EventHandler {
         if (e.getEntity().world != null && !e.getEntity().world.isRemote) {
             if (e.getEntity() instanceof MobEntity) {
                 MobEntity living = (MobEntity) e.getEntity();
-                if (DifficultyData.getDifficulty(living.world, living) >= Config.commonConf.difficultyBreak && Config.commonConf.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.commonConf.breakerChance
-                        && !Config.commonConf.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.commonConf.mobListBreakWhitelist)) {
+                if (DifficultyData.getDifficulty(living.world, living) >= Config.ServerConfig.difficultyBreak && Config.ServerConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.ServerConfig.breakerChance
+                        && !Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.ServerConfig.mobListBreakWhitelist)) {
                     e.getEntity().addTag(breaker);
                 }
-                if (!Config.commonConf.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.commonConf.armorMobWhitelist)) {
+                if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.ServerConfig.armorMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyArmor, false);
                 }
-                if (!Config.commonConf.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.commonConf.heldMobWhitelist)) {
+                if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.ServerConfig.heldMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyHeld, false);
                 }
-                if (!Config.commonConf.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.commonConf.mobAttributeWhitelist)) {
+                if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.ServerConfig.mobAttributeWhitelist)) {
                     living.getPersistentData().putBoolean(modifyAttributes, false);
                 }
             }
@@ -124,9 +125,9 @@ public class EventHandler {
     @SubscribeEvent
     public void entityProps(LivingSpawnEvent.CheckSpawn e) {
         if (e.getEntity() instanceof MobEntity && !e.getWorld().isRemote()) {
-            if (GeneralHelperMethods.isMobInList((MobEntity) e.getEntity(), Config.commonConf.mobListLight, Config.commonConf.mobListLightBlackList)) {
+            if (GeneralHelperMethods.isMobInList((MobEntity) e.getEntity(), Config.ServerConfig.mobListLight, Config.ServerConfig.mobListLightBlackList)) {
                 int light = e.getWorld().getLightLevel(LightType.BLOCK, e.getEntity().getBlockPos());
-                if (light >= Config.commonConf.light) {
+                if (light >= Config.ServerConfig.light) {
                     e.setResult(Event.Result.DENY);
                 } else {
                     e.setResult(Event.Result.ALLOW);
@@ -163,45 +164,45 @@ public class EventHandler {
                 });
                 if (mobGriefing) {
                     living.goalSelector.addGoal(1, new BlockBreakGoal(living));
-                    ItemStack stack = Config.commonConf.breakingItem.getStack();
-                    if (!Config.commonConf.shouldDropEquip)
+                    ItemStack stack = Config.ServerConfig.breakingItem.getStack();
+                    if (!Config.ServerConfig.shouldDropEquip)
                         stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                     living.setItemStackToSlot(EquipmentSlotType.OFFHAND, stack);
                 }
             }
-            if (!Config.commonConf.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.commonConf.mobListUseWhitelist)) {
+            if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.ServerConfig.mobListUseWhitelist)) {
                 living.goalSelector.addGoal(0, new ItemUseGoal(living, 15));
                 //EntityAITechGuns.applyAI(living);
             }
-            if (!Config.commonConf.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.commonConf.mobListBoatWhitelist)) {
+            if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.ServerConfig.mobListBoatWhitelist)) {
                 if (!(living.canBreatheUnderwater() || living.getNavigator() instanceof SwimmerPathNavigator))
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
             }
-            if (!Config.commonConf.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.commonConf.mobListLadderWhitelist)) {
+            if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.ServerConfig.mobListLadderWhitelist)) {
                 if (!(living.getNavigator() instanceof ClimberPathNavigator))
                     living.goalSelector.addGoal(4, new LadderClimbGoal(living));
             }
         }
         if (e.getEntity() instanceof CreatureEntity) {
             CreatureEntity creature = (CreatureEntity) e.getEntity();
-            if (DifficultyData.getDifficulty(creature.world, creature) >= Config.commonConf.difficultySteal && mobGriefing && Config.commonConf.stealerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.commonConf.stealerChance
-                    && !Config.commonConf.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, Config.commonConf.mobListStealWhitelist)) {
+            if (DifficultyData.getDifficulty(creature.world, creature) >= Config.ServerConfig.difficultySteal && mobGriefing && Config.ServerConfig.stealerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.ServerConfig.stealerChance
+                    && !Config.ServerConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, Config.ServerConfig.mobListStealWhitelist)) {
                 creature.goalSelector.addGoal(5, new StealGoal(creature));
             }
             boolean villager = false;
             boolean neutral = creature instanceof EndermanEntity || creature instanceof ZombifiedPiglinEntity;
-            if (!Config.commonConf.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.commonConf.targetVillagerWhitelist)) {
+            if (!Config.ServerConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.ServerConfig.targetVillagerWhitelist)) {
                 villager = true;
                 if (!neutral)
                     creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, VillagerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
             }
-            if (Config.commonConf.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= Config.commonConf.neutralAggressiv)
+            if (Config.ServerConfig.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= Config.ServerConfig.neutralAggressiv)
                 if (neutral) {
                     creature.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(creature, PlayerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
                     if (villager)
                         creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, VillagerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
                 }
-            List<EntityType<?>> types = Config.commonConf.autoTargets.get(creature.getType().getRegistryName());
+            List<EntityType<?>> types = Config.ServerConfig.autoTargets.get(creature.getType().getRegistryName());
             if (types != null)
                 creature.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(creature, LivingEntity.class, 10, !creature.getTags().contains("Breaker"), false, (living) -> types.contains(living.getType())));
         }
@@ -217,27 +218,27 @@ public class EventHandler {
             GeneralHelperMethods.equipHeld(living);
             living.getPersistentData().putBoolean(modifyHeld, true);
         }
-        if (Config.commonConf.baseEnchantChance != 0 && !living.getPersistentData().contains(enchanted)) {
+        if (Config.ServerConfig.baseEnchantChance != 0 && !living.getPersistentData().contains(enchanted)) {
             GeneralHelperMethods.enchantGear(living);
             living.getPersistentData().putBoolean(enchanted, true);
         }
         if (living.getPersistentData().contains(modifyAttributes) && !living.getPersistentData().getBoolean(modifyAttributes)) {
-            if (Config.commonConf.healthIncrease != 0 && !Config.commonConf.useScalingHealthMod) {
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MAX_HEALTH, Config.commonConf.healthIncrease * 0.016, Config.commonConf.healthMax, true);
+            if (Config.ServerConfig.healthIncrease != 0 && !Config.ServerConfig.useScalingHealthMod) {
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MAX_HEALTH, Config.ServerConfig.healthIncrease * 0.016, Config.ServerConfig.healthMax, true);
                 living.setHealth(living.getMaxHealth());
             }
-            if (Config.commonConf.damageIncrease != 0 && !Config.commonConf.useScalingHealthMod)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_ATTACK_DAMAGE, Config.commonConf.damageIncrease * 0.008, Config.commonConf.damageMax, true);
-            if (Config.commonConf.speedIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MOVEMENT_SPEED, Config.commonConf.speedIncrease * 0.0008, Config.commonConf.speedMax, false);
-            if (Config.commonConf.knockbackIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_KNOCKBACK_RESISTANCE, Config.commonConf.knockbackIncrease * 0.002, Config.commonConf.knockbackMax, false);
-            if (Config.commonConf.magicResIncrease != 0)
-                IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Config.commonConf.magicResIncrease * 0.0016F, Config.commonConf.magicResMax);
-                //GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, Config.commonConf.magicResIncrease * 0.0016, Config.commonConf.magicResMax, false);
-            if (Config.commonConf.projectileIncrease != 0)
-                IMAttributes.apply(living, IMAttributes.Attribute.PROJ_BOOST, Config.commonConf.projectileIncrease * 0.008F, Config.commonConf.projectileMax);
-                //GeneralHelperMethods.modifyAttr(living, IMAttributes.PROJ_BOOST, Config.commonConf.projectileIncrease * 0.008, Config.commonConf.projectileMax, false);
+            if (Config.ServerConfig.damageIncrease != 0 && !Config.ServerConfig.useScalingHealthMod)
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_ATTACK_DAMAGE, Config.ServerConfig.damageIncrease * 0.008, Config.ServerConfig.damageMax, true);
+            if (Config.ServerConfig.speedIncrease != 0)
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MOVEMENT_SPEED, Config.ServerConfig.speedIncrease * 0.0008, Config.ServerConfig.speedMax, false);
+            if (Config.ServerConfig.knockbackIncrease != 0)
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_KNOCKBACK_RESISTANCE, Config.ServerConfig.knockbackIncrease * 0.002, Config.ServerConfig.knockbackMax, false);
+            if (Config.ServerConfig.magicResIncrease != 0)
+                IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016F, Config.ServerConfig.magicResMax);
+                //GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016, Config.ServerConfig.magicResMax, false);
+            if (Config.ServerConfig.projectileIncrease != 0)
+                IMAttributes.apply(living, IMAttributes.Attribute.PROJ_BOOST, Config.ServerConfig.projectileIncrease * 0.008F, Config.ServerConfig.projectileMax);
+                //GeneralHelperMethods.modifyAttr(living, IMAttributes.PROJ_BOOST, Config.ServerConfig.projectileIncrease * 0.008, Config.ServerConfig.projectileMax, false);
 
             living.getPersistentData().putBoolean(modifyAttributes, true);
         }
@@ -256,7 +257,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void pathDebug(LivingEvent e) {
-        if (Config.commonConf.debugPath && e.getEntity() instanceof MobEntity && !e.getEntity().world.isRemote) {
+        if (Config.ServerConfig.debugPath && e.getEntity() instanceof MobEntity && !e.getEntity().world.isRemote) {
             Path path = ((MobEntity) e.getEntity()).getNavigator().getPath();
             if (path != null) {
                 for (int i = 0; i < path.getCurrentPathLength(); i++)
@@ -268,7 +269,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void attackEvent(LivingAttackEvent e) {
-        if (!Config.commonConf.friendlyFire && e.getEntity() instanceof TameableEntity && !e.getEntity().world.isRemote) {
+        if (!Config.ServerConfig.friendlyFire && e.getEntity() instanceof TameableEntity && !e.getEntity().world.isRemote) {
             TameableEntity pet = (TameableEntity) e.getEntity();
             if (e.getSource().getTrueSource() != null && e.getSource().getTrueSource() == pet.getOwner() && !e.getSource().getTrueSource().isSneaking()) {
                 e.setCanceled(true);
@@ -290,7 +291,7 @@ public class EventHandler {
     @SubscribeEvent
     public void equipPet(PlayerInteractEvent.EntityInteract e) {
         if (e.getHand() == Hand.MAIN_HAND && e.getTarget() instanceof MobEntity && e.getTarget() instanceof TameableEntity && !e.getTarget().world.isRemote && e.getPlayer().isSneaking()
-                && !GeneralHelperMethods.isMobInList((MobEntity) e.getTarget(), Config.commonConf.petArmorBlackList, Config.commonConf.petWhiteList)) {
+                && !GeneralHelperMethods.isMobInList((MobEntity) e.getTarget(), Config.ServerConfig.petArmorBlackList, Config.ServerConfig.petWhiteList)) {
             TameableEntity pet = (TameableEntity) e.getTarget();
             if (e.getPlayer() == pet.getOwner()) {
                 MobEntity living = (MobEntity) e.getTarget();
@@ -334,7 +335,7 @@ public class EventHandler {
 
     /*@SubscribeEvent
     public void techGunsChange(LivingEquipmentChangeEvent event) {
-        if(Config.commonConf.useTGunsMod && !event.getEntity().world.isRemote && event.getEntity() instanceof MonsterEntity && event.getSlot() == EquipmentSlotType.MAINHAND && event.getTo().getItem() instanceof GenericGun){
+        if(Confige.commonConf.useTGunsMod && !event.getEntity().world.isRemote && event.getEntity() instanceof MonsterEntity && event.getSlot() == EquipmentSlotType.MAINHAND && event.getTo().getItem() instanceof GenericGun){
             MonsterEntity mob = (MonsterEntity) event.getEntity();
             boolean hadAI = false;
             List<EntityAITechGuns> list = Lists.newArrayList();
@@ -378,6 +379,11 @@ public class EventHandler {
                     event.getAffectedEntities().removeIf(e->!e.equals(((MobEntity) igniter).getAttackTarget()));
             }
         }
+    }
+    
+    @SubscribeEvent
+    public void config(ModConfig.Loading event){
+        System.out.println("loading config");
     }
 
     /*public static void removeAttackAI(MonsterEntity mob) {

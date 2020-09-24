@@ -5,6 +5,7 @@ import com.flemmli97.improvedmobs.capability.TileCap;
 import com.flemmli97.improvedmobs.capability.TileCapNetwork;
 import com.flemmli97.improvedmobs.client.DifficultyDisplay;
 import com.flemmli97.improvedmobs.config.Config;
+import com.flemmli97.improvedmobs.config.ConfigSpecs;
 import com.flemmli97.improvedmobs.events.DifficultyHandler;
 import com.flemmli97.improvedmobs.events.EventHandler;
 import com.flemmli97.improvedmobs.network.PacketHandler;
@@ -12,11 +13,16 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.File;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
 @Mod(value = ImprovedMobs.MODID)
@@ -29,8 +35,11 @@ public class ImprovedMobs {
     public static final String ridingGuardian = MODID + ":riding_guardian";
 
     public ImprovedMobs() {
-        //ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, Config.clientSpec);
-        //ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.commonSpec);
+        File file = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").toFile();
+        if(!file.exists())
+            file.mkdir();
+        ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ConfigSpecs.clientSpec, "improvedmobs/client.toml");
+        ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, ConfigSpecs.commonSpec, "improvedmobs/common.toml");
     }
 
     @SubscribeEvent
@@ -38,14 +47,14 @@ public class ImprovedMobs {
         PacketHandler.register();
         CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
-        if(Config.commonConf.enableDifficultyScaling) {
+        if(Config.ServerConfig.enableDifficultyScaling) {
             MinecraftForge.EVENT_BUS.register(DifficultyDisplay.class);
             MinecraftForge.EVENT_BUS.register(DifficultyHandler.class);
         }
 
-        Config.commonConf.useScalingHealthMod = Config.commonConf.useScalingHealthMod && ModList.get().isLoaded("scalinghealth");
-        Config.commonConf.useTGunsMod = Config.commonConf.useTGunsMod && ModList.get().isLoaded("techguns");
-        Config.commonConf.useReforgedMod = Config.commonConf.useReforgedMod && ModList.get().isLoaded("reforged");
-        Config.commonConf.useCoroUtil = Config.commonConf.useCoroUtil && ModList.get().isLoaded("coroutil");
+        Config.ServerConfig.useScalingHealthMod = Config.ServerConfig.useScalingHealthMod && ModList.get().isLoaded("scalinghealth");
+        Config.ServerConfig.useTGunsMod = Config.ServerConfig.useTGunsMod && ModList.get().isLoaded("techguns");
+        Config.ServerConfig.useReforgedMod = Config.ServerConfig.useReforgedMod && ModList.get().isLoaded("reforged");
+        Config.ServerConfig.useCoroUtil = Config.ServerConfig.useCoroUtil && ModList.get().isLoaded("coroutil");
     }
 }

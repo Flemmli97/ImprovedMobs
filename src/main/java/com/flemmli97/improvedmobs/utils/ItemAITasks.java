@@ -9,6 +9,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.EnderPearlEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.monster.DrownedEntity;
+import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.entity.projectile.PotionEntity;
@@ -389,8 +390,8 @@ public class ItemAITasks {
                     } else {
                         for (int i = 0; i < nearby.size(); i++) {
                             Entity entityRand = nearby.get(entity.world.rand.nextInt(nearby.size()));
-                            if (entityRand instanceof MobEntity && entityRand != entity.getAttackTarget()) {
-                                MobEntity mob = (MobEntity) entityRand;
+                            if (entityRand instanceof MonsterEntity && entityRand != entity.getAttackTarget()) {
+                                MonsterEntity mob = (MonsterEntity) entityRand;
                                 mob.addPotionEffect(new EffectInstance(ForgeRegistries.POTIONS.getValue(new ResourceLocation(potionEffects[mob.world.rand.nextInt(6)])), 3600, 1));
                                 entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.NEUTRAL, 2F, 1.0F);
                                 return;

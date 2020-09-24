@@ -25,11 +25,11 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
     }
 
     public boolean canBreak(BlockState state) {
-        if (state.getMaterial() == Material.AIR)// || (Config.commonConf.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
+        if (state.getMaterial() == Material.AIR)// || (Config.ServerConfig.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
             return false;
-        if (!Config.commonConf.breakTileEntities && state.getBlock().hasTileEntity(state))
+        if (!Config.ServerConfig.breakTileEntities && state.getBlock().hasTileEntity(state))
             return false;
-        if (Config.commonConf.breakingAsBlacklist) {
+        if (Config.ServerConfig.breakingAsBlacklist) {
             return !this.blocks.contains(state.getBlock().getRegistryName().toString());
         }
         return this.blocks.contains(state.getBlock().getRegistryName().toString());

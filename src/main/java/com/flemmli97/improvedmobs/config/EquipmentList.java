@@ -59,10 +59,10 @@ public class EquipmentList {
         try{
             //Init default values
             ForgeRegistries.ITEMS.forEach(item -> {
-                /*if(Config.commonConf.useTGunsMod)
+                /*if(Config.ServerConfig.useTGunsMod)
                     if(item instanceof GenericGun)
                         equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-                if(Config.commonConf.useReforgedMod)
+                if(Config.ServerConfig.useReforgedMod)
                     if(item instanceof ItemBlowGun || item instanceof ItemJavelin)
                         equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
                 */if(item instanceof BowItem)
@@ -113,7 +113,7 @@ public class EquipmentList {
                     if(!defaultBlackLists(item))
                         equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
             });
-            //if(Config.commonConf.useReforgedMod)
+            //if(Config.ServerConfig.useReforgedMod)
             //    ItemAITasks.initReforgedStuff();
 
             File conf = new File(confFolder, "equipment.json");
@@ -202,7 +202,7 @@ public class EquipmentList {
             ItemStack def = new ItemStack(item);
             double dmg = 12 + ItemUtils.damage(def);
             weight -= dmg * dmg;
-        /*}else if(Config.commonConf.useTGunsMod && item instanceof GenericGun){
+        /*}else if(Config.ServerConfig.useTGunsMod && item instanceof GenericGun){
             float range = ((GenericGun) item).getAI_attackRange();
             if(techGunDmg == null)
                 techGunDmg = ReflectionUtils.getField(GenericGun.class, "damageMin");
@@ -239,7 +239,7 @@ public class EquipmentList {
                 weight = 800;
             else if(item == Blocks.TNT.asItem())
                 weight = 600;
-            /*else if(Config.commonConf.useReforgedMod){
+            /*else if(Config.ServerConfig.useReforgedMod){
                 if(item instanceof ItemBlowGun)
                     weight = 720;
                 else if(item instanceof ItemJavelin)
@@ -344,13 +344,13 @@ public class EquipmentList {
         }
 
         private boolean modBlacklist(Item item) {
-            if(Config.commonConf.equipmentModWhitelist){
-                for(String s : Config.commonConf.equipmentModBlacklist)
+            if(Config.ServerConfig.equipmentModWhitelist){
+                for(String s : Config.ServerConfig.equipmentModBlacklist)
                     if(item.getRegistryName().getNamespace().equals(s))
                         return false;
                 return true;
             }
-            for(String s : Config.commonConf.equipmentModBlacklist)
+            for(String s : Config.ServerConfig.equipmentModBlacklist)
                 if(item.getRegistryName().getNamespace().equals(s))
                     return true;
             return false;

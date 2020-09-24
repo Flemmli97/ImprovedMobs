@@ -17,10 +17,10 @@ public class DifficultyDisplay {
             return;
         MatrixStack stack = e.getMatrixStack();
         stack.push();
-        float scale = Config.clientConf.scale;
+        float scale = Config.ClientConfig.scale;
         stack.scale(scale, scale, scale);
         FontRenderer font = Minecraft.getInstance().fontRenderer;
-        font.draw(stack, Config.clientConf.color + "Difficulty " + String.format(java.util.Locale.US, "%.1f", clientDifficulty), Config.clientConf.guiX, Config.clientConf.guiY, 0);
+        font.draw(stack, Config.ClientConfig.color + "Difficulty " + String.format(java.util.Locale.US, "%.1f", clientDifficulty), Config.ClientConfig.guiX, Config.ClientConfig.guiY, 0);
         stack.pop();
     }
 
