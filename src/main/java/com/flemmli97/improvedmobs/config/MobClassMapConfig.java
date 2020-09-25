@@ -56,7 +56,7 @@ public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
         return l;
     }
 
-    public static String use(){
+    public static String use() {
         return "[mob id]-[mob id] where second value is the target.\n e.g. minecraft:zombie-minecraft:skeleton makes all zombies target skeletons";
     }
 }

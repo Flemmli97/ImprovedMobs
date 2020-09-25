@@ -24,7 +24,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     private boolean initialized;
 
     public boolean canBreak(BlockState state) {
-        if(!this.initialized)
+        if (!this.initialized)
             this.initialize();
         if (state.getMaterial() == Material.AIR)// || (Config.ServerConfig.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
             return false;
@@ -44,7 +44,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
         return this;
     }
 
-    private void initialize(){
+    private void initialize() {
         this.initialized = true;
         Set<String> blackList = Sets.newHashSet();
         Set<ITag<Block>> blackListTags = Sets.newHashSet();
@@ -61,12 +61,11 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     private static void addBlocks(String s, Set<String> list, Set<ITag<Block>> tags) {
         if (s.contains(":")) {
             ITag<Block> tag = BlockTags.getCollection().get(new ResourceLocation(s));
-            if (tag!=null)
+            if (tag != null)
                 tags.add(tag);
-            else if(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(s))!=Blocks.AIR)
+            else if (ForgeRegistries.BLOCKS.getValue(new ResourceLocation(s)) != Blocks.AIR)
                 list.add(s);
-        }
-        else {
+        } else {
             Class<?> clss = null;
             try {
                 clss = Class.forName("net.minecraft.block." + s);
@@ -90,7 +89,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
         return this.configString;
     }
 
-    public static String use(){
+    public static String use() {
         return "Usage: <registry name;classname;tag> put \"!\" infront to exclude blocks";
     }
 }

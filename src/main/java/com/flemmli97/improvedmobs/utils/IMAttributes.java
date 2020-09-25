@@ -17,22 +17,23 @@ public class IMAttributes {
         );
     }*/
 
-    public static void apply(MobEntity entity, Attribute att, float value, float max){
-        entity.getPersistentData().putFloat(ImprovedMobs.MODID+":"+att.id, Math.min(value, max));
+    public static void apply(MobEntity entity, Attribute att, float value, float max) {
+        entity.getPersistentData().putFloat(ImprovedMobs.MODID + ":" + att.id, Math.min(value, max));
         //entity.getAttributes().getCustomInstance()
     }
 
-    public static float get(MobEntity entity, Attribute att){
+    public static float get(MobEntity entity, Attribute att) {
         return entity.getPersistentData().getFloat(ImprovedMobs.MODID + ":" + att.id);
     }
 
-    public enum Attribute{
+    public enum Attribute {
 
         MAGIC_RES("magic_res"),
         PROJ_BOOST("proj_boost");
 
         private final String id;
-        Attribute(String id){
+
+        Attribute(String id) {
             this.id = id;
         }
     }

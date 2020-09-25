@@ -1,13 +1,10 @@
 package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
-import com.google.common.collect.Lists;
 import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextFormatting;
-import net.minecraftforge.common.ForgeConfigSpec;
 import net.minecraftforge.fml.ModList;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.List;
 
@@ -20,7 +17,7 @@ public class Config {
         public static TextFormatting color = TextFormatting.DARK_PURPLE;
         public static float scale = 1;
 
-        public static void load(){
+        public static void load() {
             guiX = ConfigSpecs.clientConf.guiX.get();
             guiY = ConfigSpecs.clientConf.guiY.get();
             color = ConfigSpecs.clientConf.color.get();
@@ -70,7 +67,7 @@ public class Config {
         public static boolean breakingAsBlacklist;
         public static boolean useBlockBreakSound;
         public static float breakerChance = 1;
-        public static float stealerChance= 1;
+        public static float stealerChance = 1;
         public static boolean breakTileEntities;
         public static ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
         public static float neutralAggressiv;
@@ -108,7 +105,7 @@ public class Config {
         public static float projectileIncrease;
         public static float projectileMax;
 
-        public static void load(){
+        public static void load() {
             enableDifficultyScaling = ConfigSpecs.commonConf.enableDifficultyScaling.get();
             difficultyDelay = ConfigSpecs.commonConf.difficultyDelay.get();
             ignorePlayers = ConfigSpecs.commonConf.ignorePlayers.get();
@@ -121,7 +118,7 @@ public class Config {
             petWhiteList = ConfigSpecs.commonConf.petWhiteList.get();
 
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
-            if(l.size()!= 1 || !l.get(0).equals("UNINIT"))
+            if (l.size() != 1 || !l.get(0).equals("UNINIT"))
                 entityBlacklist.readFromString(ConfigSpecs.commonConf.entityBlacklist.get());
             mobAttributeWhitelist = ConfigSpecs.commonConf.mobAttributeWhitelist.get();
             armorMobWhitelist = ConfigSpecs.commonConf.armorMobWhitelist.get();
@@ -181,9 +178,9 @@ public class Config {
             projectileMax = ConfigSpecs.commonConf.projectileMax.get().floatValue();
         }
 
-        public static void serverInit(MinecraftServer server){
+        public static void serverInit(MinecraftServer server) {
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
-            if(l.size() == 1 && l.get(0).equals("UNINITIALIZED")) {
+            if (l.size() == 1 && l.get(0).equals("UNINITIALIZED")) {
                 entityBlacklist.initDefault(server.getOverworld());
                 ConfigSpecs.commonConf.entityBlacklist.set(entityBlacklist.writeToString());
             }

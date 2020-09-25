@@ -25,11 +25,11 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
 
     private final Map<String, EnumSet<Flags>> map = Maps.newHashMap();
 
-    public void initDefault(World world){
+    public void initDefault(World world) {
         this.map.clear();
         for (EntityType<?> entry : ForgeRegistries.ENTITIES) {
             Entity e = entry.create(world);
-            if(!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity || e instanceof TameableEntity)
+            if (!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity || e instanceof TameableEntity)
                 continue;
             this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
         }
@@ -81,7 +81,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         return s;
     }
 
-    public static String use(){
+    public static String use() {
         String[] str = new String[]{"<entity registry name> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Leave empty to apply them all and REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
                 "example: minecraft:sheep|REVERSE|ATTRIBUTES will add sheep to attributes modification (since default is a blacklist)", "or minecraft:sheep|ATTRIBUTES will add sheep to everything except attributes"};
         return String.join("\n", str);

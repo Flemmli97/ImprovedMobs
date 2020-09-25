@@ -8,9 +8,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.EnderPearlEntity;
 import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.monster.DrownedEntity;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.projectile.ArrowEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
@@ -26,7 +24,6 @@ import net.minecraft.item.ShieldItem;
 import net.minecraft.item.SplashPotionItem;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
-import net.minecraft.potion.PotionUtils;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.SoundCategory;
@@ -56,9 +53,9 @@ public class ItemAITasks {
     @Nullable
     public static ItemAI getAI(Item item) {
         ItemAI ai = itemMap.get(item);
-        if(ai == null){
-            for(Class<? extends Item> clss : clssMap.keySet()){
-                if(clss.isAssignableFrom(item.getClass())){
+        if (ai == null) {
+            for (Class<? extends Item> clss : clssMap.keySet()) {
+                if (clss.isAssignableFrom(item.getClass())) {
                     ai = clssMap.get(clss);
                     break;
                 }
@@ -310,7 +307,7 @@ public class ItemAITasks {
                 double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
                 if (!entity.world.isRemote) {
                     TNTEntity tnt = new TNTEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), entity);
-                    ((ITNTThrowable)tnt).shootFromEntity(entity, entity.rotationPitch, entity.rotationYaw, -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
+                    ((ITNTThrowable) tnt).shootFromEntity(entity, entity.rotationPitch, entity.rotationYaw, -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
                     tnt.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
                     entity.world.addEntity(tnt);
                 }

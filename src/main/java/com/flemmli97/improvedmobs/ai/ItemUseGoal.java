@@ -1,7 +1,6 @@
 package com.flemmli97.improvedmobs.ai;
 
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
-import net.minecraft.client.renderer.entity.DrownedRenderer;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -10,12 +9,9 @@ import net.minecraft.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.entity.monster.DrownedEntity;
-import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
-import net.minecraft.item.TridentItem;
 import net.minecraft.util.Hand;
-import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.EnumSet;
@@ -40,10 +36,10 @@ public class ItemUseGoal extends Goal {
             follow = (float) entity.getAttribute(Attributes.GENERIC_FOLLOW_RANGE).getValue();
         maxDistance = Math.min(follow - 3, maxDistance);
         this.maxAttackDistance = maxDistance * maxDistance;
-        ((IGoalModifier)entity.goalSelector).modifyGoal(Goal.class, g->{
-            if(g instanceof RangedBowAttackGoal || g instanceof RangedCrossbowAttackGoal || this.living.getType().getRegistryName().toString().equals("primitivemobs:skeleton_warrior"))
+        ((IGoalModifier) entity.goalSelector).modifyGoal(Goal.class, g -> {
+            if (g instanceof RangedBowAttackGoal || g instanceof RangedCrossbowAttackGoal || this.living.getType().getRegistryName().toString().equals("primitivemobs:skeleton_warrior"))
                 this.hasBowAI = true;
-            if(g instanceof RangedAttackGoal)
+            if (g instanceof RangedAttackGoal)
                 this.hasRangedAttack = true;
         });
     }
@@ -51,7 +47,7 @@ public class ItemUseGoal extends Goal {
     @Override
     public boolean shouldExecute() {
         LivingEntity target = this.living.getAttackTarget();
-        if (target == null || !target.isAlive() || this.shouldNotExecute())
+        if (target == null || !target.isAlive() || this.canAlreadyUse())
             return false;
         Pair<ItemAITasks.ItemAI, Hand> pair = ItemAITasks.getAI(this.living);
         this.ai = pair.getKey();
@@ -69,7 +65,7 @@ public class ItemUseGoal extends Goal {
     @Override
     public boolean shouldContinueExecuting() {
         LivingEntity target = this.living.getAttackTarget();
-        if (target == null || !target.isAlive() || this.shouldNotExecute())
+        if (target == null || !target.isAlive() || this.canAlreadyUse())
             return false;
         if (this.stackMain != this.living.getHeldItemMainhand() || this.stackOff != this.living.getHeldItemOffhand()) {
             Pair<ItemAITasks.ItemAI, Hand> pair = ItemAITasks.getAI(this.living);
@@ -87,6 +83,7 @@ public class ItemUseGoal extends Goal {
         this.ai = null;
         this.stackMain = null;
         this.stackOff = null;
+        this.setMutexFlags(EnumSet.noneOf(Goal.Flag.class));
     }
 
     @Override
@@ -171,7 +168,9 @@ public class ItemUseGoal extends Goal {
     /**
      * Specific mobs here. like for skeletons with bows
      */
-    private boolean shouldNotExecute() {
+    private boolean canAlreadyUse() {
+        if (this.hasRangedAttack && this.living instanceof DrownedEntity && this.living.getHeldItemMainhand().getItem() == Items.TRIDENT)
+            return true;
         return this.hasBowAI && this.living.getHeldItemMainhand().getItem() == Items.BOW;
     }
 }

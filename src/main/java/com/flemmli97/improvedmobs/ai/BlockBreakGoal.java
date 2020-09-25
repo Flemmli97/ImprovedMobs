@@ -34,22 +34,22 @@ public class BlockBreakGoal extends Goal {
         this.target = this.living.getAttackTarget();
         //double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
 
-        if(this.living.ticksExisted % 10 == 0 && this.target != null /*&& motion<maxMotion*/ && this.living.getDistance(this.target) > 1D && this.living.isOnGround()){
+        if (this.living.ticksExisted % 10 == 0 && this.target != null /*&& motion<maxMotion*/ && this.living.getDistance(this.target) > 1D && this.living.isOnGround()) {
 
             BlockPos blockPos = this.getBlock(this.living);
 
-            if(blockPos == null)
+            if (blockPos == null)
                 return false;
 
             ItemStack item = this.living.getHeldItemMainhand();
             ItemStack itemOff = this.living.getHeldItemOffhand();
             BlockState block = this.living.world.getBlockState(blockPos);
 
-            if(GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff)){
+            if (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff)) {
                 this.markedLoc = blockPos;
                 this.entityPos = this.living.getBlockPos();
                 return true;
-            }else{
+            } else {
                 return false;
             }
         }
@@ -66,14 +66,14 @@ public class BlockBreakGoal extends Goal {
     @Override
     public void resetTask() {
         this.digTimer = 0;
-        if(this.markedLoc != null)
+        if (this.markedLoc != null)
             this.living.world.sendBlockBreakProgress(this.living.getEntityId(), this.markedLoc, -1);
         this.markedLoc = null;
     }
 
     @Override
     public void tick() {
-        if(this.markedLoc == null || this.living.world.getBlockState(this.markedLoc).getMaterial() == Material.AIR){
+        if (this.markedLoc == null || this.living.world.getBlockState(this.markedLoc).getMaterial() == Material.AIR) {
             this.digTimer = 0;
             return;
         }
@@ -81,7 +81,7 @@ public class BlockBreakGoal extends Goal {
         this.digTimer++;
 
         float str = GeneralHelperMethods.getBlockStrength(this.living, state, this.living.world, this.markedLoc) * (this.digTimer + 1);
-        if(str >= 1F){
+        if (str >= 1F) {
             this.digTimer = 0;
             ItemStack item = this.living.getHeldItemMainhand();
             ItemStack itemOff = this.living.getHeldItemOffhand();
@@ -89,11 +89,11 @@ public class BlockBreakGoal extends Goal {
             //if(Config.ServerConfig.useCoroUtil)
             //    TileEntityRepairingBlock.replaceBlockAndBackup(this.living.world, this.markedLoc, ConfigHandler.repairTick);
             //else
-                this.living.world.destroyBlock(this.markedLoc, canHarvest);
+            this.living.world.destroyBlock(this.markedLoc, canHarvest);
             this.markedLoc = null;
             this.living.getNavigator().setPath(this.living.getNavigator().getPathToEntityLiving(this.target, 0), 1D);
-        }else{
-            if(this.digTimer % 5 == 0){
+        } else {
+            if (this.digTimer % 5 == 0) {
                 SoundType sound = state.getBlock().getSoundType(state, this.living.world, this.markedLoc, this.living);
                 this.living.getNavigator().setPath(this.living.getNavigator().getPathToPos(this.markedLoc, 0), 1D);
                 this.living.world.playSound(null, this.markedLoc, Config.CommonConfig.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
@@ -117,10 +117,10 @@ public class BlockBreakGoal extends Goal {
         BlockState block = entityLiving.world.getBlockState(frontCheck.add(x, y, z));
         ItemStack item = entityLiving.getHeldItemMainhand();
         ItemStack itemOff = entityLiving.getHeldItemOffhand();
-        if(Config.CommonConfig.breakableBlocks.canBreak(notFull) && (GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff))){
+        if (Config.CommonConfig.breakableBlocks.canBreak(notFull) && (GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff))) {
             this.scanTick = 0;
             return partBlockCheck.add(x, y, z);
-        }else if(Config.CommonConfig.breakableBlocks.canBreak(block) && (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff))){
+        } else if (Config.CommonConfig.breakableBlocks.canBreak(block) && (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff))) {
             this.scanTick = 0;
             return frontCheck.add(x, y, z);
         }

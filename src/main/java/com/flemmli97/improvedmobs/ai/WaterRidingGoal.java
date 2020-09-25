@@ -56,19 +56,19 @@ public class WaterRidingGoal extends Goal {
     @Override
     public void tick() {
         Entity entity = this.living.getRidingEntity();
-        if(!(entity instanceof MobEntity) || !entity.isAlive())
+        if (!(entity instanceof MobEntity) || !entity.isAlive())
             return;
         this.living.addPotionEffect(new EffectInstance(Effects.WATER_BREATHING, 10, 1, false, false));
-        if(this.nearShore(entity,0)){
+        if (this.nearShore(entity, 0)) {
             this.jumpingTick = 20;
             Vector3d facing = entity.getLookVec().scale(0.5).add(entity.getMotion());
             entity.setMotion(new Vector3d(facing.x, 1, facing.z));
         }
-        if(this.jumpingTick-- > 0){
+        if (this.jumpingTick-- > 0) {
             Vector3d facing = entity.getLookVec().scale(0.5);
             entity.setMotion(new Vector3d(facing.x, entity.getMotion().y, facing.z));
         }
-        if(this.isOnLand(entity)){
+        if (this.isOnLand(entity)) {
             this.living.addPotionEffect(new EffectInstance(Effects.RESISTANCE, 2, 5, false, false));
             this.living.getNavigator().clearPath();
             this.living.stopRiding();
@@ -76,16 +76,16 @@ public class WaterRidingGoal extends Goal {
     }
 
     private boolean isOnLand(Entity riding) {
-        if(riding.world.getBlockState(riding.getBlockPos()).getMaterial() != Material.WATER){
+        if (riding.world.getBlockState(riding.getBlockPos()).getMaterial() != Material.WATER) {
             return riding.world.getBlockState(riding.getBlockPos().down()).getMaterial().isSolid();
         }
         return false;
     }
 
     private boolean nearShore(Entity riding, int cliffSize) {
-        if(cliffSize < 3){
+        if (cliffSize < 3) {
             BlockPos pos = riding.getBlockPos().offset(riding.getHorizontalFacing()).up(cliffSize);
-            if(riding.world.getBlockState(pos).getMaterial().isSolid() && !riding.world.getBlockState(pos.up()).getMaterial().blocksMovement())
+            if (riding.world.getBlockState(pos).getMaterial().isSolid() && !riding.world.getBlockState(pos.up()).getMaterial().blocksMovement())
                 return true;
             else
                 return this.nearShore(riding, cliffSize + 1);

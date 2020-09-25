@@ -30,7 +30,7 @@ import net.minecraft.entity.ai.goal.RandomSwimmingGoal;
 import net.minecraft.entity.ai.goal.RandomWalkingGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.TNTEntity;
-import net.minecraft.entity.merchant.villager.VillagerEntity;
+import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
@@ -77,10 +77,10 @@ public class EventHandler {
 
     public static final ResourceLocation tileCap = new ResourceLocation(ImprovedMobs.MODID, "opened_flag");
     public static final String breaker = ImprovedMobs.MODID + ":Breaker";
-    private static final String modifyArmor = ImprovedMobs.MODID + ":InitArmor";
-    private static final String modifyHeld = ImprovedMobs.MODID + ":InitHeld";
-    private static final String modifyAttributes = ImprovedMobs.MODID + ":InitAttr";
-    private static final String enchanted = ImprovedMobs.MODID + ":Enchanted";
+    private static final String modifyArmor = ImprovedMobs.MODID + ":ModifyArmor";
+    private static final String modifyHeld = ImprovedMobs.MODID + ":ModifyHeld";
+    private static final String modifyAttributes = ImprovedMobs.MODID + ":ModifyAttr";
+    private static final String enchanted = ImprovedMobs.MODID + ":DoEnchant";
 
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<TileEntity> event) {
@@ -89,12 +89,12 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void serverStart(FMLServerStartingEvent event){
+    public void serverStart(FMLServerStartingEvent event) {
         Config.CommonConfig.serverInit(event.getServer());
     }
 
     @SubscribeEvent
-    public void commands(RegisterCommandsEvent event){
+    public void commands(RegisterCommandsEvent event) {
         IMCommand.register(event.getDispatcher());
     }
 
@@ -108,13 +108,13 @@ public class EventHandler {
                     living.getPersistentData().putBoolean(breaker, true);
                 }
                 if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist)) {
-                    living.getPersistentData().putBoolean(modifyArmor, false);
+                    living.getPersistentData().putBoolean(modifyArmor, true);
                 }
                 if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.CommonConfig.heldMobWhitelist)) {
-                    living.getPersistentData().putBoolean(modifyHeld, false);
+                    living.getPersistentData().putBoolean(modifyHeld, true);
                 }
                 if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
-                    living.getPersistentData().putBoolean(modifyAttributes, false);
+                    living.getPersistentData().putBoolean(modifyAttributes, true);
                 }
             }
         }
@@ -138,29 +138,29 @@ public class EventHandler {
     public void onEntityLoad(EntityJoinWorldEvent e) {
         if (e.getWorld().isRemote)
             return;
-        if (e.getEntity() instanceof MobEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.waterRiding)) {
+        if (e.getEntity() instanceof MobEntity && e.getEntity().getPersistentData().getBoolean(ImprovedMobs.waterRiding)) {
             MobEntity boat = (MobEntity) e.getEntity();
-            boat.getPersistentData().putBoolean(modifyArmor, true);
-            boat.getPersistentData().putBoolean(modifyHeld, true);
-            if(!boat.getPersistentData().contains(modifyAttributes) || !boat.getPersistentData().getBoolean(modifyAttributes)) {
-                boat.getPersistentData().putBoolean(modifyAttributes, true);
+            boat.getPersistentData().putBoolean(modifyArmor, false);
+            boat.getPersistentData().putBoolean(modifyHeld, false);
+            if (!boat.getPersistentData().contains(modifyAttributes) || boat.getPersistentData().getBoolean(modifyAttributes)) {
+                boat.getPersistentData().putBoolean(modifyAttributes, false);
                 ModifiableAttributeInstance inst = boat.getAttribute(Attributes.GENERIC_MAX_HEALTH);
-                if(inst!=null)
+                if (inst != null)
                     inst.setBaseValue(5);
                 boat.setHealth(boat.getMaxHealth());
             }
-            ((IGoalModifier)boat.goalSelector).goalRemovePredicate((g)->!(g instanceof LookAtGoal || g instanceof RandomWalkingGoal ||g instanceof RandomSwimmingGoal));
-            ((IGoalModifier)boat.targetSelector).goalRemovePredicate((g)->true);
+            ((IGoalModifier) boat.goalSelector).goalRemovePredicate((g) -> !(g instanceof LookAtGoal || g instanceof RandomWalkingGoal || g instanceof RandomSwimmingGoal));
+            ((IGoalModifier) boat.targetSelector).goalRemovePredicate((g) -> true);
             return;
         }
         boolean mobGriefing = e.getWorld().getGameRules().getBoolean(GameRules.MOB_GRIEFING);
         if (e.getEntity() instanceof MobEntity) {
             MobEntity living = (MobEntity) e.getEntity();
             this.applyAttributesAndItems(living);
-            if (living.getPersistentData().contains(breaker)) {
-                ((IGoalModifier)living.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g)-> {
-                    if(g instanceof NearestAttackableTargetGoal){
-                        ((TargetGoalMixin)g).setShouldCheckSight(false);
+            if (living.getPersistentData().getBoolean(breaker)) {
+                ((IGoalModifier) living.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
+                    if (g instanceof NearestAttackableTargetGoal) {
+                        ((TargetGoalMixin) g).setShouldCheckSight(false);
                     }
                 });
                 if (mobGriefing) {
@@ -172,7 +172,7 @@ public class EventHandler {
                 }
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
-                living.goalSelector.addGoal(0, new ItemUseGoal(living, 15));
+                living.goalSelector.addGoal(2, new ItemUseGoal(living, 15));
                 //EntityAITechGuns.applyAI(living);
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
@@ -195,35 +195,35 @@ public class EventHandler {
             if (!Config.CommonConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
                 villager = true;
                 if (!neutral)
-                    creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, VillagerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
+                    creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, AbstractVillagerEntity.class, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() <= 0.5));
             }
             if (Config.CommonConfig.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv)
                 if (neutral) {
-                    creature.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(creature, PlayerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
+                    creature.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(creature, PlayerEntity.class, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() < 0.5));
                     if (villager)
-                        creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, VillagerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
+                        creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, AbstractVillagerEntity.class, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() < 0.5));
                 }
             List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(creature.getType().getRegistryName());
             if (types != null)
-                creature.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(creature, LivingEntity.class, 10, !creature.getTags().contains("Breaker"), false, (living) -> types.contains(living.getType())));
+                creature.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(creature, LivingEntity.class, 10, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() < 0.5, false, (living) -> types.contains(living.getType())));
         }
     }
 
     private void applyAttributesAndItems(MobEntity living) {
-        if (living.getPersistentData().contains(modifyArmor) && !living.getPersistentData().getBoolean(modifyArmor)) {
+        if (living.getPersistentData().getBoolean(modifyArmor)) {
             //List<IRecipe> r= CraftingManager.getInstance().getRecipeList(); for further things maybe
             GeneralHelperMethods.equipArmor(living);
-            living.getPersistentData().putBoolean(modifyArmor, true);
+            living.getPersistentData().putBoolean(modifyArmor, false);
         }
-        if (living.getPersistentData().contains(modifyHeld) && !living.getPersistentData().getBoolean(modifyHeld)) {
+        if (living.getPersistentData().getBoolean(modifyHeld)) {
             GeneralHelperMethods.equipHeld(living);
-            living.getPersistentData().putBoolean(modifyHeld, true);
+            living.getPersistentData().putBoolean(modifyHeld, false);
         }
-        if (Config.CommonConfig.baseEnchantChance != 0 && !living.getPersistentData().contains(enchanted)) {
+        if (living.getPersistentData().contains(enchanted)) {
             GeneralHelperMethods.enchantGear(living);
-            living.getPersistentData().putBoolean(enchanted, true);
+            living.getPersistentData().putBoolean(enchanted, false);
         }
-        if (living.getPersistentData().contains(modifyAttributes) && !living.getPersistentData().getBoolean(modifyAttributes)) {
+        if (living.getPersistentData().getBoolean(modifyAttributes)) {
             if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
                 GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, true);
                 living.setHealth(living.getMaxHealth());
@@ -236,12 +236,11 @@ public class EventHandler {
                 GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, false);
             if (Config.CommonConfig.magicResIncrease != 0)
                 IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Config.CommonConfig.magicResIncrease * 0.0016f, Config.CommonConfig.magicResMax);
-                //GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016, Config.ServerConfig.magicResMax, false);
+            //GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016, Config.ServerConfig.magicResMax, false);
             if (Config.CommonConfig.projectileIncrease != 0)
                 IMAttributes.apply(living, IMAttributes.Attribute.PROJ_BOOST, Config.CommonConfig.projectileIncrease * 0.008f, Config.CommonConfig.projectileMax);
-                //GeneralHelperMethods.modifyAttr(living, IMAttributes.PROJ_BOOST, Config.ServerConfig.projectileIncrease * 0.008, Config.ServerConfig.projectileMax, false);
-
-            living.getPersistentData().putBoolean(modifyAttributes, true);
+            //GeneralHelperMethods.modifyAttr(living, IMAttributes.PROJ_BOOST, Config.ServerConfig.projectileIncrease * 0.008, Config.ServerConfig.projectileMax, false);
+            living.getPersistentData().putBoolean(modifyAttributes, false);
         }
     }
 
@@ -257,9 +256,9 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void removeBoats(LivingEvent.LivingUpdateEvent event){
-        if(event.getEntity() instanceof MobEntity && event.getEntity().getPersistentData().contains(ImprovedMobs.waterRiding)){
-            if(!event.getEntity().isBeingRidden())
+    public void removeBoats(LivingEvent.LivingUpdateEvent event) {
+        if (event.getEntity() instanceof MobEntity && event.getEntity().getPersistentData().getBoolean(ImprovedMobs.waterRiding)) {
+            if (!event.getEntity().isBeingRidden())
                 event.getEntity().remove();
         }
     }
@@ -363,15 +362,14 @@ public class EventHandler {
 
     @SubscribeEvent
     public void projectileImpact(ProjectileImpactEvent e) {
-        if(e.getEntity() instanceof ProjectileEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.thrownEntityID)){
-            Entity thrower = ((ProjectileEntity)e.getEntity()).getOwner();
-            if(thrower instanceof MobEntity){
-                if(e.getEntity() instanceof PotionEntity){
+        if (e.getEntity() instanceof ProjectileEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.thrownEntityID)) {
+            Entity thrower = ((ProjectileEntity) e.getEntity()).getOwner();
+            if (thrower instanceof MobEntity) {
+                if (e.getEntity() instanceof PotionEntity) {
                     return;
-                }
-                else if(e.getRayTraceResult().getType() == RayTraceResult.Type.ENTITY){
+                } else if (e.getRayTraceResult().getType() == RayTraceResult.Type.ENTITY) {
                     EntityRayTraceResult res = (EntityRayTraceResult) e.getRayTraceResult();
-                    if(!res.getEntity().equals(((MobEntity) thrower).getAttackTarget()))
+                    if (!res.getEntity().equals(((MobEntity) thrower).getAttackTarget()))
                         e.setCanceled(true);
                 }
             }
@@ -379,13 +377,13 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void explosion(ExplosionEvent.Detonate event){
-        if(event.getExplosion().getExploder() instanceof TNTEntity && event.getExplosion().getExploder().getPersistentData().contains(ImprovedMobs.thrownEntityID)){
+    public void explosion(ExplosionEvent.Detonate event) {
+        if (event.getExplosion().getExploder() instanceof TNTEntity && event.getExplosion().getExploder().getPersistentData().contains(ImprovedMobs.thrownEntityID)) {
             LivingEntity igniter = event.getExplosion().getExplosivePlacedBy();
-            if(igniter instanceof MobEntity){
+            if (igniter instanceof MobEntity) {
                 event.getAffectedBlocks().clear();
-                if(((MobEntity) igniter).getAttackTarget()!=null)
-                    event.getAffectedEntities().removeIf(e->!e.equals(((MobEntity) igniter).getAttackTarget()));
+                if (((MobEntity) igniter).getAttackTarget() != null)
+                    event.getAffectedEntities().removeIf(e -> !e.equals(((MobEntity) igniter).getAttackTarget()));
             }
         }
     }

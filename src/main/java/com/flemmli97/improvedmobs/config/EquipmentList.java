@@ -49,7 +49,7 @@ public class EquipmentList {
 
     public static ItemStack getEquip(MobEntity e, EquipmentSlotType slot) {
         WeightedItemstackList eq = equips.get(slot);
-        if(eq == null || eq.list.isEmpty() || eq.totalWeight == 0)
+        if (eq == null || eq.list.isEmpty() || eq.totalWeight == 0)
             return ItemStack.EMPTY;
         //int totalWeight = (int)Math.max(1, eq.totalWeight*(1-Math.max(DifficultyData.getDifficulty(e.world, e)/312f,0.8)));
         int totalWeight = eq.totalWeight;
@@ -57,7 +57,7 @@ public class EquipmentList {
     }
 
     public static void initEquip() throws InvalidItemNameException {
-        try{
+        try {
             //Init default values
             ForgeRegistries.ITEMS.forEach(item -> {
                 /*if(Config.ServerConfig.useTGunsMod)
@@ -66,23 +66,24 @@ public class EquipmentList {
                 if(Config.ServerConfig.useReforgedMod)
                     if(item instanceof ItemBlowGun || item instanceof ItemJavelin)
                         equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
-                */if(item instanceof BowItem)
+                */
+                if (item instanceof BowItem)
                     equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
 
                 ItemAITasks.ItemAI ai = ItemAITasks.getAI(item);
-                if(ai != null){
-                    switch(ai.prefHand()){
+                if (ai != null) {
+                    switch (ai.prefHand()) {
                         case BOTH:
-                            if(ai.type() == ItemAITasks.ItemType.NONSTRAFINGITEM){
+                            if (ai.type() == ItemAITasks.ItemType.NONSTRAFINGITEM) {
                                 WeightedItemstack val = new WeightedItemstack(item, getDefaultWeight(item));
-                                if(!equips.get(EquipmentSlotType.MAINHAND).list.contains(val))
+                                if (!equips.get(EquipmentSlotType.MAINHAND).list.contains(val))
                                     equips.compute(EquipmentSlotType.OFFHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(val)) : l.add(val));
-                            }else{
-                                if(item == Items.SPLASH_POTION){
+                            } else {
+                                if (item == Items.SPLASH_POTION) {
                                     String potionItem = item.getRegistryName().toString() + "{Potion:\"minecraft:harming\"}";
                                     equips.compute(EquipmentSlotType.MAINHAND,
                                             (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(potionItem, getDefaultWeight(item), Lists.newArrayList()))) : l.add(new WeightedItemstack(potionItem, getDefaultWeight(item), Lists.newArrayList())));
-                                }else
+                                } else
                                     equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
                             }
                             break;
@@ -94,8 +95,8 @@ public class EquipmentList {
                             break;
                     }
                 }
-                if(item instanceof ArmorItem){
-                    switch (((ArmorItem)item).getEquipmentSlot()){
+                if (item instanceof ArmorItem) {
+                    switch (((ArmorItem) item).getEquipmentSlot()) {
                         case FEET:
                             equips.compute(EquipmentSlotType.FEET, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
                             break;
@@ -110,8 +111,8 @@ public class EquipmentList {
                             break;
                     }
                 }
-                if(item instanceof SwordItem || item instanceof ToolItem)
-                    if(!defaultBlackLists(item))
+                if (item instanceof SwordItem || item instanceof ToolItem)
+                    if (!defaultBlackLists(item))
                         equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
             });
             //if(Config.ServerConfig.useReforgedMod)
@@ -119,23 +120,23 @@ public class EquipmentList {
 
             File conf = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").resolve("equipment.json").toFile();
             JsonObject confObj = new JsonObject();
-            if(!conf.exists()){
+            if (!conf.exists()) {
                 conf.createNewFile();
-            }else{
+            } else {
                 //Clear and read all from config
                 equips.clear();
 
                 FileReader reader = new FileReader(conf);
                 confObj = GSON.fromJson(reader, JsonObject.class);
-                if(confObj == null)
+                if (confObj == null)
                     confObj = new JsonObject();
                 reader.close();
                 //Read and update from config
                 List<String> errors = Lists.newArrayList();
-                for(EquipmentSlotType key : EquipmentSlotType.values()){
-                    if(confObj.has(key.toString())){
+                for (EquipmentSlotType key : EquipmentSlotType.values()) {
+                    if (confObj.has(key.toString())) {
                         JsonObject obj = (JsonObject) confObj.get(key.toString());
-                        if(!obj.entrySet().isEmpty())
+                        if (!obj.entrySet().isEmpty())
                             obj.entrySet().forEach(ent -> {
                                 int weight = ent.getValue().getAsInt();
                                 equips.compute(key, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(ent.getKey(), weight, errors))) : l.add(new WeightedItemstack(ent.getKey(), weight, errors)));
@@ -144,11 +145,11 @@ public class EquipmentList {
                             equips.put(key, new WeightedItemstackList(Lists.newArrayList()));
                     }
                 }
-                if(!errors.isEmpty())
+                if (!errors.isEmpty())
                     throw new InvalidItemNameException("Invalid item names for following values: " + errors);
             }
             System.out.println(equips);
-            for(EquipmentSlotType key : EquipmentSlotType.values()){
+            for (EquipmentSlotType key : EquipmentSlotType.values()) {
                 JsonObject eq = confObj.has(key.toString()) ? (JsonObject) confObj.get(key.toString()) : new JsonObject();
                 equips.get(key).list.forEach(w -> eq.addProperty(w.configString, w.itemWeight));
 
@@ -167,13 +168,13 @@ public class EquipmentList {
             JsonWriter wr = GSON.newJsonWriter(new FileWriter(conf));
             GSON.toJson(confObj, JsonObject.class, wr);
             wr.close();
-        }catch(IOException e){
+        } catch (IOException e) {
             ImprovedMobs.logger.error("Error initializing equipment");
         }
     }
 
     private static boolean defaultBlackLists(Item item) {
-        if(item instanceof ToolItem && !(item instanceof AxeItem))
+        if (item instanceof ToolItem && !(item instanceof AxeItem))
             return true;
         return item.getRegistryName().getNamespace().equals("mobbattle");
     }
@@ -182,27 +183,27 @@ public class EquipmentList {
     private static final List<String> defaultZeroWeight = Lists.newArrayList("techguns:nucleardeathray", "techguns:grenadelauncher", "techguns:tfg", "techguns:guidedmissilelauncher", "techguns:rocketlauncher");
 
     private static int getDefaultWeight(Item item) {
-        if(defaultZeroWeight.contains(item.getRegistryName().toString()))
+        if (defaultZeroWeight.contains(item.getRegistryName().toString()))
             return 0;
         int weight = 1000;
-        if(item instanceof ArmorItem){
+        if (item instanceof ArmorItem) {
             ArmorItem armor = (ArmorItem) item;
             float fullProt = armor.getArmorMaterial().getDamageReductionAmount(EquipmentSlotType.HEAD) + armor.getArmorMaterial().getDamageReductionAmount(EquipmentSlotType.CHEST) + armor.getArmorMaterial().getDamageReductionAmount(EquipmentSlotType.LEGS)
                     + armor.getArmorMaterial().getDamageReductionAmount(EquipmentSlotType.FEET);
 
             float averageDurability = (armor.getArmorMaterial().getDurability(EquipmentSlotType.HEAD) + armor.getArmorMaterial().getDurability(EquipmentSlotType.CHEST) + armor.getArmorMaterial().getDurability(EquipmentSlotType.LEGS)
                     + armor.getArmorMaterial().getDurability(EquipmentSlotType.FEET)) / 4.0F;
-            if(averageDurability < 0)
+            if (averageDurability < 0)
                 averageDurability = 0;
             float ench = armor.getItemEnchantability();
             float rep = armor.isRepairable(new ItemStack(armor)) ? 0.9F : 1.15F;
             float vanillaMulti = (armor.getArmorMaterial() == ArmorMaterial.LEATHER || armor.getArmorMaterial() == ArmorMaterial.GOLD || armor.getArmorMaterial() == ArmorMaterial.CHAIN || armor.getArmorMaterial() == ArmorMaterial.IRON
                     || armor.getArmorMaterial() == ArmorMaterial.DIAMOND) ? 0.8F : 1.1F;
             weight -= (fullProt * 3.3 + averageDurability * 0.8 + ench) * rep * vanillaMulti;
-        }else if(item instanceof SwordItem){
+        } else if (item instanceof SwordItem) {
             float dmg = 10 + ((SwordItem) item).getAttackDamage();
             weight -= dmg * dmg;
-        }else if(item instanceof ToolItem){
+        } else if (item instanceof ToolItem) {
             ItemStack def = new ItemStack(item);
             double dmg = 12 + ItemUtils.damage(def);
             weight -= dmg * dmg;
@@ -223,27 +224,27 @@ public class EquipmentList {
             int burstAttackTime = ReflectionUtils.getFieldValue(techgunAIburstAttackTime, item);
 
             weight -= 2 * (range * 0.75 + dmg * 14 + attackTime * 0.1 + burstCount * 13 + burstAttackTime * 9) + 300;*/
-        }else{
-            if(item == Items.FLINT_AND_STEEL)
+        } else {
+            if (item == Items.FLINT_AND_STEEL)
                 weight = 700;
-            else if(item instanceof ShieldItem)
+            else if (item instanceof ShieldItem)
                 weight = 850;
-            else if(item == Items.LAVA_BUCKET)
+            else if (item == Items.LAVA_BUCKET)
                 weight = 400;
-            else if(item == Items.ENDER_PEARL)
+            else if (item == Items.ENDER_PEARL)
                 weight = 600;
 
-            else if(item == Items.SNOWBALL)
+            else if (item == Items.SNOWBALL)
                 weight = 900;
-            else if(item instanceof PotionItem)
+            else if (item instanceof PotionItem)
                 weight = 750;
-            else if(item instanceof BowItem)
+            else if (item instanceof BowItem)
                 weight = 850;
-            else if(item == Items.ENCHANTED_BOOK)
+            else if (item == Items.ENCHANTED_BOOK)
                 weight = 800;
-            else if(item == Blocks.TNT.asItem())
+            else if (item == Blocks.TNT.asItem())
                 weight = 600;
-            else if(item == Items.TRIDENT)
+            else if (item == Items.TRIDENT)
                 weight = 500;
             /*else if(Config.ServerConfig.useReforgedMod){
                 if(item instanceof ItemBlowGun)
@@ -276,21 +277,21 @@ public class EquipmentList {
             this.configString = item;
             String itemReg = item;
             CompoundNBT nbt = null;
-            if(item.contains("{")){
+            if (item.contains("{")) {
                 int idx = item.indexOf("{");
                 itemReg = item.substring(0, idx);
-                try{
+                try {
                     nbt = JsonToNBT.getTagFromJson(item.substring(idx));
-                }catch(CommandSyntaxException e){
+                } catch (CommandSyntaxException e) {
                     ImprovedMobs.logger.error("Error reading nbt from config {}", item.substring(idx));
                     e.printStackTrace();
                 }
             }
             Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemReg));
-            if(it == null){
+            if (it == null) {
                 errors.add(itemReg);
                 this.item = null;
-            }else
+            } else
                 this.item = new ExtendedItemStackWrapper(it).setNBT(nbt);
         }
 
@@ -300,13 +301,13 @@ public class EquipmentList {
 
         @Override
         public boolean equals(Object other) {
-            if(other == this)
+            if (other == this)
                 return true;
-            if(other instanceof WeightedItemstack){
+            if (other instanceof WeightedItemstack) {
                 WeightedItemstack oth = (WeightedItemstack) other;
-                if(!this.item.getItem().getRegistryName().equals(oth.item.getItem().getRegistryName()))
+                if (!this.item.getItem().getRegistryName().equals(oth.item.getItem().getRegistryName()))
                     return false;
-                if(this.item.getTag() == null && oth.item.getTag() != null)
+                if (this.item.getTag() == null && oth.item.getTag() != null)
                     return false;
                 return this.item.getTag() == null || this.item.getTag().equals(oth.item.getTag());
             }
@@ -336,7 +337,7 @@ public class EquipmentList {
 
         public WeightedItemstackList(List<WeightedItemstack> list) {
             this.list = list;
-            this.list.removeIf(w->w.item==null);
+            this.list.removeIf(w -> w.item == null);
             this.calculateTotalWeight();
         }
 
@@ -350,20 +351,20 @@ public class EquipmentList {
         }
 
         private boolean modBlacklist(Item item) {
-            if(Config.CommonConfig.equipmentModWhitelist){
-                for(String s : Config.CommonConfig.equipmentModBlacklist)
-                    if(item.getRegistryName().getNamespace().equals(s))
+            if (Config.CommonConfig.equipmentModWhitelist) {
+                for (String s : Config.CommonConfig.equipmentModBlacklist)
+                    if (item.getRegistryName().getNamespace().equals(s))
                         return false;
                 return true;
             }
-            for(String s : Config.CommonConfig.equipmentModBlacklist)
-                if(item.getRegistryName().getNamespace().equals(s))
+            for (String s : Config.CommonConfig.equipmentModBlacklist)
+                if (item.getRegistryName().getNamespace().equals(s))
                     return true;
             return false;
         }
 
         public WeightedItemstackList add(WeightedItemstack item) {
-            if(item.item == null)
+            if (item.item == null)
                 return this;
             this.list.remove(item);
             this.list.add(item);

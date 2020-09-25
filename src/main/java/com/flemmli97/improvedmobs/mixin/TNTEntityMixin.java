@@ -1,19 +1,13 @@
 package com.flemmli97.improvedmobs.mixin;
 
-import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.utils.ITNTThrowable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
-import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TNTEntity.class)
 public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
@@ -38,16 +32,16 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
 
     @Override
     public void shootFromEntity(Entity shooter, float pitch, float yaw, float delta, float velocity, float accuracy) {
-        TNTEntity tnt = (TNTEntity)(Object) this;
-        float x = -MathHelper.sin(yaw * (float)Math.PI / 180F) * MathHelper.cos(pitch * (float)Math.PI / 180F);
-        float y = -MathHelper.sin((pitch + delta) * (float)Math.PI / 180F);
-        float z = MathHelper.cos(yaw * (float)Math.PI / 180F) * MathHelper.cos(pitch * (float)Math.PI / 180F);
+        TNTEntity tnt = (TNTEntity) (Object) this;
+        float x = -MathHelper.sin(yaw * (float) Math.PI / 180F) * MathHelper.cos(pitch * (float) Math.PI / 180F);
+        float y = -MathHelper.sin((pitch + delta) * (float) Math.PI / 180F);
+        float z = MathHelper.cos(yaw * (float) Math.PI / 180F) * MathHelper.cos(pitch * (float) Math.PI / 180F);
         Vector3d newMotion = new Vector3d(x, y, z).normalize()
                 .add(rand.nextGaussian() * 0.0075F * accuracy, rand.nextGaussian() * 0.0075F * accuracy, rand.nextGaussian() * 0.0075F * accuracy).scale(velocity);
         tnt.setMotion(newMotion);
         float f3 = MathHelper.sqrt(newMotion.x * newMotion.x + newMotion.z * newMotion.z);
-        tnt.rotationYaw = (float)(MathHelper.atan2(newMotion.x, newMotion.z) * (180F / (float)Math.PI));
-        tnt.rotationPitch = (float)(MathHelper.atan2(newMotion.y, f3) * (180F / (float)Math.PI));
+        tnt.rotationYaw = (float) (MathHelper.atan2(newMotion.x, newMotion.z) * (180F / (float) Math.PI));
+        tnt.rotationPitch = (float) (MathHelper.atan2(newMotion.y, f3) * (180F / (float) Math.PI));
         tnt.prevRotationYaw = tnt.rotationYaw;
         tnt.prevRotationPitch = tnt.rotationPitch;
         Vector3d shooterMotion = shooter.getMotion();
