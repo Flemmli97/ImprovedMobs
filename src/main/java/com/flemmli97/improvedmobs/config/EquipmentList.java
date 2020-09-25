@@ -267,7 +267,7 @@ public class EquipmentList {
 
         public WeightedItemstack(Item item, int itemWeight) {
             super(itemWeight);
-            this.item = new ExtendedItemStackWrapper(item);
+            this.item = new ExtendedItemStackWrapper(item.getRegistryName().toString());
             this.configString = item.getRegistryName().toString();
 
         }
@@ -292,7 +292,7 @@ public class EquipmentList {
                 errors.add(itemReg);
                 this.item = null;
             } else
-                this.item = new ExtendedItemStackWrapper(it).setNBT(nbt);
+                this.item = new ExtendedItemStackWrapper(itemReg).setNBT(nbt);
         }
 
         public ItemStack getItem() {

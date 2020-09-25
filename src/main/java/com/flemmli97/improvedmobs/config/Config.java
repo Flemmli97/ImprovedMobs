@@ -69,7 +69,7 @@ public class Config {
         public static float breakerChance = 1;
         public static float stealerChance = 1;
         public static boolean breakTileEntities;
-        public static ItemWrapper breakingItem = new ItemWrapper(Items.DIAMOND_PICKAXE);
+        public static ItemWrapper breakingItem = new ItemWrapper("minecraft:diamond_pickaxe");
         public static float neutralAggressiv;
         public static MobClassMapConfig autoTargets = new MobClassMapConfig();
         public static int repairTick = 200;
