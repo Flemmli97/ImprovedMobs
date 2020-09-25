@@ -48,6 +48,7 @@ public class EquipmentList {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public static ItemStack getEquip(MobEntity e, EquipmentSlotType slot) {
+        System.out.println("get " + equips);
         WeightedItemstackList eq = equips.get(slot);
         if(eq == null || eq.list.isEmpty() || eq.totalWeight == 0)
             return ItemStack.EMPTY;
@@ -147,6 +148,7 @@ public class EquipmentList {
                 if(!errors.isEmpty())
                     throw new InvalidItemNameException("Invalid item names for following values: " + errors);
             }
+            System.out.println(equips);
             for(EquipmentSlotType key : EquipmentSlotType.values()){
                 JsonObject eq = confObj.has(key.toString()) ? (JsonObject) confObj.get(key.toString()) : new JsonObject();
                 equips.get(key).list.forEach(w -> eq.addProperty(w.configString, w.itemWeight));
@@ -242,6 +244,8 @@ public class EquipmentList {
                 weight = 800;
             else if(item == Blocks.TNT.asItem())
                 weight = 600;
+            else if(item == Items.TRIDENT)
+                weight = 500;
             /*else if(Config.ServerConfig.useReforgedMod){
                 if(item instanceof ItemBlowGun)
                     weight = 720;

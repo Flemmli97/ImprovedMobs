@@ -12,6 +12,7 @@ import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import com.flemmli97.improvedmobs.commands.IMCommand;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
+import com.flemmli97.improvedmobs.config.EquipmentList;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
@@ -90,7 +91,6 @@ public class EventHandler {
 
     @SubscribeEvent
     public void serverStart(FMLServerStartingEvent event){
-        ItemAITasks.initAI();
         Config.CommonConfig.serverInit(event.getServer());
     }
 

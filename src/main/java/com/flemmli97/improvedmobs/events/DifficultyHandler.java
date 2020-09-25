@@ -24,23 +24,23 @@ public class DifficultyHandler {
     @SubscribeEvent
     public void increaseDifficulty(TickEvent.WorldTickEvent e) {
         if(e.phase == TickEvent.Phase.END && !e.world.isRemote && e.world.getRegistryKey() == World.OVERWORLD){
-            boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !e.world.getServer().getPlayerList().getPlayers().isEmpty()) && e.world.getGameTime() > Config.CommonConfig.difficultyDelay;
+            boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !e.world.getServer().getPlayerList().getPlayers().isEmpty()) && e.world.getDayTime() > Config.CommonConfig.difficultyDelay;
             DifficultyData data = DifficultyData.get(e.world);
             if(Config.CommonConfig.shouldPunishTimeSkip){
-                long timeDiff = (int) Math.abs(e.world.getGameTime() - data.getPrevTime());
+                long timeDiff = (int) Math.abs(e.world.getDayTime() - data.getPrevTime());
                 if(timeDiff > 2400){
                     long i = timeDiff / 2400;
                     if(timeDiff - i * 2400 < (i + 1) * 2400 - timeDiff)
                         i *= 2400;
                     else
                         i *= 2400 + 2400;
-                    data.increaseDifficultyBy((ServerWorld) e.world, shouldIncrease ? Config.CommonConfig.doIMDifficulty ? i / 24000F : 0 : 0, e.world.getGameTime());
-                    //data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0 : 0, e.world.getGameTime());
+                    data.increaseDifficultyBy((ServerWorld) e.world, shouldIncrease ? Config.CommonConfig.doIMDifficulty ? i / 24000F : 0 : 0, e.world.getDayTime());
+                    //data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0 : 0, e.world.getDayTime());
                 }
             }else{
-                if(e.world.getGameTime() - data.getPrevTime() > 2400){
-                    data.increaseDifficultyBy((ServerWorld) e.world, shouldIncrease ? Config.CommonConfig.doIMDifficulty  ? 0.1F : 0 : 0, e.world.getGameTime());
-                    //data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0 : 0, e.world.getGameTime());
+                if(e.world.getDayTime() - data.getPrevTime() > 2400){
+                    data.increaseDifficultyBy((ServerWorld) e.world, shouldIncrease ? Config.CommonConfig.doIMDifficulty  ? 0.1F : 0 : 0, e.world.getDayTime());
+                    //data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0 : 0, e.world.getDayTime());
                 }
             }
         }

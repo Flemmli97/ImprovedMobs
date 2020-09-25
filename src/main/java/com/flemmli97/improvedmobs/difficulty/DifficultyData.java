@@ -40,13 +40,15 @@ public class DifficultyData extends WorldSavedData {
         PacketHandler.sendToAll(new PacketDifficulty(this), world.getServer());
     }
 
-    public void setDifficulty(float level) {
+    public void setDifficulty(float level, ServerWorld world) {
         this.difficultyLevel = level;
+        PacketHandler.sendToAll(new PacketDifficulty(this), world.getServer());
         this.markDirty();
     }
 
-    public void addDifficulty(float level) {
+    public void addDifficulty(float level, ServerWorld world) {
         this.difficultyLevel += level;
+        PacketHandler.sendToAll(new PacketDifficulty(this), world.getServer());
         this.markDirty();
     }
 

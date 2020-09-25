@@ -6,9 +6,11 @@ import com.flemmli97.improvedmobs.capability.TileCapNetwork;
 import com.flemmli97.improvedmobs.client.DifficultyDisplay;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.ConfigSpecs;
+import com.flemmli97.improvedmobs.config.EquipmentList;
 import com.flemmli97.improvedmobs.events.DifficultyHandler;
 import com.flemmli97.improvedmobs.events.EventHandler;
 import com.flemmli97.improvedmobs.network.PacketHandler;
+import com.flemmli97.improvedmobs.utils.ItemAITasks;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -43,11 +45,17 @@ public class ImprovedMobs {
     @SubscribeEvent
     static void setup(FMLCommonSetupEvent event){
         PacketHandler.register();
+        ItemAITasks.initAI();
+        try {
+            EquipmentList.initEquip();
+        } catch (EquipmentList.InvalidItemNameException e) {
+            ImprovedMobs.logger.error(e.getMessage());
+        }
         CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         if(Config.CommonConfig.enableDifficultyScaling) {
-            MinecraftForge.EVENT_BUS.register(DifficultyDisplay.class);
-            MinecraftForge.EVENT_BUS.register(DifficultyHandler.class);
+            MinecraftForge.EVENT_BUS.register(new DifficultyDisplay());
+            MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
         }
     }
 

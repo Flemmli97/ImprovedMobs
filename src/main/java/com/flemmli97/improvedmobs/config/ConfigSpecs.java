@@ -38,12 +38,12 @@ public class ConfigSpecs {
         public ForgeConfigSpec.BooleanValue enableDifficultyScaling;
         public ForgeConfigSpec.ConfigValue<Integer> difficultyDelay;
         public ForgeConfigSpec.BooleanValue ignorePlayers;
-        public ForgeConfigSpec.ConfigValue<List<? extends String>> mobListLight;
+        public ForgeConfigSpec.ConfigValue<List<String>> mobListLight;
         public ForgeConfigSpec.BooleanValue mobListLightBlackList;
         public ForgeConfigSpec.IntValue light;
         public ForgeConfigSpec.BooleanValue shouldPunishTimeSkip;
         public ForgeConfigSpec.BooleanValue friendlyFire;
-        public ForgeConfigSpec.ConfigValue<List<? extends String>> petArmorBlackList;
+        public ForgeConfigSpec.ConfigValue<List<String>> petArmorBlackList;
         public ForgeConfigSpec.BooleanValue petWhiteList;
 
         public ForgeConfigSpec.BooleanValue doIMDifficulty;
@@ -117,18 +117,18 @@ public class ConfigSpecs {
             enableDifficultyScaling = builder.worldRestart().comment("Disable/Enables the whole difficulty scaling of this mod").define("Enable difficulty scaling", true);
             difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").define("Difficulty Delay", 0);
             ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
-            mobListLight = builder.comment("Mobs to include for the new light spawning rules.").defineList("Light list", Lists.newArrayList(), String.class::isInstance);
+            mobListLight = builder.comment("Mobs to include for the new light spawning rules.").define("Light list", Lists.newArrayList());
             mobListLightBlackList = builder.comment("Turn the list list whitelist to blacklist").define("Light list blacklist", false);
             light = builder.comment("Light level, blocks can have at max, so mobs can spawn on them.").defineInRange("Light", 7, 0, 15);
             shouldPunishTimeSkip = builder.comment("Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.").define("Punish Time Skip", true);
             friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
-            petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").defineList("Pet Blacklist", Lists.newArrayList(), String.class::isInstance);
+            petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").define("Pet Blacklist", Lists.newArrayList());
             petWhiteList = builder.comment("Treat pet blacklist as whitelist").define("Pet Whitelist", false);
             //public ForgeConfigSpec.BooleanValue doIMDifficulty;
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");
-            entityBlacklist = builder.comment("By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage: " + EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"), String.class::isInstance);
+            entityBlacklist = builder.comment("By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage:", EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"), List.class::isInstance);
             mobAttributeWhitelist = builder.comment("Treat ATTRIBUTES flags as whitelist").define("Attribute Whitelist", false);
             armorMobWhitelist = builder.comment("Treat ARMOR flags as whitelist").define("Armor Equip Whitelist", false);
             heldMobWhitelist = builder.comment("Treat HELDITEMS flags as whitelist").define("Held Equip Whitelist", false);

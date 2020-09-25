@@ -12,7 +12,7 @@ public class DifficultyDisplay {
     private static float clientDifficulty;
 
     @SubscribeEvent
-    public static void showDifficulty(RenderGameOverlayEvent.Post e) {
+    public void showDifficulty(RenderGameOverlayEvent.Post e) {
         if (e.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE)
             return;
         MatrixStack stack = e.getMatrixStack();
