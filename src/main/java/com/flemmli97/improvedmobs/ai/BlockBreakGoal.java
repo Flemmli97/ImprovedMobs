@@ -96,7 +96,7 @@ public class BlockBreakGoal extends Goal {
             if(this.digTimer % 5 == 0){
                 SoundType sound = state.getBlock().getSoundType(state, this.living.world, this.markedLoc, this.living);
                 this.living.getNavigator().setPath(this.living.getNavigator().getPathToPos(this.markedLoc, 0), 1D);
-                this.living.world.playSound(null, this.markedLoc, Config.ServerConfig.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
+                this.living.world.playSound(null, this.markedLoc, Config.CommonConfig.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
                 this.living.swingArm(Hand.MAIN_HAND);
                 this.living.getLookController().setLookPosition(this.markedLoc.getX(), this.markedLoc.getY(), this.markedLoc.getZ(), 0.0F, 0.0F);
                 this.living.world.sendBlockBreakProgress(this.living.getEntityId(), this.markedLoc, (int) (str) * this.digTimer * 10);
@@ -117,10 +117,10 @@ public class BlockBreakGoal extends Goal {
         BlockState block = entityLiving.world.getBlockState(frontCheck.add(x, y, z));
         ItemStack item = entityLiving.getHeldItemMainhand();
         ItemStack itemOff = entityLiving.getHeldItemOffhand();
-        if(Config.ServerConfig.breakableBlocks.canBreak(notFull) && (GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff))){
+        if(Config.CommonConfig.breakableBlocks.canBreak(notFull) && (GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff))){
             this.scanTick = 0;
             return partBlockCheck.add(x, y, z);
-        }else if(Config.ServerConfig.breakableBlocks.canBreak(block) && (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff))){
+        }else if(Config.CommonConfig.breakableBlocks.canBreak(block) && (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff))){
             this.scanTick = 0;
             return frontCheck.add(x, y, z);
         }

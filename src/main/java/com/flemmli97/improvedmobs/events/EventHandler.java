@@ -9,11 +9,11 @@ import com.flemmli97.improvedmobs.ai.StealGoal;
 import com.flemmli97.improvedmobs.ai.WaterRidingGoal;
 import com.flemmli97.improvedmobs.capability.ITileOpened;
 import com.flemmli97.improvedmobs.capability.TileCapProvider;
+import com.flemmli97.improvedmobs.commands.IMCommand;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
-import com.flemmli97.improvedmobs.utils.AIUtils;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import com.flemmli97.improvedmobs.utils.IMAttributes;
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
@@ -42,7 +42,6 @@ import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.ClimberPathNavigator;
 import net.minecraft.pathfinding.Path;
@@ -57,6 +56,7 @@ import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
@@ -68,7 +68,6 @@ import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 import java.util.List;
@@ -92,30 +91,30 @@ public class EventHandler {
     @SubscribeEvent
     public void serverStart(FMLServerStartingEvent event){
         ItemAITasks.initAI();
+        Config.CommonConfig.serverInit(event.getServer());
     }
 
-    /*@SubscribeEvent
-    public void config(OnConfigChangedEvent event) {
-        if(event.getModID().equals(ImprovedMobs.MODID))
-            Config.ServerConfig.load(LoadState.SYNC);
-    }*/
+    @SubscribeEvent
+    public void commands(RegisterCommandsEvent event){
+        IMCommand.register(event.getDispatcher());
+    }
 
     @SubscribeEvent
     public void entityProps(EntityEvent.EntityConstructing e) {
         if (e.getEntity().world != null && !e.getEntity().world.isRemote) {
             if (e.getEntity() instanceof MobEntity) {
                 MobEntity living = (MobEntity) e.getEntity();
-                if (DifficultyData.getDifficulty(living.world, living) >= Config.ServerConfig.difficultyBreak && Config.ServerConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.ServerConfig.breakerChance
-                        && !Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.ServerConfig.mobListBreakWhitelist)) {
+                if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
+                        && !Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
                     e.getEntity().addTag(breaker);
                 }
-                if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.ServerConfig.armorMobWhitelist)) {
+                if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyArmor, false);
                 }
-                if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.ServerConfig.heldMobWhitelist)) {
+                if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.CommonConfig.heldMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyHeld, false);
                 }
-                if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.ServerConfig.mobAttributeWhitelist)) {
+                if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
                     living.getPersistentData().putBoolean(modifyAttributes, false);
                 }
             }
@@ -125,9 +124,9 @@ public class EventHandler {
     @SubscribeEvent
     public void entityProps(LivingSpawnEvent.CheckSpawn e) {
         if (e.getEntity() instanceof MobEntity && !e.getWorld().isRemote()) {
-            if (GeneralHelperMethods.isMobInList((MobEntity) e.getEntity(), Config.ServerConfig.mobListLight, Config.ServerConfig.mobListLightBlackList)) {
+            if (GeneralHelperMethods.isMobInList((MobEntity) e.getEntity(), Config.CommonConfig.mobListLight, Config.CommonConfig.mobListLightBlackList)) {
                 int light = e.getWorld().getLightLevel(LightType.BLOCK, e.getEntity().getBlockPos());
-                if (light >= Config.ServerConfig.light) {
+                if (light >= Config.CommonConfig.light) {
                     e.setResult(Event.Result.DENY);
                 } else {
                     e.setResult(Event.Result.ALLOW);
@@ -164,45 +163,45 @@ public class EventHandler {
                 });
                 if (mobGriefing) {
                     living.goalSelector.addGoal(1, new BlockBreakGoal(living));
-                    ItemStack stack = Config.ServerConfig.breakingItem.getStack();
-                    if (!Config.ServerConfig.shouldDropEquip)
+                    ItemStack stack = Config.CommonConfig.breakingItem.getStack();
+                    if (!Config.CommonConfig.shouldDropEquip)
                         stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                     living.setItemStackToSlot(EquipmentSlotType.OFFHAND, stack);
                 }
             }
-            if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.ServerConfig.mobListUseWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
                 living.goalSelector.addGoal(0, new ItemUseGoal(living, 15));
                 //EntityAITechGuns.applyAI(living);
             }
-            if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.ServerConfig.mobListBoatWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
                 if (!(living.canBreatheUnderwater() || living.getNavigator() instanceof SwimmerPathNavigator))
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
             }
-            if (!Config.ServerConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.ServerConfig.mobListLadderWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
                 if (!(living.getNavigator() instanceof ClimberPathNavigator))
                     living.goalSelector.addGoal(4, new LadderClimbGoal(living));
             }
         }
         if (e.getEntity() instanceof CreatureEntity) {
             CreatureEntity creature = (CreatureEntity) e.getEntity();
-            if (DifficultyData.getDifficulty(creature.world, creature) >= Config.ServerConfig.difficultySteal && mobGriefing && Config.ServerConfig.stealerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.ServerConfig.stealerChance
-                    && !Config.ServerConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, Config.ServerConfig.mobListStealWhitelist)) {
+            if (DifficultyData.getDifficulty(creature.world, creature) >= Config.CommonConfig.difficultySteal && mobGriefing && Config.CommonConfig.stealerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.stealerChance
+                    && !Config.CommonConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
                 creature.goalSelector.addGoal(5, new StealGoal(creature));
             }
             boolean villager = false;
             boolean neutral = creature instanceof EndermanEntity || creature instanceof ZombifiedPiglinEntity;
-            if (!Config.ServerConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.ServerConfig.targetVillagerWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
                 villager = true;
                 if (!neutral)
                     creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, VillagerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
             }
-            if (Config.ServerConfig.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= Config.ServerConfig.neutralAggressiv)
+            if (Config.CommonConfig.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv)
                 if (neutral) {
                     creature.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(creature, PlayerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
                     if (villager)
                         creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, VillagerEntity.class, !creature.getTags().contains("Breaker") && creature.world.rand.nextFloat() <= 0.5));
                 }
-            List<EntityType<?>> types = Config.ServerConfig.autoTargets.get(creature.getType().getRegistryName());
+            List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(creature.getType().getRegistryName());
             if (types != null)
                 creature.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(creature, LivingEntity.class, 10, !creature.getTags().contains("Breaker"), false, (living) -> types.contains(living.getType())));
         }
@@ -218,26 +217,26 @@ public class EventHandler {
             GeneralHelperMethods.equipHeld(living);
             living.getPersistentData().putBoolean(modifyHeld, true);
         }
-        if (Config.ServerConfig.baseEnchantChance != 0 && !living.getPersistentData().contains(enchanted)) {
+        if (Config.CommonConfig.baseEnchantChance != 0 && !living.getPersistentData().contains(enchanted)) {
             GeneralHelperMethods.enchantGear(living);
             living.getPersistentData().putBoolean(enchanted, true);
         }
         if (living.getPersistentData().contains(modifyAttributes) && !living.getPersistentData().getBoolean(modifyAttributes)) {
-            if (Config.ServerConfig.healthIncrease != 0 && !Config.ServerConfig.useScalingHealthMod) {
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MAX_HEALTH, Config.ServerConfig.healthIncrease * 0.016, Config.ServerConfig.healthMax, true);
+            if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, true);
                 living.setHealth(living.getMaxHealth());
             }
-            if (Config.ServerConfig.damageIncrease != 0 && !Config.ServerConfig.useScalingHealthMod)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_ATTACK_DAMAGE, Config.ServerConfig.damageIncrease * 0.008, Config.ServerConfig.damageMax, true);
-            if (Config.ServerConfig.speedIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MOVEMENT_SPEED, Config.ServerConfig.speedIncrease * 0.0008, Config.ServerConfig.speedMax, false);
-            if (Config.ServerConfig.knockbackIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_KNOCKBACK_RESISTANCE, Config.ServerConfig.knockbackIncrease * 0.002, Config.ServerConfig.knockbackMax, false);
-            if (Config.ServerConfig.magicResIncrease != 0)
-                IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016F, Config.ServerConfig.magicResMax);
+            if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod)
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, true);
+            if (Config.CommonConfig.speedIncrease != 0)
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, false);
+            if (Config.CommonConfig.knockbackIncrease != 0)
+                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, false);
+            if (Config.CommonConfig.magicResIncrease != 0)
+                IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Config.CommonConfig.magicResIncrease * 0.0016f, Config.CommonConfig.magicResMax);
                 //GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016, Config.ServerConfig.magicResMax, false);
-            if (Config.ServerConfig.projectileIncrease != 0)
-                IMAttributes.apply(living, IMAttributes.Attribute.PROJ_BOOST, Config.ServerConfig.projectileIncrease * 0.008F, Config.ServerConfig.projectileMax);
+            if (Config.CommonConfig.projectileIncrease != 0)
+                IMAttributes.apply(living, IMAttributes.Attribute.PROJ_BOOST, Config.CommonConfig.projectileIncrease * 0.008f, Config.CommonConfig.projectileMax);
                 //GeneralHelperMethods.modifyAttr(living, IMAttributes.PROJ_BOOST, Config.ServerConfig.projectileIncrease * 0.008, Config.ServerConfig.projectileMax, false);
 
             living.getPersistentData().putBoolean(modifyAttributes, true);
@@ -257,7 +256,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void pathDebug(LivingEvent e) {
-        if (Config.ServerConfig.debugPath && e.getEntity() instanceof MobEntity && !e.getEntity().world.isRemote) {
+        if (Config.CommonConfig.debugPath && e.getEntity() instanceof MobEntity && !e.getEntity().world.isRemote) {
             Path path = ((MobEntity) e.getEntity()).getNavigator().getPath();
             if (path != null) {
                 for (int i = 0; i < path.getCurrentPathLength(); i++)
@@ -269,7 +268,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void attackEvent(LivingAttackEvent e) {
-        if (!Config.ServerConfig.friendlyFire && e.getEntity() instanceof TameableEntity && !e.getEntity().world.isRemote) {
+        if (!Config.CommonConfig.friendlyFire && e.getEntity() instanceof TameableEntity && !e.getEntity().world.isRemote) {
             TameableEntity pet = (TameableEntity) e.getEntity();
             if (e.getSource().getTrueSource() != null && e.getSource().getTrueSource() == pet.getOwner() && !e.getSource().getTrueSource().isSneaking()) {
                 e.setCanceled(true);
@@ -291,7 +290,7 @@ public class EventHandler {
     @SubscribeEvent
     public void equipPet(PlayerInteractEvent.EntityInteract e) {
         if (e.getHand() == Hand.MAIN_HAND && e.getTarget() instanceof MobEntity && e.getTarget() instanceof TameableEntity && !e.getTarget().world.isRemote && e.getPlayer().isSneaking()
-                && !GeneralHelperMethods.isMobInList((MobEntity) e.getTarget(), Config.ServerConfig.petArmorBlackList, Config.ServerConfig.petWhiteList)) {
+                && !GeneralHelperMethods.isMobInList((MobEntity) e.getTarget(), Config.CommonConfig.petArmorBlackList, Config.CommonConfig.petWhiteList)) {
             TameableEntity pet = (TameableEntity) e.getTarget();
             if (e.getPlayer() == pet.getOwner()) {
                 MobEntity living = (MobEntity) e.getTarget();
@@ -379,11 +378,6 @@ public class EventHandler {
                     event.getAffectedEntities().removeIf(e->!e.equals(((MobEntity) igniter).getAttackTarget()));
             }
         }
-    }
-    
-    @SubscribeEvent
-    public void config(ModConfig.Loading event){
-        System.out.println("loading config");
     }
 
     /*public static void removeAttackAI(MonsterEntity mob) {

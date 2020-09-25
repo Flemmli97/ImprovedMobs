@@ -1,7 +1,7 @@
 package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
-import com.flemmli97.tenshilib.api.config.IConfigArrayValue;
+import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import net.minecraft.entity.EntityType;
@@ -15,14 +15,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
-public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
+public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
 
     private final Map<ResourceLocation, List<EntityType<?>>> map = Maps.newLinkedHashMap();
     public Map<ResourceLocation, Predicate<Class<? extends MobEntity>>> preds = Maps.newHashMap();
-
-    public MobClassMapConfig(String[] s) {
-        this.readFromString(s);
-    }
 
     @Nullable
     public List<EntityType<?>> get(ResourceLocation res) {
@@ -30,7 +26,7 @@ public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
     }
 
     @Override
-    public MobClassMapConfig readFromString(String[] ss) {
+    public MobClassMapConfig readFromString(List<String> ss) {
         this.map.clear();
         for (String s : ss) {
             String[] sub = s.replace(" ", "").split("-");
@@ -50,19 +46,17 @@ public class MobClassMapConfig implements IConfigArrayValue<MobClassMapConfig> {
     }
 
     @Override
-    public String[] writeToString() {
+    public List<String> writeToString() {
         List<String> l = Lists.newArrayList();
         for (Entry<ResourceLocation, List<EntityType<?>>> ent : this.map.entrySet()) {
             for (EntityType<?> type : ent.getValue()) {
                 l.add(ent.getKey().toString() + "-" + type.getRegistryName());
             }
         }
-        return l.toArray(new String[0]);
+        return l;
     }
 
-    @Override
-    public String usage() {
+    public static String use(){
         return "[mob id]-[mob id] where second value is the target.\n e.g. minecraft:zombie-minecraft:skeleton makes all zombies target skeletons";
     }
-
 }

@@ -51,7 +51,6 @@ public class ItemAITasks {
         clssMap.clear();
         itemMap.clear();
         initVanilla();
-        System.out.println(itemMap);
     }
 
     @Nullable

@@ -29,6 +29,7 @@ import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.JsonToNBT;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
+import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.io.File;
@@ -55,7 +56,7 @@ public class EquipmentList {
         return WeightedRandom.getRandomItem(e.world.rand, eq.list, totalWeight).getItem();
     }
 
-    public static void initEquip(File confFolder) throws InvalidItemNameException {
+    public static void initEquip() throws InvalidItemNameException {
         try{
             //Init default values
             ForgeRegistries.ITEMS.forEach(item -> {
@@ -116,7 +117,7 @@ public class EquipmentList {
             //if(Config.ServerConfig.useReforgedMod)
             //    ItemAITasks.initReforgedStuff();
 
-            File conf = new File(confFolder, "equipment.json");
+            File conf = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").resolve("equipment.json").toFile();
             JsonObject confObj = new JsonObject();
             if(!conf.exists()){
                 conf.createNewFile();
@@ -180,6 +181,8 @@ public class EquipmentList {
     private static final List<String> defaultZeroWeight = Lists.newArrayList("techguns:nucleardeathray", "techguns:grenadelauncher", "techguns:tfg", "techguns:guidedmissilelauncher", "techguns:rocketlauncher");
 
     private static int getDefaultWeight(Item item) {
+        if(defaultZeroWeight.contains(item.getRegistryName().toString()))
+            return 0;
         int weight = 1000;
         if(item instanceof ArmorItem){
             ArmorItem armor = (ArmorItem) item;
@@ -250,7 +253,7 @@ public class EquipmentList {
                     weight = 740;
             }*/
         }
-        return defaultZeroWeight.contains(item.getRegistryName().toString()) ? 0 : Math.max(weight, 1);
+        return Math.max(weight, 1);
     }
 
     public static class WeightedItemstack extends WeightedRandom.Item implements Comparable<WeightedItemstack> {
@@ -344,13 +347,13 @@ public class EquipmentList {
         }
 
         private boolean modBlacklist(Item item) {
-            if(Config.ServerConfig.equipmentModWhitelist){
-                for(String s : Config.ServerConfig.equipmentModBlacklist)
+            if(Config.CommonConfig.equipmentModWhitelist){
+                for(String s : Config.CommonConfig.equipmentModBlacklist)
                     if(item.getRegistryName().getNamespace().equals(s))
                         return false;
                 return true;
             }
-            for(String s : Config.ServerConfig.equipmentModBlacklist)
+            for(String s : Config.CommonConfig.equipmentModBlacklist)
                 if(item.getRegistryName().getNamespace().equals(s))
                     return true;
             return false;

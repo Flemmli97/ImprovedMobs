@@ -1,67 +1,70 @@
 package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
-import com.flemmli97.tenshilib.api.config.IConfigArrayValue;
+import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.material.Material;
-import net.minecraft.item.Item;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
-import net.minecraft.tags.ItemTags;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.List;
+import java.util.Set;
 
-public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
+public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
 
-    private final List<String> blocks = Lists.newArrayList();
-    private String[] configString;
-
-    public BreakableBlocks(String[] strings) {
-        this.readFromString(strings);
-    }
+    private final Set<String> blocks = Sets.newHashSet();
+    private List<String> configString = Lists.newArrayList();
+    private final Set<ITag<Block>> tags = Sets.newHashSet();
+    private boolean initialized;
 
     public boolean canBreak(BlockState state) {
+        if(!this.initialized)
+            this.initialize();
         if (state.getMaterial() == Material.AIR)// || (Config.ServerConfig.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
             return false;
-        if (!Config.ServerConfig.breakTileEntities && state.getBlock().hasTileEntity(state))
+        if (!Config.CommonConfig.breakTileEntities && state.getBlock().hasTileEntity(state))
             return false;
-        if (Config.ServerConfig.breakingAsBlacklist) {
-            return !this.blocks.contains(state.getBlock().getRegistryName().toString());
+        if (Config.CommonConfig.breakingAsBlacklist) {
+            return this.tags.stream().noneMatch(state.getBlock()::isIn) && !this.blocks.contains(state.getBlock().getRegistryName().toString());
         }
-        return this.blocks.contains(state.getBlock().getRegistryName().toString());
+        return this.tags.stream().anyMatch(state.getBlock()::isIn) || this.blocks.contains(state.getBlock().getRegistryName().toString());
     }
 
     @Override
-    public BreakableBlocks readFromString(String[] arr) {
+    public BreakableBlocks readFromString(List<String> arr) {
         this.blocks.clear();
         this.configString = arr;
-        List<String> blackList = Lists.newArrayList();
-        for (String s : arr) {
-            if (s.startsWith("!"))
-                addBlocks(s.substring(1), blackList);
-            else
-                addBlocks(s, this.blocks);
-        }
-        this.blocks.removeAll(blackList);
+        this.initialized = false;
         return this;
     }
 
-    private static void addBlocks(String s, List<String> list) {
+    private void initialize(){
+        this.initialized = true;
+        Set<String> blackList = Sets.newHashSet();
+        Set<ITag<Block>> blackListTags = Sets.newHashSet();
+        for (String s : this.configString) {
+            if (s.startsWith("!"))
+                addBlocks(s.substring(1), blackList, blackListTags);
+            else
+                addBlocks(s, this.blocks, this.tags);
+        }
+        this.blocks.removeAll(blackList);
+        this.tags.removeAll(blackListTags);
+    }
+
+    private static void addBlocks(String s, Set<String> list, Set<ITag<Block>> tags) {
         if (s.contains(":")) {
-            ITag<Item> tags = ItemTags.getCollection().get(new ResourceLocation(s));
-            if (tags!=null) {
-                tags.values().forEach(item -> {
-                    Block block = Block.getBlockFromItem(item);
-                    if (block != Blocks.AIR)
-                        list.add(block.getRegistryName().toString());
-                });
-                return;
-            }
-            list.add(s);
+            ITag<Block> tag = BlockTags.getCollection().get(new ResourceLocation(s));
+            if (tag!=null)
+                tags.add(tag);
+            else if(ForgeRegistries.BLOCKS.getValue(new ResourceLocation(s))!=Blocks.AIR)
+                list.add(s);
         }
         else {
             Class<?> clss = null;
@@ -83,13 +86,11 @@ public class BreakableBlocks implements IConfigArrayValue<BreakableBlocks> {
     }
 
     @Override
-    public String[] writeToString() {
+    public List<String> writeToString() {
         return this.configString;
     }
 
-    @Override
-    public String usage() {
-        return "Usage: <registry name;classname;oredict> put \"!\" infront to exclude blocks";
+    public static String use(){
+        return "Usage: <registry name;classname;tag> put \"!\" infront to exclude blocks";
     }
-
 }

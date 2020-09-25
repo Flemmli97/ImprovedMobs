@@ -1,31 +1,36 @@
 package com.flemmli97.improvedmobs.config;
 
-import com.flemmli97.improvedmobs.ImprovedMobs;
-import com.flemmli97.tenshilib.api.config.IConfigArrayValue;
+import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import com.flemmli97.tenshilib.common.utils.ArrayUtils;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.monster.GhastEntity;
+import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.PhantomEntity;
+import net.minecraft.entity.monster.ShulkerEntity;
+import net.minecraft.entity.monster.SlimeEntity;
+import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.EnumSet;
+import java.util.List;
 import java.util.Map;
 
-public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFlagConfig> {
+public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlagConfig> {
 
     private final Map<String, EnumSet<Flags>> map = Maps.newHashMap();
 
-    public EntityModifyFlagConfig() {
-        //Init default values as blacklist
+    public void initDefault(World world){
         for (EntityType<?> entry : ForgeRegistries.ENTITIES) {
-            try {
-                //This is as close as it gets since we dont have access to the actual class anymore
-                if(entry.getClassification().getPeacefulCreature())
-                    this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
-            } catch (Exception e) {
-                ImprovedMobs.logger.error("Error with creating entity with null world {}", e);
-            }
+            Entity e = entry.create(world);
+            if(!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity || e instanceof TameableEntity)
+                continue;
+            this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
         }
     }
 
@@ -44,12 +49,11 @@ public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFla
     }
 
     @Override
-    public EntityModifyFlagConfig readFromString(String[] s) {
+    public EntityModifyFlagConfig readFromString(List<String> s) {
         this.map.clear();
         for (String val : s) {
             String[] subs = val.split("\\|");
-
-            EnumSet<Flags> set = null;
+            EnumSet<Flags> set;
             if (subs.length == 1)
                 set = EnumSet.of(Flags.ALL);
             else {
@@ -63,23 +67,20 @@ public class EntityModifyFlagConfig implements IConfigArrayValue<EntityModifyFla
     }
 
     @Override
-    public String[] writeToString() {
-        String[] s = new String[this.map.size()];
-        int id = 0;
+    public List<String> writeToString() {
+        List<String> s = Lists.newArrayList();
         for (String key : this.map.keySet()) {
             StringBuilder val = new StringBuilder(key);
             for (Flags f : this.map.get(key)) {
                 if (f != Flags.ALL)
                     val.append("|").append(f.name());
             }
-            s[id] = val.toString();
-            id++;
+            s.add(val.toString());
         }
         return s;
     }
 
-    @Override
-    public String usage() {
+    public static String use(){
         String[] str = new String[]{"<entity registry name> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Leave empty to apply them all and REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
                 "example: minecraft:sheep|REVERSE|ATTRIBUTES will add sheep to attributes modification (since default is a blacklist)", "or minecraft:sheep|ATTRIBUTES will add sheep to everything except attributes"};
         return String.join("\n", str) + "\n";
