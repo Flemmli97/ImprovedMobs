@@ -114,7 +114,7 @@ public class ConfigSpecs {
 
         public CommonConfigVals(ForgeConfigSpec.Builder builder) {
             builder.comment("With default value every difficulty perk maxes out at difficulty 250")/*.translation("improvedmobs.general")*/.push("general");
-            enableDifficultyScaling = builder.worldRestart().comment("Disable/Enables the whole difficulty scaling of this mod").define("Enable difficulty scaling", true);
+            enableDifficultyScaling = builder.worldRestart().comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
             difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").define("Difficulty Delay", 0);
             ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             mobListLight = builder.comment("Mobs to include for the new light spawning rules.").define("Light list", Lists.newArrayList());
