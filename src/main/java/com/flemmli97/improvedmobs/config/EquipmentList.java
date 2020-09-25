@@ -48,7 +48,6 @@ public class EquipmentList {
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public static ItemStack getEquip(MobEntity e, EquipmentSlotType slot) {
-        System.out.println("get " + equips);
         WeightedItemstackList eq = equips.get(slot);
         if(eq == null || eq.list.isEmpty() || eq.totalWeight == 0)
             return ItemStack.EMPTY;

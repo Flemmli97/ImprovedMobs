@@ -7,10 +7,12 @@
   "mixins": [
     "GoalSelectorMixin",
     "NearestTargetGoalMixin",
-    "PathFinderMixin",
     "TargetGoalMixin",
     "PotionEntityMixin",
-    "TNTEntityMixin"
+    "TNTEntityMixin",
+    "PathFinderMixin",
+    "MobEntityMixin",
+    "PathNavigatorAccessor"
   ],
   "server": [
   ],

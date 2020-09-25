@@ -12,7 +12,7 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 @Mixin(GoalSelector.class)
-public class GoalSelectorMixin implements IGoalModifier {
+public abstract class GoalSelectorMixin implements IGoalModifier {
 
     @Shadow
     Set<PrioritizedGoal> goals;

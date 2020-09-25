@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 import java.util.List;
 
 @Mixin(PotionEntity.class)
-public class PotionEntityMixin {
+public abstract class PotionEntityMixin {
 
     @Inject(method = "func_213888_a", at = @At(value = "HEAD"), cancellable = true)
     private void applyPotion(List<EffectInstance> list, @Nullable Entity entity, CallbackInfo info){

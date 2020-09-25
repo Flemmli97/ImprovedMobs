@@ -12,12 +12,10 @@ import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import com.flemmli97.improvedmobs.commands.IMCommand;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
-import com.flemmli97.improvedmobs.config.EquipmentList;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import com.flemmli97.improvedmobs.utils.IMAttributes;
-import com.flemmli97.improvedmobs.utils.ItemAITasks;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
@@ -25,14 +23,15 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
+import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
 import net.minecraft.entity.ai.goal.LookAtGoal;
 import net.minecraft.entity.ai.goal.NearestAttackableTargetGoal;
+import net.minecraft.entity.ai.goal.RandomSwimmingGoal;
 import net.minecraft.entity.ai.goal.RandomWalkingGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.merchant.villager.VillagerEntity;
 import net.minecraft.entity.monster.EndermanEntity;
-import net.minecraft.entity.monster.GuardianEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.TameableEntity;
@@ -106,7 +105,7 @@ public class EventHandler {
                 MobEntity living = (MobEntity) e.getEntity();
                 if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
                         && !Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
-                    e.getEntity().addTag(breaker);
+                    living.getPersistentData().putBoolean(breaker, true);
                 }
                 if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyArmor, false);
@@ -139,23 +138,26 @@ public class EventHandler {
     public void onEntityLoad(EntityJoinWorldEvent e) {
         if (e.getWorld().isRemote)
             return;
-        if (e.getEntity() instanceof GuardianEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.ridingGuardian)) {
-            GuardianEntity guardian = (GuardianEntity) e.getEntity();
-            guardian.getPersistentData().putBoolean(modifyArmor, true);
-            guardian.getPersistentData().putBoolean(modifyHeld, true);
-            guardian.getPersistentData().putBoolean(modifyAttributes, true);
-            GeneralHelperMethods.modifyAttr(guardian, Attributes.GENERIC_MAX_HEALTH, 5, 5, false);
-            guardian.setHealth(guardian.getMaxHealth());
-            ((IGoalModifier)guardian.goalSelector).goalRemovePredicate((g)->!(g instanceof LookAtGoal || g instanceof RandomWalkingGoal));
-            ((IGoalModifier)guardian.targetSelector).goalRemovePredicate((g)->true);
+        if (e.getEntity() instanceof MobEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.waterRiding)) {
+            MobEntity boat = (MobEntity) e.getEntity();
+            boat.getPersistentData().putBoolean(modifyArmor, true);
+            boat.getPersistentData().putBoolean(modifyHeld, true);
+            if(!boat.getPersistentData().contains(modifyAttributes) || !boat.getPersistentData().getBoolean(modifyAttributes)) {
+                boat.getPersistentData().putBoolean(modifyAttributes, true);
+                ModifiableAttributeInstance inst = boat.getAttribute(Attributes.GENERIC_MAX_HEALTH);
+                if(inst!=null)
+                    inst.setBaseValue(5);
+                boat.setHealth(boat.getMaxHealth());
+            }
+            ((IGoalModifier)boat.goalSelector).goalRemovePredicate((g)->!(g instanceof LookAtGoal || g instanceof RandomWalkingGoal ||g instanceof RandomSwimmingGoal));
+            ((IGoalModifier)boat.targetSelector).goalRemovePredicate((g)->true);
             return;
         }
-
         boolean mobGriefing = e.getWorld().getGameRules().getBoolean(GameRules.MOB_GRIEFING);
         if (e.getEntity() instanceof MobEntity) {
             MobEntity living = (MobEntity) e.getEntity();
             this.applyAttributesAndItems(living);
-            if (living.getTags().contains(breaker)) {
+            if (living.getPersistentData().contains(breaker)) {
                 ((IGoalModifier)living.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g)-> {
                     if(g instanceof NearestAttackableTargetGoal){
                         ((TargetGoalMixin)g).setShouldCheckSight(false);
@@ -174,7 +176,7 @@ public class EventHandler {
                 //EntityAITechGuns.applyAI(living);
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
-                if (!(living.canBreatheUnderwater() || living.getNavigator() instanceof SwimmerPathNavigator))
+                if (!(/*living.canBreatheUnderwater() || */living.getNavigator() instanceof SwimmerPathNavigator))
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
@@ -251,6 +253,14 @@ public class EventHandler {
         if (e.getEntity() instanceof MonsterEntity) {
             if (e.getSource().isMagicDamage())
                 e.setAmount(e.getAmount() * (1 - IMAttributes.get((MobEntity) e.getEntity(), IMAttributes.Attribute.MAGIC_RES)));//this.getAttValue((MonsterEntity) e.getEntity(), IMAttributes.MAGIC_RES))));
+        }
+    }
+
+    @SubscribeEvent
+    public void removeBoats(LivingEvent.LivingUpdateEvent event){
+        if(event.getEntity() instanceof MobEntity && event.getEntity().getPersistentData().contains(ImprovedMobs.waterRiding)){
+            if(!event.getEntity().isBeingRidden())
+                event.getEntity().remove();
         }
     }
 

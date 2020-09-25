@@ -6,12 +6,16 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
+import net.minecraft.entity.ai.goal.RangedAttackGoal;
+import net.minecraft.entity.ai.goal.RangedBowAttackGoal;
+import net.minecraft.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.entity.monster.DrownedEntity;
 import net.minecraft.entity.projectile.TridentEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.item.TridentItem;
 import net.minecraft.util.Hand;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.EnumSet;
@@ -36,14 +40,12 @@ public class ItemUseGoal extends Goal {
             follow = (float) entity.getAttribute(Attributes.GENERIC_FOLLOW_RANGE).getValue();
         maxDistance = Math.min(follow - 3, maxDistance);
         this.maxAttackDistance = maxDistance * maxDistance;
-        /*entity.tasks.taskEntries.forEach(entry -> {
-
-            if(entry.action instanceof EntityAIAttackRangedBow || EntityList.getKey(this.living).toString().equals("primitivemobs:skeleton_warrior"))
+        ((IGoalModifier)entity.goalSelector).modifyGoal(Goal.class, g->{
+            if(g instanceof RangedBowAttackGoal || g instanceof RangedCrossbowAttackGoal || this.living.getType().getRegistryName().toString().equals("primitivemobs:skeleton_warrior"))
                 this.hasBowAI = true;
-            if(entry.action instanceof EntityAIAttackRanged)
+            if(g instanceof RangedAttackGoal)
                 this.hasRangedAttack = true;
-
-        });*/
+        });
     }
 
     @Override
