@@ -29,5 +29,6 @@ public class PacketDifficulty {
 
     public static void handle(PacketDifficulty pkt, Supplier<NetworkEvent.Context> ctx) {
         ctx.get().enqueueWork(() -> DifficultyDisplay.updateClientDifficulty(pkt.difficulty));
+        ctx.get().setPacketHandled(true);
     }
 }
