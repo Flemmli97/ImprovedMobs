@@ -9,7 +9,6 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.EnderPearlEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.PillagerEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;

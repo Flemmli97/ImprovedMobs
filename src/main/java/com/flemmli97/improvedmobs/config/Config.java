@@ -1,7 +1,6 @@
 package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
-import net.minecraft.item.Items;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.ModList;

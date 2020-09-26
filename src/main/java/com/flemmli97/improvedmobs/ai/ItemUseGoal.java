@@ -5,7 +5,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
-import net.minecraft.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.entity.monster.DrownedEntity;
@@ -21,7 +20,7 @@ import java.util.EnumSet;
 public class ItemUseGoal extends Goal {
 
     private final MobEntity living;
-    private float maxAttackDistance;
+    private final float maxAttackDistance;
     private int attackTime = -1;
     private int seeTime;
     private boolean strafingClockwise, strafingBackwards;

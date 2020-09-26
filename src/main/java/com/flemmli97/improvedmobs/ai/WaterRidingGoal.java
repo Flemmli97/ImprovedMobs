@@ -16,7 +16,6 @@ public class WaterRidingGoal extends Goal {
 
     protected final MobEntity living;
     private int wait = 0;
-    private int rideTick = 0;
     private int jumpingTick;
 
     public WaterRidingGoal(MobEntity living) {

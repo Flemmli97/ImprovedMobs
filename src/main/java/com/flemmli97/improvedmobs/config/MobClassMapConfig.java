@@ -32,7 +32,7 @@ public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
             String[] sub = s.replace(" ", "").split("-");
             if (sub.length < 2)
                 continue;
-            EntityType type = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(sub[1]));
+            EntityType<?> type = ForgeRegistries.ENTITIES.getValue(new ResourceLocation(sub[1]));
             if (type == null) {
                 ImprovedMobs.logger.error("Entity {} does not exist/is not registered", sub[1]);
                 continue;

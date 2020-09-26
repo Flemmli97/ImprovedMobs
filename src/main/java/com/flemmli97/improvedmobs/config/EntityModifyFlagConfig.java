@@ -12,7 +12,6 @@ import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.PhantomEntity;
 import net.minecraft.entity.monster.ShulkerEntity;
 import net.minecraft.entity.monster.SlimeEntity;
-import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;

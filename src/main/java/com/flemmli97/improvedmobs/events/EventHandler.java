@@ -36,7 +36,6 @@ import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.MonsterEntity;
-import net.minecraft.entity.monster.SpiderEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -71,7 +70,6 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -389,9 +387,7 @@ public class EventHandler {
         if (e.getEntity() instanceof ProjectileEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.thrownEntityID)) {
             Entity thrower = ((ProjectileEntity) e.getEntity()).getOwner();
             if (thrower instanceof MobEntity) {
-                if (e.getEntity() instanceof PotionEntity) {
-                    return;
-                } else if (e.getRayTraceResult().getType() == RayTraceResult.Type.ENTITY) {
+                if (!(e.getEntity() instanceof PotionEntity) && e.getRayTraceResult().getType() == RayTraceResult.Type.ENTITY) {
                     EntityRayTraceResult res = (EntityRayTraceResult) e.getRayTraceResult();
                     if (!res.getEntity().equals(((MobEntity) thrower).getAttackTarget()))
                         e.setCanceled(true);
