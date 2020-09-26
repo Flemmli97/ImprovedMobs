@@ -401,7 +401,7 @@ public class ItemAITasks {
 
             @Override
             public int cooldown() {
-                return 90;
+                return 80;
             }
 
             @Override
