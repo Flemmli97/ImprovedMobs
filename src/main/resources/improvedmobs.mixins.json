@@ -10,7 +10,8 @@
     "TargetGoalMixin",
     "PotionEntityMixin",
     "TNTEntityMixin",
-    "PathFinderMixin",
+    "WalkNodeMixin",
+    "SwimWalkMixin",
     "MobEntityMixin",
     "PathNavigatorAccessor"
   ],

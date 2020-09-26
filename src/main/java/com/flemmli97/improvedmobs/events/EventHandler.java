@@ -3,6 +3,7 @@ package com.flemmli97.improvedmobs.events;
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.ai.BlockBreakGoal;
 import com.flemmli97.improvedmobs.ai.IGoalModifier;
+import com.flemmli97.improvedmobs.ai.ILadderFlagNode;
 import com.flemmli97.improvedmobs.ai.ItemUseGoal;
 import com.flemmli97.improvedmobs.ai.LadderClimbGoal;
 import com.flemmli97.improvedmobs.ai.StealGoal;
@@ -13,6 +14,8 @@ import com.flemmli97.improvedmobs.commands.IMCommand;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
+import com.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
+import com.flemmli97.improvedmobs.mixin.PathNavigatorAccessor;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import com.flemmli97.improvedmobs.utils.IMAttributes;
@@ -33,6 +36,7 @@ import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.SpiderEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -44,6 +48,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.ClimberPathNavigator;
+import net.minecraft.pathfinding.NodeProcessor;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.SwimmerPathNavigator;
 import net.minecraft.tileentity.TileEntity;
@@ -66,12 +71,14 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 public class EventHandler {
 
@@ -159,8 +166,9 @@ public class EventHandler {
             this.applyAttributesAndItems(living);
             if (living.getPersistentData().getBoolean(breaker)) {
                 ((IGoalModifier) living.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
-                    if (g instanceof NearestAttackableTargetGoal) {
+                    if (g instanceof NearestAttackableTargetGoal && living.world.rand.nextFloat() < 0.5) {
                         ((TargetGoalMixin) g).setShouldCheckSight(false);
+                        ((NearestTargetGoalMixin) g).getTargetEntitySelector().setLineOfSiteRequired();
                     }
                 });
                 if (mobGriefing) {
@@ -172,7 +180,7 @@ public class EventHandler {
                 }
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
-                living.goalSelector.addGoal(2, new ItemUseGoal(living, 15));
+                living.goalSelector.addGoal(1, new ItemUseGoal(living, 15));
                 //EntityAITechGuns.applyAI(living);
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
@@ -180,9 +188,30 @@ public class EventHandler {
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
-                if (!(living.getNavigator() instanceof ClimberPathNavigator))
+                if (!(living.getNavigator() instanceof ClimberPathNavigator)) {
+                    NodeProcessor proc = ((PathNavigatorAccessor)living.getNavigator()).getNodeProcessor();
+                    if(proc instanceof ILadderFlagNode)
+                        ((ILadderFlagNode)proc).setCanClimbLadder(true);
                     living.goalSelector.addGoal(4, new LadderClimbGoal(living));
+                }
             }
+            boolean villager = false;
+            boolean neutral = living instanceof EndermanEntity || living instanceof ZombifiedPiglinEntity;
+            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
+                villager = true;
+                if (!neutral)
+                    living.targetSelector.addGoal(2, setNoLoS(living, AbstractVillagerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() <= 0.5, null));
+            }
+            if (Config.CommonConfig.neutralAggressiv != 0 && living.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv)
+                if (neutral) {
+                    living.targetSelector.addGoal(1, setNoLoS(living, PlayerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
+                    if (villager)
+                        living.targetSelector.addGoal(2, setNoLoS(living, AbstractVillagerEntity.class, living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
+                }
+            List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(living.getType().getRegistryName());
+            if (types != null)
+                living.targetSelector.addGoal(3, setNoLoS(living, LivingEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
+
         }
         if (e.getEntity() instanceof CreatureEntity) {
             CreatureEntity creature = (CreatureEntity) e.getEntity();
@@ -190,23 +219,18 @@ public class EventHandler {
                     && !Config.CommonConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
                 creature.goalSelector.addGoal(5, new StealGoal(creature));
             }
-            boolean villager = false;
-            boolean neutral = creature instanceof EndermanEntity || creature instanceof ZombifiedPiglinEntity;
-            if (!Config.CommonConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
-                villager = true;
-                if (!neutral)
-                    creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, AbstractVillagerEntity.class, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() <= 0.5));
-            }
-            if (Config.CommonConfig.neutralAggressiv != 0 && creature.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv)
-                if (neutral) {
-                    creature.targetSelector.addGoal(1, new NearestAttackableTargetGoal<>(creature, PlayerEntity.class, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() < 0.5));
-                    if (villager)
-                        creature.targetSelector.addGoal(2, new NearestAttackableTargetGoal<>(creature, AbstractVillagerEntity.class, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() < 0.5));
-                }
-            List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(creature.getType().getRegistryName());
-            if (types != null)
-                creature.targetSelector.addGoal(3, new NearestAttackableTargetGoal<>(creature, LivingEntity.class, 10, !creature.getPersistentData().getBoolean(breaker) || creature.world.rand.nextFloat() < 0.5, false, (living) -> types.contains(living.getType())));
         }
+    }
+
+    private <T extends LivingEntity> NearestAttackableTargetGoal<T> setNoLoS(MobEntity e, Class<T> clss, boolean sight, Predicate<LivingEntity> pred){
+        NearestAttackableTargetGoal<T> goal;
+        if(pred == null)
+            goal = new NearestAttackableTargetGoal<>(e, clss, sight);
+        else
+            goal = new NearestAttackableTargetGoal<>(e, clss, 10, sight, false, pred);
+        if(!sight)
+            ((NearestTargetGoalMixin) goal).getTargetEntitySelector().setLineOfSiteRequired();
+        return goal;
     }
 
     private void applyAttributesAndItems(MobEntity living) {
@@ -219,9 +243,9 @@ public class EventHandler {
             GeneralHelperMethods.equipHeld(living);
             living.getPersistentData().putBoolean(modifyHeld, false);
         }
-        if (living.getPersistentData().contains(enchanted)) {
+        if (!living.getPersistentData().contains(enchanted)) {
             GeneralHelperMethods.enchantGear(living);
-            living.getPersistentData().putBoolean(enchanted, false);
+            living.getPersistentData().putBoolean(enchanted, true);
         }
         if (living.getPersistentData().getBoolean(modifyAttributes)) {
             if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
@@ -382,8 +406,7 @@ public class EventHandler {
             LivingEntity igniter = event.getExplosion().getExplosivePlacedBy();
             if (igniter instanceof MobEntity) {
                 event.getAffectedBlocks().clear();
-                if (((MobEntity) igniter).getAttackTarget() != null)
-                    event.getAffectedEntities().removeIf(e -> !e.equals(((MobEntity) igniter).getAttackTarget()));
+                event.getAffectedEntities().removeIf(e -> !e.equals(((MobEntity) igniter).getAttackTarget()));
             }
         }
     }

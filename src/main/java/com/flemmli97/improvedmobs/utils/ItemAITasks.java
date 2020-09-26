@@ -9,6 +9,7 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.EnderPearlEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.PillagerEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.entity.projectile.ShulkerBulletEntity;
@@ -16,6 +17,7 @@ import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ArrowItem;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -342,7 +344,7 @@ public class ItemAITasks {
 
             @Override
             public ItemType type() {
-                return ItemType.NONSTRAFINGITEM;
+                return ItemType.STANDING;
             }
 
             @Override
@@ -356,7 +358,7 @@ public class ItemAITasks {
             }
 
             @Override
-            public int maxUseCount() {
+            public int maxUseCount(MobEntity entity, Hand hand) {
                 return 40;
             }
         });
@@ -404,12 +406,48 @@ public class ItemAITasks {
 
             @Override
             public ItemType type() {
-                return ItemType.STRAFINGITEM;
+                return ItemType.STANDING;
             }
 
             @Override
             public UsableHand prefHand() {
                 return UsableHand.BOTH;
+            }
+        });
+
+        clssMap.put(CrossbowItem.class, new ItemAI() {
+
+            @Override
+            public void attack(MobEntity entity, LivingEntity target, Hand hand) {
+                ItemStack stack = entity.getHeldItem(hand);
+                float vel = CrossbowItem.hasChargedProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
+                CrossbowItem.fireProjectiles(entity.world, entity, hand, stack, vel, 1);
+                CrossbowItem.setCharged(stack, false);
+            }
+
+            @Override
+            public int cooldown() {
+                return 20;
+            }
+
+            @Override
+            public ItemType type() {
+                return ItemType.STANDING;
+            }
+
+            @Override
+            public UsableHand prefHand() {
+                return UsableHand.BOTH;
+            }
+
+            @Override
+            public boolean useHand() {
+                return true;
+            }
+
+            @Override
+            public int maxUseCount(MobEntity entity, Hand hand) {
+                return CrossbowItem.getChargeTime(entity.getHeldItem(hand))+5;
             }
         });
 
@@ -468,7 +506,7 @@ public class ItemAITasks {
             }
 
             @Override
-            public int maxUseCount() {
+            public int maxUseCount(MobEntity entity, Hand hand) {
                 return 70;
             }
         });
@@ -488,14 +526,17 @@ public class ItemAITasks {
             return false;
         }
 
-        default int maxUseCount() {
+        default int maxUseCount(MobEntity entity, Hand hand) {
             return 20;
         }
+
+        default void onReset(MobEntity entity, Hand hand) {}
     }
 
     public enum ItemType {
         NONSTRAFINGITEM,
-        STRAFINGITEM
+        STRAFINGITEM,
+        STANDING
     }
 
     public enum UsableHand {

@@ -119,7 +119,7 @@ public class ConfigSpecs {
             ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             mobListLight = builder.comment("Mobs to include for the new light spawning rules.").define("Light list", Lists.newArrayList());
             mobListLightBlackList = builder.comment("Turn the list list whitelist to blacklist").define("Light list blacklist", false);
-            light = builder.comment("Light level, blocks can have at max, so mobs can spawn on them.").defineInRange("Light", 7, 0, 15);
+            light = builder.comment("Light level >= x will prevent mob spawning for defined mobs.").defineInRange("Light", 7, 0, 16);
             shouldPunishTimeSkip = builder.comment("Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.").define("Punish Time Skip", true);
             friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
             petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").define("Pet Blacklist", Lists.newArrayList());

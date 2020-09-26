@@ -9,8 +9,10 @@ import net.minecraft.entity.ai.goal.RangedAttackGoal;
 import net.minecraft.entity.ai.goal.RangedBowAttackGoal;
 import net.minecraft.entity.ai.goal.RangedCrossbowAttackGoal;
 import net.minecraft.entity.monster.DrownedEntity;
+import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
+import net.minecraft.item.TridentItem;
 import net.minecraft.util.Hand;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -26,7 +28,7 @@ public class ItemUseGoal extends Goal {
     private int strafingTime = -1;
     private ItemAITasks.ItemAI ai;
     private Hand hand;
-    private boolean hasBowAI, hasRangedAttack;
+    private boolean hasBowAI, hasCrossBowAI;
     private ItemStack stackMain, stackOff;
 
     public ItemUseGoal(MobEntity entity, float maxDistance) {
@@ -37,10 +39,10 @@ public class ItemUseGoal extends Goal {
         maxDistance = Math.min(follow - 3, maxDistance);
         this.maxAttackDistance = maxDistance * maxDistance;
         ((IGoalModifier) entity.goalSelector).modifyGoal(Goal.class, g -> {
-            if (g instanceof RangedBowAttackGoal || g instanceof RangedCrossbowAttackGoal || this.living.getType().getRegistryName().toString().equals("primitivemobs:skeleton_warrior"))
+            if (g instanceof RangedBowAttackGoal || this.living.getType().getRegistryName().toString().equals("primitivemobs:skeleton_warrior"))
                 this.hasBowAI = true;
-            if (g instanceof RangedAttackGoal)
-                this.hasRangedAttack = true;
+            if(g instanceof RangedCrossbowAttackGoal)
+                this.hasCrossBowAI = true;
         });
     }
 
@@ -57,7 +59,7 @@ public class ItemUseGoal extends Goal {
 
     @Override
     public void startExecuting() {
-        this.setMutexFlags(this.ai.type() == ItemAITasks.ItemType.NONSTRAFINGITEM ? EnumSet.noneOf(Goal.Flag.class) : EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK));
+        this.setMutexFlags(this.ai.type() != ItemAITasks.ItemType.NONSTRAFINGITEM ? EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK) : EnumSet.noneOf(Goal.Flag.class));
         this.stackMain = this.living.getHeldItemMainhand();
         this.stackOff = this.living.getHeldItemOffhand();
     }
@@ -80,6 +82,7 @@ public class ItemUseGoal extends Goal {
         this.seeTime = 0;
         this.attackTime = -1;
         this.living.resetActiveHand();
+        this.ai.onReset(this.living, this.hand);
         this.ai = null;
         this.stackMain = null;
         this.stackOff = null;
@@ -92,23 +95,25 @@ public class ItemUseGoal extends Goal {
         if (target != null) {
             boolean flag = this.living.getEntitySenses().canSee(target);
             if (this.ai.type() == ItemAITasks.ItemType.STRAFINGITEM)
-                this.moveStrafing(target, flag);
-
+               this.moveStrafing(target, flag);
+            else if(this.ai.type() == ItemAITasks.ItemType.STANDING)
+                this.moveToRange(target, flag);
             if (this.living.isHandActive() || !this.ai.useHand()) {
                 if (!flag && this.seeTime < -60) {
                     this.living.resetActiveHand();
+                    this.ai.onReset(this.living, this.hand);
                 } else if (flag) {
                     if (this.ai.useHand()) {
                         int i = this.living.getItemInUseMaxCount();
-                        if (i >= this.ai.maxUseCount()) {
-                            this.living.resetActiveHand();
+                        if (i >= this.ai.maxUseCount(this.living, this.hand)) {
+                            this.living.stopActiveHand();
                             this.ai.attack(this.living, target, this.hand);
-                            this.attackTime = this.ai.cooldown() * (this.hasRangedAttack ? 2 : 1);
+                            this.attackTime = this.ai.cooldown();
                         }
                     } else if (--this.attackTime <= 0) {
                         this.ai.attack(this.living, target, this.hand);
-                        this.living.resetActiveHand();
-                        this.attackTime = this.ai.cooldown() * (this.hasRangedAttack ? 2 : 1);
+                        this.living.stopActiveHand();
+                        this.attackTime = this.ai.cooldown();
                     }
                 }
             } else if (--this.attackTime < 0 && this.seeTime >= -60) {
@@ -118,20 +123,15 @@ public class ItemUseGoal extends Goal {
     }
 
     private void moveStrafing(LivingEntity target, boolean canSee) {
-        double d0 = this.living.getDistanceSq(target.getX(), target.getBoundingBox(target.getPose()).minY, target.getZ());
+        double dist = this.living.getDistanceSq(target.getX(), target.getY(), target.getZ());
         boolean flag1 = this.seeTime > 0;
-
-        if (canSee != flag1) {
+        if (canSee != flag1)
             this.seeTime = 0;
-        }
-
-        if (canSee) {
+        if (canSee)
             ++this.seeTime;
-        } else {
+        else
             --this.seeTime;
-        }
-
-        if (d0 <= this.maxAttackDistance && this.seeTime >= 20) {
+        if (dist <= this.maxAttackDistance && this.seeTime >= 20) {
             this.living.getNavigator().clearPath();
             ++this.strafingTime;
         } else {
@@ -140,23 +140,20 @@ public class ItemUseGoal extends Goal {
         }
 
         if (this.strafingTime >= 20) {
-            if (this.living.getRNG().nextFloat() < 0.3D) {
+            if (this.living.getRNG().nextFloat() < 0.3D)
                 this.strafingClockwise = !this.strafingClockwise;
-            }
 
-            if (this.living.getRNG().nextFloat() < 0.3D) {
+            if (this.living.getRNG().nextFloat() < 0.3D)
                 this.strafingBackwards = !this.strafingBackwards;
-            }
 
             this.strafingTime = 0;
         }
 
         if (this.strafingTime > -1) {
-            if (d0 > (this.maxAttackDistance * 0.75F)) {
+            if (dist > this.maxAttackDistance * 0.75)
                 this.strafingBackwards = false;
-            } else if (d0 < (this.maxAttackDistance * 0.25F)) {
+            else if (dist < this.maxAttackDistance * 0.25)
                 this.strafingBackwards = true;
-            }
 
             this.living.getMoveHelper().strafe(this.strafingBackwards ? -0.5F : 0.5F, this.strafingClockwise ? 0.5F : -0.5F);
             this.living.faceEntity(target, 30.0F, 30.0F);
@@ -165,12 +162,28 @@ public class ItemUseGoal extends Goal {
         }
     }
 
+    private void moveToRange(LivingEntity target, boolean canSee){
+        double dist = this.living.getDistanceSq(target.getX(), target.getY(), target.getZ());
+        if (canSee)
+            ++this.seeTime;
+        else
+            this.seeTime = 0;
+
+        if (dist <= this.maxAttackDistance && this.seeTime >= 5)
+            this.living.getNavigator().clearPath();
+        else
+            this.living.getNavigator().tryMoveToEntityLiving(target, 1);
+
+        this.living.getLookController().setLookPositionWithEntity(target, 30.0F, 30.0F);    }
+
     /**
      * Specific mobs here. like for skeletons with bows
      */
     private boolean canAlreadyUse() {
-        if (this.hasRangedAttack && this.living instanceof DrownedEntity && this.living.getHeldItemMainhand().getItem() == Items.TRIDENT)
+        if (this.living instanceof DrownedEntity && this.living.getHeldItemMainhand().getItem() instanceof TridentItem)
             return true;
-        return this.hasBowAI && this.living.getHeldItemMainhand().getItem() == Items.BOW;
+        if(this.hasCrossBowAI && this.living.getHeldItemMainhand().getItem() instanceof CrossbowItem)
+            return true;
+        return this.hasBowAI && this.living.getHeldItemMainhand().getItem() instanceof BowItem;
     }
 }

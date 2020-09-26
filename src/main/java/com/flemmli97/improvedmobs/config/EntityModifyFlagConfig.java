@@ -29,7 +29,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         this.map.clear();
         for (EntityType<?> entry : ForgeRegistries.ENTITIES) {
             Entity e = entry.create(world);
-            if (!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity || e instanceof TameableEntity)
+            if (!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity)
                 continue;
             this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
         }

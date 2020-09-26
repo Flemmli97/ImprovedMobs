@@ -47,7 +47,6 @@ public class WaterRidingGoal extends Goal {
         GuardianEntity boat = EntityType.GUARDIAN.create(this.living.world);
         boat.setLocationAndAngles(this.living.getX(), this.living.getY(), this.living.getZ(), this.living.rotationYaw, this.living.rotationPitch);
         boat.getPersistentData().putBoolean(ImprovedMobs.waterRiding, true);
-        //boat.getAttribute(Attributes.GENERIC_MOVEMENT_SPEED).setBaseValue(2);
         this.living.world.addEntity(boat);
         this.living.startRiding(boat);
         this.wait = 0;

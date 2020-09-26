@@ -9,6 +9,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.item.ItemStack;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.util.Hand;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
@@ -17,9 +18,9 @@ import net.minecraft.util.math.MathHelper;
 
 public class BlockBreakGoal extends Goal {
 
-    MobEntity living;
-    LivingEntity target;
-    int scanTick;
+    protected final MobEntity living;
+    private LivingEntity target;
+    private int scanTick;
     private BlockPos markedLoc;
     private BlockPos entityPos;
     private int digTimer;
@@ -33,18 +34,13 @@ public class BlockBreakGoal extends Goal {
     public boolean shouldExecute() {
         this.target = this.living.getAttackTarget();
         //double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
-
         if (this.living.ticksExisted % 10 == 0 && this.target != null /*&& motion<maxMotion*/ && this.living.getDistance(this.target) > 1D && this.living.isOnGround()) {
-
             BlockPos blockPos = this.getBlock(this.living);
-
             if (blockPos == null)
                 return false;
-
             ItemStack item = this.living.getHeldItemMainhand();
             ItemStack itemOff = this.living.getHeldItemOffhand();
             BlockState block = this.living.world.getBlockState(blockPos);
-
             if (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff)) {
                 this.markedLoc = blockPos;
                 this.entityPos = this.living.getBlockPos();
@@ -53,7 +49,6 @@ public class BlockBreakGoal extends Goal {
                 return false;
             }
         }
-
         return false;
     }
 
@@ -107,16 +102,24 @@ public class BlockBreakGoal extends Goal {
     public BlockPos getBlock(MobEntity entityLiving) {
         BlockPos partBlockCheck = entityLiving.getBlockPos();
         BlockPos frontCheck = entityLiving.getBlockPos().offset(entityLiving.getHorizontalFacing());
+        ItemStack item = entityLiving.getHeldItemMainhand();
+        ItemStack itemOff = entityLiving.getHeldItemOffhand();
+        if(entityLiving.getAttackTarget()!=null && entityLiving.getY() - entityLiving.getAttackTarget().getY() > 0) {
+            BlockPos down = entityLiving.getBlockPos().down();
+            BlockState downState = entityLiving.world.getBlockState(down);
+            if (Config.CommonConfig.breakableBlocks.canBreak(downState) && (GeneralHelperMethods.canHarvest(downState, item) || GeneralHelperMethods.canHarvest(downState, itemOff))) {
+                this.scanTick = 0;
+                return down;
+            }
+        }
         int digWidth = MathHelper.ceil(entityLiving.getWidth());
         int digHeight = MathHelper.ceil(entityLiving.getHeight());
-        int passMax = digWidth * digWidth * digHeight;
+        int scanAmount = digWidth * digWidth * digHeight;
         int x = this.scanTick % digWidth - (digWidth / 2);
         int y = this.scanTick / (digWidth * digWidth);
         int z = (this.scanTick % (digWidth * digWidth)) / digWidth - (digWidth / 2);
         BlockState notFull = entityLiving.world.getBlockState(partBlockCheck.add(x, y, z));
         BlockState block = entityLiving.world.getBlockState(frontCheck.add(x, y, z));
-        ItemStack item = entityLiving.getHeldItemMainhand();
-        ItemStack itemOff = entityLiving.getHeldItemOffhand();
         if (Config.CommonConfig.breakableBlocks.canBreak(notFull) && (GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff))) {
             this.scanTick = 0;
             return partBlockCheck.add(x, y, z);
@@ -124,7 +127,7 @@ public class BlockBreakGoal extends Goal {
             this.scanTick = 0;
             return frontCheck.add(x, y, z);
         }
-        this.scanTick = (this.scanTick + 1) % passMax;
+        this.scanTick = (this.scanTick + 1) % scanAmount;
         return null;
     }
 }

@@ -1,25 +1,31 @@
 package com.flemmli97.improvedmobs.mixin;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.utils.ITNTThrowable;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.Explosion;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(TNTEntity.class)
 public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
 
-    //@Shadow
+    @Shadow
     private int fuse;
 
     private TNTEntityMixin(EntityType<?> type, World world) {
         super(type, world);
     }
 
-    /*@Inject(method = "tick", at = @At(value = "RETURN"), cancellable = true)
+    @Inject(method = "tick", at = @At(value = "RETURN"), cancellable = true)
     private void modifyExplosion(CallbackInfo info){
         TNTEntity tnt = (TNTEntity)(Object) this;
         if(tnt.getPersistentData().contains(ImprovedMobs.thrownEntityID) && this.fuse == 2) {
@@ -28,7 +34,7 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
             if(!tnt.world.isRemote)
                 tnt.world.createExplosion(tnt, tnt.getX(), tnt.getBodyY(0.0625D), tnt.getZ(), 4.0F, Explosion.Mode.BREAK);
         }
-    }*/
+    }
 
     @Override
     public void shootFromEntity(Entity shooter, float pitch, float yaw, float delta, float velocity, float accuracy) {
