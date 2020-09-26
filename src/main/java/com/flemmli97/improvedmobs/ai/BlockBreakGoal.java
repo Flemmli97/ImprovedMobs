@@ -72,9 +72,8 @@ public class BlockBreakGoal extends Goal {
             return;
         }
         BlockState state = this.living.world.getBlockState(this.markedLoc);
-        this.digTimer++;
-
-        float str = GeneralHelperMethods.getBlockStrength(this.living, state, this.living.world, this.markedLoc) * (this.digTimer + 1);
+        float str = GeneralHelperMethods.getBlockStrength(this.living, state, this.living.world, this.markedLoc);
+        str = str/(1+str*6) * (this.digTimer+1);
         if (str >= 1F) {
             this.digTimer = 0;
             ItemStack item = this.living.getHeldItemMainhand();
@@ -87,6 +86,7 @@ public class BlockBreakGoal extends Goal {
             this.markedLoc = null;
             this.living.getNavigator().setPath(this.living.getNavigator().getPathToEntityLiving(this.target, 0), 1D);
         } else {
+            this.digTimer++;
             if (this.digTimer % 5 == 0) {
                 SoundType sound = state.getBlock().getSoundType(state, this.living.world, this.markedLoc, this.living);
                 this.living.getNavigator().setPath(this.living.getNavigator().getPathToPos(this.markedLoc, 0), 1D);
