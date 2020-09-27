@@ -1,6 +1,7 @@
 package com.flemmli97.improvedmobs.utils;
 
 import com.flemmli97.improvedmobs.config.Config;
+import com.flemmli97.improvedmobs.config.EnchantCalcConf;
 import com.flemmli97.improvedmobs.config.EquipmentList;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.tenshilib.common.utils.MathUtils;
@@ -11,9 +12,9 @@ import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
+import net.minecraft.loot.RandomValueRange;
 import net.minecraft.potion.EffectUtils;
 import net.minecraft.potion.Effects;
 import net.minecraft.tags.FluidTags;
@@ -56,7 +57,8 @@ public class GeneralHelperMethods {
                         ItemStack equip = EquipmentList.getEquip(living, slot);
                         if (!equip.isEmpty()) {
                             if (!Config.CommonConfig.shouldDropEquip)
-                                equip.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                                living.setDropChance(slot, 0);
+                                //equip.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                             living.setItemStackToSlot(slot, equip);
                         }
                     }
@@ -71,7 +73,8 @@ public class GeneralHelperMethods {
             if (living.getHeldItemMainhand().isEmpty()) {
                 ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.MAINHAND);
                 if (!Config.CommonConfig.shouldDropEquip)
-                    stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                    living.setDropChance(EquipmentSlotType.MAINHAND, -1);
+                    //stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                 living.setItemStackToSlot(EquipmentSlotType.MAINHAND, stack);
             }
         }
@@ -80,17 +83,23 @@ public class GeneralHelperMethods {
             if (living.getHeldItemOffhand().isEmpty()) {
                 ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.OFFHAND);
                 if (!Config.CommonConfig.shouldDropEquip)
-                    stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                    living.setDropChance(EquipmentSlotType.OFFHAND, 0);
+                    // stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                 living.setItemStackToSlot(EquipmentSlotType.OFFHAND, stack);
             }
         }
     }
 
     public static void enchantGear(MobEntity living) {
+        float diff = DifficultyData.getDifficulty(living.world, living);
+        EnchantCalcConf.Value val = Config.CommonConfig.enchantCalc.get(diff);
+        if(val.max == 0)
+            return;
+        RandomValueRange rng = new RandomValueRange(val.min, val.max);
         for (EquipmentSlotType entityequipmentslot : EquipmentSlotType.values()) {
             ItemStack itemstack = living.getItemStackFromSlot(entityequipmentslot);
-            if (!itemstack.isEmpty() && living.getRNG().nextFloat() < (Config.CommonConfig.baseEnchantChance + (DifficultyData.getDifficulty(living.world, living) * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
-                EnchantmentHelper.addRandomEnchantment(living.getRNG(), itemstack, 5 + living.getRNG().nextInt(25), true);
+            if (!itemstack.isEmpty() && living.getRNG().nextFloat() < (Config.CommonConfig.baseEnchantChance + (diff * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
+                EnchantmentHelper.addRandomEnchantment(living.getRNG(), itemstack, rng.generateInt(living.getRNG()), true);
             }
         }
     }

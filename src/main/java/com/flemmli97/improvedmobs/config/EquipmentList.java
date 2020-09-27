@@ -18,6 +18,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ArmorMaterial;
 import net.minecraft.item.AxeItem;
 import net.minecraft.item.BowItem;
+import net.minecraft.item.CrossbowItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
@@ -198,7 +199,7 @@ public class EquipmentList {
             float ench = armor.getItemEnchantability();
             float rep = armor.isRepairable(new ItemStack(armor)) ? 0.9F : 1.15F;
             float vanillaMulti = (armor.getArmorMaterial() == ArmorMaterial.LEATHER || armor.getArmorMaterial() == ArmorMaterial.GOLD || armor.getArmorMaterial() == ArmorMaterial.CHAIN || armor.getArmorMaterial() == ArmorMaterial.IRON
-                    || armor.getArmorMaterial() == ArmorMaterial.DIAMOND) ? 0.8F : 1.1F;
+                    || armor.getArmorMaterial() == ArmorMaterial.DIAMOND || armor.getArmorMaterial() == ArmorMaterial.NETHERITE || armor.getArmorMaterial() == ArmorMaterial.TURTLE) ? 0.8F : 1.1F;
             weight -= (fullProt * 3.3 + averageDurability * 0.8 + ench) * rep * vanillaMulti;
         } else if (item instanceof SwordItem) {
             float dmg = 10 + ((SwordItem) item).getAttackDamage();
@@ -246,6 +247,8 @@ public class EquipmentList {
                 weight = 600;
             else if (item == Items.TRIDENT)
                 weight = 500;
+            else if(item instanceof CrossbowItem)
+                weight = 700;
             /*else if(Config.ServerConfig.useReforgedMod){
                 if(item instanceof ItemBlowGun)
                     weight = 720;

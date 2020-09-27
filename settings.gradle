@@ -1,2 +1,0 @@
-include ':tenshilib'
-project(':tenshilib').projectDir = "$rootDir/../../TenshiLib/TenshiLib 1.16.x" as File

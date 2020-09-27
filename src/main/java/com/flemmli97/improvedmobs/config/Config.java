@@ -85,6 +85,7 @@ public class Config {
         public static float diffWeaponChance;
         public static float baseEnchantChance;
         public static float diffEnchantAdd;
+        public static EnchantCalcConf enchantCalc = new EnchantCalcConf();
         public static float baseItemChance;
         public static float diffItemChanceAdd;
         public static boolean shouldDropEquip;
@@ -158,6 +159,8 @@ public class Config {
             diffWeaponChance = ConfigSpecs.commonConf.diffWeaponChance.get().floatValue();
             baseEnchantChance = ConfigSpecs.commonConf.baseEnchantChance.get().floatValue();
             diffEnchantAdd = ConfigSpecs.commonConf.diffEnchantAdd.get().floatValue();
+            System.out.println(ConfigSpecs.commonConf.enchantCalc + " RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
+            enchantCalc.readFromString(ConfigSpecs.commonConf.enchantCalc.get());
             baseItemChance = ConfigSpecs.commonConf.baseItemChance.get().floatValue();
             diffItemChanceAdd = ConfigSpecs.commonConf.diffItemChanceAdd.get().floatValue();
             shouldDropEquip = ConfigSpecs.commonConf.shouldDropEquip.get();

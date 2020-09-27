@@ -5,6 +5,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigSpecs {
@@ -93,6 +94,7 @@ public class ConfigSpecs {
         public ForgeConfigSpec.ConfigValue<Double> diffWeaponChance;
         public ForgeConfigSpec.DoubleValue baseEnchantChance;
         public ForgeConfigSpec.ConfigValue<Double> diffEnchantAdd;
+        public ForgeConfigSpec.ConfigValue<List<String>> enchantCalc;
         public ForgeConfigSpec.DoubleValue baseItemChance;
         public ForgeConfigSpec.ConfigValue<Double> diffItemChanceAdd;
         public ForgeConfigSpec.BooleanValue shouldDropEquip;
@@ -175,7 +177,9 @@ public class ConfigSpecs {
             baseWeaponChance = builder.comment("Chance for mobs to have a weapon").defineInRange("Weapon Chance", 0.05, 0, 1);
             diffWeaponChance = builder.comment("Adds additional x*difficulty% to base weapon chance").define("Weapon Chance Add", 0.3);
             baseEnchantChance = builder.comment("Base chance for each armor pieces to get enchanted").defineInRange("Enchanting Chance", 0.2, 0, 1);
-            diffEnchantAdd = builder.comment("Adds additional x*difficulty% to base enchanting chance").define("Enchanting Addition", 0.1);
+            diffEnchantAdd = builder.comment("Adds additional x*difficulty% to base enchanting chance").define("Enchanting Addition", 0.2);
+            enchantCalc = builder.comment("Specify min and max enchanting levels according to difficulty. difficulty-minLevel-maxLevel").define("Enchanting Calc", Lists.newArrayList("0-5-10","25-5-15", "50-10-17", "100-15-25", "200-20-30", "250-30-35"));
+            System.out.println("============================" + enchantCalc );
             baseItemChance = builder.comment("Chance for mobs to have an item in offhand").defineInRange("Item Equip Chance", 0.05, 0, 1);
             diffItemChanceAdd = builder.comment("Adds additional x*difficulty% to base item chance").define("Item Chance add", 0.2);
             shouldDropEquip = builder.comment("Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)").define("Should drop equipment", false);
