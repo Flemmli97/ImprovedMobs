@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "com.flemmli97.improvedmobs.mixin",
-  "refmap": "tenshilib.refmap.json",
+  "refmap": "improvedmobs.refmap.json",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "GoalSelectorMixin",
@@ -14,8 +14,6 @@
     "SwimWalkMixin",
     "MobEntityMixin",
     "PathNavigatorAccessor"
-  ],
-  "server": [
   ],
   "injectors": {
     "defaultRequire": 1

@@ -16,6 +16,6 @@ authors="Flemmli97"
 [[dependency.improvedmobs]]
   modId="minecraft"
   mandatory=true
-  versionRange="[1.16.1,1.16.3]"
+  versionRange="[1.16.2,1.16.3]"
   ordering="NONE"
   side="BOTH"
