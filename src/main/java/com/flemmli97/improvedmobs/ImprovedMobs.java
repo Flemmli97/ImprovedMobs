@@ -11,6 +11,7 @@ import com.flemmli97.improvedmobs.events.DifficultyHandler;
 import com.flemmli97.improvedmobs.events.EventHandler;
 import com.flemmli97.improvedmobs.network.PacketHandler;
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
+import net.minecraft.entity.item.TNTEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -54,7 +55,6 @@ public class ImprovedMobs {
         CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         if (Config.CommonConfig.enableDifficultyScaling) {
-            MinecraftForge.EVENT_BUS.register(new DifficultyDisplay());
             MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
         }
     }
