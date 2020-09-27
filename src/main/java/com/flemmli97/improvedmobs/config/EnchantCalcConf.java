@@ -9,7 +9,7 @@ import java.util.List;
 public class EnchantCalcConf implements IConfigListValue<EnchantCalcConf> {
 
     private static final Value defaultVal = new Value(0,0,0);
-    private List<Value> vals = Lists.newArrayList();
+    private final List<Value> vals = Lists.newArrayList();
 
     @Override
     public EnchantCalcConf readFromString(List<String> ss) {

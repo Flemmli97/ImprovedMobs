@@ -7,7 +7,6 @@ import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.tenshilib.common.utils.MathUtils;
 import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
-import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -169,5 +168,6 @@ public class GeneralHelperMethods {
             value = oldValue + value;
         }
         inst.setBaseValue(value);
+        //ForgeMod.SWIM_SPEED
     }
 }

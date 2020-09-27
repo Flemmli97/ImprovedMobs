@@ -149,7 +149,6 @@ public class EquipmentList {
                 if (!errors.isEmpty())
                     throw new InvalidItemNameException("Invalid item names for following values: " + errors);
             }
-            System.out.println(equips);
             for (EquipmentSlotType key : EquipmentSlotType.values()) {
                 JsonObject eq = confObj.has(key.toString()) ? (JsonObject) confObj.get(key.toString()) : new JsonObject();
                 equips.get(key).list.forEach(w -> eq.addProperty(w.configString, w.itemWeight));

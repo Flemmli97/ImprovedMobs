@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 
 public class PacketDifficulty {
 
-    public float difficulty;
+    private final float difficulty;
 
     private PacketDifficulty(float difficulty) {
         this.difficulty = difficulty;

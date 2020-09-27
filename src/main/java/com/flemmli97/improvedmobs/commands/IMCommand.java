@@ -34,14 +34,14 @@ public class IMCommand {
 
     private static int setDifficulty(CommandContext<CommandSource> src) {
         DifficultyData data = DifficultyData.get(src.getSource().getWorld());
-        data.setDifficulty(FloatArgumentType.getFloat(src, "val"), src.getSource().getWorld());
+        data.setDifficulty(FloatArgumentType.getFloat(src, "val"));
         src.getSource().sendFeedback(new StringTextComponent("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(TextFormatting.GOLD)), true);
         return 1;
     }
 
     private static int addDifficulty(CommandContext<CommandSource> src) {
         DifficultyData data = DifficultyData.get(src.getSource().getWorld());
-        data.addDifficulty(FloatArgumentType.getFloat(src, "val"), src.getSource().getWorld());
+        data.addDifficulty(FloatArgumentType.getFloat(src, "val"));
         src.getSource().sendFeedback(new StringTextComponent("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(TextFormatting.GOLD)), true);
         return 1;
     }

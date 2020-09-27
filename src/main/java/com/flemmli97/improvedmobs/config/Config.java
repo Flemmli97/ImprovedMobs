@@ -37,8 +37,7 @@ public class Config {
         public static boolean friendlyFire;
         public static List<? extends String> petArmorBlackList;
         public static boolean petWhiteList;
-
-        public static boolean doIMDifficulty = true;
+        public static boolean doIMDifficulty;
 
         //Black-WhiteList
         public static EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
@@ -116,6 +115,7 @@ public class Config {
             friendlyFire = ConfigSpecs.commonConf.friendlyFire.get();
             petArmorBlackList = ConfigSpecs.commonConf.petArmorBlackList.get();
             petWhiteList = ConfigSpecs.commonConf.petWhiteList.get();
+            doIMDifficulty = ConfigSpecs.commonConf.doIMDifficulty.get();
 
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
             if (l.size() != 1 || !l.get(0).equals("UNINIT"))
@@ -159,7 +159,6 @@ public class Config {
             diffWeaponChance = ConfigSpecs.commonConf.diffWeaponChance.get().floatValue();
             baseEnchantChance = ConfigSpecs.commonConf.baseEnchantChance.get().floatValue();
             diffEnchantAdd = ConfigSpecs.commonConf.diffEnchantAdd.get().floatValue();
-            System.out.println(ConfigSpecs.commonConf.enchantCalc + " RRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR");
             enchantCalc.readFromString(ConfigSpecs.commonConf.enchantCalc.get());
             baseItemChance = ConfigSpecs.commonConf.baseItemChance.get().floatValue();
             diffItemChanceAdd = ConfigSpecs.commonConf.diffItemChanceAdd.get().floatValue();

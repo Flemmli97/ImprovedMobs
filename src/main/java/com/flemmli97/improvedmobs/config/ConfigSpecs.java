@@ -5,7 +5,6 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigSpecs {
@@ -18,10 +17,10 @@ public class ConfigSpecs {
 
     static class ClientConfigVals {
 
-        public ForgeConfigSpec.ConfigValue<Integer> guiX;
-        public ForgeConfigSpec.ConfigValue<Integer> guiY;
-        public ForgeConfigSpec.ConfigValue<TextFormatting> color;
-        public ForgeConfigSpec.ConfigValue<Double> scale;
+        public final ForgeConfigSpec.ConfigValue<Integer> guiX;
+        public final ForgeConfigSpec.ConfigValue<Integer> guiY;
+        public final ForgeConfigSpec.ConfigValue<TextFormatting> color;
+        public final ForgeConfigSpec.ConfigValue<Double> scale;
 
         public ClientConfigVals(ForgeConfigSpec.Builder builder) {
             builder/*.translation("improvedmobs.gui")*/.comment("Gui Configs").push("gui");
@@ -36,83 +35,83 @@ public class ConfigSpecs {
     static class CommonConfigVals {
 
         //General
-        public ForgeConfigSpec.BooleanValue enableDifficultyScaling;
-        public ForgeConfigSpec.ConfigValue<Integer> difficultyDelay;
-        public ForgeConfigSpec.BooleanValue ignorePlayers;
-        public ForgeConfigSpec.ConfigValue<List<String>> mobListLight;
-        public ForgeConfigSpec.BooleanValue mobListLightBlackList;
-        public ForgeConfigSpec.IntValue light;
-        public ForgeConfigSpec.BooleanValue shouldPunishTimeSkip;
-        public ForgeConfigSpec.BooleanValue friendlyFire;
-        public ForgeConfigSpec.ConfigValue<List<String>> petArmorBlackList;
-        public ForgeConfigSpec.BooleanValue petWhiteList;
+        public final ForgeConfigSpec.BooleanValue enableDifficultyScaling;
+        public final ForgeConfigSpec.ConfigValue<Integer> difficultyDelay;
+        public final ForgeConfigSpec.BooleanValue ignorePlayers;
+        public final ForgeConfigSpec.ConfigValue<List<String>> mobListLight;
+        public final ForgeConfigSpec.BooleanValue mobListLightBlackList;
+        public final ForgeConfigSpec.IntValue light;
+        public final ForgeConfigSpec.BooleanValue shouldPunishTimeSkip;
+        public final ForgeConfigSpec.BooleanValue friendlyFire;
+        public final ForgeConfigSpec.ConfigValue<List<String>> petArmorBlackList;
+        public final ForgeConfigSpec.BooleanValue petWhiteList;
 
-        public ForgeConfigSpec.BooleanValue doIMDifficulty;
+        public final ForgeConfigSpec.BooleanValue doIMDifficulty;
 
         //Black-WhiteList
-        public ForgeConfigSpec.ConfigValue<List<String>> entityBlacklist;
-        public ForgeConfigSpec.BooleanValue mobAttributeWhitelist;
-        public ForgeConfigSpec.BooleanValue armorMobWhitelist;
-        public ForgeConfigSpec.BooleanValue heldMobWhitelist;
-        public ForgeConfigSpec.BooleanValue mobListBreakWhitelist;
-        public ForgeConfigSpec.BooleanValue mobListUseWhitelist;
-        public ForgeConfigSpec.BooleanValue mobListLadderWhitelist;
-        public ForgeConfigSpec.BooleanValue mobListStealWhitelist;
-        public ForgeConfigSpec.BooleanValue mobListBoatWhitelist;
-        public ForgeConfigSpec.BooleanValue targetVillagerWhitelist;
+        public final ForgeConfigSpec.ConfigValue<List<String>> entityBlacklist;
+        public final ForgeConfigSpec.BooleanValue mobAttributeWhitelist;
+        public final ForgeConfigSpec.BooleanValue armorMobWhitelist;
+        public final ForgeConfigSpec.BooleanValue heldMobWhitelist;
+        public final ForgeConfigSpec.BooleanValue mobListBreakWhitelist;
+        public final ForgeConfigSpec.BooleanValue mobListUseWhitelist;
+        public final ForgeConfigSpec.BooleanValue mobListLadderWhitelist;
+        public final ForgeConfigSpec.BooleanValue mobListStealWhitelist;
+        public final ForgeConfigSpec.BooleanValue mobListBoatWhitelist;
+        public final ForgeConfigSpec.BooleanValue targetVillagerWhitelist;
 
         //Debug
-        public ForgeConfigSpec.BooleanValue debugPath;
+        public final ForgeConfigSpec.BooleanValue debugPath;
 
         //Integration
-        public ForgeConfigSpec.BooleanValue useScalingHealthMod;
-        public ForgeConfigSpec.BooleanValue useTGunsMod;
-        public ForgeConfigSpec.BooleanValue useReforgedMod;
-        public ForgeConfigSpec.BooleanValue useCoroUtil;
+        public final ForgeConfigSpec.BooleanValue useScalingHealthMod;
+        public final ForgeConfigSpec.BooleanValue useTGunsMod;
+        public final ForgeConfigSpec.BooleanValue useReforgedMod;
+        public final ForgeConfigSpec.BooleanValue useCoroUtil;
 
         //AI
-        public ForgeConfigSpec.ConfigValue<List<String>> breakableBlocks;
-        public ForgeConfigSpec.BooleanValue breakingAsBlacklist;
-        public ForgeConfigSpec.BooleanValue useBlockBreakSound;
-        public ForgeConfigSpec.DoubleValue breakerChance;
-        public ForgeConfigSpec.DoubleValue stealerChance;
-        public ForgeConfigSpec.BooleanValue breakTileEntities;
-        public ForgeConfigSpec.ConfigValue<String> breakingItem;
-        public ForgeConfigSpec.DoubleValue neutralAggressiv;
-        public ForgeConfigSpec.ConfigValue<List<String>> autoTargets;
-        public ForgeConfigSpec.ConfigValue<Integer> repairTick;
-        public ForgeConfigSpec.ConfigValue<Double> difficultyBreak;
-        public ForgeConfigSpec.ConfigValue<Double> difficultySteal;
+        public final ForgeConfigSpec.ConfigValue<List<String>> breakableBlocks;
+        public final ForgeConfigSpec.BooleanValue breakingAsBlacklist;
+        public final ForgeConfigSpec.BooleanValue useBlockBreakSound;
+        public final ForgeConfigSpec.DoubleValue breakerChance;
+        public final ForgeConfigSpec.DoubleValue stealerChance;
+        public final ForgeConfigSpec.BooleanValue breakTileEntities;
+        public final ForgeConfigSpec.ConfigValue<String> breakingItem;
+        public final ForgeConfigSpec.DoubleValue neutralAggressiv;
+        public final ForgeConfigSpec.ConfigValue<List<String>> autoTargets;
+        public final ForgeConfigSpec.ConfigValue<Integer> repairTick;
+        public final ForgeConfigSpec.ConfigValue<Double> difficultyBreak;
+        public final ForgeConfigSpec.ConfigValue<Double> difficultySteal;
 
         //Equipment
-        public ForgeConfigSpec.ConfigValue<List<String>> equipmentModBlacklist;
-        public ForgeConfigSpec.BooleanValue equipmentModWhitelist;
-        public ForgeConfigSpec.DoubleValue baseEquipChance;
-        public ForgeConfigSpec.DoubleValue baseEquipChanceAdd;
-        public ForgeConfigSpec.ConfigValue<Double> diffEquipAdd;
-        public ForgeConfigSpec.DoubleValue baseWeaponChance;
-        public ForgeConfigSpec.ConfigValue<Double> diffWeaponChance;
-        public ForgeConfigSpec.DoubleValue baseEnchantChance;
-        public ForgeConfigSpec.ConfigValue<Double> diffEnchantAdd;
-        public ForgeConfigSpec.ConfigValue<List<String>> enchantCalc;
-        public ForgeConfigSpec.DoubleValue baseItemChance;
-        public ForgeConfigSpec.ConfigValue<Double> diffItemChanceAdd;
-        public ForgeConfigSpec.BooleanValue shouldDropEquip;
+        public final ForgeConfigSpec.ConfigValue<List<String>> equipmentModBlacklist;
+        public final ForgeConfigSpec.BooleanValue equipmentModWhitelist;
+        public final ForgeConfigSpec.DoubleValue baseEquipChance;
+        public final ForgeConfigSpec.DoubleValue baseEquipChanceAdd;
+        public final ForgeConfigSpec.ConfigValue<Double> diffEquipAdd;
+        public final ForgeConfigSpec.DoubleValue baseWeaponChance;
+        public final ForgeConfigSpec.ConfigValue<Double> diffWeaponChance;
+        public final ForgeConfigSpec.DoubleValue baseEnchantChance;
+        public final ForgeConfigSpec.ConfigValue<Double> diffEnchantAdd;
+        public final ForgeConfigSpec.ConfigValue<List<String>> enchantCalc;
+        public final ForgeConfigSpec.DoubleValue baseItemChance;
+        public final ForgeConfigSpec.ConfigValue<Double> diffItemChanceAdd;
+        public final ForgeConfigSpec.BooleanValue shouldDropEquip;
 
         //Attributes
-        public ForgeConfigSpec.ConfigValue<Double> healthIncrease;
-        public ForgeConfigSpec.ConfigValue<Double> healthMax;
-        public ForgeConfigSpec.ConfigValue<Double> roundHP;
-        public ForgeConfigSpec.ConfigValue<Double> damageIncrease;
-        public ForgeConfigSpec.ConfigValue<Double> damageMax;
-        public ForgeConfigSpec.ConfigValue<Double> speedIncrease;
-        public ForgeConfigSpec.DoubleValue speedMax;
-        public ForgeConfigSpec.ConfigValue<Double> knockbackIncrease;
-        public ForgeConfigSpec.ConfigValue<Double> knockbackMax;
-        public ForgeConfigSpec.ConfigValue<Double> magicResIncrease;
-        public ForgeConfigSpec.DoubleValue magicResMax;
-        public ForgeConfigSpec.ConfigValue<Double> projectileIncrease;
-        public ForgeConfigSpec.ConfigValue<Double> projectileMax;
+        public final ForgeConfigSpec.ConfigValue<Double> healthIncrease;
+        public final ForgeConfigSpec.ConfigValue<Double> healthMax;
+        public final ForgeConfigSpec.ConfigValue<Double> roundHP;
+        public final ForgeConfigSpec.ConfigValue<Double> damageIncrease;
+        public final ForgeConfigSpec.ConfigValue<Double> damageMax;
+        public final ForgeConfigSpec.ConfigValue<Double> speedIncrease;
+        public final ForgeConfigSpec.DoubleValue speedMax;
+        public final ForgeConfigSpec.ConfigValue<Double> knockbackIncrease;
+        public final ForgeConfigSpec.ConfigValue<Double> knockbackMax;
+        public final ForgeConfigSpec.ConfigValue<Double> magicResIncrease;
+        public final ForgeConfigSpec.DoubleValue magicResMax;
+        public final ForgeConfigSpec.ConfigValue<Double> projectileIncrease;
+        public final ForgeConfigSpec.ConfigValue<Double> projectileMax;
 
         public CommonConfigVals(ForgeConfigSpec.Builder builder) {
             builder.comment("With default value every difficulty perk maxes out at difficulty 250")/*.translation("improvedmobs.general")*/.push("general");
@@ -126,7 +125,7 @@ public class ConfigSpecs {
             friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
             petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").define("Pet Blacklist", Lists.newArrayList());
             petWhiteList = builder.comment("Treat pet blacklist as whitelist").define("Pet Whitelist", false);
-            //public ForgeConfigSpec.BooleanValue doIMDifficulty;
+            doIMDifficulty = builder.comment("Increase difficulty with time", "Here untill its back as a gamerule").define("Difficulty toggle", true);
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");
@@ -179,7 +178,6 @@ public class ConfigSpecs {
             baseEnchantChance = builder.comment("Base chance for each armor pieces to get enchanted").defineInRange("Enchanting Chance", 0.2, 0, 1);
             diffEnchantAdd = builder.comment("Adds additional x*difficulty% to base enchanting chance").define("Enchanting Addition", 0.2);
             enchantCalc = builder.comment("Specify min and max enchanting levels according to difficulty. difficulty-minLevel-maxLevel").define("Enchanting Calc", Lists.newArrayList("0-5-10","25-5-15", "50-10-17", "100-15-25", "200-20-30", "250-30-35"));
-            System.out.println("============================" + enchantCalc );
             baseItemChance = builder.comment("Chance for mobs to have an item in offhand").defineInRange("Item Equip Chance", 0.05, 0, 1);
             diffItemChanceAdd = builder.comment("Adds additional x*difficulty% to base item chance").define("Item Chance add", 0.2);
             shouldDropEquip = builder.comment("Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)").define("Should drop equipment", false);
