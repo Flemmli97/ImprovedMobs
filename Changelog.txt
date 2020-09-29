@@ -1,3 +1,7 @@
+Improved Mobs 1.7.1
+================
+- Make forge complain if the dependency is missing
+
 Improved Mobs 1.7.0
 ================
 - Port to 1.16.3
