@@ -1,3 +1,7 @@
+Improved Mobs 1.7.2
+================
+- add prevention if entity with no hitbox try to break a block causing crashes (cause thats appearently a thing)
+
 Improved Mobs 1.7.1
 ================
 - Make forge complain if the dependency is missing

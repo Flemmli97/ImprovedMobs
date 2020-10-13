@@ -111,8 +111,8 @@ public class BlockBreakGoal extends Goal {
                 return down;
             }
         }
-        int digWidth = MathHelper.ceil(entityLiving.getWidth());
-        int digHeight = MathHelper.ceil(entityLiving.getHeight());
+        int digWidth = Math.max(1, MathHelper.ceil(entityLiving.getWidth()));
+        int digHeight = Math.max(1, MathHelper.ceil(entityLiving.getHeight()));
         int scanAmount = digWidth * digWidth * digHeight;
         int x = this.scanTick % digWidth - (digWidth / 2);
         int y = this.scanTick / (digWidth * digWidth);
