@@ -107,11 +107,10 @@ public class EntityAIBlockBreaking extends EntityAIBase {
 	}
 
 	public BlockPos getBlock(EntityLiving entityLiving) {
-		BlockPos i = null;
 		BlockPos partBlockCheck = entityLiving.getPosition();
 		BlockPos frontCheck = entityLiving.getPosition().offset(entityLiving.getHorizontalFacing());
-		int digWidth = MathHelper.ceil(entityLiving.width);
-		int digHeight = MathHelper.ceil(entityLiving.height);
+		int digWidth = Math.max(1,MathHelper.ceil(entityLiving.width));
+		int digHeight = Math.max(1,MathHelper.ceil(entityLiving.height));
 		int passMax = digWidth * digWidth * digHeight;
 		int x = this.scanTick % digWidth - (digWidth / 2);
 		int y = this.scanTick / (digWidth * digWidth);
@@ -122,12 +121,10 @@ public class EntityAIBlockBreaking extends EntityAIBase {
 		ItemStack itemOff = entityLiving.getHeldItemOffhand();
 		if(ConfigHandler.breakableBlocks.canBreak(notFull) && (GeneralHelperMethods.canHarvest(notFull, item) || GeneralHelperMethods.canHarvest(notFull, itemOff))){
             this.scanTick = 0;
-			i = new BlockPos(partBlockCheck.getX() + x, partBlockCheck.getY() + y, frontCheck.getZ() + z);
-			return i;
+			return new BlockPos(partBlockCheck.getX() + x, partBlockCheck.getY() + y, frontCheck.getZ() + z);
 		}else if(ConfigHandler.breakableBlocks.canBreak(block) && (GeneralHelperMethods.canHarvest(block, item) || GeneralHelperMethods.canHarvest(block, itemOff))){
             this.scanTick = 0;
-			i = new BlockPos(frontCheck.getX() + x, frontCheck.getY() + y, frontCheck.getZ() + z);
-			return i;
+			return new BlockPos(frontCheck.getX() + x, frontCheck.getY() + y, frontCheck.getZ() + z);
 		}
         this.scanTick = (this.scanTick + 1) % passMax;
 		return null;
