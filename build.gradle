@@ -4,10 +4,14 @@ buildscript {
         jcenter()
         mavenCentral()
         maven {url='https://dist.creeper.host/Sponge/maven'}
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath "com.wynprice.cursemaven:CurseMaven:2.1.5"
     }
 }
 apply plugin: 'net.minecraftforge.gradle'
@@ -16,6 +20,7 @@ apply plugin: 'org.spongepowered.mixin'
 // Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
+apply plugin: "com.wynprice.cursemaven"
 
 version = "${mcversion}-${modversion}"
 group = "com.flemmli97.${modid}"
@@ -96,10 +101,17 @@ minecraft {
 }
 
 repositories {
+    mavenLocal()
     maven {
+        name = "CurseForge"
+        url = "https://minecraft.curseforge.com/api/maven/"
+    }
+    maven {
+        name = "Unofficial Mappings"
         url 'https://www.dogforce-games.com/maven/'
     }
     maven {
+        name = "Yarn MCP Mappings"
         url "https://maven.tterrag.com/"
     }
 }
@@ -109,13 +121,9 @@ dependencies {
     // that the dep is a ForgeGradle 'patcher' dependency. And it's patches will be applied.
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:'+"${mcversion}-${forge_version}"
-
-    if (findProject(':tenshilib') != null) {
-        compile project(':tenshilib')
-    }
-    else{
-        compile fg.deobf("tenshilib:TenshiLib:1.16.x:${tenshilib_version}")
-    }
+    //I hate dealing with dependency stuff...
+    compile fg.deobf("tenshilib:TenshiLib:${tenshilib_version}")
+    //compile fg.deobf("curse.maven:tenshilib:3067125")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
@@ -148,7 +156,7 @@ publishing {
     }
     repositories {
         maven {
-            url "file:///${project.projectDir}/mcmodsrepo"
+            url "file:///${project.projectDir}/repo"
         }
     }
 }
