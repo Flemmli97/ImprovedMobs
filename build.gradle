@@ -122,8 +122,8 @@ dependencies {
     // The userdev artifact is a special name and will get all sorts of transformations applied to it.
     minecraft 'net.minecraftforge:forge:'+"${mcversion}-${forge_version}"
     //I hate dealing with dependency stuff...
-    compile fg.deobf("tenshilib:TenshiLib:${tenshilib_version}")
-    //compile fg.deobf("curse.maven:tenshilib:3067125")
+    //compile fg.deobf("tenshilib:TenshiLib:${tenshilib_version}")
+    compile fg.deobf("curse.maven:tenshilib:3067125")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
