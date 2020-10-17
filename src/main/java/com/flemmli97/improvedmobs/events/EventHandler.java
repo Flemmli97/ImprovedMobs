@@ -36,6 +36,7 @@ import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
 import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.MonsterEntity;
+import net.minecraft.entity.monster.SlimeEntity;
 import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -182,7 +183,8 @@ public class EventHandler {
                 //EntityAITechGuns.applyAI(living);
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
-                if (!(/*living.canBreatheUnderwater() || */living.getNavigator() instanceof SwimmerPathNavigator))
+                //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
+                if (!(/*living.canBreatheUnderwater() || */living.getNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity))
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
