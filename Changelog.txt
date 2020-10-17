@@ -1,3 +1,7 @@
+Improved Mobs 1.7.3
+================
+- Exclude slimes from water riding fix #44. Slimes dont attack anyway if they ride non slime entitys
+
 Improved Mobs 1.7.2
 ================
 - add prevention if entity with no hitbox try to break a block causing crashes (cause thats appearently a thing)
