@@ -13,7 +13,7 @@ public class DifficultyDisplay {
 
     @SubscribeEvent
     public void showDifficulty(RenderGameOverlayEvent.Post e) {
-        if (e.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE)
+        if (e.getType() != RenderGameOverlayEvent.ElementType.EXPERIENCE || Config.CommonConfig.useScalingHealthMod || !Config.ClientConfig.showDifficulty)
             return;
         MatrixStack stack = e.getMatrixStack();
         stack.push();

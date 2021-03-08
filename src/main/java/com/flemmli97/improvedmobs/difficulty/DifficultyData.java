@@ -1,11 +1,13 @@
 package com.flemmli97.improvedmobs.difficulty;
 
+import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.network.PacketDifficulty;
 import com.flemmli97.improvedmobs.network.PacketHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
+import net.silentchaos512.scalinghealth.utils.SHDifficulty;
 
 public class DifficultyData extends WorldSavedData {
 
@@ -26,11 +28,10 @@ public class DifficultyData extends WorldSavedData {
     }
 
     public static float getDifficulty(World world, LivingEntity e) {
-        //if(ConfigHandler.useScalingHealthMod)
-        //    return (float) Config.Difficulty.AREA_DIFFICULTY_MODE.getAreaDifficulty(world, e.getPosition());
+        if(Config.CommonConfig.useScalingHealthMod)
+            return (float) SHDifficulty.areaDifficulty(world, e.getBlockPos());
         return DifficultyData.get(world).getDifficulty();
     }
-
 
     public void increaseDifficultyBy(float amount, long time) {
         this.difficultyLevel += amount;

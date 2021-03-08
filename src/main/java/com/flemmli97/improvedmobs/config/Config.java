@@ -15,12 +15,14 @@ public class Config {
         public static int guiY;
         public static TextFormatting color = TextFormatting.DARK_PURPLE;
         public static float scale = 1;
+        public static boolean showDifficulty;
 
         public static void load() {
             guiX = ConfigSpecs.clientConf.guiX.get();
             guiY = ConfigSpecs.clientConf.guiY.get();
             color = ConfigSpecs.clientConf.color.get();
             scale = ConfigSpecs.clientConf.scale.get().floatValue();
+            showDifficulty = ConfigSpecs.clientConf.showDifficulty.get();
         }
     }
 

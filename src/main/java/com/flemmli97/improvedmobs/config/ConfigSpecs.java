@@ -21,6 +21,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.ConfigValue<Integer> guiY;
         public final ForgeConfigSpec.ConfigValue<TextFormatting> color;
         public final ForgeConfigSpec.ConfigValue<Double> scale;
+        public final ForgeConfigSpec.BooleanValue showDifficulty;
 
         public ClientConfigVals(ForgeConfigSpec.Builder builder) {
             builder/*.translation("improvedmobs.gui")*/.comment("Gui Configs").push("gui");
@@ -28,6 +29,7 @@ public class ConfigSpecs {
             this.guiY = builder.define("Gui Y", 5);
             this.color = builder.comment("Textformatting codes for the display of the difficulty").defineEnum("Difficulty color", TextFormatting.DARK_PURPLE);
             this.scale = builder.comment("Scaling of the difficulty text").define("Text Scale", 1D);
+            this.showDifficulty = builder.comment("Show the the difficulty text").define("Show Difficulty", true);
             builder.pop();
         }
     }

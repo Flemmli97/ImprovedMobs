@@ -126,6 +126,9 @@ dependencies {
     //I hate dealing with dependency stuff...
     //compile fg.deobf("tenshilib:TenshiLib:${tenshilib_version}")
     compile fg.deobf("curse.maven:tenshilib:3067125")
+
+    compile fg.deobf("curse.maven:scalingLib:3165746")
+    compile fg.deobf("curse.maven:scalingHealth:3170946")
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..
