@@ -81,7 +81,7 @@ public class ItemUseGoal extends Goal {
         this.seeTime = 0;
         this.attackTime = -1;
         this.living.resetActiveHand();
-        this.ai.onReset(this.living, this.hand);
+        //this.ai.onReset(this.living, this.hand);
         this.ai = null;
         this.stackMain = null;
         this.stackOff = null;
