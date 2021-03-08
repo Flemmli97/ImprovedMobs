@@ -57,7 +57,7 @@ public class GeneralHelperMethods {
                         if (!equip.isEmpty()) {
                             if (!Config.CommonConfig.shouldDropEquip)
                                 living.setDropChance(slot, 0);
-                                //equip.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                            //equip.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                             living.setItemStackToSlot(slot, equip);
                         }
                     }
@@ -73,7 +73,7 @@ public class GeneralHelperMethods {
                 ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.MAINHAND);
                 if (!Config.CommonConfig.shouldDropEquip)
                     living.setDropChance(EquipmentSlotType.MAINHAND, -1);
-                    //stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                //stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                 living.setItemStackToSlot(EquipmentSlotType.MAINHAND, stack);
             }
         }
@@ -83,7 +83,7 @@ public class GeneralHelperMethods {
                 ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.OFFHAND);
                 if (!Config.CommonConfig.shouldDropEquip)
                     living.setDropChance(EquipmentSlotType.OFFHAND, 0);
-                    // stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
+                // stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                 living.setItemStackToSlot(EquipmentSlotType.OFFHAND, stack);
             }
         }
@@ -92,7 +92,7 @@ public class GeneralHelperMethods {
     public static void enchantGear(MobEntity living) {
         float diff = DifficultyData.getDifficulty(living.world, living);
         EnchantCalcConf.Value val = Config.CommonConfig.enchantCalc.get(diff);
-        if(val.max == 0)
+        if (val.max == 0)
             return;
         RandomValueRange rng = new RandomValueRange(val.min, val.max);
         for (EquipmentSlotType entityequipmentslot : EquipmentSlotType.values()) {

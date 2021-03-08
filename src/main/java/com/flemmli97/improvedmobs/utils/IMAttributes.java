@@ -18,7 +18,7 @@ public class IMAttributes {
     }*/
 
     public static void apply(MobEntity entity, Attribute att, float value, float max) {
-        entity.getPersistentData().putFloat(ImprovedMobs.MODID + ":" + att.id, (att == Attribute.PROJ_BOOST?1:0)+Math.min(value, max));
+        entity.getPersistentData().putFloat(ImprovedMobs.MODID + ":" + att.id, (att == Attribute.PROJ_BOOST ? 1 : 0) + Math.min(value, max));
         //entity.getAttributes().getCustomInstance()
     }
 

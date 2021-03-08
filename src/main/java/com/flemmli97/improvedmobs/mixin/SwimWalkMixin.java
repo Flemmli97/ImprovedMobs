@@ -16,20 +16,20 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 public abstract class SwimWalkMixin extends WalkNodeProcessor {
 
     @Inject(method = "func_222859_a", at = @At(value = "RETURN"), cancellable = true, locals = LocalCapture.CAPTURE_FAILHARD)
-    private void ignoreLadder(PathPoint[] points, PathPoint point, CallbackInfoReturnable<Integer> info, int i){
-        if(((ILadderFlagNode)this).canClimbLadder())
+    private void ignoreLadder(PathPoint[] points, PathPoint point, CallbackInfoReturnable<Integer> info, int i) {
+        if (((ILadderFlagNode) this).canClimbLadder())
             i = this.addLadderPoints(points, point, i);
         info.setReturnValue(i);
         info.cancel();
     }
 
-    private int addLadderPoints(PathPoint[] points, PathPoint currentPoint, int i){
+    private int addLadderPoints(PathPoint[] points, PathPoint currentPoint, int i) {
         PathPoint ladderUp = this.openPoint(currentPoint.x, currentPoint.y + 1, currentPoint.z);
         PathPoint ladderDown = this.openPoint(currentPoint.x, currentPoint.y - 1, currentPoint.z);
-        if(ladderUp!=null && !ladderUp.visited && this.blockaccess.getBlockState(new BlockPos(ladderUp.x, ladderUp.y, ladderUp.z)).isIn(BlockTags.CLIMBABLE)){
+        if (ladderUp != null && !ladderUp.visited && this.blockaccess.getBlockState(new BlockPos(ladderUp.x, ladderUp.y, ladderUp.z)).isIn(BlockTags.CLIMBABLE)) {
             points[i++] = ladderUp;
         }
-        if(ladderDown!=null && !ladderDown.visited && this.blockaccess.getBlockState(new BlockPos(ladderDown.x, ladderDown.y, ladderDown.z)).isIn(BlockTags.CLIMBABLE)){
+        if (ladderDown != null && !ladderDown.visited && this.blockaccess.getBlockState(new BlockPos(ladderDown.x, ladderDown.y, ladderDown.z)).isIn(BlockTags.CLIMBABLE)) {
             points[i++] = ladderDown;
         }
         return i;

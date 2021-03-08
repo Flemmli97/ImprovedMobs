@@ -56,9 +56,9 @@ public class PathFindHelper {
         int j = p_237232_1_.getY();
         int k = p_237232_1_.getZ();
 
-        for(int l = -1; l <= 1; ++l) {
-            for(int i1 = -1; i1 <= 1; ++i1) {
-                for(int j1 = -1; j1 <= 1; ++j1) {
+        for (int l = -1; l <= 1; ++l) {
+            for (int i1 = -1; i1 <= 1; ++i1) {
+                for (int j1 = -1; j1 <= 1; ++j1) {
                     if (l != 0 || j1 != 0) {
                         p_237232_1_.setPos(i + l, j + i1, k + j1);
                         BlockState blockstate = p_237232_0_.getBlockState(p_237232_1_);

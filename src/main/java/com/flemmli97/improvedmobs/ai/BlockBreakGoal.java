@@ -73,7 +73,7 @@ public class BlockBreakGoal extends Goal {
         }
         BlockState state = this.living.world.getBlockState(this.markedLoc);
         float str = GeneralHelperMethods.getBlockStrength(this.living, state, this.living.world, this.markedLoc);
-        str = str/(1+str*6) * (this.digTimer+1);
+        str = str / (1 + str * 6) * (this.digTimer + 1);
         if (str >= 1F) {
             this.digTimer = 0;
             ItemStack item = this.living.getHeldItemMainhand();
@@ -103,7 +103,7 @@ public class BlockBreakGoal extends Goal {
         BlockPos frontCheck = entityLiving.getBlockPos().offset(entityLiving.getHorizontalFacing());
         ItemStack item = entityLiving.getHeldItemMainhand();
         ItemStack itemOff = entityLiving.getHeldItemOffhand();
-        if(entityLiving.getAttackTarget()!=null && entityLiving.getY() - entityLiving.getAttackTarget().getY() > 0) {
+        if (entityLiving.getAttackTarget() != null && entityLiving.getY() - entityLiving.getAttackTarget().getY() > 0) {
             BlockPos down = entityLiving.getBlockPos().down();
             BlockState downState = entityLiving.world.getBlockState(down);
             if (Config.CommonConfig.breakableBlocks.canBreak(downState) && (GeneralHelperMethods.canHarvest(downState, item) || GeneralHelperMethods.canHarvest(downState, itemOff))) {

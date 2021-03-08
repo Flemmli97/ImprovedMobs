@@ -246,7 +246,7 @@ public class EquipmentList {
                 weight = 600;
             else if (item == Items.TRIDENT)
                 weight = 500;
-            else if(item instanceof CrossbowItem)
+            else if (item instanceof CrossbowItem)
                 weight = 700;
             /*else if(Config.ServerConfig.useReforgedMod){
                 if(item instanceof ItemBlowGun)

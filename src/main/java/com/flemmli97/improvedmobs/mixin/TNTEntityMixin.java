@@ -26,12 +26,12 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
     }
 
     @Inject(method = "tick", at = @At(value = "RETURN"), cancellable = true)
-    private void modifyExplosion(CallbackInfo info){
-        TNTEntity tnt = (TNTEntity)(Object) this;
-        if(tnt.getPersistentData().contains(ImprovedMobs.thrownEntityID) && this.fuse == 2) {
+    private void modifyExplosion(CallbackInfo info) {
+        TNTEntity tnt = (TNTEntity) (Object) this;
+        if (tnt.getPersistentData().contains(ImprovedMobs.thrownEntityID) && this.fuse == 2) {
             info.cancel();
             tnt.remove();
-            if(!tnt.world.isRemote)
+            if (!tnt.world.isRemote)
                 tnt.world.createExplosion(tnt, tnt.getX(), tnt.getBodyY(0.0625D), tnt.getZ(), 4.0F, Explosion.Mode.BREAK);
         }
     }
@@ -43,7 +43,7 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
         float y = -MathHelper.sin((pitch + delta) * (float) Math.PI / 180F);
         float z = MathHelper.cos(yaw * (float) Math.PI / 180F) * MathHelper.cos(pitch * (float) Math.PI / 180F);
         Vector3d newMotion = new Vector3d(x, y, z).normalize()
-                .add(rand.nextGaussian() * 0.0075F * accuracy, rand.nextGaussian() * 0.0075F * accuracy, rand.nextGaussian() * 0.0075F * accuracy).scale(velocity);
+                .add(this.rand.nextGaussian() * 0.0075F * accuracy, this.rand.nextGaussian() * 0.0075F * accuracy, this.rand.nextGaussian() * 0.0075F * accuracy).scale(velocity);
         tnt.setMotion(newMotion);
         float f3 = MathHelper.sqrt(newMotion.x * newMotion.x + newMotion.z * newMotion.z);
         tnt.rotationYaw = (float) (MathHelper.atan2(newMotion.x, newMotion.z) * (180F / (float) Math.PI));

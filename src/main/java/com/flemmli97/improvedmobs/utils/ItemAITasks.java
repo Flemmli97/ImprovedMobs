@@ -446,7 +446,7 @@ public class ItemAITasks {
 
             @Override
             public int maxUseCount(MobEntity entity, Hand hand) {
-                return CrossbowItem.getChargeTime(entity.getHeldItem(hand))+5;
+                return CrossbowItem.getChargeTime(entity.getHeldItem(hand)) + 5;
             }
         });
 
@@ -529,7 +529,8 @@ public class ItemAITasks {
             return 20;
         }
 
-        default void onReset(MobEntity entity, Hand hand) {}
+        default void onReset(MobEntity entity, Hand hand) {
+        }
     }
 
     public enum ItemType {

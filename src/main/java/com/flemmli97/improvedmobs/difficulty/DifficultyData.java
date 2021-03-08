@@ -28,7 +28,7 @@ public class DifficultyData extends WorldSavedData {
     }
 
     public static float getDifficulty(World world, LivingEntity e) {
-        if(Config.CommonConfig.useScalingHealthMod)
+        if (Config.CommonConfig.useScalingHealthMod)
             return (float) SHDifficulty.areaDifficulty(world, e.getBlockPos());
         return DifficultyData.get(world).getDifficulty();
     }

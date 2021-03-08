@@ -189,9 +189,9 @@ public class EventHandler {
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
                 if (!(living.getNavigator() instanceof ClimberPathNavigator)) {
-                    NodeProcessor proc = ((PathNavigatorAccessor)living.getNavigator()).getNodeProcessor();
-                    if(proc instanceof ILadderFlagNode)
-                        ((ILadderFlagNode)proc).setCanClimbLadder(true);
+                    NodeProcessor proc = ((PathNavigatorAccessor) living.getNavigator()).getNodeProcessor();
+                    if (proc instanceof ILadderFlagNode)
+                        ((ILadderFlagNode) proc).setCanClimbLadder(true);
                     living.goalSelector.addGoal(4, new LadderClimbGoal(living));
                 }
             }
@@ -200,17 +200,17 @@ public class EventHandler {
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
                 villager = true;
                 if (!neutral)
-                    living.targetSelector.addGoal(2, setNoLoS(living, AbstractVillagerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() <= 0.5, null));
+                    living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() <= 0.5, null));
             }
             if (Config.CommonConfig.neutralAggressiv != 0 && living.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv)
                 if (neutral) {
-                    living.targetSelector.addGoal(1, setNoLoS(living, PlayerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
+                    living.targetSelector.addGoal(1, this.setNoLoS(living, PlayerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
                     if (villager)
-                        living.targetSelector.addGoal(2, setNoLoS(living, AbstractVillagerEntity.class, living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
+                        living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
                 }
             List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(living.getType().getRegistryName());
             if (types != null)
-                living.targetSelector.addGoal(3, setNoLoS(living, LivingEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
+                living.targetSelector.addGoal(3, this.setNoLoS(living, LivingEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
 
         }
         if (e.getEntity() instanceof CreatureEntity) {
@@ -222,13 +222,13 @@ public class EventHandler {
         }
     }
 
-    private <T extends LivingEntity> NearestAttackableTargetGoal<T> setNoLoS(MobEntity e, Class<T> clss, boolean sight, Predicate<LivingEntity> pred){
+    private <T extends LivingEntity> NearestAttackableTargetGoal<T> setNoLoS(MobEntity e, Class<T> clss, boolean sight, Predicate<LivingEntity> pred) {
         NearestAttackableTargetGoal<T> goal;
-        if(pred == null)
+        if (pred == null)
             goal = new NearestAttackableTargetGoal<>(e, clss, sight);
         else
             goal = new NearestAttackableTargetGoal<>(e, clss, 10, sight, false, pred);
-        if(!sight)
+        if (!sight)
             ((NearestTargetGoalMixin) goal).getTargetEntitySelector().setLineOfSiteRequired();
         return goal;
     }

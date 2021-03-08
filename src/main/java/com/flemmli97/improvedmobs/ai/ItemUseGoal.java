@@ -40,7 +40,7 @@ public class ItemUseGoal extends Goal {
         ((IGoalModifier) entity.goalSelector).modifyGoal(Goal.class, g -> {
             if (g instanceof RangedBowAttackGoal || this.living.getType().getRegistryName().toString().equals("primitivemobs:skeleton_warrior"))
                 this.hasBowAI = true;
-            if(g instanceof RangedCrossbowAttackGoal)
+            if (g instanceof RangedCrossbowAttackGoal)
                 this.hasCrossBowAI = true;
         });
     }
@@ -94,8 +94,8 @@ public class ItemUseGoal extends Goal {
         if (target != null) {
             boolean flag = this.living.getEntitySenses().canSee(target);
             if (this.ai.type() == ItemAITasks.ItemType.STRAFINGITEM)
-               this.moveStrafing(target, flag);
-            else if(this.ai.type() == ItemAITasks.ItemType.STANDING)
+                this.moveStrafing(target, flag);
+            else if (this.ai.type() == ItemAITasks.ItemType.STANDING)
                 this.moveToRange(target, flag);
             if (this.living.isHandActive() || !this.ai.useHand()) {
                 if (!flag && this.seeTime < -60) {
@@ -161,7 +161,7 @@ public class ItemUseGoal extends Goal {
         }
     }
 
-    private void moveToRange(LivingEntity target, boolean canSee){
+    private void moveToRange(LivingEntity target, boolean canSee) {
         double dist = this.living.getDistanceSq(target.getX(), target.getY(), target.getZ());
         if (canSee)
             ++this.seeTime;
@@ -173,7 +173,8 @@ public class ItemUseGoal extends Goal {
         else
             this.living.getNavigator().tryMoveToEntityLiving(target, 1);
 
-        this.living.getLookController().setLookPositionWithEntity(target, 30.0F, 30.0F);    }
+        this.living.getLookController().setLookPositionWithEntity(target, 30.0F, 30.0F);
+    }
 
     /**
      * Specific mobs here. like for skeletons with bows
@@ -181,7 +182,7 @@ public class ItemUseGoal extends Goal {
     private boolean canAlreadyUse() {
         if (this.living instanceof DrownedEntity && this.living.getHeldItemMainhand().getItem() instanceof TridentItem)
             return true;
-        if(this.hasCrossBowAI && this.living.getHeldItemMainhand().getItem() instanceof CrossbowItem)
+        if (this.hasCrossBowAI && this.living.getHeldItemMainhand().getItem() instanceof CrossbowItem)
             return true;
         return this.hasBowAI && this.living.getHeldItemMainhand().getItem() instanceof BowItem;
     }
