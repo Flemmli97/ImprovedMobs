@@ -33,7 +33,7 @@ public class BlockBreakGoal extends Goal {
     public boolean shouldExecute() {
         this.target = this.living.getAttackTarget();
         //double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
-        if (this.living.ticksExisted % 10 == 0 && this.target != null /*&& motion<maxMotion*/ && this.living.getDistance(this.target) > 1D && this.living.isOnGround()) {
+        if (this.living.ticksExisted % 10 == 0 && this.target != null /*&& motion<maxMotion*/ && this.living.getDistance(this.target) > 1D) {// && this.living.isOnGround()) {
             BlockPos blockPos = this.getBlock(this.living);
             if (blockPos == null)
                 return false;
@@ -53,8 +53,11 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public boolean shouldContinueExecuting() {
-        //double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
-        return this.target != null && this.living != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.entityPos != null && this.entityPos.equals(this.living.getBlockPos())/*motion<maxMotion*/ && this.living.getDistance(this.target) > 1D && (this.target.isOnGround() || !this.living.canEntityBeSeen(this.target));
+        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.getBlockPos()) && this.living.getDistance(this.target) > 1D; //(this.target.isOnGround() || !this.living.canEntityBeSeen(this.target));
+    }
+
+    private boolean nearSameSpace(BlockPos pos1, BlockPos pos2) {
+        return pos1 != null && pos2 != null && pos1.getX() == pos2.getX() && pos1.getZ() == pos2.getZ() && Math.abs(pos1.getY() - pos2.getY()) <= 1;
     }
 
     @Override

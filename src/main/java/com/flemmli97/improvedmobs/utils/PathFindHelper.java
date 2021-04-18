@@ -85,13 +85,13 @@ public class PathFindHelper {
         return p_237232_2_;
     }
 
-    protected static PathNodeType getCommonNodeType(IBlockReader p_237238_0_, BlockPos p_237238_1_) {
-        BlockState blockstate = p_237238_0_.getBlockState(p_237238_1_);
-        PathNodeType type = blockstate.getAiPathNodeType(p_237238_0_, p_237238_1_);
+    protected static PathNodeType getCommonNodeType(IBlockReader reader, BlockPos pos) {
+        BlockState blockstate = reader.getBlockState(pos);
+        PathNodeType type = blockstate.getAiPathNodeType(reader, pos);
         if (type != null) return type;
         Block block = blockstate.getBlock();
         Material material = blockstate.getMaterial();
-        if (blockstate.isAir(p_237238_0_, p_237238_1_)) {
+        if (blockstate.getBlock().isAir(blockstate, reader, pos)) {
             return PathNodeType.OPEN;
         } else if (!blockstate.isIn(BlockTags.TRAPDOORS) && !blockstate.isIn(Blocks.LILY_PAD)) {
             if (blockstate.isIn(Blocks.CACTUS)) {
@@ -103,7 +103,7 @@ public class PathFindHelper {
             } else if (blockstate.isIn(Blocks.COCOA)) {
                 return PathNodeType.COCOA;
             } else {
-                FluidState fluidstate = p_237238_0_.getFluidState(p_237238_1_);
+                FluidState fluidstate = reader.getFluidState(pos);
                 if (fluidstate.isTagged(FluidTags.WATER)) {
                     return PathNodeType.WATER;
                 } else if (fluidstate.isTagged(FluidTags.LAVA)) {
@@ -121,7 +121,7 @@ public class PathFindHelper {
                 } else if (block instanceof LeavesBlock) {
                     return PathNodeType.LEAVES;
                 } else if (!block.isIn(BlockTags.FENCES) && !block.isIn(BlockTags.WALLS) && (!(block instanceof FenceGateBlock) || blockstate.get(FenceGateBlock.OPEN))) {
-                    return !blockstate.allowsMovement(p_237238_0_, p_237238_1_, PathType.LAND) ? PathNodeType.BLOCKED : PathNodeType.OPEN;
+                    return !blockstate.allowsMovement(reader, pos, PathType.LAND) ? PathNodeType.BLOCKED : PathNodeType.OPEN;
                 } else {
                     return PathNodeType.FENCE;
                 }

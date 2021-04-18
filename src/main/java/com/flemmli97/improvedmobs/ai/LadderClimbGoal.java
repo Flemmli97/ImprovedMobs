@@ -39,7 +39,7 @@ public class LadderClimbGoal extends Goal {
                 yMotion = -0.15;
             else
                 yMotion = 0.15;
-            this.entity.setMotion(this.entity.getMotion().mul(0.5, 1, 0.5));
+            this.entity.setMotion(this.entity.getMotion().mul(0.1, 1, 0.1));
             this.entity.setMotion(this.entity.getMotion().add(0, yMotion, 0));
         }
     }

@@ -10,10 +10,9 @@
     "TargetGoalMixin",
     "PotionEntityMixin",
     "TNTEntityMixin",
-    "WalkNodeMixin",
-    "SwimWalkMixin",
-    "MobEntityMixin",
-    "PathNavigatorAccessor"
+    "PathNavigatorAccessor",
+    "NodeMixin",
+    "LadderFlagMixin"
   ],
   "injectors": {
     "defaultRequire": 1
