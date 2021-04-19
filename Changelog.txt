@@ -1,3 +1,7 @@
+Improved Mobs 1.7.5
+================
+- fix #66
+
 Improved Mobs 1.7.4
 ================
 - Fix crash with item ai. fixes #51, #59, #62
