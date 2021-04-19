@@ -23,12 +23,14 @@ import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 
 @Mixin(value = {WalkNodeProcessor.class, WalkAndSwimNodeProcessor.class, FlyingNodeProcessor.class}, priority = 500)
 public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode {
+
     //@Unique
     //private int toAdd;
 
     @Inject(method = "func_222859_a", at = @At(value = "RETURN"), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
-    private void ignoreLadder(PathPoint[] points, PathPoint point, CallbackInfoReturnable<Integer> info, int i) {
+    private void addAdditionalPoints(PathPoint[] points, PathPoint point, CallbackInfoReturnable<Integer> info, int i) {
         if (this.entity != null) {
+            //long nano = System.nanoTime();
             if (((LadderFlagMixin) (Object) this).canClimbLadder()) {
                 i += this.addLadderPoints(points, point, i);
             }
@@ -43,6 +45,7 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
                         }
                     }
                 }
+            //System.out.println("Total: " + (System.nanoTime() - nano));
             info.setReturnValue(i);
             info.cancel();
         }
@@ -59,13 +62,13 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
         int added = 0;
         BlockPos.Mutable pos = new BlockPos.Mutable(currentPoint.x, currentPoint.y + 1, currentPoint.z);
         PathPoint ladderUp = this.openPoint(pos.getX(), pos.getY(), pos.getZ());
-        if (!ladderUp.visited && this.blockaccess.getBlockState(pos).isIn(BlockTags.CLIMBABLE)) {
+        if (ladderUp != null && !ladderUp.visited && this.blockaccess.getBlockState(pos).isIn(BlockTags.CLIMBABLE)) {
             points[i++] = ladderUp;
             added++;
         }
         pos = pos.move(0, -2, 0);
         PathPoint ladderDown = this.openPoint(pos.getX(), pos.getY(), pos.getZ());
-        if (!ladderDown.visited && this.blockaccess.getBlockState(pos).isIn(BlockTags.CLIMBABLE)) {
+        if (ladderDown != null && !ladderDown.visited && this.blockaccess.getBlockState(pos).isIn(BlockTags.CLIMBABLE)) {
             points[i++] = ladderDown;
             added++;
         }
@@ -77,18 +80,20 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
         if (this.canBreak(this.blockaccess.getBlockState(pos))) {
             if (this.checkFor(pos, this.entity.getWidth() * 0.5)) {
                 PathPoint point = this.openPoint(x, y, z);
-                point.costMalus = 0.5f;
-                point.nodeType = PathNodeType.WALKABLE;
-                if (!point.visited)
+                if(point != null && !point.visited) {
+                    point.costMalus = 0.5f;
+                    point.nodeType = PathNodeType.WALKABLE;
                     return point;
+                }
             }
         } else if (this.canBreak(this.blockaccess.getBlockState(pos.move(Direction.UP)))) {
             if (this.checkFor(pos, this.entity.getWidth() * 0.5)) {
                 PathPoint point = this.openPoint(x, y, z);
-                point.costMalus = 0.5f;
-                point.nodeType = PathNodeType.WALKABLE;
-                if (!point.visited)
+                if(point != null && !point.visited) {
+                    point.costMalus = 0.5f;
+                    point.nodeType = PathNodeType.WALKABLE;
                     return point;
+                }
             }
         }
         double height = this.entity.getHeight();
@@ -98,10 +103,11 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
             pos.move(Direction.UP);
             if (currentEmpty && this.canBreak(this.blockaccess.getBlockState(pos)) && this.checkFor(pos, width)) {
                 PathPoint point = this.openPoint(x, y + 1, z);
-                point.costMalus = 0.5f;
-                point.nodeType = PathNodeType.WALKABLE;
-                if (!point.visited)
+                if(point != null && !point.visited) {
+                    point.costMalus = 0.5f;
+                    point.nodeType = PathNodeType.WALKABLE;
                     return point;
+                }
             }
         }
         return null;
