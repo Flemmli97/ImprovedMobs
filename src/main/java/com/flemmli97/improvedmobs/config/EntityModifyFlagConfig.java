@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.config;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import com.flemmli97.tenshilib.common.utils.ArrayUtils;
 import com.google.common.collect.Lists;
@@ -27,10 +28,15 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
     public void initDefault(World world) {
         this.map.clear();
         for (EntityType<?> entry : ForgeRegistries.ENTITIES) {
-            Entity e = entry.create(world);
-            if (!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity)
-                continue;
-            this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
+            try {
+                Entity e = entry.create(world);
+                if (!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity)
+                    continue;
+                this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
+            }
+            catch (Exception e){
+                ImprovedMobs.logger.error("Error during default entity config for EntityType {], skipping this type. Cause: {}", entry.getRegistryName(), e.getMessage());
+            }
         }
     }
 
