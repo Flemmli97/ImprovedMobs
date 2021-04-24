@@ -6,6 +6,7 @@ bin
 
 #intellij
 .idea
+logs
 
 #vs
 .vscode
