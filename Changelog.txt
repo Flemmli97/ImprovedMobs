@@ -1,3 +1,7 @@
+Improved Mobs 1.7.6
+================
+- Put the default entity list init in try catch since it can be unstable
+
 Improved Mobs 1.7.5
 ================
 - fix #66
