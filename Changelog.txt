@@ -2,7 +2,7 @@ Improved Mobs 1.7.6
 ================
 - Put the default entity list init in try catch since it can be unstable
 - Add weighted breaking tools (#55)
-- Fix mobs unable to ride guardians past forge 35.1.29
+- Fix mobs unable to ride guardians past forge 35.1.29 (#60)
 
 Improved Mobs 1.7.5
 ================
