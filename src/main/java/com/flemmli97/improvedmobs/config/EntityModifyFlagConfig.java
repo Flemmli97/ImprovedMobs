@@ -33,8 +33,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
                 if (!(e instanceof MobEntity) || e instanceof MonsterEntity || e instanceof GhastEntity || e instanceof PhantomEntity || e instanceof SlimeEntity || e instanceof ShulkerEntity)
                     continue;
                 this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 ImprovedMobs.logger.error("Error during default entity config for EntityType {], skipping this type. Cause: {}", entry.getRegistryName(), e.getMessage());
             }
         }

@@ -1,11 +1,16 @@
 package com.flemmli97.improvedmobs.config;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
+import com.google.common.collect.Lists;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.ModList;
 
 import java.util.List;
+import java.util.Random;
 
 public class Config {
 
@@ -31,6 +36,7 @@ public class Config {
         //General
         public static boolean enableDifficultyScaling;
         public static int difficultyDelay;
+        public static DifficultyConfig increaseHandler = new DifficultyConfig();
         public static boolean ignorePlayers;
         public static List<? extends String> mobListLight;
         public static boolean mobListLightBlackList;
@@ -69,7 +75,7 @@ public class Config {
         public static float breakerChance = 1;
         public static float stealerChance = 1;
         public static boolean breakTileEntities;
-        public static ItemWrapper breakingItem = new ItemWrapper("minecraft:diamond_pickaxe");
+        public static List<WeightedItem> breakingItem = Lists.newArrayList(new WeightedItem(new ItemWrapper("minecraft:diamond_pickaxe"), 1));
         public static float neutralAggressiv;
         public static MobClassMapConfig autoTargets = new MobClassMapConfig();
         public static int repairTick = 200;
@@ -118,6 +124,7 @@ public class Config {
             petArmorBlackList = ConfigSpecs.commonConf.petArmorBlackList.get();
             petWhiteList = ConfigSpecs.commonConf.petWhiteList.get();
             doIMDifficulty = ConfigSpecs.commonConf.doIMDifficulty.get();
+            increaseHandler.readFromString(ConfigSpecs.commonConf.increaseHandler.get());
 
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
             if (l.size() != 1 || !l.get(0).equals("UNINIT"))
@@ -145,7 +152,21 @@ public class Config {
             breakerChance = ConfigSpecs.commonConf.breakerChance.get().floatValue();
             stealerChance = ConfigSpecs.commonConf.stealerChance.get().floatValue();
             breakTileEntities = ConfigSpecs.commonConf.breakTileEntities.get();
-            breakingItem.readFromString(ConfigSpecs.commonConf.breakingItem.get());
+
+            breakingItem.clear();
+            for (String s : ConfigSpecs.commonConf.breakingItems.get()) {
+                s = s.replace(" ", "");
+                String[] sub = s.split(";");
+                if (sub.length != 2) {
+                    ImprovedMobs.logger.error("Faulty entry for breaking item {}", s);
+                    continue;
+                }
+                try {
+                    breakingItem.add(new WeightedItem(new ItemWrapper(sub[0]), Integer.parseInt(sub[1])));
+                } catch (NumberFormatException e) {
+                    ImprovedMobs.logger.error("Faulty entry for breaking item {}", s);
+                }
+            }
             neutralAggressiv = ConfigSpecs.commonConf.neutralAggressiv.get().floatValue();
             autoTargets.readFromString(ConfigSpecs.commonConf.autoTargets.get());
             repairTick = ConfigSpecs.commonConf.repairTick.get();
@@ -187,6 +208,28 @@ public class Config {
                 entityBlacklist.initDefault(server.getOverworld());
                 ConfigSpecs.commonConf.entityBlacklist.set(entityBlacklist.writeToString());
             }
+        }
+
+        public static ItemStack getRandomBreakingItem(Random rand) {
+            int total = WeightedRandom.getTotalWeight(breakingItem);
+            if (breakingItem.size() == 0 || total <= 0)
+                return ItemStack.EMPTY;
+            ItemWrapper r = WeightedRandom.getRandomItem(rand, breakingItem, total).getItem();
+            return r.getStack();
+        }
+    }
+
+    public static class WeightedItem extends WeightedRandom.Item {
+
+        private final ItemWrapper item;
+
+        public WeightedItem(ItemWrapper item, int weight) {
+            super(weight);
+            this.item = item;
+        }
+
+        public ItemWrapper getItem() {
+            return this.item;
         }
     }
 }

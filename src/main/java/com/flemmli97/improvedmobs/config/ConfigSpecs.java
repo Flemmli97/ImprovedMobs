@@ -39,6 +39,7 @@ public class ConfigSpecs {
         //General
         public final ForgeConfigSpec.BooleanValue enableDifficultyScaling;
         public final ForgeConfigSpec.ConfigValue<Integer> difficultyDelay;
+        public final ForgeConfigSpec.ConfigValue<List<String>> increaseHandler;
         public final ForgeConfigSpec.BooleanValue ignorePlayers;
         public final ForgeConfigSpec.ConfigValue<List<String>> mobListLight;
         public final ForgeConfigSpec.BooleanValue mobListLightBlackList;
@@ -78,7 +79,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.DoubleValue breakerChance;
         public final ForgeConfigSpec.DoubleValue stealerChance;
         public final ForgeConfigSpec.BooleanValue breakTileEntities;
-        public final ForgeConfigSpec.ConfigValue<String> breakingItem;
+        public final ForgeConfigSpec.ConfigValue<List<String>> breakingItems;
         public final ForgeConfigSpec.DoubleValue neutralAggressiv;
         public final ForgeConfigSpec.ConfigValue<List<String>> autoTargets;
         public final ForgeConfigSpec.ConfigValue<Integer> repairTick;
@@ -119,6 +120,7 @@ public class ConfigSpecs {
             builder.comment("With default value every difficulty perk maxes out at difficulty 250")/*.translation("improvedmobs.general")*/.push("general");
             this.enableDifficultyScaling = builder.worldRestart().comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").define("Difficulty Delay", 0);
+            this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             this.mobListLight = builder.comment("Mobs to include for the new light spawning rules.").define("Light list", Lists.newArrayList());
             this.mobListLightBlackList = builder.comment("Turn the list list whitelist to blacklist").define("Light list blacklist", false);
@@ -160,7 +162,7 @@ public class ConfigSpecs {
             this.useBlockBreakSound = builder.comment("Use the block breaking sound instead of a knocking sound").define("Sound", false);
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items").defineInRange("Stealer Chance", 0.3, 0, 1);
-            this.breakingItem = builder.comment("Item which will be given to mobs who can break blocks. Set to nothing to not give any items.").define("Breaking item", "minecraft:diamond_pickaxe");
+            this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1"));
             this.breakTileEntities = builder.comment("Should mobs be able to break tile entities? Evaluated before the break list").define("Break Tiles", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").defineInRange("Neutral Aggressive Chance", 0.2, 0, 1);
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", Lists.newArrayList());

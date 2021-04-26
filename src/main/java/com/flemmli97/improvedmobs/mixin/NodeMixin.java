@@ -80,7 +80,7 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
         if (this.canBreak(this.blockaccess.getBlockState(pos))) {
             if (this.checkFor(pos, this.entity.getWidth() * 0.5)) {
                 PathPoint point = this.openPoint(x, y, z);
-                if(point != null && !point.visited) {
+                if (point != null && !point.visited) {
                     point.costMalus = 0.5f;
                     point.nodeType = PathNodeType.WALKABLE;
                     return point;
@@ -89,7 +89,7 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
         } else if (this.canBreak(this.blockaccess.getBlockState(pos.move(Direction.UP)))) {
             if (this.checkFor(pos, this.entity.getWidth() * 0.5)) {
                 PathPoint point = this.openPoint(x, y, z);
-                if(point != null && !point.visited) {
+                if (point != null && !point.visited) {
                     point.costMalus = 0.5f;
                     point.nodeType = PathNodeType.WALKABLE;
                     return point;
@@ -103,7 +103,7 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
             pos.move(Direction.UP);
             if (currentEmpty && this.canBreak(this.blockaccess.getBlockState(pos)) && this.checkFor(pos, width)) {
                 PathPoint point = this.openPoint(x, y + 1, z);
-                if(point != null && !point.visited) {
+                if (point != null && !point.visited) {
                     point.costMalus = 0.5f;
                     point.nodeType = PathNodeType.WALKABLE;
                     return point;

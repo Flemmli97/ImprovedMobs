@@ -172,7 +172,7 @@ public class EventHandler {
                 });
                 if (mobGriefing) {
                     living.goalSelector.addGoal(1, new BlockBreakGoal(living));
-                    ItemStack stack = Config.CommonConfig.breakingItem.getStack();
+                    ItemStack stack = Config.CommonConfig.getRandomBreakingItem(living.getRNG());
                     if (!Config.CommonConfig.shouldDropEquip)
                         stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
                     living.setItemStackToSlot(EquipmentSlotType.OFFHAND, stack);
