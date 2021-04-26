@@ -12,7 +12,8 @@
     "TNTEntityMixin",
     "PathNavigatorAccessor",
     "NodeMixin",
-    "LadderFlagMixin"
+    "LadderFlagMixin",
+    "GuardianMixin"
   ],
   "injectors": {
     "defaultRequire": 1
