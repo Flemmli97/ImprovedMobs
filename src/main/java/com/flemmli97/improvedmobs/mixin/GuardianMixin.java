@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class GuardianMixin {
 
     @Inject(method = "canBeRiddenInWater", at = @At(value = "HEAD"), cancellable = true)
-    private void ridable(CallbackInfoReturnable<Boolean> info){
-        if((Object)this instanceof GuardianEntity && ((GuardianEntity) (Object) this).getPersistentData().getBoolean(ImprovedMobs.waterRiding)) {
+    private void ridable(CallbackInfoReturnable<Boolean> info) {
+        if ((Object) this instanceof GuardianEntity && ((GuardianEntity) (Object) this).getPersistentData().getBoolean(ImprovedMobs.waterRiding)) {
             info.setReturnValue(true);
             info.cancel();
         }

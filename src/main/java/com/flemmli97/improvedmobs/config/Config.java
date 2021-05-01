@@ -75,7 +75,7 @@ public class Config {
         public static float breakerChance = 1;
         public static float stealerChance = 1;
         public static boolean breakTileEntities;
-        public static List<WeightedItem> breakingItem = Lists.newArrayList(new WeightedItem(new ItemWrapper("minecraft:diamond_pickaxe"), 1));
+        public static List<WeightedItem> breakingItem = Lists.newArrayList();
         public static float neutralAggressiv;
         public static MobClassMapConfig autoTargets = new MobClassMapConfig();
         public static int repairTick = 200;
