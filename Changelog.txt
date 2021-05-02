@@ -3,6 +3,9 @@ Improved Mobs 1.7.6
 - Put the default entity list init in try catch since it can be unstable
 - Add weighted breaking tools (#55)
 - Fix mobs unable to ride guardians past forge 35.1.29 (#60)
+- Add a finer option to control the difficulty ("Difficulty Increase" in config)
+- Probably fixed mobs glitching through walls when trying to ride guardians.
+  Also made them dismount after a while if not targeting other mobs.
 
 Improved Mobs 1.7.5
 ================
