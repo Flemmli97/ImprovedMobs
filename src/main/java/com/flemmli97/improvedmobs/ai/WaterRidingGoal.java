@@ -1,6 +1,7 @@
 package com.flemmli97.improvedmobs.ai;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
+import com.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import net.minecraft.block.material.Material;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
@@ -9,11 +10,13 @@ import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.monster.GuardianEntity;
 import net.minecraft.potion.EffectInstance;
 import net.minecraft.potion.Effects;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.vector.Vector3d;
 
 public class WaterRidingGoal extends Goal {
 
+    public static final ResourceLocation EMPTY = new ResourceLocation(ImprovedMobs.MODID, "empty");
     protected final MobEntity living;
     private int wait = 0;
     private int jumpingTick;
@@ -24,37 +27,57 @@ public class WaterRidingGoal extends Goal {
 
     @Override
     public boolean shouldExecute() {
+        if (this.living.getRidingEntity() instanceof GuardianEntity) {
+            return true;
+        }
         if (this.living.isInWater() && !this.living.isPassenger() && this.living.getAttackTarget() != null) {
-            if (this.wait == 80)
-                return true;
-            if (this.wait < 80)
-                this.wait++;
-            else
+            if (this.wait == 80) {
                 this.wait = 0;
+                return true;
+            }
+            this.wait++;
         }
         return false;
     }
 
     @Override
     public boolean shouldContinueExecuting() {
-        return this.living.getRidingEntity() instanceof MobEntity;
+        if (this.living.getRidingEntity() instanceof GuardianEntity) {
+            if (this.living.getAttackTarget() == null)
+                this.wait++;
+            else
+                this.wait = 0;
+            return this.wait < 100;
+        }
+        return false;
+    }
+
+    @Override
+    public void resetTask() {
+        this.living.stopRiding();
+        this.wait = 0;
     }
 
     @Override
     public void startExecuting() {
         //DolphinEntity boat = EntityType.DOLPHIN.create(this.living.world);
-        GuardianEntity boat = EntityType.GUARDIAN.create(this.living.world);
-        boat.setLocationAndAngles(this.living.getX(), this.living.getY(), this.living.getZ(), this.living.rotationYaw, this.living.rotationPitch);
-        boat.getPersistentData().putBoolean(ImprovedMobs.waterRiding, true);
-        this.living.world.addEntity(boat);
-        this.living.startRiding(boat);
-        this.wait = 0;
+        if (!this.living.isPassenger()) {
+            GuardianEntity boat = EntityType.GUARDIAN.create(this.living.world);
+            BlockPos pos = this.living.getBlockPos();
+            boat.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.rotationYaw, this.living.rotationPitch);
+            if (this.living.world.isSpaceEmpty(boat)) {
+                ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
+                boat.getPersistentData().putBoolean(ImprovedMobs.waterRiding, true);
+                this.living.world.addEntity(boat);
+                this.living.startRiding(boat);
+            }
+        }
     }
 
     @Override
     public void tick() {
         Entity entity = this.living.getRidingEntity();
-        if (!(entity instanceof MobEntity) || !entity.isAlive())
+        if (!(entity instanceof GuardianEntity) || !entity.isAlive())
             return;
         this.living.addPotionEffect(new EffectInstance(Effects.WATER_BREATHING, 10, 1, false, false));
         if (this.nearShore(entity, 0)) {

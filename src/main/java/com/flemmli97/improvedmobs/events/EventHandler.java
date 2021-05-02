@@ -14,6 +14,7 @@ import com.flemmli97.improvedmobs.commands.IMCommand;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
+import com.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import com.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import com.flemmli97.improvedmobs.mixin.PathNavigatorAccessor;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
@@ -184,8 +185,9 @@ public class EventHandler {
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
                 //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
-                if (!(/*living.canBreatheUnderwater() || */living.getNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity))
+                if (!(/*living.canBreatheUnderwater() || */((MobEntityMixin) living).getTrueNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity)) {
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
+                }
             }
             if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
                 if (!(living.getNavigator() instanceof ClimberPathNavigator)) {

@@ -6,7 +6,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(NodeProcessor.class)
-public class LadderFlagMixin implements ILadderFlagNode {
+public abstract class LadderFlagMixin implements ILadderFlagNode {
 
     @Unique
     private boolean canClimbLadder;

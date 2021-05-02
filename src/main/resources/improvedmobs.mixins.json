@@ -13,7 +13,8 @@
     "PathNavigatorAccessor",
     "NodeMixin",
     "LadderFlagMixin",
-    "GuardianMixin"
+    "GuardianMixin",
+    "MobEntityMixin"
   ],
   "injectors": {
     "defaultRequire": 1
