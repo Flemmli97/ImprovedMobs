@@ -2,15 +2,15 @@ package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import com.flemmli97.tenshilib.common.utils.SearchUtils;
-import com.google.common.collect.Lists;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class DifficultyConfig implements IConfigListValue<DifficultyConfig> {
 
     private static final Pair<Float, Float> defaultVal = Pair.of(0f, 1f);
-    private final List<Pair<Float, Float>> vals = Lists.newArrayList();
+    private final List<Pair<Float, Float>> vals = new ArrayList<>();
 
     @Override
     public DifficultyConfig readFromString(List<String> ss) {
@@ -27,7 +27,7 @@ public class DifficultyConfig implements IConfigListValue<DifficultyConfig> {
 
     @Override
     public List<String> writeToString() {
-        List<String> list = Lists.newArrayList();
+        List<String> list = new ArrayList<>();
         this.vals.forEach(v -> list.add(v.getLeft() + "-" + v.getRight()));
         return list;
     }

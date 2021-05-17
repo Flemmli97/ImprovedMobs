@@ -2,13 +2,13 @@ package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
-import com.google.common.collect.Lists;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.ModList;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -75,7 +75,7 @@ public class Config {
         public static float breakerChance = 1;
         public static float stealerChance = 1;
         public static boolean breakTileEntities;
-        public static List<WeightedItem> breakingItem = Lists.newArrayList();
+        public static List<WeightedItem> breakingItem = new ArrayList<>();
         public static float neutralAggressiv;
         public static MobClassMapConfig autoTargets = new MobClassMapConfig();
         public static int repairTick = 200;

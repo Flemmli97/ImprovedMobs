@@ -1,7 +1,6 @@
 package com.flemmli97.improvedmobs.utils;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
-import com.google.common.collect.Maps;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
@@ -35,14 +34,15 @@ import net.minecraftforge.registries.ForgeRegistries;
 import org.apache.commons.lang3.tuple.Pair;
 
 import javax.annotation.Nullable;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class ItemAITasks {
 
     private final static String[] potionEffects = new String[]{"minecraft:regeneration", "minecraft:speed", "minecraft:strength", "minecraft:invisibility", "minecraft:resistance", "minecraft:fire_resistance"};
-    private static final Map<Class<? extends Item>, ItemAI> clssMap = Maps.newHashMap();
-    private static final Map<Item, ItemAITasks.ItemAI> itemMap = Maps.newHashMap();
+    private static final Map<Class<? extends Item>, ItemAI> clssMap = new HashMap<>();
+    private static final Map<Item, ItemAITasks.ItemAI> itemMap = new HashMap<>();
 
 
     public static void initAI() {

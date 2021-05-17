@@ -3,8 +3,6 @@ package com.flemmli97.improvedmobs.config;
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import com.flemmli97.tenshilib.common.utils.ArrayUtils;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.MobEntity;
@@ -17,13 +15,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraft.world.World;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlagConfig> {
 
-    private final Map<String, EnumSet<Flags>> map = Maps.newHashMap();
+    private final Map<String, EnumSet<Flags>> map = new HashMap<>();
 
     public void initDefault(World world) {
         this.map.clear();
@@ -73,7 +73,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
 
     @Override
     public List<String> writeToString() {
-        List<String> s = Lists.newArrayList();
+        List<String> s = new ArrayList<>();
         for (String key : this.map.keySet()) {
             StringBuilder val = new StringBuilder(key);
             for (Flags f : this.map.get(key)) {

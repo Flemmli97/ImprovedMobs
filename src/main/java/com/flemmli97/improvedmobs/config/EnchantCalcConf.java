@@ -2,14 +2,14 @@ package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import com.flemmli97.tenshilib.common.utils.SearchUtils;
-import com.google.common.collect.Lists;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class EnchantCalcConf implements IConfigListValue<EnchantCalcConf> {
 
     private static final Value defaultVal = new Value(0, 0, 0);
-    private final List<Value> vals = Lists.newArrayList();
+    private final List<Value> vals = new ArrayList<>();
 
     @Override
     public EnchantCalcConf readFromString(List<String> ss) {
@@ -26,7 +26,7 @@ public class EnchantCalcConf implements IConfigListValue<EnchantCalcConf> {
 
     @Override
     public List<String> writeToString() {
-        List<String> list = Lists.newArrayList();
+        List<String> list = new ArrayList<>();
         this.vals.forEach(v -> list.add(v.diff + "-" + v.min + "-" + v.max));
         return list;
     }

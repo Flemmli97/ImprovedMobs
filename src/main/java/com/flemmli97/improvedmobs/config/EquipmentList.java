@@ -5,7 +5,6 @@ import com.flemmli97.improvedmobs.utils.ItemAITasks;
 import com.flemmli97.tenshilib.api.config.ExtendedItemStackWrapper;
 import com.flemmli97.tenshilib.common.utils.ItemUtils;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -38,13 +37,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class EquipmentList {
 
-    private static final Map<EquipmentSlotType, WeightedItemstackList> equips = Maps.newHashMap();
+    private static final Map<EquipmentSlotType, WeightedItemstackList> equips = new HashMap<>();
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -83,7 +84,7 @@ public class EquipmentList {
                                 if (item == Items.SPLASH_POTION) {
                                     String potionItem = item.getRegistryName().toString() + "{Potion:\"minecraft:harming\"}";
                                     equips.compute(EquipmentSlotType.MAINHAND,
-                                            (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(potionItem, getDefaultWeight(item), Lists.newArrayList()))) : l.add(new WeightedItemstack(potionItem, getDefaultWeight(item), Lists.newArrayList())));
+                                            (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(potionItem, getDefaultWeight(item), new ArrayList<>()))) : l.add(new WeightedItemstack(potionItem, getDefaultWeight(item), new ArrayList<>())));
                                 } else
                                     equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
                             }
@@ -133,7 +134,7 @@ public class EquipmentList {
                     confObj = new JsonObject();
                 reader.close();
                 //Read and update from config
-                List<String> errors = Lists.newArrayList();
+                List<String> errors = new ArrayList<>();
                 for (EquipmentSlotType key : EquipmentSlotType.values()) {
                     if (confObj.has(key.toString())) {
                         JsonObject obj = (JsonObject) confObj.get(key.toString());
@@ -143,7 +144,7 @@ public class EquipmentList {
                                 equips.compute(key, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(ent.getKey(), weight, errors))) : l.add(new WeightedItemstack(ent.getKey(), weight, errors)));
                             });
                         else
-                            equips.put(key, new WeightedItemstackList(Lists.newArrayList()));
+                            equips.put(key, new WeightedItemstackList(new ArrayList<>()));
                     }
                 }
                 if (!errors.isEmpty())
@@ -155,7 +156,7 @@ public class EquipmentList {
 
                 //Sort json object
                 JsonObject sorted = new JsonObject();
-                List<String> member = Lists.newArrayList();
+                List<String> member = new ArrayList<>();
                 eq.entrySet().forEach(ent -> member.add(ent.getKey()));
                 Collections.sort(member);
 

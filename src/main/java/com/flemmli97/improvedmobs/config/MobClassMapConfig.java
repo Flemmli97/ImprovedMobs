@@ -10,6 +10,8 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import javax.annotation.Nullable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -18,7 +20,7 @@ import java.util.function.Predicate;
 public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
 
     private final Map<ResourceLocation, List<EntityType<?>>> map = Maps.newLinkedHashMap();
-    public Map<ResourceLocation, Predicate<Class<? extends MobEntity>>> preds = Maps.newHashMap();
+    public Map<ResourceLocation, Predicate<Class<? extends MobEntity>>> preds = new HashMap<>();
 
     @Nullable
     public List<EntityType<?>> get(ResourceLocation res) {
@@ -47,7 +49,7 @@ public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
 
     @Override
     public List<String> writeToString() {
-        List<String> l = Lists.newArrayList();
+        List<String> l = new ArrayList<>();
         for (Entry<ResourceLocation, List<EntityType<?>>> ent : this.map.entrySet()) {
             for (EntityType<?> type : ent.getValue()) {
                 l.add(ent.getKey().toString() + "-" + type.getRegistryName());

@@ -17,6 +17,8 @@ import net.minecraft.util.math.MathHelper;
 
 public class BlockBreakGoal extends Goal {
 
+    public static final int breakDelay = 120;
+
     protected final MobEntity living;
     private LivingEntity target;
     private int scanTick;
@@ -33,7 +35,7 @@ public class BlockBreakGoal extends Goal {
     public boolean shouldExecute() {
         this.target = this.living.getAttackTarget();
         //double motion = MathHelper.sqrt(living.motionX)+MathHelper.sqrt(living.motionZ);
-        if (this.living.ticksExisted % 10 == 0 && this.target != null /*&& motion<maxMotion*/ && this.living.getDistance(this.target) > 1D) {// && this.living.isOnGround()) {
+        if (this.living.ticksExisted > breakDelay && this.living.ticksExisted % 10 == 0 && this.target != null /*&& motion<maxMotion*/ && this.living.getDistance(this.target) > 1D) {// && this.living.isOnGround()) {
             BlockPos blockPos = this.getBlock(this.living);
             if (blockPos == null)
                 return false;

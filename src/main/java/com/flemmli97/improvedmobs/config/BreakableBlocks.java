@@ -2,8 +2,6 @@ package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.IConfigListValue;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -13,14 +11,16 @@ import net.minecraft.tags.ITag;
 import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.registries.ForgeRegistries;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
 
-    private final Set<String> blocks = Sets.newHashSet();
-    private List<String> configString = Lists.newArrayList();
-    private final Set<ITag<Block>> tags = Sets.newHashSet();
+    private final Set<String> blocks = new HashSet<>();
+    private List<String> configString = new ArrayList<>();
+    private final Set<ITag<Block>> tags = new HashSet<>();
     private boolean initialized;
 
     public boolean canBreak(BlockState state) {
@@ -46,8 +46,8 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
 
     private void initialize() {
         this.initialized = true;
-        Set<String> blackList = Sets.newHashSet();
-        Set<ITag<Block>> blackListTags = Sets.newHashSet();
+        Set<String> blackList = new HashSet<>();
+        Set<ITag<Block>> blackListTags = new HashSet<>();
         for (String s : this.configString) {
             if (s.startsWith("!"))
                 addBlocks(s.substring(1), blackList, blackListTags);

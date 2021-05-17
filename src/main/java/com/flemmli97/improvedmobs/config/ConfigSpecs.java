@@ -122,12 +122,12 @@ public class ConfigSpecs {
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").define("Difficulty Delay", 0);
             this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
-            this.mobListLight = builder.comment("Mobs to include for the new light spawning rules.").define("Light list", Lists.newArrayList());
+            this.mobListLight = builder.comment("Mobs to include for the new light spawning rules.").define("Light list", new ArrayList<>());
             this.mobListLightBlackList = builder.comment("Turn the list list whitelist to blacklist").define("Light list blacklist", false);
             this.light = builder.comment("Light level >= x will prevent mob spawning for defined mobs.").defineInRange("Light", 7, 0, 16);
             this.shouldPunishTimeSkip = builder.comment("Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.").define("Punish Time Skip", true);
             this.friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
-            this.petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").define("Pet Blacklist", Lists.newArrayList());
+            this.petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").define("Pet Blacklist", new ArrayList<>());
             this.petWhiteList = builder.comment("Treat pet blacklist as whitelist").define("Pet Whitelist", false);
             this.doIMDifficulty = builder.comment("Increase difficulty with time", "Here untill its back as a gamerule").define("Difficulty toggle", true);
             builder.pop();
@@ -165,14 +165,14 @@ public class ConfigSpecs {
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1"));
             this.breakTileEntities = builder.comment("Should mobs be able to break tile entities? Evaluated before the break list").define("Break Tiles", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").defineInRange("Neutral Aggressive Chance", 0.2, 0, 1);
-            this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", Lists.newArrayList());
+            this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());
             this.repairTick = builder.comment("Delay for the coroutil repair block. Coroutil integration needs to be enabled").define("Repair Ticks", 500);
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
             builder.pop();
 
             builder.comment("Configs regarding mobs spawning with equipment").push("equipment");
-            this.equipmentModBlacklist = builder.comment("Blacklist for mods. Add modid to prevent items from that mod being used. (For individual items use the equipment.json)").define("Item Blacklist", Lists.newArrayList());
+            this.equipmentModBlacklist = builder.comment("Blacklist for mods. Add modid to prevent items from that mod being used. (For individual items use the equipment.json)").define("Item Blacklist", new ArrayList<>());
             this.equipmentModWhitelist = builder.comment("Use blacklist as whitelist").define("Item Whitelist", false);
             this.baseEquipChance = builder.comment("Base chance that a mob can have one piece of armor").defineInRange("Equipment Chance", 0.1, 0, 1);
             this.baseEquipChanceAdd = builder.comment("Base chance for each additional armor pieces").defineInRange("Additional Equipment Chance", 0.3, 0, 1);

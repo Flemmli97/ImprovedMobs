@@ -372,7 +372,7 @@ public class EventHandler {
         if(Confige.commonConf.useTGunsMod && !event.getEntity().world.isRemote && event.getEntity() instanceof MonsterEntity && event.getSlot() == EquipmentSlotType.MAINHAND && event.getTo().getItem() instanceof GenericGun){
             MonsterEntity mob = (MonsterEntity) event.getEntity();
             boolean hadAI = false;
-            List<EntityAITechGuns> list = Lists.newArrayList();
+            List<EntityAITechGuns> list = new ArrayList<>();
             for(EntityAITasks.EntityAITaskEntry entry : mob.tasks.taskEntries){
                 if(entry.action instanceof EntityAITechGuns)
                     list.add((EntityAITechGuns) entry.action);
@@ -412,7 +412,7 @@ public class EventHandler {
     }
 
     /*public static void removeAttackAI(MonsterEntity mob) {
-        List<EntityAIAttackMelee> list = Lists.newArrayList();
+        List<EntityAIAttackMelee> list = new ArrayList<>();
         mob.tasks.taskEntries.forEach(entry -> {
             if(entry.action instanceof EntityAIAttackMelee)
                 list.add((EntityAIAttackMelee) entry.action);
