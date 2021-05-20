@@ -97,6 +97,8 @@ public class GeneralHelperMethods {
         RandomValueRange rng = new RandomValueRange(val.min, val.max);
         for (EquipmentSlotType entityequipmentslot : EquipmentSlotType.values()) {
             ItemStack itemstack = living.getItemStackFromSlot(entityequipmentslot);
+            if (itemstack.isEnchanted())
+                continue;
             if (!itemstack.isEmpty() && living.getRNG().nextFloat() < (Config.CommonConfig.baseEnchantChance + (diff * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
                 EnchantmentHelper.addRandomEnchantment(living.getRNG(), itemstack, rng.generateInt(living.getRNG()), true);
             }
