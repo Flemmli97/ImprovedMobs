@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.ai;
 
+import com.flemmli97.improvedmobs.utils.ItemAI;
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
@@ -25,7 +26,7 @@ public class ItemUseGoal extends Goal {
     private int seeTime;
     private boolean strafingClockwise, strafingBackwards;
     private int strafingTime = -1;
-    private ItemAITasks.ItemAI ai;
+    private ItemAI ai;
     private Hand hand;
     private boolean hasBowAI, hasCrossBowAI;
     private ItemStack stackMain, stackOff;
@@ -50,7 +51,7 @@ public class ItemUseGoal extends Goal {
         LivingEntity target = this.living.getAttackTarget();
         if (target == null || !target.isAlive() || this.canAlreadyUse())
             return false;
-        Pair<ItemAITasks.ItemAI, Hand> pair = ItemAITasks.getAI(this.living);
+        Pair<ItemAI, Hand> pair = ItemAITasks.getAI(this.living);
         this.ai = pair.getKey();
         this.hand = pair.getValue();
         return this.ai != null;
@@ -58,7 +59,7 @@ public class ItemUseGoal extends Goal {
 
     @Override
     public void startExecuting() {
-        this.setMutexFlags(this.ai.type() != ItemAITasks.ItemType.NONSTRAFINGITEM ? EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK) : EnumSet.noneOf(Goal.Flag.class));
+        this.setMutexFlags(this.ai.type() != ItemAI.ItemType.NONSTRAFINGITEM ? EnumSet.of(Goal.Flag.MOVE, Goal.Flag.LOOK) : EnumSet.noneOf(Goal.Flag.class));
         this.stackMain = this.living.getHeldItemMainhand();
         this.stackOff = this.living.getHeldItemOffhand();
     }
@@ -69,7 +70,7 @@ public class ItemUseGoal extends Goal {
         if (target == null || !target.isAlive() || this.canAlreadyUse())
             return false;
         if (this.stackMain != this.living.getHeldItemMainhand() || this.stackOff != this.living.getHeldItemOffhand()) {
-            Pair<ItemAITasks.ItemAI, Hand> pair = ItemAITasks.getAI(this.living);
+            Pair<ItemAI, Hand> pair = ItemAITasks.getAI(this.living);
             this.ai = pair.getKey();
             this.hand = pair.getValue();
         }
@@ -93,9 +94,9 @@ public class ItemUseGoal extends Goal {
         LivingEntity target = this.living.getAttackTarget();
         if (target != null) {
             boolean flag = this.living.getEntitySenses().canSee(target);
-            if (this.ai.type() == ItemAITasks.ItemType.STRAFINGITEM)
+            if (this.ai.type() == ItemAI.ItemType.STRAFINGITEM)
                 this.moveStrafing(target, flag);
-            else if (this.ai.type() == ItemAITasks.ItemType.STANDING)
+            else if (this.ai.type() == ItemAI.ItemType.STANDING)
                 this.moveToRange(target, flag);
             if (this.living.isHandActive() || !this.ai.useHand()) {
                 if (!flag && this.seeTime < -60) {

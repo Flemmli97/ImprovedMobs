@@ -5,6 +5,7 @@ import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigSpecs {
@@ -52,6 +53,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue doIMDifficulty;
 
         //Black-WhiteList
+        public final ForgeConfigSpec.ConfigValue<List<String>> flagBlacklist;
         public final ForgeConfigSpec.ConfigValue<List<String>> entityBlacklist;
         public final ForgeConfigSpec.BooleanValue mobAttributeWhitelist;
         public final ForgeConfigSpec.BooleanValue armorMobWhitelist;
@@ -89,6 +91,8 @@ public class ConfigSpecs {
         //Equipment
         public final ForgeConfigSpec.ConfigValue<List<String>> equipmentModBlacklist;
         public final ForgeConfigSpec.BooleanValue equipmentModWhitelist;
+        public final ForgeConfigSpec.ConfigValue<List<String>> itemuseBlacklist;
+        public final ForgeConfigSpec.BooleanValue itemuseWhitelist;
         public final ForgeConfigSpec.DoubleValue baseEquipChance;
         public final ForgeConfigSpec.DoubleValue baseEquipChanceAdd;
         public final ForgeConfigSpec.ConfigValue<Double> diffEquipAdd;
@@ -122,8 +126,8 @@ public class ConfigSpecs {
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").define("Difficulty Delay", 0);
             this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
-            this.mobListLight = builder.comment("Mobs to include for the new light spawning rules.").define("Light list", new ArrayList<>());
-            this.mobListLightBlackList = builder.comment("Turn the list list whitelist to blacklist").define("Light list blacklist", false);
+            this.mobListLight = builder.comment("Mobs to include for the new light spawning rules.", "Only prevention is possible. Meaning you cant allow mobs to spawn at higher light levels").define("Light list", new ArrayList<>());
+            this.mobListLightBlackList = builder.comment("Turn the light list whitelist to blacklist").define("Light list blacklist", false);
             this.light = builder.comment("Light level >= x will prevent mob spawning for defined mobs.").defineInRange("Light", 7, 0, 16);
             this.shouldPunishTimeSkip = builder.comment("Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.").define("Punish Time Skip", true);
             this.friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
@@ -133,7 +137,8 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");
-            this.entityBlacklist = builder.comment("By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage:", EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"), List.class::isInstance);
+            this.entityBlacklist = builder.comment("By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage:", EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
+            this.flagBlacklist = builder.comment("Put the above flags here to completly disable them.").define("Flag Blacklist", new ArrayList<>());
             this.mobAttributeWhitelist = builder.comment("Treat ATTRIBUTES flags as whitelist").define("Attribute Whitelist", false);
             this.armorMobWhitelist = builder.comment("Treat ARMOR flags as whitelist").define("Armor Equip Whitelist", false);
             this.heldMobWhitelist = builder.comment("Treat HELDITEMS flags as whitelist").define("Held Equip Whitelist", false);
@@ -172,8 +177,11 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Configs regarding mobs spawning with equipment").push("equipment");
-            this.equipmentModBlacklist = builder.comment("Blacklist for mods. Add modid to prevent items from that mod being used. (For individual items use the equipment.json)").define("Item Blacklist", new ArrayList<>());
+            this.equipmentModBlacklist = builder.comment("Blacklist for mods. Add modid to prevent items from that mod being equipped. (For individual items use the equipment.json)").define("Item Blacklist", new ArrayList<>());
             this.equipmentModWhitelist = builder.comment("Use blacklist as whitelist").define("Item Whitelist", false);
+            this.itemuseBlacklist = builder.comment("Blacklist for items mobs should never be able to use.", "Use as in using the item similar to players (e.g. shooting bows)").define("Item Use Blacklist", Lists.newArrayList("bigbrain:buckler"));
+            this.itemuseWhitelist = builder.comment("Turn the use blacklist into a whitelist").define("Item Use Whitelist", false);
+
             this.baseEquipChance = builder.comment("Base chance that a mob can have one piece of armor").defineInRange("Equipment Chance", 0.1, 0, 1);
             this.baseEquipChanceAdd = builder.comment("Base chance for each additional armor pieces").defineInRange("Additional Equipment Chance", 0.3, 0, 1);
             this.diffEquipAdd = builder.comment("Adds additional x*difficulty% to base equip chance").define("Equipment Addition", 0.3);

@@ -43,7 +43,8 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         ResourceLocation res = living.getType().getRegistryName();
         if (res == null)
             return false;
-
+        if(Config.CommonConfig.flagBlacklist.contains(flag.toString()))
+            return false;
         EnumSet<Flags> set = this.map.get(res.toString());
         if (set == null)
             set = this.map.get(res.getNamespace());

@@ -1,6 +1,7 @@
 package com.flemmli97.improvedmobs.config;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
+import com.flemmli97.improvedmobs.utils.ItemAI;
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
 import com.flemmli97.tenshilib.api.config.ExtendedItemStackWrapper;
 import com.flemmli97.tenshilib.common.utils.ItemUtils;
@@ -72,11 +73,11 @@ public class EquipmentList {
                 if (item instanceof BowItem)
                     equips.compute(EquipmentSlotType.MAINHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(item, getDefaultWeight(item)))) : l.add(new WeightedItemstack(item, getDefaultWeight(item))));
 
-                ItemAITasks.ItemAI ai = ItemAITasks.getAI(item);
+                ItemAI ai = ItemAITasks.getAI(item);
                 if (ai != null) {
                     switch (ai.prefHand()) {
                         case BOTH:
-                            if (ai.type() == ItemAITasks.ItemType.NONSTRAFINGITEM) {
+                            if (ai.type() == ItemAI.ItemType.NONSTRAFINGITEM) {
                                 WeightedItemstack val = new WeightedItemstack(item, getDefaultWeight(item));
                                 if (!equips.get(EquipmentSlotType.MAINHAND).list.contains(val))
                                     equips.compute(EquipmentSlotType.OFFHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(val)) : l.add(val));

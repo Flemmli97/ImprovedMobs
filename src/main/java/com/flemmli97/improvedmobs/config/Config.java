@@ -38,17 +38,18 @@ public class Config {
         public static int difficultyDelay;
         public static DifficultyConfig increaseHandler = new DifficultyConfig();
         public static boolean ignorePlayers;
-        public static List<? extends String> mobListLight;
+        public static List<String> mobListLight;
         public static boolean mobListLightBlackList;
         public static int light;
         public static boolean shouldPunishTimeSkip;
         public static boolean friendlyFire;
-        public static List<? extends String> petArmorBlackList;
+        public static List<String> petArmorBlackList;
         public static boolean petWhiteList;
         public static boolean doIMDifficulty;
 
         //Black-WhiteList
         public static EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
+        public static List<String> flagBlacklist;
         public static boolean mobAttributeWhitelist;
         public static boolean armorMobWhitelist;
         public static boolean heldMobWhitelist;
@@ -85,6 +86,8 @@ public class Config {
         //Equipment
         public static List<String> equipmentModBlacklist;
         public static boolean equipmentModWhitelist;
+        public static List<String> itemuseBlacklist;
+        public static boolean itemuseWhitelist;
         public static float baseEquipChance;
         public static float baseEquipChanceAdd;
         public static float diffEquipAdd;
@@ -129,6 +132,7 @@ public class Config {
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
             if (l.size() != 1 || !l.get(0).equals("UNINIT"))
                 entityBlacklist.readFromString(ConfigSpecs.commonConf.entityBlacklist.get());
+            flagBlacklist = ConfigSpecs.commonConf.flagBlacklist.get();
             mobAttributeWhitelist = ConfigSpecs.commonConf.mobAttributeWhitelist.get();
             armorMobWhitelist = ConfigSpecs.commonConf.armorMobWhitelist.get();
             heldMobWhitelist = ConfigSpecs.commonConf.heldMobWhitelist.get();
@@ -175,6 +179,8 @@ public class Config {
 
             equipmentModBlacklist = ConfigSpecs.commonConf.equipmentModBlacklist.get();
             equipmentModWhitelist = ConfigSpecs.commonConf.equipmentModWhitelist.get();
+            itemuseBlacklist = ConfigSpecs.commonConf.itemuseBlacklist.get();
+            itemuseWhitelist = ConfigSpecs.commonConf.itemuseWhitelist.get();
             baseEquipChance = ConfigSpecs.commonConf.baseEquipChance.get().floatValue();
             baseEquipChanceAdd = ConfigSpecs.commonConf.baseEquipChanceAdd.get().floatValue();
             diffEquipAdd = ConfigSpecs.commonConf.diffEquipAdd.get().floatValue();
