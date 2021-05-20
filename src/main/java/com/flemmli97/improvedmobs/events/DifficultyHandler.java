@@ -29,16 +29,16 @@ public class DifficultyHandler {
                 long timeDiff = (int) Math.abs(e.world.getDayTime() - data.getPrevTime());
                 if (timeDiff > 2400) {
                     long i = timeDiff / 2400;
-                    if (timeDiff - i * 2400 < (i + 1) * 2400 - timeDiff)
-                        i *= 2400;
-                    else
-                        i *= 2400 + 2400;
-                    data.increaseDifficultyBy(shouldIncrease ? Config.CommonConfig.doIMDifficulty ? i / 24000F : 0 : 0, e.world.getDayTime());
-                    //data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0 : 0, e.world.getDayTime());
+                    if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
+                        i += 1;
+                    while (i > 0) {
+                        data.increaseDifficultyBy(shouldIncrease ? Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(data.getDifficulty()) : 0 : 0, e.world.getDayTime());
+                        i--;
+                    }//data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0 : 0, e.world.getDayTime());
                 }
             } else {
                 if (e.world.getDayTime() - data.getPrevTime() > 2400) {
-                    data.increaseDifficultyBy(shouldIncrease ? Config.CommonConfig.doIMDifficulty ? 0.1F : 0 : 0, e.world.getDayTime());
+                    data.increaseDifficultyBy(shouldIncrease ? Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(data.getDifficulty()) : 0 : 0, e.world.getDayTime());
                     //data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0 : 0, e.world.getDayTime());
                 }
             }
