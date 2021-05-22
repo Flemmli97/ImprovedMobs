@@ -38,8 +38,7 @@ public class ItemAITasks {
 
     @Nullable
     public static ItemAI getAI(Item item) {
-        ItemAI ai = itemMap.get(item);
-        return ai;
+        return itemMap.get(item);
     }
 
     @Nullable

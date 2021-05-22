@@ -140,13 +140,19 @@ public class GeneralHelperMethods {
 
     public static float getBlockStrength(MobEntity entityLiving, BlockState state, World world, BlockPos pos) {
         float hardness = world.getBlockState(pos).getBlockHardness(world, pos);
-        if (hardness == -1) {
+        if (hardness < 0) {
             return 0.0F;
         }
         ItemStack main = entityLiving.getHeldItemMainhand();
         ItemStack off = entityLiving.getHeldItemOffhand();
         if (canHarvest(state, main)) {
-            return getBreakSpeed(entityLiving, main, state) / hardness / 30F;
+            float speed = getBreakSpeed(entityLiving, main, state);
+            if (canHarvest(state, off)) {
+                float offSpeed = getBreakSpeed(entityLiving, off, state);
+                if (offSpeed > speed)
+                    speed = offSpeed;
+            }
+            return speed / hardness / 30F;
         } else if (canHarvest(state, off)) {
             return getBreakSpeed(entityLiving, off, state) / hardness / 30F;
         } else {

@@ -108,8 +108,8 @@ dependencies {
 
     compile fg.deobf(tenshilib_dep)
 
-    compile fg.deobf(sillib_dep)
-    compile fg.deobf(scalhealth_dep)
+    compileOnly fg.deobf(sillib_dep)
+    compileOnly fg.deobf(scalhealth_dep)
 }
 
 // Example for how to get properties into the manifest for reading by the runtime..

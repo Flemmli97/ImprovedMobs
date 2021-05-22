@@ -79,6 +79,8 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue breakingAsBlacklist;
         public final ForgeConfigSpec.BooleanValue useBlockBreakSound;
         public final ForgeConfigSpec.DoubleValue breakerChance;
+        public final ForgeConfigSpec.ConfigValue<Integer> breakerInitCooldown;
+        public final ForgeConfigSpec.ConfigValue<Integer> breakerCooldown;
         public final ForgeConfigSpec.DoubleValue stealerChance;
         public final ForgeConfigSpec.BooleanValue breakTileEntities;
         public final ForgeConfigSpec.ConfigValue<List<String>> breakingItems;
@@ -162,12 +164,14 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");
-            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. " + BreakableBlocks.use()).define("Block Whitelist", Lists.newArrayList("forge:glass", "forge:glass_panes", "minecraft:fence_gates", "forge:fence_gates", "minecraft:wooden_doors"));
-            this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Block as BlacklistBlock as Blacklist", false);
+            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. " + BreakableBlocks.use(), "If you includery common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("forge:glass", "forge:glass_panes", "minecraft:fence_gates", "forge:fence_gates", "minecraft:wooden_doors"));
+            this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Block as Blacklist", false);
             this.useBlockBreakSound = builder.comment("Use the block breaking sound instead of a knocking sound").define("Sound", false);
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);
+            this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").define("Breaker Initial Cooldown", 120);
+            this.breakerCooldown = builder.comment("Cooldown for breaking blocks").define("Breaker Cooldown", 20);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items").defineInRange("Stealer Chance", 0.3, 0, 1);
-            this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1"));
+            this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1"));
             this.breakTileEntities = builder.comment("Should mobs be able to break tile entities? Evaluated before the break list").define("Break Tiles", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").defineInRange("Neutral Aggressive Chance", 0.2, 0, 1);
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());

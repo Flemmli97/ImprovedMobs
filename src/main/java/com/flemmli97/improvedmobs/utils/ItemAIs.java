@@ -31,7 +31,7 @@ public class ItemAIs {
 
     private final static String[] potionEffects = new String[]{"minecraft:regeneration", "minecraft:speed", "minecraft:strength", "minecraft:invisibility", "minecraft:resistance", "minecraft:fire_resistance"};
 
-    public static ItemAI ENCHANTEDBOOK = new ItemAI() {
+    public static final ItemAI ENCHANTEDBOOK = new ItemAI() {
         @Override
         public void attack(MobEntity entity, LivingEntity target, Hand hand) {
             if (!entity.world.isRemote) {

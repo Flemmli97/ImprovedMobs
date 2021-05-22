@@ -73,8 +73,10 @@ public class Config {
         public static BreakableBlocks breakableBlocks = new BreakableBlocks();
         public static boolean breakingAsBlacklist;
         public static boolean useBlockBreakSound;
-        public static float breakerChance = 1;
-        public static float stealerChance = 1;
+        public static float breakerChance;
+        public static int breakerInitCooldown;
+        public static int breakerCooldown;
+        public static float stealerChance;
         public static boolean breakTileEntities;
         public static List<WeightedItem> breakingItem = new ArrayList<>();
         public static float neutralAggressiv;
@@ -154,6 +156,8 @@ public class Config {
             breakingAsBlacklist = ConfigSpecs.commonConf.breakingAsBlacklist.get();
             useBlockBreakSound = ConfigSpecs.commonConf.useBlockBreakSound.get();
             breakerChance = ConfigSpecs.commonConf.breakerChance.get().floatValue();
+            breakerInitCooldown = ConfigSpecs.commonConf.breakerInitCooldown.get();
+            breakerCooldown = ConfigSpecs.commonConf.breakerCooldown.get();
             stealerChance = ConfigSpecs.commonConf.stealerChance.get().floatValue();
             breakTileEntities = ConfigSpecs.commonConf.breakTileEntities.get();
 

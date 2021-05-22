@@ -12,7 +12,7 @@ public class TileCapProvider implements ICapabilitySerializable<INBT> {
     @CapabilityInject(ITileOpened.class)
     public static final Capability<ITileOpened> OpenedCap = null;
 
-    private ITileOpened instance = OpenedCap.getDefaultInstance();
+    private final ITileOpened instance = OpenedCap.getDefaultInstance();
 
     @Override
     public INBT serializeNBT() {

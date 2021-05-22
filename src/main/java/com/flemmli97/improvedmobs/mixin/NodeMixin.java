@@ -3,6 +3,7 @@ package com.flemmli97.improvedmobs.mixin;
 import com.flemmli97.improvedmobs.ai.ILadderFlagNode;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.events.EventHandler;
+import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import net.minecraft.block.BlockState;
 import net.minecraft.pathfinding.FlyingNodeProcessor;
 import net.minecraft.pathfinding.NodeProcessor;
@@ -35,16 +36,19 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
                 i += this.addLadderPoints(points, point, i);
             }
             //Rechecks all potential points. Needs more tests for performance.
-            for (int x = -1; x <= 1; x++)
-                for (int z = -1; z <= 1; z++) {
-                    if (x != 0 || z != 0) {
-                        PathPoint pathpoint = this.getPoint(point.x + x, point.y, point.z + z, true);
-                        if (pathpoint != null) {
-                            points[i++] = pathpoint;
-                            //this.toAdd += 1;
+            if (this.entity.getAttackTarget() != null && this.entity.getPersistentData().getBoolean(EventHandler.breaker)) {
+                BlockPos.Mutable pos = new BlockPos.Mutable(point.x, point.y, point.z);
+                for (int x = -1; x <= 1; x++)
+                    for (int z = -1; z <= 1; z++) {
+                        if (x != 0 || z != 0) {
+                            PathPoint pathpoint = this.getPoint(pos.setPos(point.x + x, point.y, point.z + z), true);
+                            if (pathpoint != null) {
+                                points[i++] = pathpoint;
+                                //this.toAdd += 1;
+                            }
                         }
                     }
-                }
+            }
             //System.out.println("Total: " + (System.nanoTime() - nano));
             info.setReturnValue(i);
             info.cancel();
@@ -75,34 +79,24 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
         return added;
     }
 
-    private PathPoint getPoint(int x, int y, int z, boolean init) {
-        BlockPos.Mutable pos = new BlockPos.Mutable(x, y, z);
-        if (this.canBreak(this.blockaccess.getBlockState(pos))) {
-            if (this.checkFor(pos, this.entity.getWidth() * 0.5)) {
-                PathPoint point = this.openPoint(x, y, z);
+    private PathPoint getPoint(BlockPos.Mutable pos, boolean init) {
+        BlockState baseState = this.blockaccess.getBlockState(pos);
+        boolean baseBreak = this.canBreak(baseState);
+        if (baseBreak || this.canBreak(this.blockaccess.getBlockState(pos.move(Direction.UP)))) {
+            if (!baseBreak)
+                pos.move(Direction.DOWN);
+            PathNodeType ground = this.getPathNodeType(this.blockaccess, pos.getX(), pos.getY(), pos.getZ());
+            if (this.checkEmpty(pos.move(Direction.UP), this.entity.getWidth() * 0.5) && this.entity.getPathPriority(ground) >= 0 && ground != PathNodeType.OPEN) {
+                PathPoint point = this.openPoint(pos.getX(), pos.getY(), pos.getZ());
                 if (point != null && !point.visited) {
                     point.costMalus = 0.5f;
                     point.nodeType = PathNodeType.WALKABLE;
                     return point;
                 }
             }
-        } else if (this.canBreak(this.blockaccess.getBlockState(pos.move(Direction.UP)))) {
-            if (this.checkFor(pos, this.entity.getWidth() * 0.5)) {
-                PathPoint point = this.openPoint(x, y, z);
-                if (point != null && !point.visited) {
-                    point.costMalus = 0.5f;
-                    point.nodeType = PathNodeType.WALKABLE;
-                    return point;
-                }
-            }
-        }
-        double height = this.entity.getHeight();
-        double width = this.entity.getWidth() * 0.5;
-        while (pos.getY() - y < height) {
-            boolean currentEmpty = this.blockaccess.getBlockState(pos).getCollisionShape(this.blockaccess, pos).isEmpty();
-            pos.move(Direction.UP);
-            if (currentEmpty && this.canBreak(this.blockaccess.getBlockState(pos)) && this.checkFor(pos, width)) {
-                PathPoint point = this.openPoint(x, y + 1, z);
+            pos.move(Direction.DOWN);
+            if ((baseBreak || baseState.getCollisionShape(this.blockaccess, pos).isEmpty()) && this.checkFor(pos, this.entity.getWidth() * 0.5)) {
+                PathPoint point = this.openPoint(pos.getX(), pos.getY(), pos.getZ());
                 if (point != null && !point.visited) {
                     point.costMalus = 0.5f;
                     point.nodeType = PathNodeType.WALKABLE;
@@ -118,7 +112,14 @@ public abstract class NodeMixin extends NodeProcessor implements ILadderFlagNode
         return this.blockaccess.getBlockCollisions(this.entity, axisalignedbb, (state, p) -> !Config.CommonConfig.breakableBlocks.canBreak(state)).allMatch(VoxelShape::isEmpty);
     }
 
+    private boolean checkEmpty(BlockPos pos, double width) {
+        AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - width + 0.5, pos.getY() + 0.001D, pos.getZ() - width + 0.5, pos.getX() + width + 0.5, pos.getY() + this.entity.getHeight() - 0.002D, pos.getZ() + width + 0.5);
+        return this.blockaccess.getBlockCollisions(this.entity, axisalignedbb).allMatch(VoxelShape::isEmpty);
+    }
+
     private boolean canBreak(BlockState state) {
+        if (!GeneralHelperMethods.canHarvest(state, this.entity.getHeldItemMainhand()) && !GeneralHelperMethods.canHarvest(state, this.entity.getHeldItemOffhand()))
+            return false;
         return this.entity.getPersistentData().getBoolean(EventHandler.breaker) && Config.CommonConfig.breakableBlocks.canBreak(state);
     }
 }

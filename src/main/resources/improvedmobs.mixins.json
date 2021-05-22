@@ -11,10 +11,10 @@
     "PotionEntityMixin",
     "TNTEntityMixin",
     "PathNavigatorAccessor",
-    "NodeMixin",
     "LadderFlagMixin",
     "GuardianMixin",
-    "MobEntityMixin"
+    "MobEntityMixin",
+    "NodeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -34,7 +34,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
                     continue;
                 this.map.put(entry.getRegistryName().toString(), EnumSet.of(Flags.ALL));
             } catch (Exception e) {
-                ImprovedMobs.logger.error("Error during default entity config for EntityType {], skipping this type. Cause: {}", entry.getRegistryName(), e.getMessage());
+                ImprovedMobs.logger.error("Error during default entity config for EntityType {}, skipping this type. Cause: {}", entry.getRegistryName(), e.getMessage());
             }
         }
     }
@@ -43,7 +43,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         ResourceLocation res = living.getType().getRegistryName();
         if (res == null)
             return false;
-        if(Config.CommonConfig.flagBlacklist.contains(flag.toString()))
+        if (Config.CommonConfig.flagBlacklist.contains(flag.toString()))
             return false;
         EnumSet<Flags> set = this.map.get(res.toString());
         if (set == null)

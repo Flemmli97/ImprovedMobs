@@ -1,3 +1,13 @@
+Improved Mobs 1.7.7
+================
+- Rewrote the item using ai registration a bit. Dont need all that stuff with classes anymore
+- Add a blacklist for items which should never be used (not equipped. thats what the equipment.json is for)
+    - Add the buckler item from big brains mod to the default list.
+- Update scaling health dependency.
+- Fix difficulty not using the config values. (very strange since i am sure i wrote the code already but it vanished...)
+- Changed the block breaking ai to start from the top
+- Also added config to tweak the delay between each block breaking attempt
+
 Improved Mobs 1.7.6
 ================
 - Put the default entity list init in try catch since it can be unstable
