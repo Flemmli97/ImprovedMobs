@@ -14,13 +14,15 @@ public class EnchantCalcConf implements IConfigListValue<EnchantCalcConf> {
     @Override
     public EnchantCalcConf readFromString(List<String> ss) {
         this.vals.clear();
+        List<Value> list = new ArrayList<>();
         for (String s : ss) {
             String[] parts = s.split("-");
             if (parts.length != 3)
                 continue;
-            this.vals.add(new Value(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
+            list.add(new Value(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
         }
-        this.vals.sort(null);
+        list.sort(null);
+        this.vals.addAll(list);
         return this;
     }
 

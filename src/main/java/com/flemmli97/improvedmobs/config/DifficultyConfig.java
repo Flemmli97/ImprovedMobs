@@ -15,13 +15,15 @@ public class DifficultyConfig implements IConfigListValue<DifficultyConfig> {
     @Override
     public DifficultyConfig readFromString(List<String> ss) {
         this.vals.clear();
+        List<Pair<Float, Float>> list = new ArrayList<>();
         for (String s : ss) {
             String[] parts = s.split("-");
             if (parts.length != 2)
                 continue;
             this.vals.add(Pair.of(Float.parseFloat(parts[0]), Float.parseFloat(parts[1])));
         }
-        this.vals.sort((o1, o2) -> Float.compare(o1.getLeft(), o2.getLeft()));
+        list.sort((o1, o2) -> Float.compare(o1.getLeft(), o2.getLeft()));
+        this.vals.addAll(list);
         return this;
     }
 
