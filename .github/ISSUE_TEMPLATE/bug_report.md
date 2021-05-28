@@ -26,4 +26,8 @@ assignees: ''
 
 
 
-#### Logs (Use a site like pastebin, gist etc. DONT COPY PASTE THE LOG IN HERE):
+#### Logs (Use a site like pastebin, gist etc. DONT COPY PASTE THE LOG IN HERE. Also dont upload the log file directly here!):
+
+
+
+### Config file (via pastebin, gist. No uploading directly):
