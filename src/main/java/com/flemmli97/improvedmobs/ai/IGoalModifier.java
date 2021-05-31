@@ -7,7 +7,7 @@ import java.util.function.Predicate;
 
 public interface IGoalModifier {
 
-    boolean goalRemovePredicate(Predicate<Goal> goal);
+    void goalRemovePredicate(Predicate<Goal> goal);
 
     <T extends Goal> void modifyGoal(Class<T> clss, Consumer<T> cons);
 }
