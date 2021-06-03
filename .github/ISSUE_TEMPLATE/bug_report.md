@@ -30,4 +30,4 @@ assignees: ''
 
 
 
-### Config file (via pastebin, gist. No uploading directly):
+#### Config file (via pastebin, gist. No uploading directly):
