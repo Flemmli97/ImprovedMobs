@@ -95,6 +95,8 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue equipmentModWhitelist;
         public final ForgeConfigSpec.ConfigValue<List<String>> itemuseBlacklist;
         public final ForgeConfigSpec.BooleanValue itemuseWhitelist;
+        public final ForgeConfigSpec.ConfigValue<List<String>> entityItemConfig;
+
         public final ForgeConfigSpec.DoubleValue baseEquipChance;
         public final ForgeConfigSpec.DoubleValue baseEquipChanceAdd;
         public final ForgeConfigSpec.ConfigValue<Double> diffEquipAdd;
@@ -185,7 +187,7 @@ public class ConfigSpecs {
             this.equipmentModWhitelist = builder.comment("Use blacklist as whitelist").define("Item Whitelist", false);
             this.itemuseBlacklist = builder.comment("Blacklist for items mobs should never be able to use.", "Use as in using the item similar to players (e.g. shooting bows)").define("Item Use Blacklist", Lists.newArrayList("bigbrain:buckler"));
             this.itemuseWhitelist = builder.comment("Turn the use blacklist into a whitelist").define("Item Use Whitelist", false);
-
+            this.entityItemConfig = builder.comment("Blacklist for specific mobs and items they shouldnt use (e.g. skeletons already use bows)", EntityItemConfig.use()).define("Entity Item Use Blacklist", Config.CommonConfig.entityItemConfig.writeToString());
             this.baseEquipChance = builder.comment("Base chance that a mob can have one piece of armor").defineInRange("Equipment Chance", 0.1, 0, 1);
             this.baseEquipChanceAdd = builder.comment("Base chance for each additional armor pieces").defineInRange("Additional Equipment Chance", 0.3, 0, 1);
             this.diffEquipAdd = builder.comment("Adds additional x*difficulty% to base equip chance").define("Equipment Addition", 0.3);

@@ -1,3 +1,11 @@
+Improved Mobs 1.7.8
+================
+- Made pathfinding a bit better again
+- Add "Entity Item Use Blacklist" to blacklist mob specific items.
+  Made so e.g. skeletons dont use bow items since they already can use it.
+  Previously was a hardcoded check.
+  By default excludes bow use from vanilla skeletons, drowned trident use, pillager + piglins crossbow use and snowman snowball use
+
 Improved Mobs 1.7.7
 ================
 - Rewrote the item using ai registration a bit. Dont need all that stuff with classes anymore

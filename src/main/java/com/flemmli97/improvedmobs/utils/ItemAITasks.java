@@ -53,10 +53,10 @@ public class ItemAITasks {
         }
         Hand hand = Hand.MAIN_HAND;
         ItemAI ai = itemMap.get(heldMain.getItem());
-        if (ai == null || ai.prefHand() == ItemAI.UsableHand.OFF || blockedAI(heldMain.getItem())) {
+        if (ai == null || ai.prefHand() == ItemAI.UsableHand.OFF || blockedAI(entity, heldMain.getItem())) {
             ai = itemMap.get(heldOff.getItem());
             if (ai != null) {
-                if (ai.prefHand() == ItemAI.UsableHand.MAIN || blockedAI(heldOff.getItem()))
+                if (ai.prefHand() == ItemAI.UsableHand.MAIN || blockedAI(entity, heldOff.getItem()))
                     ai = null;
                 else hand = Hand.OFF_HAND;
             }
@@ -64,8 +64,10 @@ public class ItemAITasks {
         return Pair.of(ai, hand);
     }
 
-    private static boolean blockedAI(Item item) {
-        return (Config.CommonConfig.mobListUseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(item.getRegistryName().toString())) || Config.CommonConfig.itemuseBlacklist.contains(item.getRegistryName().toString());
+    private static boolean blockedAI(MobEntity entity, Item item) {
+        return (Config.CommonConfig.mobListUseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(item.getRegistryName().toString()))
+                || Config.CommonConfig.itemuseBlacklist.contains(item.getRegistryName().toString())
+                || Config.CommonConfig.entityItemConfig.preventUse(entity, item);
     }
 
     private static void initVanilla() {

@@ -21,7 +21,7 @@ public abstract class GoalSelectorMixin implements IGoalModifier {
     @Override
     public void goalRemovePredicate(Predicate<Goal> goal) {
         Set<PrioritizedGoal> toRemove = this.goals.stream().filter((prio) -> goal.test(prio.getGoal())).collect(Collectors.toSet());
-        toRemove.forEach(prio->this.removeGoal(prio.getGoal()));
+        toRemove.forEach(prio -> this.removeGoal(prio.getGoal()));
     }
 
     @SuppressWarnings("unchecked")

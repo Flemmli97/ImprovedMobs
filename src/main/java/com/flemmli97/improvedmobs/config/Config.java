@@ -4,6 +4,7 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraftforge.fml.ModList;
@@ -89,6 +90,15 @@ public class Config {
         public static List<String> equipmentModBlacklist;
         public static boolean equipmentModWhitelist;
         public static List<String> itemuseBlacklist;
+        public static EntityItemConfig entityItemConfig = new EntityItemConfig()
+                .add(new ResourceLocation("skeleton"), "BOW")
+                .add(new ResourceLocation("wither_skeleton"), "BOW")
+                .add(new ResourceLocation("stray"), "BOW")
+                .add(new ResourceLocation("illusioner"), "BOW")
+                .add(new ResourceLocation("drowned"), "TRIDENT")
+                .add(new ResourceLocation("piglin"), "CROSSBOW")
+                .add(new ResourceLocation("pillager"), "CROSSBOW")
+                .add(new ResourceLocation("snow_golem"), "minecraft:snowball");
         public static boolean itemuseWhitelist;
         public static float baseEquipChance;
         public static float baseEquipChanceAdd;
@@ -185,6 +195,7 @@ public class Config {
             equipmentModWhitelist = ConfigSpecs.commonConf.equipmentModWhitelist.get();
             itemuseBlacklist = ConfigSpecs.commonConf.itemuseBlacklist.get();
             itemuseWhitelist = ConfigSpecs.commonConf.itemuseWhitelist.get();
+            entityItemConfig.readFromString(ConfigSpecs.commonConf.entityItemConfig.get());
             baseEquipChance = ConfigSpecs.commonConf.baseEquipChance.get().floatValue();
             baseEquipChanceAdd = ConfigSpecs.commonConf.baseEquipChanceAdd.get().floatValue();
             diffEquipAdd = ConfigSpecs.commonConf.diffEquipAdd.get().floatValue();
