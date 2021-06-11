@@ -41,7 +41,7 @@ public class GeneralHelperMethods {
     }
 
     public static boolean canHarvest(BlockState block, ItemStack item) {
-        return item.canHarvestBlock(block) || !block.isToolRequired();
+        return item.canHarvestBlock(block) || !block.getRequiresTool();
     }
 
     public static void equipArmor(MobEntity living) {
@@ -169,7 +169,7 @@ public class GeneralHelperMethods {
         if (multiply) {
             value = Math.min(value, max - 1);
             value = oldValue * (1 + value);
-            if (att == Attributes.GENERIC_MAX_HEALTH)
+            if (att == Attributes.MAX_HEALTH)
                 value = Config.CommonConfig.roundHP > 0 ? MathUtils.roundTo(value, Config.CommonConfig.roundHP) : value;
         } else {
             value = Math.min(value, max);

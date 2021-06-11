@@ -35,7 +35,7 @@ public class AIUtils {
     //TODO fishing rod
 
     public static void setHeadingToPosition(ThrowableEntity e, double x, double y, double z, float velocity, float inaccuracy) {
-        Vector3d dir = new Vector3d(x - e.getX(), y - e.getY(), z - e.getZ()).scale(1 / velocity);
+        Vector3d dir = new Vector3d(x - e.getPosX(), y - e.getPosY(), z - e.getPosZ()).scale(1 / velocity);
         e.shoot(dir.x, dir.y, dir.z, velocity, inaccuracy);
     }
 
@@ -44,9 +44,9 @@ public class AIUtils {
         AbstractArrowEntity abstractarrowentity = ProjectileHelper.fireArrow(entity, itemstack, distanceFactor);
         if (entity.getHeldItemMainhand().getItem() instanceof net.minecraft.item.BowItem)
             abstractarrowentity = ((net.minecraft.item.BowItem) entity.getHeldItemMainhand().getItem()).customArrow(abstractarrowentity);
-        double d0 = target.getX() - entity.getX();
-        double d1 = target.getBodyY(0.3333333333333333D) - abstractarrowentity.getY();
-        double d2 = target.getZ() - entity.getZ();
+        double d0 = target.getPosX() - entity.getPosX();
+        double d1 = target.getPosYHeight(0.3333333333333333D) - abstractarrowentity.getPosY();
+        double d2 = target.getPosZ() - entity.getPosZ();
         double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
         abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.world.getDifficulty().getId() * 4));
         entity.playSound(SoundEvents.ENTITY_SKELETON_SHOOT, 1.0F, 1.0F / (entity.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -55,9 +55,9 @@ public class AIUtils {
 
     public static void tridentAttack(MobEntity entity, LivingEntity target) {
         TridentEntity tridententity = new TridentEntity(entity.world, entity, new ItemStack(Items.TRIDENT));
-        double d0 = target.getX() - entity.getX();
-        double d1 = target.getBodyY(0.3333333333333333D) - tridententity.getY();
-        double d2 = target.getZ() - entity.getZ();
+        double d0 = target.getPosX() - entity.getPosX();
+        double d1 = target.getPosYHeight(0.3333333333333333D) - tridententity.getPosY();
+        double d2 = target.getPosZ() - entity.getPosZ();
         double d3 = MathHelper.sqrt(d0 * d0 + d2 * d2);
         tridententity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.world.getDifficulty().getId() * 4));
         entity.playSound(SoundEvents.ENTITY_DROWNED_SHOOT, 1.0F, 1.0F / (entity.getRNG().nextFloat() * 0.4F + 0.8F));
@@ -94,7 +94,7 @@ public class AIUtils {
         AxisAlignedBB axisalignedbb = entity.getBoundingBox().grow(4.0D, 2.0D, 4.0D);
         List<LivingEntity> list = entity.world.getEntitiesWithinAABB(LivingEntity.class, axisalignedbb);
         for (LivingEntity livingentity : list) {
-            if (entity.getOwner() instanceof MobEntity && !livingentity.equals(((MobEntity) entity.getOwner()).getAttackTarget()))
+            if (entity.getShooter() instanceof MobEntity && !livingentity.equals(((MobEntity) entity.getShooter()).getAttackTarget()))
                 continue;
             if (livingentity.canBeHitWithPotion()) {
                 double d0 = entity.getDistanceSq(livingentity);
@@ -107,7 +107,7 @@ public class AIUtils {
                     for (EffectInstance effectinstance : p_213888_1_) {
                         Effect effect = effectinstance.getPotion();
                         if (effect.isInstant()) {
-                            effect.affectEntity(entity, entity.getOwner(), livingentity, effectinstance.getAmplifier(), d1);
+                            effect.affectEntity(entity, entity.getShooter(), livingentity, effectinstance.getAmplifier(), d1);
                         } else {
                             int i = (int) (d1 * (double) effectinstance.getDuration() + 0.5D);
                             if (i > 20) {

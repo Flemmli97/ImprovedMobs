@@ -131,7 +131,7 @@ public class EventHandler {
     public void entityProps(LivingSpawnEvent.CheckSpawn e) {
         if (e.getEntity() instanceof MobEntity && !e.getWorld().isRemote()) {
             if (GeneralHelperMethods.isMobInList((MobEntity) e.getEntity(), Config.CommonConfig.mobListLight, Config.CommonConfig.mobListLightBlackList)) {
-                int light = e.getWorld().getLightLevel(LightType.BLOCK, e.getEntity().getBlockPos());
+                int light = e.getWorld().getLightFor(LightType.BLOCK, e.getEntity().getPosition());
                 if (light >= Config.CommonConfig.light) {
                     e.setResult(Event.Result.DENY);
                 } else {
@@ -151,7 +151,7 @@ public class EventHandler {
             boat.getPersistentData().putBoolean(modifyHeld, false);
             if (!boat.getPersistentData().contains(modifyAttributes) || boat.getPersistentData().getBoolean(modifyAttributes)) {
                 boat.getPersistentData().putBoolean(modifyAttributes, false);
-                ModifiableAttributeInstance inst = boat.getAttribute(Attributes.GENERIC_MAX_HEALTH);
+                ModifiableAttributeInstance inst = boat.getAttribute(Attributes.MAX_HEALTH);
                 if (inst != null)
                     inst.setBaseValue(5);
                 boat.setHealth(boat.getMaxHealth());
@@ -168,7 +168,7 @@ public class EventHandler {
                 ((IGoalModifier) living.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
                     if (g instanceof NearestAttackableTargetGoal && living.world.rand.nextFloat() < 0.5) {
                         ((TargetGoalMixin) g).setShouldCheckSight(false);
-                        ((NearestTargetGoalMixin) g).getTargetEntitySelector().setLineOfSiteRequired();
+                        ((NearestTargetGoalMixin) g).getTargetEntitySelector().setIgnoresLineOfSight();
                     }
                 });
                 if (mobGriefing) {
@@ -231,7 +231,7 @@ public class EventHandler {
         else
             goal = new NearestAttackableTargetGoal<>(e, clss, 10, sight, false, pred);
         if (!sight)
-            ((NearestTargetGoalMixin) goal).getTargetEntitySelector().setLineOfSiteRequired();
+            ((NearestTargetGoalMixin) goal).getTargetEntitySelector().setIgnoresLineOfSight();
         return goal;
     }
 
@@ -251,15 +251,15 @@ public class EventHandler {
         }
         if (living.getPersistentData().getBoolean(modifyAttributes)) {
             if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, true);
+                GeneralHelperMethods.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, true);
                 living.setHealth(living.getMaxHealth());
             }
             if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, true);
+                GeneralHelperMethods.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, true);
             if (Config.CommonConfig.speedIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, false);
+                GeneralHelperMethods.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, false);
             if (Config.CommonConfig.knockbackIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.GENERIC_KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, false);
+                GeneralHelperMethods.modifyAttr(living, Attributes.KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, false);
             if (Config.CommonConfig.magicResIncrease != 0)
                 IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Config.CommonConfig.magicResIncrease * 0.0016f, Config.CommonConfig.magicResMax);
             //GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016, Config.ServerConfig.magicResMax, false);
@@ -358,7 +358,7 @@ public class EventHandler {
     private void equipPetItem(PlayerEntity player, MobEntity living, ItemStack stack, EquipmentSlotType slot) {
         ItemStack current = living.getItemStackFromSlot(slot);
         if (!current.isEmpty() && !player.isCreative()) {
-            ItemEntity entityitem = new ItemEntity(living.world, living.getX(), living.getY(), living.getZ(), current);
+            ItemEntity entityitem = new ItemEntity(living.world, living.getPosX(), living.getPosY(), living.getPosZ(), current);
             entityitem.setNoPickupDelay();
             living.world.addEntity(entityitem);
         }
@@ -389,7 +389,7 @@ public class EventHandler {
     @SubscribeEvent
     public void projectileImpact(ProjectileImpactEvent e) {
         if (e.getEntity() instanceof ProjectileEntity && e.getEntity().getPersistentData().contains(ImprovedMobs.thrownEntityID)) {
-            Entity thrower = ((ProjectileEntity) e.getEntity()).getOwner();
+            Entity thrower = ((ProjectileEntity) e.getEntity()).getShooter();
             if (thrower instanceof MobEntity) {
                 if (!(e.getEntity() instanceof PotionEntity) && e.getRayTraceResult().getType() == RayTraceResult.Type.ENTITY) {
                     EntityRayTraceResult res = (EntityRayTraceResult) e.getRayTraceResult();

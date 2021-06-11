@@ -36,11 +36,11 @@ public class BlockBreakGoal extends Goal {
     public boolean shouldExecute() {
         this.target = this.living.getAttackTarget();
         if (this.entityPos == null) {
-            this.entityPos = this.living.getBlockPos();
+            this.entityPos = this.living.getPosition();
             this.cooldown = Config.CommonConfig.breakerCooldown;
         }
         if (--this.cooldown <= 0) {
-            if (!this.entityPos.equals(this.living.getBlockPos())) {
+            if (!this.entityPos.equals(this.living.getPosition())) {
                 this.entityPos = null;
                 this.cooldown = Config.CommonConfig.breakerCooldown;
                 return false;
@@ -50,7 +50,7 @@ public class BlockBreakGoal extends Goal {
                     return false;
                 this.cooldown = Config.CommonConfig.breakerCooldown;
                 this.markedLoc = blockPos;
-                this.entityPos = this.living.getBlockPos();
+                this.entityPos = this.living.getPosition();
                 return true;
             }
         }
@@ -59,7 +59,7 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public boolean shouldContinueExecuting() {
-        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.getBlockPos()) && this.living.getDistance(this.target) > 1D; //(this.target.isOnGround() || !this.living.canEntityBeSeen(this.target));
+        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.getPosition()) && this.living.getDistance(this.target) > 1D; //(this.target.isOnGround() || !this.living.canEntityBeSeen(this.target));
     }
 
     private boolean nearSameSpace(BlockPos pos1, BlockPos pos2) {
@@ -96,7 +96,7 @@ public class BlockBreakGoal extends Goal {
             this.markedLoc = null;
             this.living.setAIMoveSpeed(0);
             this.living.getNavigator().clearPath();
-            this.living.getNavigator().setPath(this.living.getNavigator().getPathToEntityLiving(this.target, 0), 1D);
+            this.living.getNavigator().setPath(this.living.getNavigator().pathfind(this.target, 0), 1D);
         } else {
             this.digTimer++;
             if (this.digTimer % 5 == 0) {
@@ -112,7 +112,7 @@ public class BlockBreakGoal extends Goal {
     public BlockPos getBlock(MobEntity entityLiving) {
         ItemStack item = entityLiving.getHeldItemMainhand();
         ItemStack itemOff = entityLiving.getHeldItemOffhand();
-        BlockPos pos = entityLiving.getBlockPos().add(0, 1, 0);
+        BlockPos pos = entityLiving.getPosition().add(0, 1, 0);
         BlockState state = entityLiving.world.getBlockState(pos);
         if (this.canBreak(entityLiving, state, pos, item, itemOff)) {
             this.scanTick = 0;
@@ -122,9 +122,9 @@ public class BlockBreakGoal extends Goal {
         int digWidth = Math.max(1, MathHelper.ceil(entityLiving.getWidth())) + 1;
         int digHeight = (int) entityLiving.getHeight() + 1;
         if (path != null) {
-            PathPoint point = path.getCurrentPathIndex() < path.getCurrentPathLength() ? path.method_29301() : null;
+            PathPoint point = path.getCurrentPathIndex() < path.getCurrentPathLength() ? path.getCurrentPoint() : null;
             if (point != null) {
-                BlockPos dir = entityLiving.getBlockPos().add(-point.x, 0, -point.z);
+                BlockPos dir = entityLiving.getPosition().add(-point.x, 0, -point.z);
                 int offsetX = dir.getX() > 0 && dir.getZ() != 0 ? 1 : dir.getX() < 0 && dir.getZ() != 0 ? -1 : 0;
                 int y = digHeight - this.scanTick / (digWidth * digWidth);
                 int x = this.scanTick % digWidth - (digWidth / 2);
@@ -141,9 +141,9 @@ public class BlockBreakGoal extends Goal {
             }
         }
         if (entityLiving.getAttackTarget() != null) {
-            BlockPos target = entityLiving.getAttackTarget().getBlockPos();
-            if (target.getY() < entityLiving.getY() && target.getX() == pos.getX() && target.getZ() == pos.getZ()) {
-                pos = entityLiving.getBlockPos().down();
+            BlockPos target = entityLiving.getAttackTarget().getPosition();
+            if (target.getY() < entityLiving.getPosY() && target.getX() == pos.getX() && target.getZ() == pos.getZ()) {
+                pos = entityLiving.getPosition().down();
                 state = entityLiving.world.getBlockState(pos);
                 if (this.canBreak(entityLiving, state, pos, item, itemOff)) {
                     this.scanTick = 0;
@@ -157,7 +157,7 @@ public class BlockBreakGoal extends Goal {
     }
 
     private boolean canBreak(LivingEntity entity, BlockState state, BlockPos pos, ItemStack item, ItemStack itemOff) {
-        if (state.getCollisionShape(entity.world, pos).isEmpty())
+        if (state.getCollisionShapeUncached(entity.world, pos).isEmpty())
             return false;
         return Config.CommonConfig.breakableBlocks.canBreak(state) && (GeneralHelperMethods.canHarvest(state, item) || GeneralHelperMethods.canHarvest(state, itemOff));
     }

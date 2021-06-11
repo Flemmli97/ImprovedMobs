@@ -22,7 +22,7 @@ public class DifficultyHandler {
 
     @SubscribeEvent
     public void increaseDifficulty(TickEvent.WorldTickEvent e) {
-        if (e.phase == TickEvent.Phase.END && !e.world.isRemote && e.world.getRegistryKey() == World.OVERWORLD) {
+        if (e.phase == TickEvent.Phase.END && !e.world.isRemote && e.world.getDimensionKey() == World.OVERWORLD) {
             boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !e.world.getServer().getPlayerList().getPlayers().isEmpty()) && e.world.getDayTime() > Config.CommonConfig.difficultyDelay;
             DifficultyData data = DifficultyData.get(e.world);
             if (Config.CommonConfig.shouldPunishTimeSkip) {

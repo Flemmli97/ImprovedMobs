@@ -42,12 +42,12 @@ public class StealGoal extends MoveToBlockGoal {
         this.stealDelay = Math.max(0, --this.stealDelay);
         TileEntity tile = this.entity.world.getTileEntity(this.destinationBlock);
 
-        if (tile instanceof IInventory && this.stealDelay == 0 && this.entity.getDistanceSq(Vector3d.ofCenter(this.destinationBlock)) < 5 && this.canSee()) {
+        if (tile instanceof IInventory && this.stealDelay == 0 && this.entity.getDistanceSq(Vector3d.copyCentered(this.destinationBlock)) < 5 && this.canSee()) {
             IInventory inv = (IInventory) tile;
             ItemStack drop = this.randomStack(inv);
-            this.entity.world.playSound(null, this.entity.getBlockPos(), SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.3F, 1);
+            this.entity.world.playSound(null, this.entity.getPosition(), SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.3F, 1);
             this.entity.swingArm(Hand.MAIN_HAND);
-            ItemEntity item = new ItemEntity(this.entity.world, this.entity.getX(), this.entity.getY(), this.entity.getZ(), drop);
+            ItemEntity item = new ItemEntity(this.entity.world, this.entity.getPosX(), this.entity.getPosY(), this.entity.getPosZ(), drop);
             this.entity.world.addEntity(item);
             this.stealDelay = 150 + this.entity.getRNG().nextInt(45);
         }
@@ -55,7 +55,7 @@ public class StealGoal extends MoveToBlockGoal {
 
     private boolean canSee() {
         Vector3d eyes = this.entity.getEyePosition(1);
-        Vector3d block = Vector3d.ofCenter(this.destinationBlock);
+        Vector3d block = Vector3d.copyCentered(this.destinationBlock);
         BlockRayTraceResult res = this.entity.world.rayTraceBlocks(new RayTraceContext(eyes, block, RayTraceContext.BlockMode.COLLIDER, RayTraceContext.FluidMode.NONE, this.entity));
         return res.getType() == RayTraceResult.Type.BLOCK && res.getPos().equals(this.destinationBlock);
     }

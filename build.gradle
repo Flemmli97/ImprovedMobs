@@ -1,27 +1,33 @@
 buildscript {
     repositories {
-        maven { url = 'https://files.minecraftforge.net/maven' }
-        jcenter()
+        maven { url = 'https://maven.minecraftforge.net' }
         mavenCentral()
-        maven {url='https://repo.spongepowered.org/repository/maven-public'}
+        maven { url = 'https://repo.spongepowered.org/repository/maven-public' }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '3.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '4.1.+', changing: true
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
+        classpath group: 'com.diluv.schoomp', name: 'Schoomp', version: '1.1.0'
     }
+}
+
+plugins {
+    id 'eclipse'
+    id 'maven-publish'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
 }
 apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-// Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
-apply plugin: 'eclipse'
-apply plugin: 'maven-publish'
+import com.diluv.schoomp.Webhook
+import com.diluv.schoomp.message.Message
+import com.diluv.schoomp.message.embed.Embed
 
 version = "${mcversion}-${modversion}"
 group = "io.github.flemmli97"
 archivesBaseName = modid
 
-sourceCompatibility = targetCompatibility = compileJava.sourceCompatibility = compileJava.targetCompatibility = '1.8' // Need this here so eclipse task generates correctly.
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
 mixin {
     add sourceSets.main, "${modid}.refmap.json"
@@ -33,10 +39,11 @@ minecraft {
     runs {
         client {
             workingDirectory project.file('run')
-            arg "-mixin.config="+modid+".mixins.json"
+            arg "-mixin.config=" + modid + ".mixins.json"
 
             // Recommended logging data for a userdev environment
             property 'forge.logging.markers', 'REGISTRIES'
+
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
             property 'mixin.env.disableRefMap', 'true'
@@ -51,10 +58,10 @@ minecraft {
 
         server {
             workingDirectory project.file('run')
-            arg "-mixin.config="+modid+".mixins.json"
+            arg "-mixin.config=" + modid + ".mixins.json"
 
             // Recommended logging data for a userdev environment
-            property 'forge.logging.markers', 'SCAN,REGISTRIES,REGISTRYDUMP'
+            property 'forge.logging.markers', 'REGISTRIES'
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
@@ -76,7 +83,7 @@ minecraft {
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
 
-            args '--mod', modid, '--all', '--output', file('src/generated/resources/')
+            args '--mod', modid, '--all', '--output', file('src/generated/resources/'), '--existing', sourceSets.main.resources.srcDirs[0]
 
             mods {
                 modid {
@@ -85,6 +92,10 @@ minecraft {
             }
         }
     }
+}
+
+sourceSets.main.resources {
+    srcDir 'src/generated/resources'
 }
 
 repositories {
@@ -104,7 +115,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:'+"${mcversion}-${forge_version}"
+    minecraft 'net.minecraftforge:forge:' + "${mcversion}-${forge_version}"
 
     compile fg.deobf(tenshilib_dep)
 
@@ -112,18 +123,17 @@ dependencies {
     compileOnly fg.deobf(scalhealth_dep)
 }
 
-// Example for how to get properties into the manifest for reading by the runtime..
 jar {
     manifest {
         attributes([
-            "Specification-Title": modid,
-            "Specification-Vendor": "flemmli97",
-            "Specification-Version": "1", // We are version 1 of ourselves
-            "Implementation-Title": project.name,
-            "Implementation-Version": version,
-            "Implementation-Vendor" : "flemmli97",
-            "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-            "MixinConfigs": "${modid}.mixins.json"
+                "Specification-Title"     : modid,
+                "Specification-Vendor"    : "flemmli97",
+                "Specification-Version"   : "1", // We are version 1 of ourselves
+                "Implementation-Title"    : mod_name,
+                "Implementation-Version"  : version,
+                "Implementation-Vendor"   : "flemmli97",
+                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+                "MixinConfigs"            : "${modid}.mixins.json"
         ])
     }
 }
@@ -152,3 +162,104 @@ publishing {
         }
     }
 }
+
+def changelog(int versions) {
+    try {
+        def changelog = ""
+        def match = 0
+        file("Changelog.txt").eachLine {
+            if (it.matches("${project.mod_name} ([0-9].[0-9].[0-9])"))
+                match++
+            if (match <= versions) {
+                changelog += it + "\n"
+            } else
+                return
+        }
+        return changelog + "\n\n"
+    } catch (exception) {
+        return "${project.mod_name} ${project.modversion}\n==========\n"
+    }
+}
+
+//Splits the changelog into multiple parts if they get bigger than discords embed field size (1024)
+def discordChangelog() {
+    def changelog = changelog(1)
+    def res = new ArrayList()
+    if (changelog.size() < 1024) {
+        res.add(changelog)
+        return res;
+    }
+    def temp = ""
+    changelog.split("\n").each {
+        it = it + "\n"
+        if ((temp.size() + it.size()) >= 1024) {
+            res.add(temp)
+            temp = it
+        } else
+            temp += it
+    }
+    res.add(temp)
+    return res
+}
+
+curseforge {
+    apiKey = findProperty('curseApiToken') ?: 0
+
+    project {
+        id = "${curse_id}"
+        addGameVersion "Forge"
+        "${project.curse_versions}".split(', ').each {
+            addGameVersion "${it}"
+        }
+        changelog = changelog(3).replace("\n-", "\n\n- ")
+        changelogType = "markdown"
+        releaseType = 'release'
+        relations {
+            "${project.curse_dep}".split(', ').each {
+                requiredDependency "${it}"
+            }
+        }
+    }
+}
+
+tasks.getByName("curseforge").doLast {
+    if (project.ping_id == 0)
+        return
+    try {
+        def newFileId = tasks.getByName("curseforge${project.curse_id}").property('mainArtifact').fileID
+
+        def webhook = new Webhook(findProperty('discordHook'), "${project.mod_name} Upload")
+
+        def message = new Message()
+        def version = project.curse_versions.split(', ')[0]
+        message.setUsername("Release")
+        message.setContent("<@&${project.ping_id}> ${project.mod_name} ${project.modversion} for Minecraft ${mcversion} has been released!")
+
+        def embed = new Embed()
+        embed.addField('Get it here (When it is accepted)', "${project.findProperty('curse_page')}/files/${newFileId}", false)
+        def changelog = discordChangelog()
+        if (changelog.size() == 1)
+            embed.addField('Change Log', "```md\n${changelog.get(0) ?: 'Unavailable :('}```", false)
+        else
+            changelog.forEach {
+                embed.addField("Change Log", "```md\n${it}```", false)
+            }
+        embed.setColor(0xFF8000)
+        message.addEmbed(embed)
+
+        webhook.sendMessage(message)
+    }
+
+    catch (IOException e) {
+        println 'Failed to push to the Discord webhook.'
+    }
+}
+
+task buildUploadAll(group: "publishing") {
+    dependsOn clean, build, publish, tasks.getByName("curseforge")
+    build.mustRunAfter clean
+    tasks.findByName("curseforge").mustRunAfter publish
+}
+
+tasks.getByName("curseforge").dependsOn build
+publish.dependsOn build

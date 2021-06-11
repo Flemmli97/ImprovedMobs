@@ -226,7 +226,7 @@ public class Config {
         public static void serverInit(MinecraftServer server) {
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
             if (l.size() == 1 && l.get(0).equals("UNINITIALIZED")) {
-                entityBlacklist.initDefault(server.getOverworld());
+                entityBlacklist.initDefault(server.func_241755_D_());
                 ConfigSpecs.commonConf.entityBlacklist.set(entityBlacklist.writeToString());
             }
         }

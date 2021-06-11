@@ -27,8 +27,8 @@ public class ItemUseGoal extends Goal {
     public ItemUseGoal(MobEntity entity, float maxDistance) {
         this.living = entity;
         float follow = maxDistance;
-        if (entity.getAttribute(Attributes.GENERIC_FOLLOW_RANGE) != null)
-            follow = (float) entity.getAttribute(Attributes.GENERIC_FOLLOW_RANGE).getValue();
+        if (entity.getAttribute(Attributes.FOLLOW_RANGE) != null)
+            follow = (float) entity.getAttribute(Attributes.FOLLOW_RANGE).getValue();
         maxDistance = Math.min(follow - 3, maxDistance);
         this.maxAttackDistance = maxDistance * maxDistance;
     }
@@ -110,7 +110,7 @@ public class ItemUseGoal extends Goal {
     }
 
     private void moveStrafing(LivingEntity target, boolean canSee) {
-        double dist = this.living.getDistanceSq(target.getX(), target.getY(), target.getZ());
+        double dist = this.living.getDistanceSq(target.getPosX(), target.getPosY(), target.getPosZ());
         boolean flag1 = this.seeTime > 0;
         if (canSee != flag1)
             this.seeTime = 0;
@@ -150,7 +150,7 @@ public class ItemUseGoal extends Goal {
     }
 
     private void moveToRange(LivingEntity target, boolean canSee) {
-        double dist = this.living.getDistanceSq(target.getX(), target.getY(), target.getZ());
+        double dist = this.living.getDistanceSq(target.getPosX(), target.getPosY(), target.getPosZ());
         if (canSee)
             ++this.seeTime;
         else

@@ -63,7 +63,7 @@ public class NodeUtils {
         if (baseBreak || canBreak(blockaccess.getBlockState(pos.move(Direction.UP)), entity)) {
             if (!baseBreak)
                 pos.move(Direction.DOWN);
-            PathNodeType ground = processor.getPathNodeType(blockaccess, pos.getX(), pos.getY(), pos.getZ());
+            PathNodeType ground = processor.getFloorNodeType(blockaccess, pos.getX(), pos.getY(), pos.getZ());
             if (entity.getPathPriority(ground) < 0 && (!baseBreak || checkEmpty(pos.move(Direction.UP), entity.getWidth() * 0.5, blockaccess, entity))) {
                 PathPoint point = func.apply(pos.getX(), pos.getY(), pos.getZ());
                 if (point != null && !point.visited) {
@@ -74,7 +74,7 @@ public class NodeUtils {
             }
             if (baseBreak)
                 pos.move(Direction.DOWN);
-            if ((baseBreak || baseState.getCollisionShape(blockaccess, pos).isEmpty()) && checkFor(pos, entity.getWidth() * 0.5, blockaccess, entity)) {
+            if ((baseBreak || baseState.getCollisionShapeUncached(blockaccess, pos).isEmpty()) && checkFor(pos, entity.getWidth() * 0.5, blockaccess, entity)) {
                 PathPoint point = func.apply(pos.getX(), pos.getY(), pos.getZ());
                 if (point != null && !point.visited) {
                     point.costMalus = Math.max(0, entity.getPathPriority(ground)) + 0.5f;
@@ -88,12 +88,12 @@ public class NodeUtils {
 
     private static boolean checkFor(BlockPos pos, double width, Region blockaccess, MobEntity entity) {
         AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - width + 0.5, pos.getY() + 0.001D, pos.getZ() - width + 0.5, pos.getX() + width + 0.5, pos.getY() + entity.getHeight() - 0.002D, pos.getZ() + width + 0.5);
-        return blockaccess.getBlockCollisions(entity, axisalignedbb, (state, p) -> !Config.CommonConfig.breakableBlocks.canBreak(state)).allMatch(VoxelShape::isEmpty);
+        return blockaccess.func_241457_a_(entity, axisalignedbb, (state, p) -> !Config.CommonConfig.breakableBlocks.canBreak(state)).allMatch(VoxelShape::isEmpty);
     }
 
     private static boolean checkEmpty(BlockPos pos, double width, Region blockaccess, MobEntity entity) {
         AxisAlignedBB axisalignedbb = new AxisAlignedBB(pos.getX() - width + 0.5, pos.getY() + 0.001D, pos.getZ() - width + 0.5, pos.getX() + width + 0.5, pos.getY() + entity.getHeight() - 0.002D, pos.getZ() + width + 0.5);
-        return blockaccess.getBlockCollisions(entity, axisalignedbb).allMatch(VoxelShape::isEmpty);
+        return blockaccess.getBlockCollisionShapes(entity, axisalignedbb).allMatch(VoxelShape::isEmpty);
     }
 
     private static boolean canBreak(BlockState state, MobEntity entity) {

@@ -32,7 +32,7 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
             info.cancel();
             tnt.remove();
             if (!tnt.world.isRemote)
-                tnt.world.createExplosion(tnt, tnt.getX(), tnt.getBodyY(0.0625D), tnt.getZ(), 4.0F, Explosion.Mode.BREAK);
+                tnt.world.createExplosion(tnt, tnt.getPosX(), tnt.getPosYHeight(0.0625D), tnt.getPosZ(), 4.0F, Explosion.Mode.BREAK);
         }
     }
 

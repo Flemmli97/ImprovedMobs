@@ -43,7 +43,7 @@ public class ItemAIs {
                             for (int z = -1; z <= 1; z++) {
                                 if (x == 0 || z == 0) {
                                     Vector3d targetMotion = target.getMotion();
-                                    EvokerFangsEntity fang = new EvokerFangsEntity(entity.world, target.getX() + x + targetMotion.x, target.getY(), target.getZ() + z + targetMotion.z, 0, 5, entity);
+                                    EvokerFangsEntity fang = new EvokerFangsEntity(entity.world, target.getPosX() + x + targetMotion.x, target.getPosY(), target.getPosZ() + z + targetMotion.z, 0, 5, entity);
                                     entity.world.addEntity(fang);
                                 }
                             }
@@ -58,7 +58,7 @@ public class ItemAIs {
                         if (entityRand instanceof MonsterEntity && entityRand != entity.getAttackTarget()) {
                             MonsterEntity mob = (MonsterEntity) entityRand;
                             mob.addPotionEffect(new EffectInstance(ForgeRegistries.POTIONS.getValue(new ResourceLocation(potionEffects[mob.world.rand.nextInt(6)])), 3600, 1));
-                            entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.NEUTRAL, 2F, 1.0F);
+                            entity.world.playSound(null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), SoundEvents.ENTITY_ELDER_GUARDIAN_CURSE, SoundCategory.NEUTRAL, 2F, 1.0F);
                             return;
                         }
                     }
@@ -121,7 +121,7 @@ public class ItemAIs {
         public void attack(MobEntity entity, LivingEntity target, Hand hand) {
             double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
             if (!entity.world.isRemote) {
-                TNTEntity tnt = new TNTEntity(entity.world, entity.getX(), entity.getY(), entity.getZ(), entity);
+                TNTEntity tnt = new TNTEntity(entity.world, entity.getPosX(), entity.getPosY(), entity.getPosZ(), entity);
                 ((ITNTThrowable) tnt).shootFromEntity(entity, entity.rotationPitch, entity.rotationYaw, -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
                 tnt.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
                 entity.world.addEntity(tnt);
@@ -177,11 +177,11 @@ public class ItemAIs {
             ItemStack stack = entity.getHeldItem(hand);
             if (AIUtils.isBadPotion(stack)) {
                 double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
-                entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+                entity.world.playSound(null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
                 if (!entity.world.isRemote) {
                     PotionEntity potion = new PotionEntity(entity.world, entity);
                     potion.setItem(stack);
-                    potion.setProperties(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
+                    potion.setDirectionAndMovement(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
                     potion.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
                     entity.world.addEntity(potion);
                 }
@@ -211,11 +211,11 @@ public class ItemAIs {
             ItemStack stack = entity.getHeldItem(hand);
             if (AIUtils.isBadPotion(stack)) {
                 double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
-                entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+                entity.world.playSound(null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), SoundEvents.ENTITY_SPLASH_POTION_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
                 if (!entity.world.isRemote) {
                     PotionEntity potion = new PotionEntity(entity.world, entity);
                     potion.setItem(stack);
-                    potion.setProperties(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
+                    potion.setDirectionAndMovement(entity, entity.rotationPitch, entity.rotationYaw, -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
                     potion.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
                     entity.world.addEntity(potion);
                 }
@@ -338,10 +338,10 @@ public class ItemAIs {
 
         @Override
         public void attack(MobEntity entity, LivingEntity target, Hand hand) {
-            entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+            entity.world.playSound(null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
             if (!entity.world.isRemote) {
                 SnowballEntity snowball = new SnowballEntity(entity.world, entity);
-                snowball.setProperties(entity, entity.rotationPitch, entity.rotationYaw, 0, 1.5F, 1.0F);
+                snowball.setDirectionAndMovement(entity, entity.rotationPitch, entity.rotationYaw, 0, 1.5F, 1.0F);
                 snowball.getPersistentData().putBoolean(ImprovedMobs.thrownEntityID, true);
                 entity.world.addEntity(snowball);
             }
@@ -369,7 +369,7 @@ public class ItemAIs {
         public void attack(MobEntity entity, LivingEntity target, Hand hand) {
             double dis = entity.getPositionVec().squareDistanceTo(target.getPositionVec());
             if (dis > 49.0) {
-                entity.world.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
+                entity.world.playSound(null, entity.getPosX(), entity.getPosY(), entity.getPosZ(), SoundEvents.ENTITY_SNOWBALL_THROW, SoundCategory.NEUTRAL, 0.5F, 0.4F / (entity.world.rand.nextFloat() * 0.4F + 0.8F));
                 if (!entity.world.isRemote) {
                     Vector3d v1 = entity.getPositionVec().subtract(target.getPositionVec()).normalize().scale(16);
                     double x = 0;
@@ -381,7 +381,7 @@ public class ItemAIs {
                         z = v1.z;
                     }
                     EnderPearlEntity pearl = new EnderPearlEntity(entity.world, entity);
-                    AIUtils.setHeadingToPosition(pearl, target.getX() - x, target.getY() - y, target.getZ() - z, 1.5F, 3.0F);
+                    AIUtils.setHeadingToPosition(pearl, target.getPosX() - x, target.getPosY() - y, target.getPosZ() - z, 1.5F, 3.0F);
                     entity.world.addEntity(pearl);
                 }
             }
@@ -408,7 +408,7 @@ public class ItemAIs {
         @Override
         public void attack(MobEntity entity, LivingEntity target, Hand hand) {
             double dis = entity.getPositionVec().distanceTo(target.getPositionVec());
-            if (dis < 8 && AIUtils.tryPlaceLava(entity.world, new BlockPos(target.getX() - 2 + entity.world.rand.nextInt(4), target.getY() - 1 + entity.world.rand.nextInt(2), target.getZ() - 2 + entity.world.rand.nextInt(4)))) {
+            if (dis < 8 && AIUtils.tryPlaceLava(entity.world, new BlockPos(target.getPosX() - 2 + entity.world.rand.nextInt(4), target.getPosY() - 1 + entity.world.rand.nextInt(2), target.getPosZ() - 2 + entity.world.rand.nextInt(4)))) {
                 entity.addPotionEffect(new EffectInstance(Effects.FIRE_RESISTANCE, 240, 1, true, false));
             }
         }

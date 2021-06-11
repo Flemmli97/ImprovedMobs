@@ -24,12 +24,12 @@ public class DifficultyData extends WorldSavedData {
     }
 
     public static DifficultyData get(World world) {
-        return world.getServer().getOverworld().getSavedData().getOrCreate(DifficultyData::new, identifier);
+        return world.getServer().func_241755_D_().getSavedData().getOrCreate(DifficultyData::new, identifier);
     }
 
     public static float getDifficulty(World world, LivingEntity e) {
         if (Config.CommonConfig.useScalingHealthMod)
-            return (float) SHDifficulty.areaDifficulty(world, e.getBlockPos());
+            return (float) SHDifficulty.areaDifficulty(world, e.getPosition());
         return DifficultyData.get(world).getDifficulty();
     }
 

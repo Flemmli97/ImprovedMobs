@@ -63,9 +63,9 @@ public class WaterRidingGoal extends Goal {
         //DolphinEntity boat = EntityType.DOLPHIN.create(this.living.world);
         if (!this.living.isPassenger()) {
             GuardianEntity boat = EntityType.GUARDIAN.create(this.living.world);
-            BlockPos pos = this.living.getBlockPos();
+            BlockPos pos = this.living.getPosition();
             boat.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.rotationYaw, this.living.rotationPitch);
-            if (this.living.world.isSpaceEmpty(boat)) {
+            if (this.living.world.hasNoCollisions(boat)) {
                 ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
                 boat.getPersistentData().putBoolean(ImprovedMobs.waterRiding, true);
                 this.living.world.addEntity(boat);
@@ -97,15 +97,15 @@ public class WaterRidingGoal extends Goal {
     }
 
     private boolean isOnLand(Entity riding) {
-        if (riding.world.getBlockState(riding.getBlockPos()).getMaterial() != Material.WATER) {
-            return riding.world.getBlockState(riding.getBlockPos().down()).getMaterial().isSolid();
+        if (riding.world.getBlockState(riding.getPosition()).getMaterial() != Material.WATER) {
+            return riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
         }
         return false;
     }
 
     private boolean nearShore(Entity riding, int cliffSize) {
         if (cliffSize < 3) {
-            BlockPos pos = riding.getBlockPos().offset(riding.getHorizontalFacing()).up(cliffSize);
+            BlockPos pos = riding.getPosition().offset(riding.getHorizontalFacing()).up(cliffSize);
             if (riding.world.getBlockState(pos).getMaterial().isSolid() && !riding.world.getBlockState(pos.up()).getMaterial().blocksMovement())
                 return true;
             else
