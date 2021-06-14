@@ -20,6 +20,7 @@ public class WaterRidingGoal extends Goal {
     protected final MobEntity living;
     private int wait = 0;
     private int jumpingTick;
+    private boolean start;
 
     public WaterRidingGoal(MobEntity living) {
         this.living = living;
@@ -60,22 +61,25 @@ public class WaterRidingGoal extends Goal {
 
     @Override
     public void startExecuting() {
-        //DolphinEntity boat = EntityType.DOLPHIN.create(this.living.world);
-        if (!this.living.isPassenger()) {
-            GuardianEntity boat = EntityType.GUARDIAN.create(this.living.world);
-            BlockPos pos = this.living.getPosition();
-            boat.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.rotationYaw, this.living.rotationPitch);
-            if (this.living.world.hasNoCollisions(boat)) {
-                ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
-                boat.getPersistentData().putBoolean(ImprovedMobs.waterRiding, true);
-                this.living.world.addEntity(boat);
-                this.living.startRiding(boat);
-            }
-        }
+        this.start = true;
     }
 
     @Override
     public void tick() {
+        if(this.start) {
+            if (!this.living.isPassenger()) {
+                GuardianEntity boat = EntityType.GUARDIAN.create(this.living.world);
+                BlockPos pos = this.living.getPosition();
+                boat.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.rotationYaw, this.living.rotationPitch);
+                if (this.living.world.hasNoCollisions(boat)) {
+                    ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
+                    boat.getPersistentData().putBoolean(ImprovedMobs.waterRiding, true);
+                    this.living.world.addEntity(boat);
+                    this.living.startRiding(boat);
+                }
+            }
+            this.start = false;
+        }
         Entity entity = this.living.getRidingEntity();
         if (!(entity instanceof GuardianEntity) || !entity.isAlive())
             return;
