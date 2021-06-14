@@ -66,7 +66,7 @@ public class WaterRidingGoal extends Goal {
 
     @Override
     public void tick() {
-        if(this.start) {
+        if (this.start) {
             if (!this.living.isPassenger()) {
                 GuardianEntity boat = EntityType.GUARDIAN.create(this.living.world);
                 BlockPos pos = this.living.getPosition();

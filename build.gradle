@@ -46,7 +46,8 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.disableRefMap', 'true'
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
             //For linux intellij
             environment 'PULSE_RUNTIME_PATH', '/run/user/1000/pulse'
             mods {
@@ -65,8 +66,8 @@ minecraft {
 
             // Recommended logging level for the console
             property 'forge.logging.console.level', 'debug'
-            property 'mixin.env.disableRefMap', 'true'
-
+            property 'mixin.env.remapRefMap', 'true'
+            property 'mixin.env.refMapRemappingFile', "${buildDir}/createSrgToMcp/output.srg"
             mods {
                 modid {
                     source sourceSets.main

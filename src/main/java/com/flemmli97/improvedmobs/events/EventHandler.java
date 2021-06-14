@@ -60,6 +60,7 @@ import net.minecraft.util.math.EntityRayTraceResult;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.world.GameRules;
 import net.minecraft.world.LightType;
+import net.minecraft.world.World;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
@@ -72,6 +73,7 @@ import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.living.LivingSpawnEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
+import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.Event;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
@@ -95,9 +97,15 @@ public class EventHandler {
             event.addCapability(tileCap, new TileCapProvider());
     }
 
+    /**
+     * Move the init of default config to {@link WorldEvent.Load} cause {@link FMLServerStartingEvent} is too late.
+     * Entities are already loaded at that point
+     */
     @SubscribeEvent
-    public void serverStart(FMLServerStartingEvent event) {
-        Config.CommonConfig.serverInit(event.getServer());
+    public void worldLoad(WorldEvent.Load event) {
+        if (event.getWorld() instanceof ServerWorld && ((ServerWorld) event.getWorld()).getDimensionKey() == World.OVERWORLD) {
+            Config.CommonConfig.serverInit((ServerWorld) event.getWorld());
+        }
     }
 
     @SubscribeEvent

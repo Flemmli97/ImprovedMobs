@@ -3,10 +3,10 @@ package com.flemmli97.improvedmobs.config;
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.ItemWrapper;
 import net.minecraft.item.ItemStack;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.text.TextFormatting;
+import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.ModList;
 
 import java.util.ArrayList;
@@ -223,10 +223,10 @@ public class Config {
             projectileMax = ConfigSpecs.commonConf.projectileMax.get().floatValue();
         }
 
-        public static void serverInit(MinecraftServer server) {
+        public static void serverInit(ServerWorld world) {
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
             if (l.size() == 1 && l.get(0).equals("UNINITIALIZED")) {
-                entityBlacklist.initDefault(server.func_241755_D_());
+                entityBlacklist.initDefault(world);
                 ConfigSpecs.commonConf.entityBlacklist.set(entityBlacklist.writeToString());
             }
         }
