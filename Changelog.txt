@@ -5,6 +5,7 @@ Improved Mobs 1.7.8
   Made so e.g. skeletons dont use bow items since they already can use it.
   Previously was a hardcoded check.
   By default excludes bow use from vanilla skeletons, drowned trident use, pillager + piglins crossbow use and snowman snowball use
+- Fix guardian crash with ice and fire mobs. They still dont go after mobs but thats another thing
 
 Improved Mobs 1.7.7
 ================
