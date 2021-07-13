@@ -119,16 +119,16 @@ public class EventHandler {
             if (e.getEntity() instanceof MobEntity) {
                 MobEntity living = (MobEntity) e.getEntity();
                 if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
-                        && !Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
+                        && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
                     living.getPersistentData().putBoolean(breaker, true);
                 }
-                if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist)) {
+                if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyArmor, true);
                 }
-                if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.CommonConfig.heldMobWhitelist)) {
+                if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.CommonConfig.heldMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyHeld, true);
                 }
-                if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
+                if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
                     living.getPersistentData().putBoolean(modifyAttributes, true);
                 }
             }
@@ -187,17 +187,17 @@ public class EventHandler {
                     living.setItemStackToSlot(EquipmentSlotType.OFFHAND, stack);
                 }
             }
-            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
                 living.goalSelector.addGoal(1, new ItemUseGoal(living, 15));
                 //EntityAITechGuns.applyAI(living);
             }
-            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
                 //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
                 if (!(/*living.canBreatheUnderwater() || */((MobEntityMixin) living).getTrueNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity)) {
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
                 }
             }
-            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
                 if (!(living.getNavigator() instanceof ClimberPathNavigator)) {
                     NodeProcessor proc = ((PathNavigatorAccessor) living.getNavigator()).getNodeProcessor();
                     if (proc instanceof ILadderFlagNode)
@@ -207,7 +207,7 @@ public class EventHandler {
             }
             boolean villager = false;
             boolean neutral = living instanceof EndermanEntity || living instanceof ZombifiedPiglinEntity;
-            if (!Config.CommonConfig.entityBlacklist.testForFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
                 villager = true;
                 if (!neutral)
                     living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() <= 0.5, null));
@@ -226,7 +226,7 @@ public class EventHandler {
         if (e.getEntity() instanceof CreatureEntity) {
             CreatureEntity creature = (CreatureEntity) e.getEntity();
             if (DifficultyData.getDifficulty(creature.world, creature) >= Config.CommonConfig.difficultySteal && mobGriefing && Config.CommonConfig.stealerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.stealerChance
-                    && !Config.CommonConfig.entityBlacklist.testForFlag(creature, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
+                    && !Config.CommonConfig.entityBlacklist.hasFlag(creature, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
                 creature.goalSelector.addGoal(5, new StealGoal(creature));
             }
         }

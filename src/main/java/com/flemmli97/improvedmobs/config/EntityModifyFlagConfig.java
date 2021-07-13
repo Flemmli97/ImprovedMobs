@@ -39,12 +39,12 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         }
     }
 
-    public boolean testForFlag(MobEntity living, Flags flag, boolean reverse) {
+    public boolean hasFlag(MobEntity living, Flags flag, boolean reverse) {
         ResourceLocation res = living.getType().getRegistryName();
         if (res == null)
-            return false;
+            return true;
         if (Config.CommonConfig.flagBlacklist.contains(flag.toString()))
-            return false;
+            return true;
         EnumSet<Flags> set = this.map.get(res.toString());
         if (set == null)
             set = this.map.get(res.getNamespace());

@@ -1,3 +1,7 @@
+Improved Mobs 1.7.9
+================
+- Fix Flag Blacklist not working
+
 Improved Mobs 1.7.8
 ================
 - Made pathfinding a bit better again
