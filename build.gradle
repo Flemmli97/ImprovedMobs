@@ -236,6 +236,7 @@ tasks.getByName("curseforge").doLast {
         def version = project.curse_versions.split(', ')[0]
         message.setUsername("Release")
         message.setContent("<@&${project.ping_id}> ${project.mod_name} ${project.modversion} for Minecraft ${mcversion} has been released!")
+        message.setAvatarUrl("https://cdn.discordapp.com/avatars/680540027255652407/e4b7a058b24843ae13389a9a3cc3ae8c.png?size=128")
 
         def embed = new Embed()
         embed.addField('Get it here (When it is accepted)', "${project.findProperty('curse_page')}/files/${newFileId}", false)
