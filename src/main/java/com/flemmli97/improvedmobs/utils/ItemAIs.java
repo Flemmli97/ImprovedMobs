@@ -202,6 +202,11 @@ public class ItemAIs {
         public UsableHand prefHand() {
             return UsableHand.BOTH;
         }
+
+        @Override
+        public boolean applies(ItemStack stack) {
+            return AIUtils.isBadPotion(stack);
+        }
     };
 
     public static final ItemAI LINGERINGPOTIONS = new ItemAI() {
@@ -235,6 +240,11 @@ public class ItemAIs {
         @Override
         public UsableHand prefHand() {
             return UsableHand.BOTH;
+        }
+
+        @Override
+        public boolean applies(ItemStack stack) {
+            return AIUtils.isBadPotion(stack);
         }
     };
 

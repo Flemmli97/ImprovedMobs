@@ -2,6 +2,7 @@ package com.flemmli97.improvedmobs.utils;
 
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.Hand;
 
 public interface ItemAI {
@@ -22,6 +23,10 @@ public interface ItemAI {
     }
 
     default void onReset(MobEntity entity, Hand hand) {
+    }
+
+    default boolean applies(ItemStack stack) {
+        return true;
     }
 
     enum ItemType {

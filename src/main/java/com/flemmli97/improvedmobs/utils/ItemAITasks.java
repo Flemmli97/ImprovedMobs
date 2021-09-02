@@ -53,10 +53,10 @@ public class ItemAITasks {
         }
         Hand hand = Hand.MAIN_HAND;
         ItemAI ai = itemMap.get(heldMain.getItem());
-        if (ai == null || ai.prefHand() == ItemAI.UsableHand.OFF || blockedAI(entity, heldMain.getItem())) {
+        if (ai == null || ai.prefHand() == ItemAI.UsableHand.OFF || blockedAI(entity, heldMain.getItem()) || !ai.applies(heldMain)) {
             ai = itemMap.get(heldOff.getItem());
             if (ai != null) {
-                if (ai.prefHand() == ItemAI.UsableHand.MAIN || blockedAI(entity, heldOff.getItem()))
+                if (ai.prefHand() == ItemAI.UsableHand.MAIN || blockedAI(entity, heldOff.getItem()) || !ai.applies(heldOff))
                     ai = null;
                 else hand = Hand.OFF_HAND;
             }
