@@ -43,6 +43,7 @@ import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
+import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ArmorItem;
@@ -311,10 +312,19 @@ public class EventHandler {
 
     @SubscribeEvent
     public void attackEvent(LivingAttackEvent e) {
-        if (!Config.CommonConfig.friendlyFire && e.getEntity() instanceof TameableEntity && !e.getEntity().world.isRemote) {
-            TameableEntity pet = (TameableEntity) e.getEntity();
-            if (e.getSource().getTrueSource() != null && e.getSource().getTrueSource() == pet.getOwner() && !e.getSource().getTrueSource().isSneaking()) {
-                e.setCanceled(true);
+        if(!e.getEntity().world.isRemote) {
+            if (!Config.CommonConfig.friendlyFire && e.getEntity() instanceof TameableEntity) {
+                TameableEntity pet = (TameableEntity) e.getEntity();
+                if (e.getSource().getTrueSource() != null && e.getSource().getTrueSource() == pet.getOwner() && !e.getSource().getTrueSource().isSneaking()) {
+                    e.setCanceled(true);
+                }
+            }
+            if(e.getEntity() instanceof PlayerEntity) {
+                Entity direct = e.getSource().getImmediateSource();
+                if(direct instanceof SnowballEntity && direct.getPersistentData().getBoolean(ImprovedMobs.thrownEntityID)) {
+                    direct.getPersistentData().remove(ImprovedMobs.thrownEntityID);
+                    e.getEntity().attackEntityFrom(e.getSource(), 0.001f);
+                }
             }
         }
     }
