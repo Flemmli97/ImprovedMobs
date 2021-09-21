@@ -119,10 +119,6 @@ public class EventHandler {
         if (e.getEntity().world != null && !e.getEntity().world.isRemote) {
             if (e.getEntity() instanceof MobEntity) {
                 MobEntity living = (MobEntity) e.getEntity();
-                if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
-                        && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
-                    living.getPersistentData().putBoolean(breaker, true);
-                }
                 if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist)) {
                     living.getPersistentData().putBoolean(modifyArmor, true);
                 }
@@ -172,6 +168,12 @@ public class EventHandler {
         boolean mobGriefing = e.getWorld().getGameRules().getBoolean(GameRules.MOB_GRIEFING);
         if (e.getEntity() instanceof MobEntity) {
             MobEntity living = (MobEntity) e.getEntity();
+            boolean canBreak = false;
+            if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
+                    && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
+                living.getPersistentData().putBoolean(breaker, true);
+                canBreak = true;
+            }
             this.applyAttributesAndItems(living);
             if (living.getPersistentData().getBoolean(breaker)) {
                 ((IGoalModifier) living.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
@@ -211,17 +213,17 @@ public class EventHandler {
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
                 villager = true;
                 if (!neutral)
-                    living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() <= 0.5, null));
+                    living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, !canBreak || living.world.rand.nextFloat() <= 0.5, null));
             }
             if (Config.CommonConfig.neutralAggressiv != 0 && living.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv)
                 if (neutral) {
-                    living.targetSelector.addGoal(1, this.setNoLoS(living, PlayerEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
+                    living.targetSelector.addGoal(1, this.setNoLoS(living, PlayerEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, null));
                     if (villager)
-                        living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, null));
+                        living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, canBreak || living.world.rand.nextFloat() < 0.5, null));
                 }
             List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(living.getType().getRegistryName());
             if (types != null)
-                living.targetSelector.addGoal(3, this.setNoLoS(living, LivingEntity.class, !living.getPersistentData().getBoolean(breaker) || living.world.rand.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
+                living.targetSelector.addGoal(3, this.setNoLoS(living, LivingEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
 
         }
         if (e.getEntity() instanceof CreatureEntity) {
@@ -312,16 +314,16 @@ public class EventHandler {
 
     @SubscribeEvent
     public void attackEvent(LivingAttackEvent e) {
-        if(!e.getEntity().world.isRemote) {
+        if (!e.getEntity().world.isRemote) {
             if (!Config.CommonConfig.friendlyFire && e.getEntity() instanceof TameableEntity) {
                 TameableEntity pet = (TameableEntity) e.getEntity();
                 if (e.getSource().getTrueSource() != null && e.getSource().getTrueSource() == pet.getOwner() && !e.getSource().getTrueSource().isSneaking()) {
                     e.setCanceled(true);
                 }
             }
-            if(e.getEntity() instanceof PlayerEntity) {
+            if (e.getEntity() instanceof PlayerEntity) {
                 Entity direct = e.getSource().getImmediateSource();
-                if(direct instanceof SnowballEntity && direct.getPersistentData().getBoolean(ImprovedMobs.thrownEntityID)) {
+                if (direct instanceof SnowballEntity && direct.getPersistentData().getBoolean(ImprovedMobs.thrownEntityID)) {
                     direct.getPersistentData().remove(ImprovedMobs.thrownEntityID);
                     e.getEntity().attackEntityFrom(e.getSource(), 0.001f);
                 }
