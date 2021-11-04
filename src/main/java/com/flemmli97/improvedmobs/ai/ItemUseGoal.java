@@ -1,5 +1,6 @@
 package com.flemmli97.improvedmobs.ai;
 
+import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.utils.ItemAI;
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
 import net.minecraft.entity.LivingEntity;
@@ -78,6 +79,11 @@ public class ItemUseGoal extends Goal {
 
     @Override
     public void tick() {
+        if (this.living.getPersistentData().contains(ImprovedMobs.disableShield) && this.living.getHeldItem(this.hand).isShield(this.living)) {
+            this.living.getPersistentData().remove(ImprovedMobs.disableShield);
+            this.attackTime = this.ai.cooldown() * 2;
+            return;
+        }
         LivingEntity target = this.living.getAttackTarget();
         if (target != null) {
             boolean flag = this.living.getEntitySenses().canSee(target);

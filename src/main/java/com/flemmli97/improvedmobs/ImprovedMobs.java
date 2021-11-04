@@ -32,6 +32,7 @@ public class ImprovedMobs {
 
     public static final String thrownEntityID = MODID + ":thrown_entity";
     public static final String waterRiding = MODID + ":water_riding";
+    public static final String disableShield = MODID + ":trigger_shield";
 
     public ImprovedMobs() {
         File file = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").toFile();

@@ -20,6 +20,7 @@ import com.flemmli97.improvedmobs.mixin.PathNavigatorAccessor;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import com.flemmli97.improvedmobs.utils.IMAttributes;
+import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
@@ -315,19 +316,38 @@ public class EventHandler {
     @SubscribeEvent
     public void attackEvent(LivingAttackEvent e) {
         if (!e.getEntity().world.isRemote) {
-            if (!Config.CommonConfig.friendlyFire && e.getEntity() instanceof TameableEntity) {
+            if (!Config.CommonConfig.friendlyFire && e.getEntityLiving() instanceof TameableEntity) {
                 TameableEntity pet = (TameableEntity) e.getEntity();
                 if (e.getSource().getTrueSource() != null && e.getSource().getTrueSource() == pet.getOwner() && !e.getSource().getTrueSource().isSneaking()) {
                     e.setCanceled(true);
+                    return;
                 }
             }
-            if (e.getEntity() instanceof PlayerEntity) {
+            Entity source = e.getSource().getTrueSource();
+            if (e.getEntityLiving() instanceof PlayerEntity) {
                 Entity direct = e.getSource().getImmediateSource();
                 if (direct instanceof SnowballEntity && direct.getPersistentData().getBoolean(ImprovedMobs.thrownEntityID)) {
                     direct.getPersistentData().remove(ImprovedMobs.thrownEntityID);
                     e.getEntity().attackEntityFrom(e.getSource(), 0.001f);
                 }
+            } else if (source instanceof LivingEntity) {
+                LivingEntity attacker = (LivingEntity) source;
+                if (attacker.getHeldItemMainhand().canDisableShield(e.getEntityLiving().getActiveItemStack(), e.getEntityLiving(), attacker)) {
+                    triggerDisableShield(attacker, e.getEntityLiving());
+                }
             }
+        }
+    }
+
+    private static void triggerDisableShield(LivingEntity attacker, LivingEntity target) {
+        float f = 0.25F + EnchantmentHelper.getEfficiencyModifier(attacker) * 0.05F;
+        if (attacker.isSprinting()) {
+            f += 0.75F;
+        }
+        if (attacker.getRNG().nextFloat() < f) {
+            target.getPersistentData().putBoolean(ImprovedMobs.disableShield, true);
+            target.resetActiveHand();
+            target.world.setEntityState(target, (byte) 30);
         }
     }
 
@@ -420,12 +440,13 @@ public class EventHandler {
         }
     }
 
+    //Note: Sodium-Forge breaks this since they modify explosion but dont call the forge event
     @SubscribeEvent
     public void explosion(ExplosionEvent.Detonate event) {
         if (event.getExplosion().getExploder() instanceof TNTEntity && event.getExplosion().getExploder().getPersistentData().contains(ImprovedMobs.thrownEntityID)) {
+            event.getAffectedBlocks().clear();
             LivingEntity igniter = event.getExplosion().getExplosivePlacedBy();
             if (igniter instanceof MobEntity) {
-                event.getAffectedBlocks().clear();
                 event.getAffectedEntities().removeIf(e -> !e.equals(((MobEntity) igniter).getAttackTarget()));
             }
         }

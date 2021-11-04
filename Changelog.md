@@ -1,6 +1,8 @@
 Improved Mobs 1.7.10
 ================
 - Fix a freeze during world creating if scaling health is installed
+- Fix pillagers keep only shielding and do nothing else
+- Axes now disable shields just like for players
 
 Improved Mobs 1.7.9
 ================
