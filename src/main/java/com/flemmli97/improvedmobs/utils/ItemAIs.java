@@ -6,6 +6,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.item.EnderPearlEntity;
 import net.minecraft.entity.item.TNTEntity;
+import net.minecraft.entity.monster.AbstractSkeletonEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.projectile.EvokerFangsEntity;
 import net.minecraft.entity.projectile.PotionEntity;
@@ -320,7 +321,7 @@ public class ItemAIs {
 
         @Override
         public int cooldown() {
-            return 80;
+            return 60;
         }
 
         @Override
@@ -340,7 +341,12 @@ public class ItemAIs {
 
         @Override
         public int maxUseCount(MobEntity entity, Hand hand) {
-            return 70;
+            return 75;
+        }
+
+        @Override
+        public boolean isIncompatibleWith(LivingEntity entity, ItemStack stack) {
+            return stack.getItem() instanceof CrossbowItem || (entity instanceof AbstractSkeletonEntity && stack.getItem() instanceof BowItem);
         }
     };
 

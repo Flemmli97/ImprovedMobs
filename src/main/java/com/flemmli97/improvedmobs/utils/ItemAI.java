@@ -29,6 +29,10 @@ public interface ItemAI {
         return true;
     }
 
+    default boolean isIncompatibleWith(LivingEntity entity, ItemStack stack) {
+        return false;
+    }
+
     enum ItemType {
         NONSTRAFINGITEM,
         STRAFINGITEM,

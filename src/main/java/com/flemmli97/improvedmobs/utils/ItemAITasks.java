@@ -56,7 +56,7 @@ public class ItemAITasks {
         if (ai == null || ai.prefHand() == ItemAI.UsableHand.OFF || blockedAI(entity, heldMain.getItem()) || !ai.applies(heldMain)) {
             ai = itemMap.get(heldOff.getItem());
             if (ai != null) {
-                if (ai.prefHand() == ItemAI.UsableHand.MAIN || blockedAI(entity, heldOff.getItem()) || !ai.applies(heldOff))
+                if (ai.prefHand() == ItemAI.UsableHand.MAIN || ai.isIncompatibleWith(entity, heldMain) || blockedAI(entity, heldOff.getItem()) || !ai.applies(heldOff))
                     ai = null;
                 else hand = Hand.OFF_HAND;
             }
