@@ -1,0 +1,39 @@
+dependencies {
+    // We depend on fabric loader here to use the fabric @Environment annotations and get the mixin dependencies
+    // Do NOT use other classes from fabric loader
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+}
+
+architectury {
+    common()
+}
+
+loom {
+    accessWidenerPath.set project(":fabric").file("src/main/resources/improvedmobs.accesswidener")
+}
+
+repositories {
+    mavenLocal()
+    maven {
+        name = "TenshiLib"
+        url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+    }
+}
+
+dependencies {
+    modCompileOnly "${tenshilib_dep}:fabric"
+}
+
+publishing {
+    publications {
+        mavenCommon(MavenPublication) {
+            artifactId = rootProject.archives_base_name
+            from components.java
+        }
+    }
+
+    // See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+    repositories {
+        // Add repositories to publish to here.
+    }
+}

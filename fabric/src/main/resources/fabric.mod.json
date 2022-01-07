@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "improvedmobs",
+  "version": "${version}",
+  "name": "Improved Mobs",
+  "description": "Improved AI and customizations for mobs.",
+  "authors": [
+    "Flemmli97"
+  ],
+  "contact": {
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/improved-mobs-fabric",
+    "sources": "https://github.com/Flemmli97/ImprovedMobs"
+  },
+  "license": "ARR",
+  "icon": "assets/examplemod/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric"
+    ],
+    "client": [
+      "io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabricClient"
+    ]
+  },
+  "mixins": [
+    "improvedmobs.mixins.json",
+    "improvedmobs.fabric.mixins.json"
+  ],
+  "accessWidener": "improvedmobs.accesswidener",
+  "depends": {
+    "fabric": "*",
+    "minecraft": ">=1.18"
+  },
+  "suggests": {
+    "flamingo": "*"
+  }
+}

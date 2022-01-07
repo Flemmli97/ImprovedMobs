@@ -1,0 +1,95 @@
+package io.github.flemmli97.improvedmobs.config;
+
+import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.tenshilib.RegistryHelper;
+import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.Tag;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.material.Material;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
+
+    private final Set<String> blocks = new HashSet<>();
+    private List<String> configString = new ArrayList<>();
+    private final Set<Tag<Block>> tags = new HashSet<>();
+    private boolean initialized;
+
+    public boolean canBreak(BlockState state) {
+        if (!this.initialized)
+            this.initialize();
+        if (state.getMaterial() == Material.AIR)// || (Config.ServerConfig.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
+            return false;
+        if (!Config.CommonConfig.breakTileEntities && state.hasBlockEntity())
+            return false;
+        if (Config.CommonConfig.breakingAsBlacklist) {
+            return this.tags.stream().noneMatch(state::is) && !this.blocks.contains(RegistryHelper.blocks().getIDFrom(state.getBlock()).toString());
+        }
+        return this.tags.stream().anyMatch(state::is) || this.blocks.contains(RegistryHelper.blocks().getIDFrom(state.getBlock()).toString());
+    }
+
+    @Override
+    public BreakableBlocks readFromString(List<String> arr) {
+        this.blocks.clear();
+        this.configString = arr;
+        this.initialized = false;
+        return this;
+    }
+
+    private void initialize() {
+        this.initialized = true;
+        Set<String> blackList = new HashSet<>();
+        Set<Tag<Block>> blackListTags = new HashSet<>();
+        for (String s : this.configString) {
+            if (s.startsWith("!"))
+                addBlocks(s.substring(1), blackList, blackListTags);
+            else
+                addBlocks(s, this.blocks, this.tags);
+        }
+        this.blocks.removeAll(blackList);
+        this.tags.removeAll(blackListTags);
+    }
+
+    private static void addBlocks(String s, Set<String> list, Set<Tag<Block>> tags) {
+        if (s.contains(":")) {
+            Tag<Block> tag = BlockTags.getAllTags().getTag(new ResourceLocation(s));
+            if (tag != null)
+                tags.add(tag);
+            else if (RegistryHelper.blocks().getFromId(new ResourceLocation(s)) != Blocks.AIR)
+                list.add(s);
+        } else {
+            Class<?> clss = null;
+            try {
+                clss = Class.forName("net.minecraft.block." + s);
+            } catch (ClassNotFoundException e) {
+                try {
+                    clss = Class.forName(s);
+                } catch (ClassNotFoundException e1) {
+                    ImprovedMobs.logger.error("Couldn't find class for " + s);
+                }
+            }
+            if (clss != null)
+                for (Block block : RegistryHelper.blocks().getIterator()) {
+                    if (clss.isInstance(block))
+                        list.add(RegistryHelper.blocks().getIDFrom(block).toString());
+                }
+        }
+    }
+
+    @Override
+    public List<String> writeToString() {
+        return this.configString;
+    }
+
+    public static String use() {
+        return "Usage: <registry name;classname;tag> put \"!\" infront to exclude blocks";
+    }
+}
