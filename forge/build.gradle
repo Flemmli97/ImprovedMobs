@@ -27,6 +27,10 @@ repositories {
         name = "TenshiLib"
         url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
     }
+    maven {
+        name = "CurseMaven"
+        url "https://www.cursemaven.com"
+    }
 }
 
 dependencies {
@@ -36,6 +40,9 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
     modImplementation "${tenshilib_dep}:forge"
+
+    modRuntimeOnly "${sillib_dep}"
+    modImplementation "${scalhealth_dep}"
 }
 
 processResources {

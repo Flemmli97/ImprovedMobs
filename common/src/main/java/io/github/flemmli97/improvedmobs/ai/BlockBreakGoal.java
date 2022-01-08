@@ -117,9 +117,6 @@ public class BlockBreakGoal extends Goal {
             ItemStack item = this.living.getMainHandItem();
             ItemStack itemOff = this.living.getOffhandItem();
             boolean canHarvest = Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff);
-            //if(Config.ServerConfig.useCoroUtil)
-            //    TileEntityRepairingBlock.replaceBlockAndBackup(this.living.world, this.markedLoc, ConfigHandler.repairTick);
-            //else
             this.living.level.destroyBlock(this.markedLoc, canHarvest);
             this.markedLoc = null;
             if (!this.aboveTarget()) {
