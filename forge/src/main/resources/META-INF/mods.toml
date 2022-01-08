@@ -2,24 +2,20 @@ modLoader="javafml"
 loaderVersion="[38,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/ImprovedMobs/issues"
-displayURL="https://www.curseforge.com/minecraft/mc-mods/improved-mobs"
-# logoFile=""
-credits=""
-authors="Flemmli97"
 [[mods]]
-modId = "improvedmobs"
-version = "${version}"
+modId="improvedmobs"
+version="${version}"
 displayName="Improved Mobs Mod"
+displayURL="https://www.curseforge.com/minecraft/mc-mods/improved-mobs"
+logoFile="icon.png"
 authors="Flemmli97"
-description = '''
-Improved AI and customizations for mobs.
-'''
+description='''Improved AI and customizations for mobs.'''
 [[dependencies.improvedmobs]]
-modId = "minecraft"
-mandatory = true
-versionRange = "[1.18,)"
-ordering = "NONE"
-side = "BOTH"
+modId="minecraft"
+mandatory=true
+versionRange="[1.18,)"
+ordering="NONE"
+side="BOTH"
 [[dependencies.improvedmobs]]
 modId="tenshilib"
 mandatory=true

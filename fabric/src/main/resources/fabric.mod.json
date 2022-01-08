@@ -9,10 +9,11 @@
   ],
   "contact": {
     "homepage": "https://www.curseforge.com/minecraft/mc-mods/improved-mobs-fabric",
+    "issues": "https://github.com/Flemmli97/ImprovedMobs/issues",
     "sources": "https://github.com/Flemmli97/ImprovedMobs"
   },
   "license": "ARR",
-  "icon": "assets/examplemod/icon.png",
+  "icon": "icon.png",
   "environment": "*",
   "entrypoints": {
     "main": [
@@ -31,8 +32,5 @@
     "fabric": "*",
     "minecraft": ">=1.18",
     "tenshilib": "*"
-  },
-  "suggests": {
-    "flamingo": "*"
   }
 }
