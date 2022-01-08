@@ -8,6 +8,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.Ghast;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Phantom;
@@ -30,7 +31,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         for (EntityType<?> entry : RegistryHelper.entities().getIterator()) {
             try {
                 Entity e = entry.create(world);
-                if (!(e instanceof Mob) || e instanceof Monster || e instanceof Ghast || e instanceof Phantom || e instanceof Slime || e instanceof Shulker)
+                if (!(e instanceof Mob) || e instanceof Enemy)
                     continue;
                 this.map.put(RegistryHelper.entities().getIDFrom(entry).toString(), EnumSet.of(Flags.ALL));
             } catch (Exception e) {

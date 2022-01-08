@@ -57,8 +57,8 @@ public class EntityFlags {
     }
 
     public enum FlagType {
+        UNDEF,
         TRUE,
         FALSE,
-        UNDEF
     }
 }
