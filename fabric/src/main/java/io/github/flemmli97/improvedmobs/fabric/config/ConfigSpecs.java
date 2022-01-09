@@ -78,9 +78,6 @@ public final class ConfigSpecs {
 
         //Integration
         public final CommentedVal<Boolean> useScalingHealthMod;
-        public final CommentedVal<Boolean> useTGunsMod;
-        public final CommentedVal<Boolean> useReforgedMod;
-        public final CommentedVal<Boolean> useCoroUtil;
 
         //AI
         public final CommentedVal<List<String>> breakableBlocks;
@@ -165,9 +162,6 @@ public final class ConfigSpecs {
 
             //builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
-            this.useTGunsMod = builder.comment("Should mobs be able to use techguns weapons. (Requires techguns mod)").define("Use Techguns Mod", true);
-            this.useReforgedMod = builder.comment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)").define("Use Reforged Mod", true);
-            this.useCoroUtil = builder.comment("Should the coroutils repair block be used. (Requires coroutils mod)").define("Use CoroUtils Mod", true);
 
             //builder.comment("Settings regarding custom ai for mobs").push("ai");
             this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. " + BreakableBlocks.use(), "If you includery common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("minecraft:fence_gates", "minecraft:wooden_doors", "c:glass", "c:glass_panes", "minecraft:glass"));

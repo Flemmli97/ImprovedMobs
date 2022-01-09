@@ -55,9 +55,6 @@ public class Config {
 
         //Integration
         public static boolean useScalingHealthMod = true;
-        public static boolean useTGunsMod = true;
-        public static boolean useReforgedMod = true;
-        public static boolean useCoroUtil = true;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks();

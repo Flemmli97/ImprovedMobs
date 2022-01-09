@@ -51,9 +51,6 @@ public class ConfigLoader {
         Config.CommonConfig.debugPath = specs.debugPath.get();
 
         Config.CommonConfig.useScalingHealthMod = specs.useScalingHealthMod.get() && FabricLoader.getInstance().isModLoaded("scalinghealth");
-        Config.CommonConfig.useTGunsMod = specs.useTGunsMod.get() && FabricLoader.getInstance().isModLoaded("techguns");
-        Config.CommonConfig.useReforgedMod = specs.useReforgedMod.get() && FabricLoader.getInstance().isModLoaded("reforged");
-        Config.CommonConfig.useCoroUtil = specs.useCoroUtil.get() && FabricLoader.getInstance().isModLoaded("coroutil");
 
         Config.CommonConfig.breakableBlocks.readFromString(specs.breakableBlocks.get());
         Config.CommonConfig.breakingAsBlacklist = specs.breakingAsBlacklist.get();
