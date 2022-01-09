@@ -65,6 +65,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue mobListLadderWhitelist;
         public final ForgeConfigSpec.BooleanValue mobListStealWhitelist;
         public final ForgeConfigSpec.BooleanValue mobListBoatWhitelist;
+        public final ForgeConfigSpec.BooleanValue mobListFlyWhitelist;
         public final ForgeConfigSpec.BooleanValue targetVillagerWhitelist;
 
         //Debug
@@ -91,6 +92,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.ConfigValue<Integer> repairTick;
         public final ForgeConfigSpec.ConfigValue<Double> difficultyBreak;
         public final ForgeConfigSpec.ConfigValue<Double> difficultySteal;
+        public final ForgeConfigSpec.ConfigValue<Double> flyAIChance;
 
         //Equipment
         public final ForgeConfigSpec.ConfigValue<List<String>> equipmentModBlacklist;
@@ -149,7 +151,8 @@ public class ConfigSpecs {
             this.mobListUseWhitelist = builder.comment("Treat USEITEM flags as whitelist").define("Item Use Whitelist", false);
             this.mobListLadderWhitelist = builder.comment("Treat LADDER flags as whitelist").define("Ladder Whitelist", false);
             this.mobListStealWhitelist = builder.comment("Treat STEAL flags as whitelist").define("Steal Whitelist", false);
-            this.mobListBoatWhitelist = builder.comment("Treat SWIMMRIDE flags as whitelist").define("Boat Whitelist", false);
+            this.mobListBoatWhitelist = builder.comment("Treat GUARDIAN flags as whitelist").define("Guardian Whitelist", false);
+            this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Parrot Whitelist", false);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", false);
             builder.pop();
 
@@ -179,6 +182,7 @@ public class ConfigSpecs {
             this.repairTick = builder.comment("Delay for the coroutil repair block. Coroutil integration needs to be enabled").define("Repair Ticks", 500);
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
+            this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").define("Fly Chance", 0.5);
             builder.pop();
 
             builder.comment("Configs regarding mobs spawning with equipment").push("equipment");

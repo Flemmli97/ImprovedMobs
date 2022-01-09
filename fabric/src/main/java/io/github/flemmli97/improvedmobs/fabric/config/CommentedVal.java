@@ -18,6 +18,10 @@ public class CommentedVal<T> {
         return this.input;
     }
 
+    public void set(T value) {
+        this.input = value;
+    }
+
     public static class Builder {
 
         private List<String> comments;

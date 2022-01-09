@@ -45,6 +45,7 @@ public class ConfigLoader {
         Config.CommonConfig.mobListLadderWhitelist = specs.mobListLadderWhitelist.get();
         Config.CommonConfig.mobListStealWhitelist = specs.mobListStealWhitelist.get();
         Config.CommonConfig.mobListBoatWhitelist = specs.mobListBoatWhitelist.get();
+        Config.CommonConfig.mobListFlyWhitelist = specs.mobListFlyWhitelist.get();
         Config.CommonConfig.targetVillagerWhitelist = specs.targetVillagerWhitelist.get();
 
         Config.CommonConfig.debugPath = specs.debugPath.get();
@@ -82,6 +83,7 @@ public class ConfigLoader {
         Config.CommonConfig.repairTick = specs.repairTick.get();
         Config.CommonConfig.difficultyBreak = specs.difficultyBreak.get().floatValue();
         Config.CommonConfig.difficultySteal = specs.difficultySteal.get().floatValue();
+        Config.CommonConfig.flyAIChance = specs.flyAIChance.get().floatValue();
 
         Config.CommonConfig.equipmentModBlacklist = specs.equipmentModBlacklist.get();
         Config.CommonConfig.equipmentModWhitelist = specs.equipmentModWhitelist.get();
@@ -121,7 +123,7 @@ public class ConfigLoader {
         List<? extends String> l = vals.entityBlacklist.get();
         if (l.size() == 1 && l.get(0).equals("UNINITIALIZED")) {
             Config.CommonConfig.entityBlacklist.initDefault(world);
-            vals.entityBlacklist = new CommentedVal<>(vals.entityBlacklist.comments, Config.CommonConfig.entityBlacklist.writeToString());
+            vals.entityBlacklist.set(Config.CommonConfig.entityBlacklist.writeToString());
             ConfigSpecs.commonConfig.save();
         }
     }

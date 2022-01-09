@@ -41,11 +41,11 @@ public class BlockBreakGoal extends Goal {
         this.living = living;
         int digWidth = living.getBbWidth() < 1 ? 0 : Mth.ceil(living.getBbWidth());
         this.digHeight = (int) living.getBbHeight() + 1;
-        for (int i = digHeight; i >= 0; i--)
+        for (int i = this.digHeight; i >= 0; i--)
             this.breakAOE.add(new BlockPos(0, i, 0));
         //north = neg z
         for (int z = digWidth + 1; z >= -digWidth; z--)
-            for (int y = digHeight; y >= 0; y--) {
+            for (int y = this.digHeight; y >= 0; y--) {
                 for (int x = 0; x <= digWidth; x++) {
                     if (z != 0) {
                         this.breakAOE.add(new BlockPos(x, y, z));
@@ -83,7 +83,7 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.blockPosition()) && this.living.distanceTo(this.target) > 1D; //(this.target.isOnGround() || !this.living.canEntityBeSeen(this.target));
+        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.blockPosition()) && this.living.distanceTo(this.target) > 1D;
     }
 
     private boolean nearSameSpace(BlockPos pos1, BlockPos pos2) {

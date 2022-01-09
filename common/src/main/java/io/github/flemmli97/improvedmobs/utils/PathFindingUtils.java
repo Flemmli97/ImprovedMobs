@@ -156,7 +156,4 @@ public class PathFindingUtils {
         BlockState state = entity.level.getBlockState(pos);
         return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
     }
-    /*public static void t(PathFinder pathFinder) {
-        Optional<Path> optional = !set3.isEmpty() ? set3.stream().map(target -> pathFinder.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), true)).min(Comparator.comparingInt(Path::getNodeCount)) : set.stream().map(target -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));
-    }*/
 }

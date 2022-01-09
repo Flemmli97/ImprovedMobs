@@ -41,6 +41,7 @@ public class ConfigLoader {
         Config.CommonConfig.mobListLadderWhitelist = ConfigSpecs.commonConf.mobListLadderWhitelist.get();
         Config.CommonConfig.mobListStealWhitelist = ConfigSpecs.commonConf.mobListStealWhitelist.get();
         Config.CommonConfig.mobListBoatWhitelist = ConfigSpecs.commonConf.mobListBoatWhitelist.get();
+        Config.CommonConfig.mobListFlyWhitelist = ConfigSpecs.commonConf.mobListFlyWhitelist.get();
         Config.CommonConfig.targetVillagerWhitelist = ConfigSpecs.commonConf.targetVillagerWhitelist.get();
 
         Config.CommonConfig.debugPath = ConfigSpecs.commonConf.debugPath.get();
@@ -78,6 +79,7 @@ public class ConfigLoader {
         Config.CommonConfig.repairTick = ConfigSpecs.commonConf.repairTick.get();
         Config.CommonConfig.difficultyBreak = ConfigSpecs.commonConf.difficultyBreak.get().floatValue();
         Config.CommonConfig.difficultySteal = ConfigSpecs.commonConf.difficultySteal.get().floatValue();
+        Config.CommonConfig.flyAIChance = ConfigSpecs.commonConf.flyAIChance.get().floatValue();
 
         Config.CommonConfig.equipmentModBlacklist = ConfigSpecs.commonConf.equipmentModBlacklist.get();
         Config.CommonConfig.equipmentModWhitelist = ConfigSpecs.commonConf.equipmentModWhitelist.get();

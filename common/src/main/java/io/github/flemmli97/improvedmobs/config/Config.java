@@ -47,6 +47,7 @@ public class Config {
         public static boolean mobListLadderWhitelist;
         public static boolean mobListStealWhitelist;
         public static boolean mobListBoatWhitelist;
+        public static boolean mobListFlyWhitelist;
         public static boolean targetVillagerWhitelist;
 
         //Debug
@@ -73,6 +74,7 @@ public class Config {
         public static int repairTick = 200;
         public static float difficultyBreak;
         public static float difficultySteal;
+        public static float flyAIChance;
 
         //Equipment
         public static List<String> equipmentModBlacklist;

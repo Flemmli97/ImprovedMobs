@@ -13,7 +13,7 @@ import net.minecraft.ChatFormatting;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConfigSpecs {
+public final class ConfigSpecs {
 
     public static JsonConfig<ClientConfigVals> clientConfig;
     public static JsonConfig<CommonConfigVals> commonConfig;
@@ -28,7 +28,7 @@ public class ConfigSpecs {
                 ConfigSpecs.CommonConfigVals.class, new ConfigSpecs.CommonConfigVals());
     }
 
-    public static class ClientConfigVals {
+    public final static class ClientConfigVals {
 
         public final CommentedVal<Integer> guiX;
         public final CommentedVal<Integer> guiY;
@@ -46,90 +46,92 @@ public class ConfigSpecs {
         }
     }
 
-    public static class CommonConfigVals {
+    public final static class CommonConfigVals {
 
         //General
-        public CommentedVal<Boolean> enableDifficultyScaling;
-        public CommentedVal<Integer> difficultyDelay;
-        public CommentedVal<List<String>> increaseHandler;
-        public CommentedVal<Boolean> ignorePlayers;
-        public CommentedVal<Boolean> shouldPunishTimeSkip;
-        public CommentedVal<Boolean> friendlyFire;
-        public CommentedVal<List<String>> petArmorBlackList;
-        public CommentedVal<Boolean> petWhiteList;
-        public CommentedVal<Boolean> doIMDifficulty;
+        public final CommentedVal<Boolean> enableDifficultyScaling;
+        public final CommentedVal<Integer> difficultyDelay;
+        public final CommentedVal<List<String>> increaseHandler;
+        public final CommentedVal<Boolean> ignorePlayers;
+        public final CommentedVal<Boolean> shouldPunishTimeSkip;
+        public final CommentedVal<Boolean> friendlyFire;
+        public final CommentedVal<List<String>> petArmorBlackList;
+        public final CommentedVal<Boolean> petWhiteList;
+        public final CommentedVal<Boolean> doIMDifficulty;
 
         //Black-WhiteList
-        public CommentedVal<List<String>> flagBlacklist;
-        public CommentedVal<List<String>> entityBlacklist;
-        public CommentedVal<Boolean> mobAttributeWhitelist;
-        public CommentedVal<Boolean> armorMobWhitelist;
-        public CommentedVal<Boolean> heldMobWhitelist;
-        public CommentedVal<Boolean> mobListBreakWhitelist;
-        public CommentedVal<Boolean> mobListUseWhitelist;
-        public CommentedVal<Boolean> mobListLadderWhitelist;
-        public CommentedVal<Boolean> mobListStealWhitelist;
-        public CommentedVal<Boolean> mobListBoatWhitelist;
-        public CommentedVal<Boolean> targetVillagerWhitelist;
+        public final CommentedVal<List<String>> flagBlacklist;
+        public final CommentedVal<List<String>> entityBlacklist;
+        public final CommentedVal<Boolean> mobAttributeWhitelist;
+        public final CommentedVal<Boolean> armorMobWhitelist;
+        public final CommentedVal<Boolean> heldMobWhitelist;
+        public final CommentedVal<Boolean> mobListBreakWhitelist;
+        public final CommentedVal<Boolean> mobListUseWhitelist;
+        public final CommentedVal<Boolean> mobListLadderWhitelist;
+        public final CommentedVal<Boolean> mobListStealWhitelist;
+        public final CommentedVal<Boolean> mobListBoatWhitelist;
+        public final CommentedVal<Boolean> mobListFlyWhitelist;
+        public final CommentedVal<Boolean> targetVillagerWhitelist;
 
         //Debug
-        public CommentedVal<Boolean> debugPath;
+        public final CommentedVal<Boolean> debugPath;
 
         //Integration
-        public CommentedVal<Boolean> useScalingHealthMod;
-        public CommentedVal<Boolean> useTGunsMod;
-        public CommentedVal<Boolean> useReforgedMod;
-        public CommentedVal<Boolean> useCoroUtil;
+        public final CommentedVal<Boolean> useScalingHealthMod;
+        public final CommentedVal<Boolean> useTGunsMod;
+        public final CommentedVal<Boolean> useReforgedMod;
+        public final CommentedVal<Boolean> useCoroUtil;
 
         //AI
-        public CommentedVal<List<String>> breakableBlocks;
-        public CommentedVal<Boolean> breakingAsBlacklist;
-        public CommentedVal<Boolean> useBlockBreakSound;
-        public CommentedVal<Double> breakerChance;
-        public CommentedVal<Integer> breakerInitCooldown;
-        public CommentedVal<Integer> breakerCooldown;
-        public CommentedVal<Double> stealerChance;
-        public CommentedVal<Boolean> breakTileEntities;
-        public CommentedVal<List<String>> breakingItems;
-        public CommentedVal<Double> neutralAggressiv;
-        public CommentedVal<List<String>> autoTargets;
-        public CommentedVal<Integer> repairTick;
-        public CommentedVal<Double> difficultyBreak;
-        public CommentedVal<Double> difficultySteal;
+        public final CommentedVal<List<String>> breakableBlocks;
+        public final CommentedVal<Boolean> breakingAsBlacklist;
+        public final CommentedVal<Boolean> useBlockBreakSound;
+        public final CommentedVal<Double> breakerChance;
+        public final CommentedVal<Integer> breakerInitCooldown;
+        public final CommentedVal<Integer> breakerCooldown;
+        public final CommentedVal<Double> stealerChance;
+        public final CommentedVal<Boolean> breakTileEntities;
+        public final CommentedVal<List<String>> breakingItems;
+        public final CommentedVal<Double> neutralAggressiv;
+        public final CommentedVal<List<String>> autoTargets;
+        public final CommentedVal<Integer> repairTick;
+        public final CommentedVal<Double> difficultyBreak;
+        public final CommentedVal<Double> difficultySteal;
+        public final CommentedVal<Double> flyAIChance;
 
         //Equipment
-        public CommentedVal<List<String>> equipmentModBlacklist;
-        public CommentedVal<Boolean> equipmentModWhitelist;
-        public CommentedVal<List<String>> itemuseBlacklist;
-        public CommentedVal<Boolean> itemuseWhitelist;
-        public CommentedVal<List<String>> entityItemConfig;
+        public final CommentedVal<List<String>> equipmentModBlacklist;
+        public final CommentedVal<Boolean> equipmentModWhitelist;
+        public final CommentedVal<List<String>> itemuseBlacklist;
+        public final CommentedVal<Boolean> itemuseWhitelist;
+        public final CommentedVal<List<String>> entityItemConfig;
 
-        public CommentedVal<Double> baseEquipChance;
-        public CommentedVal<Double> baseEquipChanceAdd;
-        public CommentedVal<Double> diffEquipAdd;
-        public CommentedVal<Double> baseWeaponChance;
-        public CommentedVal<Double> diffWeaponChance;
-        public CommentedVal<Double> baseEnchantChance;
-        public CommentedVal<Double> diffEnchantAdd;
-        public CommentedVal<List<String>> enchantCalc;
-        public CommentedVal<Double> baseItemChance;
-        public CommentedVal<Double> diffItemChanceAdd;
-        public CommentedVal<Boolean> shouldDropEquip;
+        public final CommentedVal<Double> baseEquipChance;
+        public final CommentedVal<Double> baseEquipChanceAdd;
+        public final CommentedVal<Double> diffEquipAdd;
+        public final CommentedVal<Double> baseWeaponChance;
+        public final CommentedVal<Double> diffWeaponChance;
+        public final CommentedVal<Double> baseEnchantChance;
+        public final CommentedVal<Double> diffEnchantAdd;
+        public final CommentedVal<List<String>> enchantCalc;
+        public final CommentedVal<Double> baseItemChance;
+        public final CommentedVal<Double> diffItemChanceAdd;
+        public final CommentedVal<Boolean> shouldDropEquip;
 
         //Attributes
-        public CommentedVal<Double> healthIncrease;
-        public CommentedVal<Double> healthMax;
-        public CommentedVal<Double> roundHP;
-        public CommentedVal<Double> damageIncrease;
-        public CommentedVal<Double> damageMax;
-        public CommentedVal<Double> speedIncrease;
-        public CommentedVal<Double> speedMax;
-        public CommentedVal<Double> knockbackIncrease;
-        public CommentedVal<Double> knockbackMax;
-        public CommentedVal<Double> magicResIncrease;
-        public CommentedVal<Double> magicResMax;
-        public CommentedVal<Double> projectileIncrease;
-        public CommentedVal<Double> projectileMax;
+        public final CommentedVal<Double> healthIncrease;
+        public final CommentedVal<Double> healthMax;
+        public final CommentedVal<Double> roundHP;
+        public final CommentedVal<Double> damageIncrease;
+        public final CommentedVal<Double> damageMax;
+        public final CommentedVal<Double> speedIncrease;
+        public final CommentedVal<Double> speedMax;
+        public final CommentedVal<Double> knockbackIncrease;
+        public final CommentedVal<Double> knockbackMax;
+        public final CommentedVal<Double> magicResIncrease;
+        public final CommentedVal<Double> magicResMax;
+        public final CommentedVal<Double> projectileIncrease;
+        public final CommentedVal<Double> projectileMax;
 
         public CommonConfigVals() {
             CommentedVal.Builder builder = new CommentedVal.Builder();
@@ -154,7 +156,8 @@ public class ConfigSpecs {
             this.mobListUseWhitelist = builder.comment("Treat USEITEM flags as whitelist").define("Item Use Whitelist", false);
             this.mobListLadderWhitelist = builder.comment("Treat LADDER flags as whitelist").define("Ladder Whitelist", false);
             this.mobListStealWhitelist = builder.comment("Treat STEAL flags as whitelist").define("Steal Whitelist", false);
-            this.mobListBoatWhitelist = builder.comment("Treat SWIMMRIDE flags as whitelist").define("Boat Whitelist", false);
+            this.mobListBoatWhitelist = builder.comment("Treat GUARDIAN flags as whitelist").define("Guardian Whitelist", false);
+            this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Parrot Whitelist", false);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", false);
 
             //builder.comment("Debugging").push("debug");
@@ -181,6 +184,7 @@ public class ConfigSpecs {
             this.repairTick = builder.comment("Delay for the coroutil repair block. Coroutil integration needs to be enabled").define("Repair Ticks", 500);
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
+            this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").define("Fly Chance", 0.5);
 
             //builder.comment("Configs regarding mobs spawning with equipment").push("equipment");
             this.equipmentModBlacklist = builder.comment("Blacklist for mods. Add modid to prevent items from that mod being equipped. (For individual items use the equipment.json)").define("Item Blacklist", new ArrayList<>());

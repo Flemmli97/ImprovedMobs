@@ -144,7 +144,7 @@ public class EventCalls {
                 mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
             }
         }
-        if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListBoatWhitelist)) {
+        if (mob.level.random.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
             if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof FlyingPathNavigation) && !(mob instanceof Slime)) {
                 mob.goalSelector.addGoal(6, new FlyRidingGoal(mob));
