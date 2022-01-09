@@ -13,7 +13,7 @@ public abstract class GuardianMixin {
 
     @Inject(method = "rideableUnderWater", at = @At(value = "HEAD"), cancellable = true)
     private void ridable(CallbackInfoReturnable<Boolean> info) {
-        if ((Object) this instanceof Guardian && EntityFlags.get((Guardian) (Object) this).isWaterRidden) {
+        if ((Object) this instanceof Guardian && EntityFlags.get((Guardian) (Object) this).rideSummon) {
             info.setReturnValue(true);
             info.cancel();
         }

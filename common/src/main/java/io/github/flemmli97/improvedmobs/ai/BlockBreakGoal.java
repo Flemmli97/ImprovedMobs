@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -168,9 +169,7 @@ public class BlockBreakGoal extends Goal {
     }
 
     private boolean canBreak(LivingEntity entity, BlockState state, BlockPos pos, ItemStack item, ItemStack itemOff) {
-        if (state.getCollisionShape(entity.level, pos).isEmpty())
-            return false;
-        return Config.CommonConfig.breakableBlocks.canBreak(state) && (Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff));
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, CollisionContext.of(entity)) && (Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff));
     }
 
     private boolean aboveTarget() {

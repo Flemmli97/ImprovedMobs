@@ -71,7 +71,7 @@ public class CustomBlockCollision extends AbstractIterator<VoxelShape> {
             if (l == 3 || (blockGetter = this.getChunk(i, k)) == null) continue;
             this.pos.set(i, j, k);
             BlockState blockState = blockGetter.getBlockState(this.pos);
-            if (Config.CommonConfig.breakableBlocks.canBreak(blockState) || l == 1 && !blockState.hasLargeCollisionShape() || l == 2 && !blockState.is(Blocks.MOVING_PISTON))
+            if (Config.CommonConfig.breakableBlocks.canBreak(blockState, this.pos, blockGetter, this.context) || l == 1 && !blockState.hasLargeCollisionShape() || l == 2 && !blockState.is(Blocks.MOVING_PISTON))
                 continue;
             VoxelShape voxelShape = blockState.getCollisionShape(this.collisionGetter, this.pos, this.context);
             if (voxelShape == Shapes.block()) {

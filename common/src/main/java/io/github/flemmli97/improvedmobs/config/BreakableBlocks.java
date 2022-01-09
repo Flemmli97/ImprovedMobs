@@ -3,13 +3,15 @@ package io.github.flemmli97.improvedmobs.config;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.RegistryHelper;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,10 +25,10 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     private final Set<Tag<Block>> tags = new HashSet<>();
     private boolean initialized;
 
-    public boolean canBreak(BlockState state) {
+    public boolean canBreak(BlockState state, BlockPos pos, BlockGetter level, CollisionContext ctx) {
         if (!this.initialized)
             this.initialize();
-        if (state.getMaterial() == Material.AIR)// || (Config.ServerConfig.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
+        if (state.getCollisionShape(level, pos, ctx).isEmpty())
             return false;
         if (!Config.CommonConfig.breakTileEntities && state.hasBlockEntity())
             return false;

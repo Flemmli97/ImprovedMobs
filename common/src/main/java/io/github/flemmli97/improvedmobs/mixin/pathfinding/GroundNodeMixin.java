@@ -1,6 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
 import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.utils.PathFindingUtils;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
@@ -14,6 +15,7 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -37,7 +39,9 @@ public abstract class GroundNodeMixin extends NodeEvaluator {
 
     @ModifyVariable(method = "getNeighbors", at = @At(value = "RETURN"), ordinal = 0)
     private int addAdditionalPoints(int nodeCounts, Node[] points, Node origin) {
-        return PathFindingUtils.createLadderNodeFor(nodeCounts, points, origin, p -> this.getNode(p), this.level, this.mob);
+        if (((INodeBreakable) this).canClimbLadder())
+            return PathFindingUtils.createLadderNodeFor(nodeCounts, points, origin, p -> this.getNode(p), this.level, this.mob);
+        return nodeCounts;
     }
 
     @Inject(method = "done", at = @At(value = "RETURN"))
@@ -48,6 +52,8 @@ public abstract class GroundNodeMixin extends NodeEvaluator {
 
     @Inject(method = "findAcceptedNode", at = @At(value = "HEAD"), cancellable = true)
     private void breakableNodes(int x, int y, int z, int steps, double groundY, Direction direction, BlockPathTypes blockPathTypes, CallbackInfoReturnable<Node> info) {
+        if (!((INodeBreakable) this).canBreakBlocks())
+            return;
         Node node = PathFindingUtils.notFloatingNodeModifier(this.mob, this.level, x, y, z, steps, direction, blockPathTypes,
                 pos -> this.getCachedBlockType(this.mob, pos.getX(), pos.getY(), pos.getZ()),
                 aabb -> this.collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.level, this.mob, aabb)),
@@ -61,8 +67,11 @@ public abstract class GroundNodeMixin extends NodeEvaluator {
 
     @Redirect(method = "getBlockPathTypes", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/pathfinder/WalkNodeEvaluator;getBlockPathType(Lnet/minecraft/world/level/BlockGetter;III)Lnet/minecraft/world/level/pathfinder/BlockPathTypes;"))
     private BlockPathTypes breakable(WalkNodeEvaluator nodeEvaluator, BlockGetter getter, int x, int y, int z) {
-        BlockState state = getter.getBlockState(new BlockPos.MutableBlockPos(x, y, z));
-        if (this.breakableMap.computeIfAbsent(BlockPos.asLong(x, y, z), pos -> Config.CommonConfig.breakableBlocks.canBreak(state))) {
+        if (!((INodeBreakable) this).canBreakBlocks())
+            return nodeEvaluator.getBlockPathType(getter, x, y, z);
+        BlockPos pos = new BlockPos(x, y, z);
+        BlockState state = getter.getBlockState(pos);
+        if (this.breakableMap.computeIfAbsent(BlockPos.asLong(x, y, z), l -> Config.CommonConfig.breakableBlocks.canBreak(state, pos, getter, CollisionContext.of(this.mob)))) {
             return BlockPathTypes.WALKABLE;
         }
         return nodeEvaluator.getBlockPathType(getter, x, y, z);
@@ -70,8 +79,10 @@ public abstract class GroundNodeMixin extends NodeEvaluator {
 
     @Inject(method = "hasCollisions", at = @At(value = "HEAD"), cancellable = true)
     private void hasNoBreakableCollisions(AABB aabb, CallbackInfoReturnable<Boolean> info) {
-        info.setReturnValue(this.collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.level, this.mob, aabb)));
-        info.cancel();
+        if (((INodeBreakable) this).canBreakBlocks()) {
+            info.setReturnValue(this.collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.level, this.mob, aabb)));
+            info.cancel();
+        }
     }
 
     @Shadow

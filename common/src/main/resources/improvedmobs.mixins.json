@@ -14,7 +14,8 @@
     "TNTEntityMixin",
     "pathfinding.FlyNodeMixin",
     "pathfinding.GroundNodeMixin",
-    "pathfinding.PathNavigationMixin"
+    "pathfinding.PathNavigationMixin",
+    "pathfinding.NodeEvaluatorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

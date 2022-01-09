@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(PathNavigation.class)
-public class PathNavigationMixin {
+public abstract class PathNavigationMixin {
 
     @Shadow
     protected Mob mob;

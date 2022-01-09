@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
+import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.utils.PathFindingUtils;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
@@ -28,9 +29,11 @@ public abstract class FlyNodeMixin extends NodeEvaluator {
 
     @Inject(method = "getNode", at = @At(value = "HEAD"), cancellable = true)
     private void breakableNodes(int x, int y, int z, CallbackInfoReturnable<Node> info) {
+        if (!((INodeBreakable) this).canBreakBlocks())
+            return;
         Node node = PathFindingUtils.floatingNodeModifier(this.mob, this.level, x, y, z,
                 aabb -> this.collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.level, this.mob, aabb)),
-                super::getNode);
+                p -> super.getNode(p.getX(), p.getY(), p.getZ()));
         if (node != null) {
             info.setReturnValue(node);
             info.cancel();

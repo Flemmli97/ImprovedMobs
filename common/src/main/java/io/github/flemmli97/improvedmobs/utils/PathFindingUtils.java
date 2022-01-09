@@ -16,6 +16,7 @@ import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.BooleanOp;
+import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
@@ -26,11 +27,9 @@ public class PathFindingUtils {
     public static Node notFloatingNodeModifier(Mob mob, BlockGetter getter, int x, int y, int z, int stepModifier, Direction dir, BlockPathTypes standingType,
                                                Function<BlockPos, BlockPathTypes> func, Function<AABB, Boolean> collision, Function<AABB, Boolean> collisionDefault,
                                                Function<BlockPos, Node> nodeGetter, Object2BooleanMap<Long> breakableMap) {
-        if (EntityFlags.get(mob).canBreakBlocks != EntityFlags.FlagType.TRUE)
-            return null;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
         BlockState state = getter.getBlockState(pos);
-        if (breakableMap.computeIfAbsent(BlockPos.asLong(x, y, z), p -> canBreak(state, mob))) {
+        if (breakableMap.computeIfAbsent(BlockPos.asLong(x, y, z), p -> canBreak(state, pos, mob))) {
             AABB aabb = createAABBForPos(getter, x, y, z, mob.getBbWidth() / 2.0, mob.getBbHeight());
             if (stepModifier > 0 && !collisionDefault.apply(aabb.expandTowards(-dir.getStepX(), 0, -dir.getStepZ()))) {
                 Node node = nodeGetter.apply(pos.set(x, y + 1, z));
@@ -75,7 +74,7 @@ public class PathFindingUtils {
             return node;
         } else if (stepModifier > 0) {
             BlockState above = getter.getBlockState(pos.set(x, y + 1, z));
-            if (!breakableMap.computeIfAbsent(BlockPos.asLong(x, y + 1, z), p -> canBreak(above, mob)))
+            if (!breakableMap.computeIfAbsent(BlockPos.asLong(x, y + 1, z), p -> canBreak(above, pos, mob)))
                 return null;
             AABB aabb = createAABBForPos(getter, x, y + 1, z, mob.getBbWidth() / 2.0, mob.getBbHeight());
             if (collision.apply(aabb)) {
@@ -91,11 +90,9 @@ public class PathFindingUtils {
     }
 
     public static Node floatingNodeModifier(Mob mob, BlockGetter getter, int x, int y, int z, Function<AABB, Boolean> collision, Function<BlockPos, Node> nodeGetter) {
-        if (EntityFlags.get(mob).canBreakBlocks != EntityFlags.FlagType.TRUE)
-            return null;
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
         BlockState state = getter.getBlockState(pos);
-        if (canBreak(state, mob)) {
+        if (canBreak(state, pos, mob)) {
             AABB aabb = createAABBForPos(getter, x, y, z, mob.getBbWidth() / 2.0, mob.getBbHeight());
             if (collision.apply(aabb)) {
                 return null;
@@ -151,13 +148,13 @@ public class PathFindingUtils {
         return nodeID;
     }
 
-    private static boolean canBreak(BlockState state, Mob entity) {
-        return Config.CommonConfig.breakableBlocks.canBreak(state) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
+    private static boolean canBreak(BlockState state, BlockPos pos, Mob entity) {
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
     }
 
     public static boolean canBreak(BlockPos pos, Mob entity) {
         BlockState state = entity.level.getBlockState(pos);
-        return Config.CommonConfig.breakableBlocks.canBreak(state) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
     }
     /*public static void t(PathFinder pathFinder) {
         Optional<Path> optional = !set3.isEmpty() ? set3.stream().map(target -> pathFinder.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), true)).min(Comparator.comparingInt(Path::getNodeCount)) : set.stream().map(target -> this.reconstructPath(target.getBestNode(), (BlockPos)map.get(target), false)).min(Comparator.comparingDouble(Path::getDistToTarget).thenComparingInt(Path::getNodeCount));

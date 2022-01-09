@@ -74,7 +74,7 @@ public class WaterRidingGoal extends Goal {
                 boat.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.getYRot(), this.living.getXRot());
                 if (this.living.level.noCollision(boat)) {
                     ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
-                    EntityFlags.get(boat).isWaterRidden = true;
+                    EntityFlags.get(boat).rideSummon = true;
                     this.living.level.addFreshEntity(boat);
                     this.living.startRiding(boat);
                 }

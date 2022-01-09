@@ -9,11 +9,6 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.entity.monster.Ghast;
-import net.minecraft.world.entity.monster.Monster;
-import net.minecraft.world.entity.monster.Phantom;
-import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
@@ -103,10 +98,9 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         USEITEM,
         LADDER,
         STEAL,
-        SWIMMRIDE,
+        GUARDIAN,
+        PARROT,
         TARGETVILLAGER,
-        //TARGETPLAYER,
-        //TARGETHURT,
         REVERSE
 
     }

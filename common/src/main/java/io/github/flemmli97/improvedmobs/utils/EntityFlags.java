@@ -14,7 +14,7 @@ public class EntityFlags {
 
     public boolean modifyArmor, modifyHeldItems, modifyAttributes, enchantGear;
 
-    public boolean isThrownEntity, isWaterRidden;
+    public boolean isThrownEntity, rideSummon;
 
     public FlagType canBreakBlocks = FlagType.UNDEF;
 
@@ -34,7 +34,7 @@ public class EntityFlags {
         tag.putBoolean("ModifiedAttributes", this.modifyAttributes);
         tag.putBoolean("GearEnchanted", this.enchantGear);
         tag.putBoolean("IsThrown", this.isThrownEntity);
-        tag.putBoolean("IsWaterSummoned", this.isWaterRidden);
+        tag.putBoolean("IsRideSummoned", this.rideSummon);
         tag.putFloat("MagicRes", this.magicReg);
         tag.putFloat("ProjBoost", this.projMult);
         return tag;
@@ -47,7 +47,7 @@ public class EntityFlags {
         this.modifyAttributes = nbt.getBoolean("ModifiedAttributes");
         this.enchantGear = nbt.getBoolean("GearEnchanted");
         this.isThrownEntity = nbt.getBoolean("IsThrown");
-        this.isWaterRidden = nbt.getBoolean("IsWaterSummoned");
+        this.rideSummon = nbt.getBoolean("IsRideSummoned");
         this.magicReg = nbt.getFloat("MagicRes");
         this.projMult = nbt.getFloat("ProjBoost");
     }

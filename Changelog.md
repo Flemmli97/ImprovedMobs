@@ -1,3 +1,6 @@
-Improved Mobs 1.7.10
+Improved Mobs 1.8.0
 ================
 - Port to 1.18
+- Renamed SWIMMRIDE flag to GUARDIAN
+- Parrots: new flag PARROT.
+  Mobs can start riding a parrot to reach normally unreachable places

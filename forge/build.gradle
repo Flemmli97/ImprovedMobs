@@ -41,8 +41,8 @@ dependencies {
 
     modImplementation "${tenshilib_dep}:forge"
 
-    modRuntimeOnly "${sillib_dep}"
-    modImplementation "${scalhealth_dep}"
+    // modRuntimeOnly "${sillib_dep}"
+    modCompileOnly "${scalhealth_dep}"
 }
 
 processResources {

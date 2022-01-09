@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.events;
 
 import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.ai.BlockBreakGoal;
+import io.github.flemmli97.improvedmobs.ai.FlyRidingGoal;
 import io.github.flemmli97.improvedmobs.ai.ItemUseGoal;
 import io.github.flemmli97.improvedmobs.ai.LadderClimbGoal;
 import io.github.flemmli97.improvedmobs.ai.StealGoal;
@@ -13,6 +14,7 @@ import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixinhelper.IGoalModifier;
+import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.utils.Utils;
 import io.github.flemmli97.tenshilib.RegistryHelper;
@@ -36,6 +38,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
 import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
+import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -93,7 +96,7 @@ public class EventCalls {
         if (mob.level.isClientSide)
             return;
         EntityFlags flags = EntityFlags.get(mob);
-        if (flags.isWaterRidden) {
+        if (flags.rideSummon) {
             if (!flags.modifyAttributes) {
                 flags.modifyAttributes = true;
                 AttributeInstance inst = mob.getAttribute(Attributes.MAX_HEALTH);
@@ -121,6 +124,7 @@ public class EventCalls {
                 }
             });
             if (mobGriefing) {
+                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).setCanBreakBlocks(true);
                 mob.goalSelector.addGoal(1, new BlockBreakGoal(mob));
                 if (mob.getOffhandItem().isEmpty()) {
                     ItemStack stack = Config.CommonConfig.getRandomBreakingItem(mob.getRandom());
@@ -134,16 +138,23 @@ public class EventCalls {
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
             mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 15));
         }
-        if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
+        if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
             if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof WaterBoundPathNavigation) && !(mob instanceof Slime)) {
                 mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
+            }
+        }
+        if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListBoatWhitelist)) {
+            //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
+            if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof FlyingPathNavigation) && !(mob instanceof Slime)) {
+                mob.goalSelector.addGoal(6, new FlyRidingGoal(mob));
             }
         }
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
             if (!(mob.getNavigation() instanceof WallClimberNavigation)) {
                 EntityFlags.get(mob).ladderClimber = true;
                 mob.goalSelector.addGoal(4, new LadderClimbGoal(mob));
+                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).setCanClimbLadder(true);
             }
         }
         boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
@@ -226,7 +237,7 @@ public class EventCalls {
 
     public static void entityTick(LivingEntity entity) {
         if (entity instanceof Mob mob) {
-            if (EntityFlags.get(mob).isWaterRidden && !mob.isVehicle())
+            if (EntityFlags.get(mob).rideSummon && !mob.isVehicle())
                 mob.remove(Entity.RemovalReason.KILLED);
             if (Config.CommonConfig.debugPath && !mob.level.isClientSide) {
                 Path path = mob.getNavigation().getPath();
