@@ -67,9 +67,6 @@ public class Config {
 
         //Integration
         public static boolean useScalingHealthMod = true;
-        public static boolean useTGunsMod = true;
-        public static boolean useReforgedMod = true;
-        public static boolean useCoroUtil = true;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks();
@@ -161,9 +158,6 @@ public class Config {
             debugPath = ConfigSpecs.commonConf.debugPath.get();
 
             useScalingHealthMod = ConfigSpecs.commonConf.useScalingHealthMod.get() && ModList.get().isLoaded("scalinghealth");
-            useTGunsMod = ConfigSpecs.commonConf.useTGunsMod.get() && ModList.get().isLoaded("techguns");
-            useReforgedMod = ConfigSpecs.commonConf.useReforgedMod.get() && ModList.get().isLoaded("reforged");
-            useCoroUtil = ConfigSpecs.commonConf.useCoroUtil.get() && ModList.get().isLoaded("coroutil");
 
             breakableBlocks.readFromString(ConfigSpecs.commonConf.breakableBlocks.get());
             breakingAsBlacklist = ConfigSpecs.commonConf.breakingAsBlacklist.get();

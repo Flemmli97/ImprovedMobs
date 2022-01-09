@@ -71,9 +71,6 @@ public class ConfigSpecs {
 
         //Integration
         public final ForgeConfigSpec.BooleanValue useScalingHealthMod;
-        public final ForgeConfigSpec.BooleanValue useTGunsMod;
-        public final ForgeConfigSpec.BooleanValue useReforgedMod;
-        public final ForgeConfigSpec.BooleanValue useCoroUtil;
 
         //AI
         public final ForgeConfigSpec.ConfigValue<List<String>> breakableBlocks;
@@ -163,9 +160,6 @@ public class ConfigSpecs {
 
             builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
-            this.useTGunsMod = builder.comment("Should mobs be able to use techguns weapons. (Requires techguns mod)").define("Use Techguns Mod", true);
-            this.useReforgedMod = builder.comment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)").define("Use Reforged Mod", true);
-            this.useCoroUtil = builder.comment("Should the coroutils repair block be used. (Requires coroutils mod)").define("Use CoroUtils Mod", true);
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");
