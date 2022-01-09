@@ -5,10 +5,12 @@ import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.material.Material;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.ResourceLocation;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.world.IBlockReader;
 import net.minecraftforge.registries.ForgeRegistries;
 
 import java.util.ArrayList;
@@ -23,10 +25,10 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     private final Set<ITag<Block>> tags = new HashSet<>();
     private boolean initialized;
 
-    public boolean canBreak(BlockState state) {
+    public boolean canBreak(BlockState state, BlockPos pos, IBlockReader getter, ISelectionContext forEntity) {
         if (!this.initialized)
             this.initialize();
-        if (state.getMaterial() == Material.AIR)// || (Config.ServerConfig.useCoroUtil && state.getBlock() instanceof BlockRepairingBlock))
+        if (state.getCollisionShape(getter, pos, forEntity).isEmpty())
             return false;
         if (!Config.CommonConfig.breakTileEntities && state.getBlock().hasTileEntity(state))
             return false;

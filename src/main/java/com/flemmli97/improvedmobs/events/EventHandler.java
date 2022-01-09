@@ -2,8 +2,8 @@ package com.flemmli97.improvedmobs.events;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.ai.BlockBreakGoal;
+import com.flemmli97.improvedmobs.ai.FlyRidingGoal;
 import com.flemmli97.improvedmobs.ai.IGoalModifier;
-import com.flemmli97.improvedmobs.ai.ILadderFlagNode;
 import com.flemmli97.improvedmobs.ai.ItemUseGoal;
 import com.flemmli97.improvedmobs.ai.LadderClimbGoal;
 import com.flemmli97.improvedmobs.ai.StealGoal;
@@ -16,10 +16,10 @@ import com.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import com.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
-import com.flemmli97.improvedmobs.mixin.PathNavigatorAccessor;
 import com.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import com.flemmli97.improvedmobs.utils.IMAttributes;
+import com.flemmli97.improvedmobs.utils.INodeBreakable;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureEntity;
@@ -51,7 +51,7 @@ import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
 import net.minecraft.pathfinding.ClimberPathNavigator;
-import net.minecraft.pathfinding.NodeProcessor;
+import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.SwimmerPathNavigator;
 import net.minecraft.tileentity.TileEntity;
@@ -185,6 +185,7 @@ public class EventHandler {
                 });
                 if (mobGriefing) {
                     living.goalSelector.addGoal(1, new BlockBreakGoal(living));
+                    ((INodeBreakable) living.getNavigator().getNodeProcessor()).setCanBreakBlocks(true);
                     ItemStack stack = Config.CommonConfig.getRandomBreakingItem(living.getRNG());
                     if (!Config.CommonConfig.shouldDropEquip)
                         stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
@@ -195,17 +196,21 @@ public class EventHandler {
                 living.goalSelector.addGoal(1, new ItemUseGoal(living, 15));
                 //EntityAITechGuns.applyAI(living);
             }
-            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.SWIMMRIDE, Config.CommonConfig.mobListBoatWhitelist)) {
+            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListBoatWhitelist)) {
                 //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
-                if (!(/*living.canBreatheUnderwater() || */((MobEntityMixin) living).getTrueNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity)) {
+                if (!(((MobEntityMixin) living).getTrueNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity)) {
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
+                }
+            }
+            if (living.world.rand.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
+                //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
+                if (!(((MobEntityMixin) living).getTrueNavigator() instanceof FlyingPathNavigator) && !(living instanceof SlimeEntity)) {
+                    living.goalSelector.addGoal(6, new FlyRidingGoal(living));
                 }
             }
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
                 if (!(living.getNavigator() instanceof ClimberPathNavigator)) {
-                    NodeProcessor proc = ((PathNavigatorAccessor) living.getNavigator()).getNodeProcessor();
-                    if (proc instanceof ILadderFlagNode)
-                        ((ILadderFlagNode) proc).setCanClimbLadder(true);
+                    ((INodeBreakable) living.getNavigator().getNodeProcessor()).setCanClimbLadder(true);
                     living.goalSelector.addGoal(4, new LadderClimbGoal(living));
                 }
             }
@@ -402,7 +407,9 @@ public class EventHandler {
             entityitem.setNoPickupDelay();
             living.world.addEntity(entityitem);
         }
-        living.setItemStackToSlot(slot, stack.copy());
+        ItemStack copy = stack.copy();
+        copy.setCount(1);
+        living.setItemStackToSlot(slot, copy);
         if (!player.isCreative())
             stack.shrink(1);
     }

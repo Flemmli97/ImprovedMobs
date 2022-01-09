@@ -4,7 +4,6 @@ import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.SoundType;
-import net.minecraft.block.material.Material;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.goal.Goal;
@@ -12,24 +11,48 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathPoint;
 import net.minecraft.util.Hand;
+import net.minecraft.util.Rotation;
 import net.minecraft.util.SoundCategory;
 import net.minecraft.util.SoundEvents;
-import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.shapes.ISelectionContext;
+import net.minecraft.util.math.vector.Vector3d;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class BlockBreakGoal extends Goal {
 
     protected final MobEntity living;
     private LivingEntity target;
-    private int scanTick;
     private BlockPos markedLoc;
     private BlockPos entityPos;
     private int digTimer;
     private int cooldown = Config.CommonConfig.breakerInitCooldown;
 
+    private final List<BlockPos> breakAOE = new ArrayList<>();
+    private int breakIndex;
+
+    private final int digHeight;
+
     public BlockBreakGoal(MobEntity living) {
         this.living = living;
+        int digWidth = living.getWidth() < 1 ? 0 : MathHelper.ceil(living.getWidth());
+        this.digHeight = (int) living.getHeight() + 1;
+        for (int i = digHeight; i >= 0; i--)
+            this.breakAOE.add(new BlockPos(0, i, 0));
+        //north = neg z
+        for (int z = digWidth + 1; z >= -digWidth; z--)
+            for (int y = digHeight; y >= 0; y--) {
+                for (int x = 0; x <= digWidth; x++) {
+                    if (z != 0) {
+                        this.breakAOE.add(new BlockPos(x, y, z));
+                        if (x != 0)
+                            this.breakAOE.add(new BlockPos(-x, y, z));
+                    }
+                }
+            }
     }
 
     @Override
@@ -44,8 +67,8 @@ public class BlockBreakGoal extends Goal {
                 this.entityPos = null;
                 this.cooldown = Config.CommonConfig.breakerCooldown;
                 return false;
-            } else if (this.target != null && this.living.getDistance(this.target) > 1D) {// && this.living.isOnGround()) {
-                BlockPos blockPos = this.getBlock(this.living);
+            } else if (this.target != null && this.living.getDistanceSq(this.target) > 1D) {// && this.living.isOnGround()) {
+                BlockPos blockPos = this.getDiggingLocation();
                 if (blockPos == null)
                     return false;
                 this.cooldown = Config.CommonConfig.breakerCooldown;
@@ -59,7 +82,7 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public boolean shouldContinueExecuting() {
-        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.getPosition()) && this.living.getDistance(this.target) > 1D; //(this.target.isOnGround() || !this.living.canEntityBeSeen(this.target));
+        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.getPosition()) && this.living.getDistanceSq(this.target) > 1D;
     }
 
     private boolean nearSameSpace(BlockPos pos1, BlockPos pos2) {
@@ -68,7 +91,7 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public void resetTask() {
-        this.digTimer = 0;
+        this.breakIndex = 0;
         if (this.markedLoc != null)
             this.living.world.sendBlockBreakProgress(this.living.getEntityId(), this.markedLoc, -1);
         this.markedLoc = null;
@@ -76,7 +99,7 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.markedLoc == null || this.living.world.getBlockState(this.markedLoc).getMaterial() == Material.AIR) {
+        if (this.markedLoc == null || this.living.world.getBlockState(this.markedLoc).getCollisionShape(this.living.world, this.markedLoc).isEmpty()) {
             this.digTimer = 0;
             return;
         }
@@ -89,18 +112,17 @@ public class BlockBreakGoal extends Goal {
             ItemStack item = this.living.getHeldItemMainhand();
             ItemStack itemOff = this.living.getHeldItemOffhand();
             boolean canHarvest = GeneralHelperMethods.canHarvest(state, item) || GeneralHelperMethods.canHarvest(state, itemOff);
-            //if(Config.ServerConfig.useCoroUtil)
-            //    TileEntityRepairingBlock.replaceBlockAndBackup(this.living.world, this.markedLoc, ConfigHandler.repairTick);
-            //else
             this.living.world.destroyBlock(this.markedLoc, canHarvest);
             this.markedLoc = null;
-            this.living.setAIMoveSpeed(0);
-            this.living.getNavigator().clearPath();
-            this.living.getNavigator().setPath(this.living.getNavigator().pathfind(this.target, 0), 1D);
+            if (!this.aboveTarget()) {
+                this.living.setAIMoveSpeed(0);
+                this.living.getNavigator().clearPath();
+                this.living.getNavigator().setPath(this.living.getNavigator().pathfind(this.target, 0), 1D);
+            }
         } else {
             this.digTimer++;
             if (this.digTimer % 5 == 0) {
-                SoundType sound = state.getBlock().getSoundType(state, this.living.world, this.markedLoc, this.living);
+                SoundType sound = state.getSoundType(this.living.world, this.markedLoc, this.living);
                 this.living.world.playSound(null, this.markedLoc, Config.CommonConfig.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.BLOCK_NOTE_BLOCK_BASS, SoundCategory.BLOCKS, 2F, 0.5F);
                 this.living.swingArm(Hand.MAIN_HAND);
                 this.living.getLookController().setLookPosition(this.markedLoc.getX(), this.markedLoc.getY(), this.markedLoc.getZ(), 0.0F, 0.0F);
@@ -109,62 +131,71 @@ public class BlockBreakGoal extends Goal {
         }
     }
 
-    public BlockPos getBlock(MobEntity entityLiving) {
-        ItemStack item = entityLiving.getHeldItemMainhand();
-        ItemStack itemOff = entityLiving.getHeldItemOffhand();
-        BlockPos pos = entityLiving.getPosition().add(0, 1, 0);
-        BlockState state = entityLiving.world.getBlockState(pos);
-        if (this.canBreak(entityLiving, state, pos, item, itemOff)) {
-            this.scanTick = 0;
-            return pos;
-        }
-        Path path = entityLiving.getNavigator().getPath();
-        int digWidth = Math.max(1, MathHelper.ceil(entityLiving.getWidth())) + 1;
-        int digHeight = (int) entityLiving.getHeight() + 1;
-        if (path != null) {
-            PathPoint point = path.getCurrentPathIndex() < path.getCurrentPathLength() ? path.getCurrentPoint() : null;
-            if (point != null) {
-                BlockPos dir = entityLiving.getPosition().add(-point.x, 0, -point.z);
-                int offsetX = dir.getX() > 0 && dir.getZ() != 0 ? 1 : dir.getX() < 0 && dir.getZ() != 0 ? -1 : 0;
-                int y = digHeight - this.scanTick / (digWidth * digWidth);
-                int x = this.scanTick % digWidth - (digWidth / 2);
-                int z = (this.scanTick / digWidth) % digWidth - (digWidth / 2);
-                pos = new BlockPos(point.x + x + offsetX, point.y + y, point.z + z);
-                BlockPos closest = this.clampedPos(pos, entityLiving.getBoundingBox());
-                if (closest.manhattanDistance(pos) <= 1) {
-                    state = entityLiving.world.getBlockState(pos);
-                    if (this.canBreak(entityLiving, state, pos, item, itemOff)) {
-                        this.scanTick = 0;
-                        return pos;
-                    }
-                }
-            }
-        }
-        if (entityLiving.getAttackTarget() != null) {
-            BlockPos target = entityLiving.getAttackTarget().getPosition();
-            if (target.getY() < entityLiving.getPosY() && target.getX() == pos.getX() && target.getZ() == pos.getZ()) {
-                pos = entityLiving.getPosition().down();
-                state = entityLiving.world.getBlockState(pos);
-                if (this.canBreak(entityLiving, state, pos, item, itemOff)) {
-                    this.scanTick = 0;
+    public BlockPos getDiggingLocation() {
+        ItemStack item = this.living.getHeldItemMainhand();
+        ItemStack itemOff = this.living.getHeldItemOffhand();
+        BlockPos pos = this.living.getPosition();
+        BlockState state;
+        if (this.living.getAttackTarget() != null) {
+            Vector3d target = this.living.getAttackTarget().getPositionVec();
+            if (this.aboveTarget() && Math.abs(target.x - pos.getX()) <= 1 && Math.abs(target.z - pos.getZ()) <= 1) {
+                pos = this.living.getPosition().down();
+                state = this.living.world.getBlockState(pos);
+                if (this.canBreak(this.living, state, pos, item, itemOff)) {
+                    this.breakIndex = 0;
                     return pos;
                 }
             }
         }
-        int scanAmount = digWidth * digWidth * (digHeight + 1);
-        this.scanTick = (this.scanTick + 1) % scanAmount;
+        Rotation rot = getDigDirection(this.living);
+        BlockPos offset = this.breakAOE.get(this.breakIndex);
+        offset = new BlockPos(offset.getX(), this.aboveTarget() ? (-(offset.getY() - this.digHeight)) : offset.getY(), offset.getZ());
+        pos = pos.add(offset.rotate(rot));
+        state = this.living.world.getBlockState(pos);
+        if (this.canBreak(this.living, state, pos, item, itemOff)) {
+            this.breakIndex = 0;
+            return pos;
+        }
+        this.breakIndex++;
+        if (this.breakIndex == this.breakAOE.size())
+            this.breakIndex = 0;
         return null;
     }
 
     private boolean canBreak(LivingEntity entity, BlockState state, BlockPos pos, ItemStack item, ItemStack itemOff) {
-        if (state.getCollisionShapeUncached(entity.world, pos).isEmpty())
-            return false;
-        return Config.CommonConfig.breakableBlocks.canBreak(state) && (GeneralHelperMethods.canHarvest(state, item) || GeneralHelperMethods.canHarvest(state, itemOff));
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.world, ISelectionContext.forEntity(entity)) && (GeneralHelperMethods.canHarvest(state, item) || GeneralHelperMethods.canHarvest(state, itemOff));
     }
 
-    private BlockPos clampedPos(BlockPos point, AxisAlignedBB aabb) {
-        return new BlockPos(MathHelper.clamp(point.getX(), (int) Math.floor(aabb.minX), (int) Math.ceil(aabb.maxX)),
-                MathHelper.clamp(point.getY(), (int) Math.floor(aabb.minY), (int) Math.ceil(aabb.maxY + 1)),
-                MathHelper.clamp(point.getZ(), (int) Math.floor(aabb.minZ), (int) Math.ceil(aabb.maxZ)));
+    private boolean aboveTarget() {
+        return this.target.getPosY() < this.living.getPosY() + 1.1;
+    }
+
+    public static Rotation getDigDirection(MobEntity mob) {
+        Path path = mob.getNavigator().getPath();
+        if (path != null) {
+            PathPoint point = path.getCurrentPathIndex() < path.getCurrentPathLength() ? path.getCurrentPoint() : null;
+            if (point != null) {
+                Vector3d dir = new Vector3d(point.x + 0.5, mob.getPosY(), point.z + 0.5).subtract(mob.getPositionVec());
+                if (Math.abs(dir.x) < Math.abs(dir.z)) {
+                    if (dir.z >= 0)
+                        return Rotation.NONE;
+                    return Rotation.CLOCKWISE_180;
+                } else {
+                    if (dir.x > 0)
+                        return Rotation.COUNTERCLOCKWISE_90;
+                    return Rotation.CLOCKWISE_90;
+                }
+            }
+        }
+        switch (mob.getHorizontalFacing()) {
+            case SOUTH:
+                return Rotation.CLOCKWISE_180;
+            case EAST:
+                return Rotation.CLOCKWISE_90;
+            case WEST:
+                return Rotation.COUNTERCLOCKWISE_90;
+        }
+        ;
+        return Rotation.NONE;
     }
 }

@@ -6,15 +6,16 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "GoalSelectorMixin",
-    "NearestTargetGoalMixin",
-    "TargetGoalMixin",
-    "PotionEntityMixin",
-    "TNTEntityMixin",
-    "PathNavigatorAccessor",
-    "LadderFlagMixin",
     "GuardianMixin",
     "MobEntityMixin",
-    "NodeMixin"
+    "NearestTargetGoalMixin",
+    "PotionEntityMixin",
+    "TargetGoalMixin",
+    "TNTEntityMixin",
+    "pathfinding.FlyNodeMixin",
+    "pathfinding.GroundNodeMixin",
+    "pathfinding.NodeEvaluatorMixin",
+    "pathfinding.PathNavigationMixin"
   ],
   "injectors": {
     "defaultRequire": 1

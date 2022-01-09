@@ -59,6 +59,7 @@ public class Config {
         public static boolean mobListLadderWhitelist;
         public static boolean mobListStealWhitelist;
         public static boolean mobListBoatWhitelist;
+        public static boolean mobListFlyWhitelist;
         public static boolean targetVillagerWhitelist;
 
         //Debug
@@ -85,6 +86,7 @@ public class Config {
         public static int repairTick = 200;
         public static float difficultyBreak;
         public static float difficultySteal;
+        public static float flyAIChance;
 
         //Equipment
         public static List<String> equipmentModBlacklist;
@@ -153,6 +155,7 @@ public class Config {
             mobListLadderWhitelist = ConfigSpecs.commonConf.mobListLadderWhitelist.get();
             mobListStealWhitelist = ConfigSpecs.commonConf.mobListStealWhitelist.get();
             mobListBoatWhitelist = ConfigSpecs.commonConf.mobListBoatWhitelist.get();
+            mobListFlyWhitelist = ConfigSpecs.commonConf.mobListFlyWhitelist.get();
             targetVillagerWhitelist = ConfigSpecs.commonConf.targetVillagerWhitelist.get();
 
             debugPath = ConfigSpecs.commonConf.debugPath.get();
@@ -190,6 +193,7 @@ public class Config {
             repairTick = ConfigSpecs.commonConf.repairTick.get();
             difficultyBreak = ConfigSpecs.commonConf.difficultyBreak.get().floatValue();
             difficultySteal = ConfigSpecs.commonConf.difficultySteal.get().floatValue();
+            flyAIChance = ConfigSpecs.commonConf.flyAIChance.get().floatValue();
 
             equipmentModBlacklist = ConfigSpecs.commonConf.equipmentModBlacklist.get();
             equipmentModWhitelist = ConfigSpecs.commonConf.equipmentModWhitelist.get();

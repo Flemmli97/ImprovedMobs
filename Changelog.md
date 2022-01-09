@@ -1,3 +1,10 @@
+Improved Mobs 1.8.0
+================
+- Improved pathfinding of mobs able to break blocks
+- Renamed SWIMMRIDE flag to GUARDIAN
+- Parrots: new flag PARROT.
+  Mobs can start riding a parrot to reach normally unreachable places
+
 Improved Mobs 1.7.10
 ================
 - Fix a freeze during world creating if scaling health is installed
