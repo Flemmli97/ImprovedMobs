@@ -55,9 +55,6 @@ public class Config {
 
         //Integration
         public static boolean useScalingHealthMod = true;
-        public static boolean useTGunsMod = true;
-        public static boolean useReforgedMod = true;
-        public static boolean useCoroUtil = true;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks();
@@ -71,7 +68,6 @@ public class Config {
         public static List<WeightedItem> breakingItem = new ArrayList<>();
         public static float neutralAggressiv;
         public static MobClassMapConfig autoTargets = new MobClassMapConfig();
-        public static int repairTick = 200;
         public static float difficultyBreak;
         public static float difficultySteal;
         public static float flyAIChance;

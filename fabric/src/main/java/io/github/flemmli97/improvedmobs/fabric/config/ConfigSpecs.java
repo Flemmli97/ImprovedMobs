@@ -78,9 +78,6 @@ public final class ConfigSpecs {
 
         //Integration
         public final CommentedVal<Boolean> useScalingHealthMod;
-        public final CommentedVal<Boolean> useTGunsMod;
-        public final CommentedVal<Boolean> useReforgedMod;
-        public final CommentedVal<Boolean> useCoroUtil;
 
         //AI
         public final CommentedVal<List<String>> breakableBlocks;
@@ -94,7 +91,6 @@ public final class ConfigSpecs {
         public final CommentedVal<List<String>> breakingItems;
         public final CommentedVal<Double> neutralAggressiv;
         public final CommentedVal<List<String>> autoTargets;
-        public final CommentedVal<Integer> repairTick;
         public final CommentedVal<Double> difficultyBreak;
         public final CommentedVal<Double> difficultySteal;
         public final CommentedVal<Double> flyAIChance;
@@ -165,9 +161,6 @@ public final class ConfigSpecs {
 
             //builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
-            this.useTGunsMod = builder.comment("Should mobs be able to use techguns weapons. (Requires techguns mod)").define("Use Techguns Mod", true);
-            this.useReforgedMod = builder.comment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)").define("Use Reforged Mod", true);
-            this.useCoroUtil = builder.comment("Should the coroutils repair block be used. (Requires coroutils mod)").define("Use CoroUtils Mod", true);
 
             //builder.comment("Settings regarding custom ai for mobs").push("ai");
             this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. " + BreakableBlocks.use(), "If you includery common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("minecraft:fence_gates", "minecraft:wooden_doors", "c:glass", "c:glass_panes", "minecraft:glass"));
@@ -181,7 +174,6 @@ public final class ConfigSpecs {
             this.breakTileEntities = builder.comment("Should mobs be able to break tile entities? Evaluated before the break list").define("Break Tiles", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").define("Neutral Aggressive Chance", 0.2);
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());
-            this.repairTick = builder.comment("Delay for the coroutil repair block. Coroutil integration needs to be enabled").define("Repair Ticks", 500);
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
             this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").define("Fly Chance", 0.5);

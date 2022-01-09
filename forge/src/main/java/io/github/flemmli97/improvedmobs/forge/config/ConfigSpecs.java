@@ -73,9 +73,6 @@ public class ConfigSpecs {
 
         //Integration
         public final ForgeConfigSpec.BooleanValue useScalingHealthMod;
-        public final ForgeConfigSpec.BooleanValue useTGunsMod;
-        public final ForgeConfigSpec.BooleanValue useReforgedMod;
-        public final ForgeConfigSpec.BooleanValue useCoroUtil;
 
         //AI
         public final ForgeConfigSpec.ConfigValue<List<String>> breakableBlocks;
@@ -89,7 +86,6 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.ConfigValue<List<String>> breakingItems;
         public final ForgeConfigSpec.DoubleValue neutralAggressiv;
         public final ForgeConfigSpec.ConfigValue<List<String>> autoTargets;
-        public final ForgeConfigSpec.ConfigValue<Integer> repairTick;
         public final ForgeConfigSpec.ConfigValue<Double> difficultyBreak;
         public final ForgeConfigSpec.ConfigValue<Double> difficultySteal;
         public final ForgeConfigSpec.ConfigValue<Double> flyAIChance;
@@ -162,9 +158,6 @@ public class ConfigSpecs {
 
             builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
-            this.useTGunsMod = builder.comment("Should mobs be able to use techguns weapons. (Requires techguns mod)").define("Use Techguns Mod", true);
-            this.useReforgedMod = builder.comment("Should mobs be able to use weapons from the reforged mod. (Requires reforged mod)").define("Use Reforged Mod", true);
-            this.useCoroUtil = builder.comment("Should the coroutils repair block be used. (Requires coroutils mod)").define("Use CoroUtils Mod", true);
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");
@@ -179,7 +172,6 @@ public class ConfigSpecs {
             this.breakTileEntities = builder.comment("Should mobs be able to break tile entities? Evaluated before the break list").define("Break Tiles", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").defineInRange("Neutral Aggressive Chance", 0.2, 0, 1);
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());
-            this.repairTick = builder.comment("Delay for the coroutil repair block. Coroutil integration needs to be enabled").define("Repair Ticks", 500);
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
             this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").define("Fly Chance", 0.5);
