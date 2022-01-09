@@ -1,7 +1,9 @@
 package com.flemmli97.improvedmobs.mixin.pathfinding;
 
+import com.flemmli97.improvedmobs.utils.INodeBreakable;
 import com.flemmli97.improvedmobs.utils.PathFindingUtils;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.pathfinding.NodeProcessor;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigator;
 import net.minecraft.util.math.BlockPos;
@@ -18,9 +20,13 @@ public abstract class PathNavigationMixin {
     protected MobEntity entity;
     @Shadow
     protected Path currentPath;
+    @Shadow
+    protected NodeProcessor nodeProcessor;
 
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/controller/MovementController;setMoveTo(DDDD)V"), index = 1)
     private double noJumpBreakable(double y) {
+        if(!((INodeBreakable)this.nodeProcessor).canBreakBlocks())
+            return y;
         Vector3d vector3d2 = this.currentPath.getPosition(this.entity);
         if (PathFindingUtils.canBreak(new BlockPos(vector3d2), this.entity)) {
             return vector3d2.y - 0.5;
