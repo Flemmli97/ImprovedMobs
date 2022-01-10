@@ -5,6 +5,7 @@ import com.flemmli97.improvedmobs.network.PacketDifficulty;
 import com.flemmli97.improvedmobs.network.PacketHandler;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
@@ -33,22 +34,22 @@ public class DifficultyData extends WorldSavedData {
         return DifficultyData.get(world).getDifficulty();
     }
 
-    public void increaseDifficultyBy(float amount, long time) {
+    public void increaseDifficultyBy(float amount, long time, MinecraftServer server) {
         this.difficultyLevel += amount;
         this.prevTime = time;
         this.markDirty();
-        PacketHandler.sendToAll(new PacketDifficulty(this));
+        PacketHandler.sendToAll(new PacketDifficulty(this), server);
     }
 
-    public void setDifficulty(float level) {
+    public void setDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel = level;
-        PacketHandler.sendToAll(new PacketDifficulty(this));
+        PacketHandler.sendToAll(new PacketDifficulty(this), server);
         this.markDirty();
     }
 
-    public void addDifficulty(float level) {
+    public void addDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel += level;
-        PacketHandler.sendToAll(new PacketDifficulty(this));
+        PacketHandler.sendToAll(new PacketDifficulty(this), server);
         this.markDirty();
     }
 
