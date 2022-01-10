@@ -10,6 +10,8 @@ import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.pathfinding.FlyingPathNavigator;
 import net.minecraft.pathfinding.Path;
 import net.minecraft.pathfinding.PathNavigator;
+import net.minecraft.potion.EffectInstance;
+import net.minecraft.potion.Effects;
 import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
 
@@ -37,7 +39,7 @@ public class FlyRidingGoal extends Goal {
         if (this.living.getRidingEntity() instanceof ParrotEntity) {
             return true;
         }
-        if (!this.living.isPassenger() && this.living.getAttackTarget() != null) {
+        if (!this.living.isPassenger() && this.living.getAttackTarget() != null && this.living.getAttackTarget().isAlive()) {
             if (this.wait >= 80 && --this.pathCheckWait <= 0) {
                 if (this.checkFlying()) {
                     this.wait = 0;
@@ -65,6 +67,7 @@ public class FlyRidingGoal extends Goal {
     @Override
     public void resetTask() {
         this.living.stopRiding();
+        this.living.addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 200, 1));
         this.wait = 0;
     }
 
@@ -108,6 +111,11 @@ public class FlyRidingGoal extends Goal {
     }
 
     private boolean isOnLand(Entity riding) {
-        return this.living.getNavigator().noPath() && riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
+        if(this.living.getNavigator().noPath() && riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid())
+            return true;
+        if(this.living.getAttackTarget() != null && this.living.getAttackTarget().getDistanceSq(this.living) < 1) {
+            return riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
+        }
+        return false;
     }
 }
