@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.fabric;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.fabric.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.utils.ITileOpened;
 import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.fabricmc.loader.api.FabricLoader;
@@ -35,7 +34,7 @@ public class CrossPlatformStuffImpl {
     }
 
     public static void sendDifficultyData(DifficultyData data, MinecraftServer server) {
-        PacketHandler.sendDifficultyPacketToAll(data, server);
+        ImprovedMobsFabric.sendDifficultyPacketToAll(data, server);
     }
 
     public static Path configDirPath() {

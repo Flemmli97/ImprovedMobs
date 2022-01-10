@@ -33,7 +33,7 @@ public class CrossPlatformStuffImpl {
     }
 
     public static void sendDifficultyData(DifficultyData data, MinecraftServer server) {
-        PacketHandler.sendToAll(new PacketDifficulty(data));
+        PacketHandler.sendToAll(new PacketDifficulty(data), server);
     }
 
     public static Path configDirPath() {
