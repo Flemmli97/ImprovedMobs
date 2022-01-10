@@ -5,6 +5,8 @@ import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -38,7 +40,7 @@ public class FlyRidingGoal extends Goal {
         if (this.living.getVehicle() instanceof Parrot) {
             return true;
         }
-        if (!this.living.isPassenger() && this.living.getTarget() != null) {
+        if (!this.living.isPassenger() && this.living.getTarget() != null && this.living.getTarget().isAlive()) {
             if (this.wait >= 80 && --this.pathCheckWait <= 0) {
                 if (this.checkFlying()) {
                     this.wait = 0;
@@ -66,6 +68,7 @@ public class FlyRidingGoal extends Goal {
     @Override
     public void stop() {
         this.living.stopRiding();
+        this.living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 200, 1));
         this.wait = 0;
     }
 
@@ -109,6 +112,11 @@ public class FlyRidingGoal extends Goal {
     }
 
     private boolean isOnLand(Entity riding) {
-        return this.living.getNavigation().isDone() && riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid();
+        if(this.living.getNavigation().isDone() && riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid())
+            return true;
+        if(this.living.getTarget() != null && this.living.getTarget().distanceToSqr(this.living) < 1) {
+            return riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid();
+        }
+        return false;
     }
 }

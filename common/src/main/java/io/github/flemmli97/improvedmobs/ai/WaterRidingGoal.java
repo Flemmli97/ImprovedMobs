@@ -32,7 +32,7 @@ public class WaterRidingGoal extends Goal {
         if (this.living.getVehicle() instanceof Guardian) {
             return true;
         }
-        if (this.living.isInWater() && !this.living.isPassenger() && this.living.getTarget() != null) {
+        if (this.living.isInWater() && !this.living.isPassenger() && this.living.getTarget() != null && this.living.getTarget().isAlive()) {
             if (this.wait == 80) {
                 this.wait = 0;
                 return true;
