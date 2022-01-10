@@ -140,11 +140,11 @@ curseforge {
             changelogType = "markdown"
             releaseType = 'beta'
         }
-        /*relations {
+        relations {
             "${project.curse_dep_forge}".split(', ').each {
                 requiredDependency "${it}"
             }
-        }*/
+        }
     }
 }
 
