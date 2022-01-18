@@ -9,7 +9,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -20,7 +22,7 @@ public class FlyRidingGoal extends Goal {
 
     public static final ResourceLocation EMPTY = new ResourceLocation(ImprovedMobs.MODID, "empty");
     protected final Mob living;
-    private int wait = 0, pathCheckWait, flyDelay;
+    private int wait = 0, pathCheckWait, flyDelay, targetDelay;
     private boolean start;
 
     private PathNavigation flyer;
@@ -40,10 +42,14 @@ public class FlyRidingGoal extends Goal {
         if (this.living.getVehicle() instanceof Parrot) {
             return true;
         }
-        if (!this.living.isPassenger() && this.living.getTarget() != null && this.living.getTarget().isAlive()) {
+        LivingEntity target = this.living.getTarget();
+        if (target == null || !target.isAlive()) {
+            this.targetDelay = 0;
+        } else if (!this.living.isPassenger() && ++this.targetDelay > 100) {
             if (this.wait >= 80 && --this.pathCheckWait <= 0) {
                 if (this.checkFlying()) {
                     this.wait = 0;
+                    this.targetDelay = 0;
                     return true;
                 }
                 this.pathCheckWait = 25;
@@ -70,6 +76,7 @@ public class FlyRidingGoal extends Goal {
         this.living.stopRiding();
         this.living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 200, 1));
         this.wait = 0;
+        this.targetDelay = 0;
     }
 
     @Override
@@ -102,6 +109,8 @@ public class FlyRidingGoal extends Goal {
     }
 
     private boolean checkFlying() {
+        if (this.living.isNoGravity() || !this.living.isOnGround())
+            return false;
         Path path = this.living.getNavigation().getPath();
         if (path == null || (path.isDone() && !path.canReach())) {
             Path flyer = this.flyer.createPath(this.living.getTarget(), 1);
@@ -112,9 +121,10 @@ public class FlyRidingGoal extends Goal {
     }
 
     private boolean isOnLand(Entity riding) {
-        if(this.living.getNavigation().isDone() && riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid())
+        if (this.living.getNavigation().isDone() && riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid())
             return true;
-        if(this.living.getTarget() != null && this.living.getTarget().distanceToSqr(this.living) < 1) {
+        LivingEntity target = this.living.getTarget();
+        if (target != null && BehaviorUtils.isWithinMeleeAttackRange(this.living, target)) {
             return riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid();
         }
         return false;
