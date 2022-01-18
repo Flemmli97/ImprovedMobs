@@ -46,14 +46,15 @@ public class GeneralHelperMethods {
 
     public static void equipArmor(MobEntity living) {
         if (Config.CommonConfig.baseEquipChance != 0) {
-            float time = DifficultyData.getDifficulty(living.world, living) * Config.CommonConfig.diffEquipAdd * 0.01F;
+            float difficulty = DifficultyData.getDifficulty(living.world, living);
+            float time = difficulty * Config.CommonConfig.diffEquipAdd * 0.01F;
             if (living.getRNG().nextFloat() < (Config.CommonConfig.baseEquipChance + time)) {
                 for (EquipmentSlotType slot : EquipmentSlotType.values()) {
                     if (slot.getSlotType() == EquipmentSlotType.Group.HAND)
                         continue;
                     boolean shouldAdd = slot == EquipmentSlotType.HEAD || (Config.CommonConfig.baseEquipChanceAdd != 0 && living.getRNG().nextFloat() < (Config.CommonConfig.baseEquipChanceAdd + time));
                     if (shouldAdd && living.getItemStackFromSlot(slot).isEmpty()) {
-                        ItemStack equip = EquipmentList.getEquip(living, slot);
+                        ItemStack equip = EquipmentList.getEquip(living, slot, difficulty);
                         if (!equip.isEmpty()) {
                             if (!Config.CommonConfig.shouldDropEquip)
                                 living.setDropChance(slot, 0);
@@ -67,10 +68,11 @@ public class GeneralHelperMethods {
     }
 
     public static void equipHeld(MobEntity living) {
-        float add = DifficultyData.getDifficulty(living.world, living) * Config.CommonConfig.diffWeaponChance * 0.01F;
+        float difficulty = DifficultyData.getDifficulty(living.world, living);
+        float add = difficulty * Config.CommonConfig.diffWeaponChance * 0.01F;
         if (Config.CommonConfig.baseWeaponChance != 0 && living.getRNG().nextFloat() < (Config.CommonConfig.baseWeaponChance + add)) {
             if (living.getHeldItemMainhand().isEmpty()) {
-                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.MAINHAND);
+                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.MAINHAND, difficulty);
                 if (!Config.CommonConfig.shouldDropEquip)
                     living.setDropChance(EquipmentSlotType.MAINHAND, -1);
                 //stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
@@ -80,7 +82,7 @@ public class GeneralHelperMethods {
         add = DifficultyData.getDifficulty(living.world, living) * Config.CommonConfig.diffItemChanceAdd * 0.01F;
         if (Config.CommonConfig.baseItemChance != 0 && living.getRNG().nextFloat() < (Config.CommonConfig.baseItemChance + add)) {
             if (living.getHeldItemOffhand().isEmpty()) {
-                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.OFFHAND);
+                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlotType.OFFHAND, difficulty);
                 if (!Config.CommonConfig.shouldDropEquip)
                     living.setDropChance(EquipmentSlotType.OFFHAND, 0);
                 // stack.addEnchantment(Enchantments.VANISHING_CURSE, 1);
