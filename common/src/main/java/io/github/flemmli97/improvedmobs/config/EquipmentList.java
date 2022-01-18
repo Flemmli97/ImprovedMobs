@@ -238,7 +238,7 @@ public class EquipmentList {
             else if (item == Items.SNOWBALL)
                 weight = 1400;
             else if (item instanceof ThrowablePotionItem)
-                weight = 1250;
+                weight = 1050;
             else if (item instanceof BowItem bow)
                 weight = (int) (1300 - bow.getMaxDamage() * 0.5);
             else if (item == Items.ENCHANTED_BOOK)
