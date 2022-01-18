@@ -45,14 +45,15 @@ public class Utils {
 
     public static void equipArmor(Mob living) {
         if (Config.CommonConfig.baseEquipChance != 0) {
-            float time = DifficultyData.getDifficulty(living.level, living) * Config.CommonConfig.diffEquipAdd * 0.01F;
+            float difficulty = DifficultyData.getDifficulty(living.level, living);
+            float time = difficulty * Config.CommonConfig.diffEquipAdd * 0.01F;
             if (living.getRandom().nextFloat() < (Config.CommonConfig.baseEquipChance + time)) {
                 for (EquipmentSlot slot : EquipmentSlot.values()) {
                     if (slot.getType() == EquipmentSlot.Type.HAND)
                         continue;
                     boolean shouldAdd = slot == EquipmentSlot.HEAD || (Config.CommonConfig.baseEquipChanceAdd != 0 && living.getRandom().nextFloat() < (Config.CommonConfig.baseEquipChanceAdd + time));
                     if (shouldAdd && living.getItemBySlot(slot).isEmpty()) {
-                        ItemStack equip = EquipmentList.getEquip(living, slot);
+                        ItemStack equip = EquipmentList.getEquip(living, slot, difficulty);
                         if (!equip.isEmpty()) {
                             if (!Config.CommonConfig.shouldDropEquip)
                                 living.setDropChance(slot, -100);
@@ -65,10 +66,11 @@ public class Utils {
     }
 
     public static void equipHeld(Mob living) {
-        float add = DifficultyData.getDifficulty(living.level, living) * Config.CommonConfig.diffWeaponChance * 0.01F;
+        float difficulty = DifficultyData.getDifficulty(living.level, living);
+        float add = difficulty * Config.CommonConfig.diffWeaponChance * 0.01F;
         if (Config.CommonConfig.baseWeaponChance != 0 && living.getRandom().nextFloat() < (Config.CommonConfig.baseWeaponChance + add)) {
             if (living.getMainHandItem().isEmpty()) {
-                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlot.MAINHAND);
+                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlot.MAINHAND, difficulty);
                 if (!Config.CommonConfig.shouldDropEquip)
                     living.setDropChance(EquipmentSlot.MAINHAND, -100);
                 living.setItemSlot(EquipmentSlot.MAINHAND, stack);
@@ -77,7 +79,7 @@ public class Utils {
         add = DifficultyData.getDifficulty(living.level, living) * Config.CommonConfig.diffItemChanceAdd * 0.01F;
         if (Config.CommonConfig.baseItemChance != 0 && living.getRandom().nextFloat() < (Config.CommonConfig.baseItemChance + add)) {
             if (living.getOffhandItem().isEmpty()) {
-                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlot.OFFHAND);
+                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlot.OFFHAND, difficulty);
                 if (!Config.CommonConfig.shouldDropEquip)
                     living.setDropChance(EquipmentSlot.OFFHAND, -100);
                 living.setItemSlot(EquipmentSlot.OFFHAND, stack);
