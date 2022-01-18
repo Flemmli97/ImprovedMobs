@@ -30,9 +30,9 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.PotionItem;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.SwordItem;
+import net.minecraft.world.item.ThrowablePotionItem;
 import net.minecraft.world.level.block.Blocks;
 
 import java.io.File;
@@ -127,7 +127,7 @@ public class EquipmentList {
                             if (!equips.get(EquipmentSlot.MAINHAND).list.contains(val))
                                 equips.compute(EquipmentSlot.OFFHAND, (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(val)) : l.add(val));
                         } else {
-                            if (item == Items.SPLASH_POTION) {
+                            if (item instanceof ThrowablePotionItem) {
                                 String potionItem = RegistryHelper.items().getIDFrom(item).toString() + "{Potion:\"minecraft:harming\"}";
                                 equips.compute(EquipmentSlot.MAINHAND,
                                         (s, l) -> l == null ? new WeightedItemstackList(Lists.newArrayList(new WeightedItemstack(potionItem, getDefaultWeight(item), new ArrayList<>()))) : l.add(new WeightedItemstack(potionItem, getDefaultWeight(item), new ArrayList<>())));
@@ -177,7 +177,7 @@ public class EquipmentList {
         if (item instanceof ArmorItem armor) {
             float fullProt = armor.getMaterial().getDefenseForSlot(EquipmentSlot.HEAD) + armor.getMaterial().getDefenseForSlot(EquipmentSlot.CHEST) + armor.getMaterial().getDefenseForSlot(EquipmentSlot.LEGS)
                     + armor.getMaterial().getDefenseForSlot(EquipmentSlot.FEET);
-
+            float toughness = armor.getMaterial().getToughness();
             float averageDurability = (armor.getMaterial().getDurabilityForSlot(EquipmentSlot.HEAD) + armor.getMaterial().getDurabilityForSlot(EquipmentSlot.CHEST) + armor.getMaterial().getDurabilityForSlot(EquipmentSlot.LEGS)
                     + armor.getMaterial().getDurabilityForSlot(EquipmentSlot.FEET)) / 4.0F;
             if (averageDurability < 0)
@@ -186,14 +186,14 @@ public class EquipmentList {
             float rep = (armor.getMaterial().getRepairIngredient() != null && !armor.getMaterial().getRepairIngredient().isEmpty()) ? 0.9F : 1.15F;
             float vanillaMulti = (armor.getMaterial() == ArmorMaterials.LEATHER || armor.getMaterial() == ArmorMaterials.GOLD || armor.getMaterial() == ArmorMaterials.CHAIN || armor.getMaterial() == ArmorMaterials.IRON
                     || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8F : 1.1F;
-            weight -= (fullProt * 3.3 + averageDurability * 0.8 + ench) * rep * vanillaMulti;
-        } else if (item instanceof SwordItem) {
-            float dmg = 10 + ((SwordItem) item).getDamage();
-            weight -= (dmg * dmg + item.getMaxDamage() * 0.1);
+            weight -= (fullProt * fullProt * 2.5 + toughness * toughness * 12 + averageDurability * 0.9 + ench) * rep * vanillaMulti;
+        } else if (item instanceof SwordItem sword) {
+            float dmg = 5 + sword.getDamage();
+            weight -= (dmg * dmg * 2 + item.getMaxDamage() * 0.3);
         } else if (item instanceof DiggerItem) {
             ItemStack def = new ItemStack(item);
-            double dmg = 12 + ItemUtils.damage(def);
-            weight -= (dmg * dmg + item.getMaxDamage() * 0.1);
+            double dmg = 3 + ItemUtils.damage(def);
+            weight -= (dmg * dmg * 2 + item.getMaxDamage() * 0.1);
         } else {
             if (item == Items.FLINT_AND_STEEL)
                 weight = 1200;
@@ -203,21 +203,20 @@ public class EquipmentList {
                 weight = 900;
             else if (item == Items.ENDER_PEARL)
                 weight = 1100;
-
             else if (item == Items.SNOWBALL)
                 weight = 1400;
-            else if (item instanceof PotionItem)
+            else if (item instanceof ThrowablePotionItem)
                 weight = 1250;
-            else if (item instanceof BowItem)
-                weight = 1350;
+            else if (item instanceof BowItem bow)
+                weight = (int) (1300 - bow.getMaxDamage() * 0.5);
             else if (item == Items.ENCHANTED_BOOK)
-                weight = 1300;
+                weight = 1100;
             else if (item == Blocks.TNT.asItem())
-                weight = 900;
+                weight = 800;
             else if (item == Items.TRIDENT)
-                weight = 1000;
+                weight = 900;
             else if (item instanceof CrossbowItem)
-                weight = 1200;
+                weight = 1000;
         }
         return Math.max(weight, 1);
     }
