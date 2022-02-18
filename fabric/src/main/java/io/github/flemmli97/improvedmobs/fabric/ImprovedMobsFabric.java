@@ -5,6 +5,7 @@ import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.fabric.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
+import io.github.flemmli97.improvedmobs.fabric.platform.integration.DifficultyValuesImpl;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -28,6 +29,7 @@ public class ImprovedMobsFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        DifficultyValuesImpl.init();
         ServerTickEvents.END_WORLD_TICK.register(EventCalls::increaseDifficulty);
         ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
         CommandRegistrationCallback.EVENT.register(EventHandler::registerCommand);

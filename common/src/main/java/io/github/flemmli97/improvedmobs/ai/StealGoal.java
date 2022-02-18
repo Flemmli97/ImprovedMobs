@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.ai;
 
-import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -79,7 +79,7 @@ public class StealGoal extends MoveToBlockGoal {
         BlockEntity tile = world.getBlockEntity(pos);
         boolean opened = false;
         if (tile instanceof Container) {
-            opened = CrossPlatformStuff.getTileData(tile).playerOpened();
+            opened = CrossPlatformStuff.instance().getTileData(tile).playerOpened();
         }
         return opened && !((Container) tile).isEmpty();
     }

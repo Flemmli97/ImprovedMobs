@@ -7,10 +7,10 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAI;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.RegistryHelper;
 import io.github.flemmli97.tenshilib.api.config.ExtendedItemStackWrapper;
 import io.github.flemmli97.tenshilib.common.utils.ItemUtils;
@@ -66,7 +66,7 @@ public class EquipmentList {
 
     public static void initEquip() throws InvalidItemNameException {
         try {
-            File conf = CrossPlatformStuff.configDirPath().resolve("improvedmobs").resolve("equipment.json").toFile();
+            File conf = CrossPlatformStuff.instance().configDirPath().resolve("improvedmobs").resolve("equipment.json").toFile();
             JsonObject confObj = new JsonObject();
             if (!conf.exists()) {
                 initDefaultVals();

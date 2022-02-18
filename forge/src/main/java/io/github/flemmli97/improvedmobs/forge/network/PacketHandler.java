@@ -38,7 +38,7 @@ public class PacketHandler {
     }
 
     private static boolean hasChannel(ServerPlayer player) {
-        ConnectionData data= NetworkHooks.getConnectionData(player.connection.connection);
+        ConnectionData data = NetworkHooks.getConnectionData(player.connection.connection);
         return data != null && data.getChannels().containsKey(channelID);
     }
 }

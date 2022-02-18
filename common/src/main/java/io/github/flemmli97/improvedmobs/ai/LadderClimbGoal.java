@@ -1,6 +1,6 @@
 package io.github.flemmli97.improvedmobs.ai;
 
-import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.state.BlockState;
@@ -36,7 +36,7 @@ public class LadderClimbGoal extends Goal {
             Node pointNext = this.path.getNode(i + 1);
             BlockState down = this.entity.level.getBlockState(this.entity.blockPosition().below());
             double yMotion;
-            if (pointNext.y < y || (pointNext.y == y && !CrossPlatformStuff.isLadder(down, this.entity, this.entity.blockPosition().below())))
+            if (pointNext.y < y || (pointNext.y == y && !CrossPlatformStuff.instance().isLadder(down, this.entity, this.entity.blockPosition().below())))
                 yMotion = -0.15;
             else
                 yMotion = 0.15;

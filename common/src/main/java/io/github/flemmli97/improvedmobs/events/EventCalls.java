@@ -1,6 +1,5 @@
 package io.github.flemmli97.improvedmobs.events;
 
-import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.ai.BlockBreakGoal;
 import io.github.flemmli97.improvedmobs.ai.FlyRidingGoal;
 import io.github.flemmli97.improvedmobs.ai.ItemUseGoal;
@@ -15,6 +14,7 @@ import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixinhelper.IGoalModifier;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.utils.Utils;
 import io.github.flemmli97.tenshilib.RegistryHelper;
@@ -268,7 +268,7 @@ public class EventCalls {
                 }
             } else if (source instanceof LivingEntity) {
                 LivingEntity attacker = (LivingEntity) source;
-                if (CrossPlatformStuff.canDisableShield(attacker.getMainHandItem(), target.getUseItem(), target, attacker)) {
+                if (CrossPlatformStuff.instance().canDisableShield(attacker.getMainHandItem(), target.getUseItem(), target, attacker)) {
                     triggerDisableShield(attacker, target);
                 }
             }
@@ -292,7 +292,7 @@ public class EventCalls {
         if (!player.level.isClientSide && !player.isShiftKeyDown()) {
             BlockEntity tile = player.level.getBlockEntity(pos);
             if (tile instanceof Container) {
-                CrossPlatformStuff.getTileData(tile).setOpened(tile);
+                CrossPlatformStuff.instance().getTileData(tile).setOpened(tile);
             }
         }
     }

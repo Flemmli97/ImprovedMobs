@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.utils;
 
-import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -126,7 +126,7 @@ public class PathFindingUtils {
 
     public static int createLadderNodeFor(int nodeID, Node[] nodes, Node origin, Function<BlockPos, Node> nodeGetter, BlockGetter getter, Mob mob) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(origin.x, origin.y + 1, origin.z);
-        if (CrossPlatformStuff.isLadder(getter.getBlockState(pos), mob, pos)) {
+        if (CrossPlatformStuff.instance().isLadder(getter.getBlockState(pos), mob, pos)) {
             Node node = nodeGetter.apply(pos);
             if (node != null && !node.closed) {
                 node.costMalus = 0;
@@ -136,7 +136,7 @@ public class PathFindingUtils {
             }
         }
         pos.set(pos.getX(), pos.getY() - 2, pos.getZ());
-        if (CrossPlatformStuff.isLadder(getter.getBlockState(pos), mob, pos)) {
+        if (CrossPlatformStuff.instance().isLadder(getter.getBlockState(pos), mob, pos)) {
             Node node = nodeGetter.apply(pos);
             if (node != null && !node.closed) {
                 node.costMalus = 0;

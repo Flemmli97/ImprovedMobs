@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.ai;
 
-import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
@@ -128,7 +128,7 @@ public class BlockBreakGoal extends Goal {
         } else {
             this.digTimer++;
             if (this.digTimer % 5 == 0) {
-                SoundType sound = CrossPlatformStuff.blockSound(state, this.living, this.markedLoc);
+                SoundType sound = CrossPlatformStuff.instance().blockSound(state, this.living, this.markedLoc);
                 this.living.level.playSound(null, this.markedLoc, Config.CommonConfig.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F);
                 this.living.swing(InteractionHand.MAIN_HAND);
                 this.living.getLookControl().setLookAt(this.markedLoc.getX(), this.markedLoc.getY(), this.markedLoc.getZ(), 0.0F, 0.0F);

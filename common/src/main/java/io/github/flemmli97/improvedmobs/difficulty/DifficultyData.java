@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.difficulty;
 
-import io.github.flemmli97.improvedmobs.CrossPlatformStuff;
-import io.github.flemmli97.improvedmobs.integration.DifficultyValues;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.improvedmobs.platform.integration.DifficultyValues;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,25 +26,25 @@ public class DifficultyData extends SavedData {
     }
 
     public static float getDifficulty(Level world, LivingEntity e) {
-        return DifficultyValues.getDifficulty(world, e.blockPosition(), DifficultyData.get(world.getServer()).getDifficulty());
+        return DifficultyValues.instance().getDifficulty(world, e.blockPosition(), DifficultyData.get(world.getServer()).getDifficulty());
     }
 
     public void increaseDifficultyBy(float amount, long time, MinecraftServer server) {
         this.difficultyLevel += amount;
         this.prevTime = time;
         this.setDirty();
-        CrossPlatformStuff.sendDifficultyData(this, server);
+        CrossPlatformStuff.instance().sendDifficultyData(this, server);
     }
 
     public void setDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel = level;
-        CrossPlatformStuff.sendDifficultyData(this, server);
+        CrossPlatformStuff.instance().sendDifficultyData(this, server);
         this.setDirty();
     }
 
     public void addDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel += level;
-        CrossPlatformStuff.sendDifficultyData(this, server);
+        CrossPlatformStuff.instance().sendDifficultyData(this, server);
         this.setDirty();
     }
 

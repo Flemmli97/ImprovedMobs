@@ -1,9 +1,10 @@
-package io.github.flemmli97.improvedmobs.forge;
+package io.github.flemmli97.improvedmobs.forge.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.forge.capability.TileCapProvider;
 import io.github.flemmli97.improvedmobs.forge.network.PacketDifficulty;
 import io.github.flemmli97.improvedmobs.forge.network.PacketHandler;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.ITileOpened;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -18,33 +19,44 @@ import net.minecraftforge.fml.loading.FMLPaths;
 
 import java.nio.file.Path;
 
-public class CrossPlatformStuffImpl {
+public class CrossPlatformStuffImpl extends CrossPlatformStuff {
 
-    public static ITileOpened getTileData(BlockEntity blockEntity) {
-        return blockEntity.getCapability(TileCapProvider.CAP).orElseThrow(() -> new NullPointerException("Capability null. This shouldn't be"));
+    public void init() {
+        INSTANCE = new CrossPlatformStuffImpl();
     }
 
-    public static boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos) {
+    @Override
+    public ITileOpened getTileData(BlockEntity blockEntity) {
+        return blockEntity.getCapability(TileCapProvider.CAP).orElseThrow(() -> new NullPointerException("Capability null. This shouldn't be. BlockEntite " + blockEntity));
+    }
+
+    @Override
+    public boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos) {
         return state.isLadder(entity.level, pos, entity);
     }
 
-    public static SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos) {
+    @Override
+    public SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos) {
         return state.getSoundType(entity.level, pos, entity);
     }
 
-    public static void sendDifficultyData(DifficultyData data, MinecraftServer server) {
+    @Override
+    public void sendDifficultyData(DifficultyData data, MinecraftServer server) {
         PacketHandler.sendToAll(new PacketDifficulty(data), server);
     }
 
-    public static Path configDirPath() {
+    @Override
+    public Path configDirPath() {
         return FMLPaths.CONFIGDIR.get();
     }
 
-    public static AbstractArrow customBowArrow(BowItem item, AbstractArrow def) {
+    @Override
+    public AbstractArrow customBowArrow(BowItem item, AbstractArrow def) {
         return item.customArrow(def);
     }
 
-    public static boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
+    @Override
+    public boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
         return attackingStack.canDisableShield(held, entity, attacker);
     }
 }
