@@ -1,3 +1,7 @@
+Improved Mobs 1.9.0
+================
+- Internal changes
+
 Improved Mobs 1.8.1
 ================
 - Make parrot ability get triggered less
