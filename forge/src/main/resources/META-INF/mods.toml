@@ -19,6 +19,6 @@ side="BOTH"
 [[dependencies.improvedmobs]]
 modId="tenshilib"
 mandatory=true
-versionRange="[1.4.0,)"
-ordering="AFTER"
+versionRange="[1.18.1-1.5.0,)"
+ordering="NONE"
 side="BOTH"

@@ -31,6 +31,6 @@
   "depends": {
     "fabric": "*",
     "minecraft": ">=1.18",
-    "tenshilib": "*"
+    "tenshilib": ">=1.18.1-1.5.0"
   }
 }
