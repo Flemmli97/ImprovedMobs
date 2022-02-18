@@ -11,9 +11,9 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAI;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import io.github.flemmli97.tenshilib.RegistryHelper;
 import io.github.flemmli97.tenshilib.api.config.ExtendedItemStackWrapper;
 import io.github.flemmli97.tenshilib.common.utils.ItemUtils;
+import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
@@ -140,7 +140,7 @@ public class EquipmentList {
     }
 
     private static void initDefaultVals() {
-        RegistryHelper.items().getIterator().forEach(item -> {
+        RegistryHelper.instance().items().getIterator().forEach(item -> {
             if (item instanceof BowItem)
                 addItemTo(EquipmentSlot.MAINHAND, item);
             ItemAI ai = ItemAITasks.getAI(item);
@@ -154,7 +154,7 @@ public class EquipmentList {
                                 equips.compute(EquipmentSlot.OFFHAND, (s, l) -> l == null ? new WeightedItemstackList(val) : l.add(val));
                         } else {
                             if (item instanceof ThrowablePotionItem) {
-                                String potionItem = RegistryHelper.items().getIDFrom(item).toString() + "{Potion:\"minecraft:harming\"}";
+                                String potionItem = RegistryHelper.instance().items().getIDFrom(item).toString() + "{Potion:\"minecraft:harming\"}";
                                 float[] weights = getDefaultWeight(item);
                                 equips.compute(EquipmentSlot.MAINHAND,
                                         (s, l) -> l == null ? new WeightedItemstackList(new WeightedItemstack(potionItem, (int) weights[0], weights[1], new ArrayList<>())) : l.add(new WeightedItemstack(potionItem, (int) weights[0], weights[1], new ArrayList<>())));
@@ -192,14 +192,14 @@ public class EquipmentList {
     private static boolean defaultBlackLists(Item item) {
         if (item instanceof DiggerItem && !(item instanceof AxeItem))
             return true;
-        return RegistryHelper.items().getIDFrom(item).getNamespace().equals("mobbattle");
+        return RegistryHelper.instance().items().getIDFrom(item).getNamespace().equals("mobbattle");
     }
 
     private static Field techGunDmg, techgunAIAttackTime, techgunAIBurstCount, techgunAIburstAttackTime;
     private static final List<String> defaultZeroWeight = Lists.newArrayList("techguns:nucleardeathray", "techguns:grenadelauncher", "techguns:tfg", "techguns:guidedmissilelauncher", "techguns:rocketlauncher");
 
     private static float[] getDefaultWeight(Item item) {
-        if (defaultZeroWeight.contains(RegistryHelper.items().getIDFrom(item).toString()))
+        if (defaultZeroWeight.contains(RegistryHelper.instance().items().getIDFrom(item).toString()))
             return new float[]{0, 0};
         int weight = 1500;
         float quality = 0;
@@ -259,7 +259,7 @@ public class EquipmentList {
             int idx = itemString.indexOf("{");
             itemReg = itemString.substring(0, idx);
         }
-        Item item = RegistryHelper.items().getFromId(new ResourceLocation(itemReg));
+        Item item = RegistryHelper.instance().items().getFromId(new ResourceLocation(itemReg));
         return item instanceof ArmorItem || item instanceof SwordItem || item instanceof DiggerItem;
     }
 
@@ -277,8 +277,8 @@ public class EquipmentList {
         public WeightedItemstack(Item item, int itemWeight, float quality) {
             this.weight = itemWeight;
             this.quality = quality;
-            this.item = new ExtendedItemStackWrapper(RegistryHelper.items().getIDFrom(item).toString());
-            this.configString = RegistryHelper.items().getIDFrom(item).toString();
+            this.item = new ExtendedItemStackWrapper(RegistryHelper.instance().items().getIDFrom(item).toString());
+            this.configString = RegistryHelper.instance().items().getIDFrom(item).toString();
         }
 
         public WeightedItemstack(String item, int itemWeight, float quality, List<String> errors) {
@@ -297,7 +297,7 @@ public class EquipmentList {
                     e.printStackTrace();
                 }
             }
-            Item it = RegistryHelper.items().getFromId(new ResourceLocation(itemReg));
+            Item it = RegistryHelper.instance().items().getFromId(new ResourceLocation(itemReg));
             if (it == null) {
                 errors.add(itemReg);
                 this.item = null;
@@ -325,17 +325,17 @@ public class EquipmentList {
 
         @Override
         public int hashCode() {
-            return (RegistryHelper.items().getIDFrom(this.item.getItem()) + (this.item.getTag() != null ? this.item.getTag().toString() : "")).hashCode();
+            return (RegistryHelper.instance().items().getIDFrom(this.item.getItem()) + (this.item.getTag() != null ? this.item.getTag().toString() : "")).hashCode();
         }
 
         @Override
         public int compareTo(WeightedItemstack o) {
-            return RegistryHelper.items().getIDFrom(this.item.getItem()).toString().compareTo(RegistryHelper.items().getIDFrom(o.item.getItem()).toString());
+            return RegistryHelper.instance().items().getIDFrom(this.item.getItem()).toString().compareTo(RegistryHelper.instance().items().getIDFrom(o.item.getItem()).toString());
         }
 
         @Override
         public String toString() {
-            return String.format("Item: %s; Weight: %d", RegistryHelper.items().getIDFrom(this.item.getItem()), this.weight);
+            return String.format("Item: %s; Weight: %d", RegistryHelper.instance().items().getIDFrom(this.item.getItem()), this.weight);
         }
 
         public int getWeight(float modifier) {
@@ -373,12 +373,12 @@ public class EquipmentList {
         private boolean modBlacklist(Item item) {
             if (Config.CommonConfig.equipmentModWhitelist) {
                 for (String s : Config.CommonConfig.equipmentModBlacklist)
-                    if (RegistryHelper.items().getIDFrom(item).getNamespace().equals(s))
+                    if (RegistryHelper.instance().items().getIDFrom(item).getNamespace().equals(s))
                         return false;
                 return true;
             }
             for (String s : Config.CommonConfig.equipmentModBlacklist)
-                if (RegistryHelper.items().getIDFrom(item).getNamespace().equals(s))
+                if (RegistryHelper.instance().items().getIDFrom(item).getNamespace().equals(s))
                     return true;
             return false;
         }

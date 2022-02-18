@@ -2,8 +2,8 @@ package io.github.flemmli97.improvedmobs.config;
 
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.tenshilib.RegistryHelper;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
+import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.BowItem;
@@ -29,9 +29,9 @@ public class EntityItemConfig implements IConfigListValue<EntityItemConfig> {
     }
 
     public boolean preventUse(Entity entity, Item item) {
-        List<String> items = this.itemBlacklist.get(RegistryHelper.entities().getIDFrom(entity.getType()));
+        List<String> items = this.itemBlacklist.get(RegistryHelper.instance().entities().getIDFrom(entity.getType()));
         String remap = this.vanillaRemapping(item);
-        return items != null && (items.contains(RegistryHelper.items().getIDFrom(item).toString()) || (remap != null && items.contains(remap)));
+        return items != null && (items.contains(RegistryHelper.instance().items().getIDFrom(item).toString()) || (remap != null && items.contains(remap)));
     }
 
     @Override

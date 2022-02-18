@@ -17,7 +17,7 @@ import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.utils.Utils;
-import io.github.flemmli97.tenshilib.RegistryHelper;
+import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
@@ -167,7 +167,7 @@ public class EventCalls {
             aggressive = true;
         if (villager && aggressive)
             mob.targetSelector.addGoal(2, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
-        List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(RegistryHelper.entities().getIDFrom(mob.getType()));
+        List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(RegistryHelper.instance().entities().getIDFrom(mob.getType()));
         if (types != null)
             mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
         if (mob instanceof PathfinderMob pathfinderMob && DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultySteal && mobGriefing
