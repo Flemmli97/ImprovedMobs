@@ -32,6 +32,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.ThrowablePotionItem;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 
 import java.io.File;
@@ -212,7 +213,7 @@ public class EquipmentList {
             if (averageDurability < 0)
                 averageDurability = 0;
             float ench = armor.getEnchantmentValue();
-            float rep = (armor.getMaterial().getRepairIngredient() != null && !armor.getMaterial().getRepairIngredient().isEmpty()) ? 0.9F : 1.15F;
+            float rep = (armor.getMaterial().getRepairIngredient() != null && armor.getMaterial().getRepairIngredient() != Ingredient.EMPTY) ? 0.9F : 1.15F;
             float vanillaMulti = (armor.getMaterial() == ArmorMaterials.LEATHER || armor.getMaterial() == ArmorMaterials.GOLD || armor.getMaterial() == ArmorMaterials.CHAIN || armor.getMaterial() == ArmorMaterials.IRON
                     || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8F : 1.1F;
             weight -= (fullProt * fullProt * 2.5 + toughness * toughness * 12 + averageDurability * 0.9 + ench) * rep * vanillaMulti;

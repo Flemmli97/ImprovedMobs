@@ -1,6 +1,8 @@
 Improved Mobs 1.9.0
 ================
 - Internal changes
+- Fix capability null crash
+- Fix crash with armor ingredients
 
 Improved Mobs 1.8.1
 ================
