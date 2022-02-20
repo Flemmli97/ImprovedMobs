@@ -7,7 +7,6 @@ import io.github.flemmli97.improvedmobs.forge.capability.TileCap;
 import io.github.flemmli97.improvedmobs.forge.config.ConfigLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.Container;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
@@ -24,6 +23,7 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 public class EventHandler {
 
@@ -31,8 +31,8 @@ public class EventHandler {
 
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<BlockEntity> event) {
-        if (event.getObject() instanceof Container)
-            event.addCapability(tileCap, new TileCap());
+        event.getObject().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                .ifPresent(c -> event.addCapability(tileCap, new TileCap()));
     }
 
     /**

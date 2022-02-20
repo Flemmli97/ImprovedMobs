@@ -1,11 +1,9 @@
 package io.github.flemmli97.improvedmobs.ai;
 
-import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.Container;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
@@ -39,8 +37,8 @@ public class StealGoal extends MoveToBlockGoal {
         this.stealDelay = Math.max(0, --this.stealDelay);
         BlockEntity tile = this.entity.level.getBlockEntity(this.blockPos);
 
-        if (tile instanceof Container inv && this.stealDelay == 0 && this.entity.distanceToSqr(Vec3.atCenterOf(this.blockPos)) < 5 && this.canSee()) {
-            ItemStack drop = this.randomStack(inv);
+        if (this.stealDelay == 0 && this.entity.distanceToSqr(Vec3.atCenterOf(this.blockPos)) < 5 && this.canSee()) {
+            ItemStack drop = CrossPlatformStuff.instance().lootRandomItem(tile, this.entity.getRandom());
             this.entity.level.playSound(null, this.entity.blockPosition(), SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.3F, 1);
             this.entity.swing(InteractionHand.MAIN_HAND);
             ItemEntity item = new ItemEntity(this.entity.level, this.entity.getX(), this.entity.getY(), this.entity.getZ(), drop);
@@ -56,31 +54,12 @@ public class StealGoal extends MoveToBlockGoal {
         return res.getType() == HitResult.Type.BLOCK && res.getBlockPos().equals(this.blockPos);
     }
 
-    private ItemStack randomStack(Container inv) {
-        try {
-            if (!inv.isEmpty()) {
-                ItemStack drop = inv.removeItem(this.entity.getRandom().nextInt(inv.getContainerSize()), 1);
-                int tries = 0;
-                while (drop.isEmpty() && tries < 10) {
-                    drop = inv.removeItem(this.entity.getRandom().nextInt(inv.getContainerSize()), 1);
-                    tries++;
-                }
-                return drop;
-            }
-            return ItemStack.EMPTY;
-        } catch (Exception e) {
-            ImprovedMobs.logger.error("#getSizeInventory and actual size of the inventory (" + inv + ") is not the same.");
-            return ItemStack.EMPTY;
-        }
-    }
-
     @Override
     protected boolean isValidTarget(LevelReader world, BlockPos pos) {
         BlockEntity tile = world.getBlockEntity(pos);
-        boolean opened = false;
-        if (tile instanceof Container) {
-            opened = CrossPlatformStuff.instance().getTileData(tile).playerOpened();
+        if (tile != null) {
+            return CrossPlatformStuff.instance().canLoot(tile);
         }
-        return opened && !((Container) tile).isEmpty();
+        return false;
     }
 }

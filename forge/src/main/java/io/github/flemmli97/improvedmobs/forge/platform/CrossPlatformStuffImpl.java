@@ -16,8 +16,10 @@ import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.nio.file.Path;
+import java.util.Random;
 
 public class CrossPlatformStuffImpl extends CrossPlatformStuff {
 
@@ -26,8 +28,34 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     }
 
     @Override
-    public ITileOpened getTileData(BlockEntity blockEntity) {
-        return blockEntity.getCapability(TileCapProvider.CAP).orElseThrow(() -> new NullPointerException("Capability null. This shouldn't be. BlockEntite " + blockEntity));
+    public void onPlayerOpen(BlockEntity blockEntity) {
+        blockEntity.getCapability(TileCapProvider.CAP)
+                .ifPresent(cap -> cap.setOpened(blockEntity));
+    }
+
+    @Override
+    public boolean canLoot(BlockEntity blockEntity) {
+        return blockEntity.getCapability(TileCapProvider.CAP).map(ITileOpened::playerOpened).orElse(false) &&
+                blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(cap -> {
+                    for (int i = 0; i < cap.getSlots(); i++)
+                        if (!cap.getStackInSlot(i).isEmpty())
+                            return true;
+                    return false;
+                }).orElse(false);
+    }
+
+    @Override
+    public ItemStack lootRandomItem(BlockEntity blockEntity, Random rand) {
+        return blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                .map(cap -> {
+                    ItemStack drop = cap.extractItem(rand.nextInt(cap.getSlots()), 1, false);
+                    int tries = 0;
+                    while (drop.isEmpty() && tries < 10) {
+                        drop = cap.extractItem(rand.nextInt(cap.getSlots()), 1, false);
+                        tries++;
+                    }
+                    return drop;
+                }).orElse(ItemStack.EMPTY);
     }
 
     @Override

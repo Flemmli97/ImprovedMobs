@@ -291,8 +291,8 @@ public class EventCalls {
     public static void openTile(Player player, BlockPos pos) {
         if (!player.level.isClientSide && !player.isShiftKeyDown()) {
             BlockEntity tile = player.level.getBlockEntity(pos);
-            if (tile instanceof Container) {
-                CrossPlatformStuff.instance().getTileData(tile).setOpened(tile);
+            if (tile != null) {
+                CrossPlatformStuff.instance().onPlayerOpen(tile);
             }
         }
     }

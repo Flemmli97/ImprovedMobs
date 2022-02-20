@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.utils.ITileOpened;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,6 +12,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
+import java.util.Random;
 
 public abstract class CrossPlatformStuff {
 
@@ -22,7 +22,11 @@ public abstract class CrossPlatformStuff {
         return INSTANCE;
     }
 
-    public abstract ITileOpened getTileData(BlockEntity blockEntity);
+    public abstract void onPlayerOpen(BlockEntity blockEntity);
+
+    public abstract boolean canLoot(BlockEntity blockEntity);
+
+    public abstract ItemStack lootRandomItem(BlockEntity blockEntity, Random rand);
 
     public abstract boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos);
 

@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.fabric.platform;
 
+import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
@@ -9,6 +10,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.AxeItem;
@@ -20,6 +22,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
+import java.util.Random;
 
 public class CrossPlatformStuffImpl extends CrossPlatformStuff {
 
@@ -28,8 +31,36 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     }
 
     @Override
-    public ITileOpened getTileData(BlockEntity blockEntity) {
-        return (ITileOpened) blockEntity;
+    public void onPlayerOpen(BlockEntity blockEntity) {
+        ((ITileOpened) blockEntity).setOpened(blockEntity);
+    }
+
+    @Override
+    public boolean canLoot(BlockEntity blockEntity) {
+        if (blockEntity instanceof Container container)
+            return ((ITileOpened) blockEntity).playerOpened() && !container.isEmpty();
+        return false;
+    }
+
+    @Override
+    public ItemStack lootRandomItem(BlockEntity blockEntity, Random rand) {
+        if (blockEntity instanceof Container inv) {
+            try {
+                if (!inv.isEmpty()) {
+                    ItemStack drop = inv.removeItem(rand.nextInt(inv.getContainerSize()), 1);
+                    int tries = 0;
+                    while (drop.isEmpty() && tries < 10) {
+                        drop = inv.removeItem(rand.nextInt(inv.getContainerSize()), 1);
+                        tries++;
+                    }
+                    return drop;
+                }
+                return ItemStack.EMPTY;
+            } catch (Exception e) {
+                ImprovedMobs.logger.error("#getSizeInventory and actual size of the inventory (" + inv + ") is not the same.");
+            }
+        }
+        return ItemStack.EMPTY;
     }
 
     @Override
