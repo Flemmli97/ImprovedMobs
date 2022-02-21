@@ -1,7 +1,6 @@
 package com.flemmli97.improvedmobs.network;
 
 import com.flemmli97.improvedmobs.client.DifficultyDisplay;
-import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import net.minecraft.network.PacketBuffer;
 import net.minecraftforge.fml.network.NetworkEvent;
 
@@ -11,12 +10,8 @@ public class PacketDifficulty {
 
     private final float difficulty;
 
-    private PacketDifficulty(float difficulty) {
+    public PacketDifficulty(float difficulty) {
         this.difficulty = difficulty;
-    }
-
-    public PacketDifficulty(DifficultyData data) {
-        this.difficulty = data.getDifficulty();
     }
 
     public static PacketDifficulty read(PacketBuffer buf) {

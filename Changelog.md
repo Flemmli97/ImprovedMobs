@@ -1,3 +1,12 @@
+Improved Mobs 1.9.0
+================
+- New flag NEUTRALAGGRO to finetune mobs that are affected by the neutral aggressive feature
+- new DifficultyType config:  
+  Defines how the difficulty at a position is calculated. Supported values are:  
+  "GLOBAL: Serverwide difficulty value  
+  "PLAYERMAX: Maximum difficulty of players in a 128 radius around the position  
+  "PLAYERMEAN: Average difficulty of players in a 128 radius around the position
+
 Improved Mobs 1.8.1
 ================
 - Make parrot ability get triggered less

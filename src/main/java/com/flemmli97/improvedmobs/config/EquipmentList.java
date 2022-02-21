@@ -206,6 +206,7 @@ public class EquipmentList {
     private static Field techGunDmg, techgunAIAttackTime, techgunAIBurstCount, techgunAIburstAttackTime;
     private static final List<String> defaultZeroWeight = Lists.newArrayList("techguns:nucleardeathray", "techguns:grenadelauncher", "techguns:tfg", "techguns:guidedmissilelauncher", "techguns:rocketlauncher");
 
+    @SuppressWarnings("deprecation")
     private static float[] getDefaultWeight(Item item) {
         if (defaultZeroWeight.contains(item.getRegistryName().toString()))
             return new float[]{0, 0};

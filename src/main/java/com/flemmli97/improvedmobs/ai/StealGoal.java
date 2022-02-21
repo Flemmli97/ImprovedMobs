@@ -1,12 +1,10 @@
 package com.flemmli97.improvedmobs.ai;
 
-import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.capability.ITileOpened;
 import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.entity.item.ItemEntity;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.Hand;
@@ -18,8 +16,9 @@ import net.minecraft.util.math.RayTraceContext;
 import net.minecraft.util.math.RayTraceResult;
 import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.world.IWorldReader;
+import net.minecraftforge.items.CapabilityItemHandler;
 
-import java.util.Optional;
+import java.util.Random;
 
 public class StealGoal extends MoveToBlockGoal {
 
@@ -42,9 +41,8 @@ public class StealGoal extends MoveToBlockGoal {
         this.stealDelay = Math.max(0, --this.stealDelay);
         TileEntity tile = this.entity.world.getTileEntity(this.destinationBlock);
 
-        if (tile instanceof IInventory && this.stealDelay == 0 && this.entity.getDistanceSq(Vector3d.copyCentered(this.destinationBlock)) < 5 && this.canSee()) {
-            IInventory inv = (IInventory) tile;
-            ItemStack drop = this.randomStack(inv);
+        if (tile != null && this.stealDelay == 0 && this.entity.getDistanceSq(Vector3d.copyCentered(this.destinationBlock)) < 5 && this.canSee()) {
+            ItemStack drop = this.randomStack(tile, this.entity.getRNG());
             this.entity.world.playSound(null, this.entity.getPosition(), SoundEvents.BLOCK_CHEST_OPEN, SoundCategory.BLOCKS, 0.3F, 1);
             this.entity.swingArm(Hand.MAIN_HAND);
             ItemEntity item = new ItemEntity(this.entity.world, this.entity.getPosX(), this.entity.getPosY(), this.entity.getPosZ(), drop);
@@ -60,33 +58,31 @@ public class StealGoal extends MoveToBlockGoal {
         return res.getType() == RayTraceResult.Type.BLOCK && res.getPos().equals(this.destinationBlock);
     }
 
-    private ItemStack randomStack(IInventory inv) {
-        try {
-            if (!inv.isEmpty()) {
-                ItemStack drop = inv.decrStackSize(this.entity.getRNG().nextInt(inv.getSizeInventory()), 1);
-                int tries = 0;
-                while (drop.isEmpty() && tries < 10) {
-                    drop = inv.decrStackSize(this.entity.getRNG().nextInt(inv.getSizeInventory()), 1);
-                    tries++;
-                }
-                return drop;
-            }
-            return ItemStack.EMPTY;
-        } catch (Exception e) {
-            ImprovedMobs.logger.error("#getSizeInventory and actual size of the inventory (" + inv + ") is not the same.");
-            return ItemStack.EMPTY;
-        }
+    private ItemStack randomStack(TileEntity blockEntity, Random rand) {
+        return blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+                .map(cap -> {
+                    ItemStack drop = cap.extractItem(rand.nextInt(cap.getSlots()), 1, false);
+                    int tries = 0;
+                    while (drop.isEmpty() && tries < 10) {
+                        drop = cap.extractItem(rand.nextInt(cap.getSlots()), 1, false);
+                        tries++;
+                    }
+                    return drop;
+                }).orElse(ItemStack.EMPTY);
     }
 
     @Override
     protected boolean shouldMoveTo(IWorldReader world, BlockPos pos) {
         TileEntity tile = world.getTileEntity(pos);
-        boolean opened = false;
-        if (tile instanceof IInventory) {
-            Optional<ITileOpened> cap = tile.getCapability(TileCapProvider.OpenedCap, null).resolve();
-            if (cap.isPresent())
-                opened = cap.get().playerOpened();
+        if (tile != null && tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent()) {
+            return tile.getCapability(TileCapProvider.OpenedCap).map(ITileOpened::playerOpened).orElse(false) &&
+                    tile.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(cap -> {
+                        for (int i = 0; i < cap.getSlots(); i++)
+                            if (!cap.getStackInSlot(i).isEmpty())
+                                return true;
+                        return false;
+                    }).orElse(false);
         }
-        return opened && !((IInventory) tile).isEmpty();
+        return false;
     }
 }

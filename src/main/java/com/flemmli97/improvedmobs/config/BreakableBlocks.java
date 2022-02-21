@@ -4,7 +4,6 @@ import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.tenshilib.api.config.IConfigListValue;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.ITag;
 import net.minecraft.util.ResourceLocation;
@@ -33,9 +32,9 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
         if (!Config.CommonConfig.breakTileEntities && state.getBlock().hasTileEntity(state))
             return false;
         if (Config.CommonConfig.breakingAsBlacklist) {
-            return this.tags.stream().noneMatch(state.getBlock()::isIn) && !this.blocks.contains(state.getBlock().getRegistryName().toString());
+            return this.tags.stream().noneMatch(state.getBlock()::isIn) && !this.blocks.contains(state.getBlock().getRegistryName().getNamespace()) && !this.blocks.contains(state.getBlock().getRegistryName().toString());
         }
-        return this.tags.stream().anyMatch(state.getBlock()::isIn) || this.blocks.contains(state.getBlock().getRegistryName().toString());
+        return this.tags.stream().anyMatch(state.getBlock()::isIn) || this.blocks.contains(state.getBlock().getRegistryName().getNamespace()) || this.blocks.contains(state.getBlock().getRegistryName().toString());
     }
 
     @Override
@@ -65,7 +64,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
             ITag<Block> tag = BlockTags.getCollection().get(new ResourceLocation(s));
             if (tag != null)
                 tags.add(tag);
-            else if (ForgeRegistries.BLOCKS.getValue(new ResourceLocation(s)) != Blocks.AIR)
+            else
                 list.add(s);
         } else {
             Class<?> clss = null;
@@ -92,6 +91,6 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     }
 
     public static String use() {
-        return "Usage: <registry name;classname;tag> put \"!\" infront to exclude blocks";
+        return "Usage: <registry name;classname;tag;namespace> put \"!\" infront to exclude blocks";
     }
 }

@@ -49,6 +49,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue friendlyFire;
         public final ForgeConfigSpec.ConfigValue<List<String>> petArmorBlackList;
         public final ForgeConfigSpec.BooleanValue petWhiteList;
+        public final ForgeConfigSpec.EnumValue<Config.DifficultyType> difficultyType;
 
         public final ForgeConfigSpec.BooleanValue doIMDifficulty;
 
@@ -65,6 +66,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue mobListBoatWhitelist;
         public final ForgeConfigSpec.BooleanValue mobListFlyWhitelist;
         public final ForgeConfigSpec.BooleanValue targetVillagerWhitelist;
+        public final ForgeConfigSpec.BooleanValue neutralAggroWhitelist;
 
         //Debug
         public final ForgeConfigSpec.BooleanValue debugPath;
@@ -137,10 +139,14 @@ public class ConfigSpecs {
             this.petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").define("Pet Blacklist", new ArrayList<>());
             this.petWhiteList = builder.comment("Treat pet blacklist as whitelist").define("Pet Whitelist", false);
             this.doIMDifficulty = builder.comment("Increase difficulty with time", "Here untill its back as a gamerule").define("Difficulty toggle", true);
+            this.difficultyType = builder.comment("How the difficulty at a position is calculated. Supported values are: ",
+                    "GLOBAL: Serverwide difficulty value",
+                    "PLAYERMAX: Maximum difficulty of players in a 128 radius around the position",
+                    "PLAYERMEAN: Average difficulty of players in a 128 radius around the position").defineEnum("Difficulty type", Config.DifficultyType.GLOBAL);
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");
-            this.entityBlacklist = builder.comment("By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage:", EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
+            this.entityBlacklist = builder.comment(EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
             this.flagBlacklist = builder.comment("Put the above flags here to completly disable them.").define("Flag Blacklist", new ArrayList<>());
             this.mobAttributeWhitelist = builder.comment("Treat ATTRIBUTES flags as whitelist").define("Attribute Whitelist", false);
             this.armorMobWhitelist = builder.comment("Treat ARMOR flags as whitelist").define("Armor Equip Whitelist", false);
@@ -152,6 +158,7 @@ public class ConfigSpecs {
             this.mobListBoatWhitelist = builder.comment("Treat GUARDIAN flags as whitelist").define("Guardian Whitelist", false);
             this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Parrot Whitelist", false);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", false);
+            this.neutralAggroWhitelist = builder.comment("Treat NEUTRALAGGRO flags as whitelist").define("Neutral Aggro Whitelist", false);
             builder.pop();
 
             builder.comment("Debugging").push("debug");
@@ -163,7 +170,7 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");
-            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. " + BreakableBlocks.use(), "If you includery common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("forge:glass", "forge:glass_panes", "minecraft:fence_gates", "forge:fence_gates", "minecraft:wooden_doors"));
+            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. ", BreakableBlocks.use(), "Note: If you include common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("forge:glass", "forge:glass_panes", "minecraft:fence_gates", "forge:fence_gates", "minecraft:wooden_doors"));
             this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Block as Blacklist", false);
             this.useBlockBreakSound = builder.comment("Use the block breaking sound instead of a knocking sound").define("Sound", false);
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);

@@ -47,6 +47,7 @@ public class Config {
         public static List<String> petArmorBlackList;
         public static boolean petWhiteList;
         public static boolean doIMDifficulty;
+        public static DifficultyType difficultyType = DifficultyType.GLOBAL;
 
         //Black-WhiteList
         public static EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
@@ -61,6 +62,7 @@ public class Config {
         public static boolean mobListBoatWhitelist;
         public static boolean mobListFlyWhitelist;
         public static boolean targetVillagerWhitelist;
+        public static boolean neutralAggroWhitelist;
 
         //Debug
         public static boolean debugPath;
@@ -139,6 +141,7 @@ public class Config {
             petWhiteList = ConfigSpecs.commonConf.petWhiteList.get();
             doIMDifficulty = ConfigSpecs.commonConf.doIMDifficulty.get();
             increaseHandler.readFromString(ConfigSpecs.commonConf.increaseHandler.get());
+            Config.CommonConfig.difficultyType = ConfigSpecs.commonConf.difficultyType.get();
 
             List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
             if (l.size() != 1 || !l.get(0).equals("UNINIT"))
@@ -154,6 +157,7 @@ public class Config {
             mobListBoatWhitelist = ConfigSpecs.commonConf.mobListBoatWhitelist.get();
             mobListFlyWhitelist = ConfigSpecs.commonConf.mobListFlyWhitelist.get();
             targetVillagerWhitelist = ConfigSpecs.commonConf.targetVillagerWhitelist.get();
+            neutralAggroWhitelist = ConfigSpecs.commonConf.neutralAggroWhitelist.get();
 
             debugPath = ConfigSpecs.commonConf.debugPath.get();
 
@@ -250,5 +254,11 @@ public class Config {
         public ItemWrapper getItem() {
             return this.item;
         }
+    }
+
+    public enum DifficultyType {
+        GLOBAL,
+        PLAYERMAX,
+        PLAYERMEAN
     }
 }

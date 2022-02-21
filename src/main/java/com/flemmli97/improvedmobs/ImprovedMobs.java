@@ -1,8 +1,8 @@
 package com.flemmli97.improvedmobs;
 
 import com.flemmli97.improvedmobs.capability.ITileOpened;
+import com.flemmli97.improvedmobs.capability.PlayerDifficultyData;
 import com.flemmli97.improvedmobs.capability.TileCap;
-import com.flemmli97.improvedmobs.capability.TileCapNetwork;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.config.ConfigSpecs;
 import com.flemmli97.improvedmobs.config.EquipmentList;
@@ -10,7 +10,11 @@ import com.flemmli97.improvedmobs.events.DifficultyHandler;
 import com.flemmli97.improvedmobs.events.EventHandler;
 import com.flemmli97.improvedmobs.network.PacketHandler;
 import com.flemmli97.improvedmobs.utils.ItemAITasks;
+import net.minecraft.nbt.CompoundNBT;
+import net.minecraft.nbt.INBT;
+import net.minecraft.util.Direction;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -21,6 +25,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.annotation.Nullable;
 import java.io.File;
 
 @Mod.EventBusSubscriber(bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -51,7 +56,36 @@ public class ImprovedMobs {
         } catch (EquipmentList.InvalidItemNameException e) {
             ImprovedMobs.logger.error(e.getMessage());
         }
-        CapabilityManager.INSTANCE.register(ITileOpened.class, new TileCapNetwork(), TileCap::new);
+        CapabilityManager.INSTANCE.register(ITileOpened.class, new Capability.IStorage<ITileOpened>() {
+            @Nullable
+            @Override
+            public INBT writeNBT(Capability<ITileOpened> capability, ITileOpened instance, Direction side) {
+                CompoundNBT compound = new CompoundNBT();
+                instance.writeToNBT(compound);
+                return compound;
+            }
+
+            @Override
+            public void readNBT(Capability<ITileOpened> capability, ITileOpened instance, Direction side, INBT nbt) {
+                instance.readFromNBT((CompoundNBT) nbt);
+            }
+        }, TileCap::new);
+        CapabilityManager.INSTANCE.register(PlayerDifficultyData.class, new Capability.IStorage<PlayerDifficultyData>() {
+            @Nullable
+            @Override
+            public INBT writeNBT(Capability<PlayerDifficultyData> capability, PlayerDifficultyData instance, Direction side) {
+                CompoundNBT compound = new CompoundNBT();
+                instance.save(compound);
+                return compound;
+            }
+
+            @Override
+            public void readNBT(Capability<PlayerDifficultyData> capability, PlayerDifficultyData instance, Direction side, INBT nbt) {
+                instance.load((CompoundNBT) nbt);
+
+            }
+        }, PlayerDifficultyData::new);
+
         MinecraftForge.EVENT_BUS.register(new EventHandler());
         if (Config.CommonConfig.enableDifficultyScaling) {
             MinecraftForge.EVENT_BUS.register(new DifficultyHandler());

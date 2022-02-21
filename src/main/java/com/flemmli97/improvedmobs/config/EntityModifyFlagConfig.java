@@ -87,8 +87,8 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
     }
 
     public static String use() {
-        String[] str = new String[]{"<entity registry name> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Leave empty to apply them all and REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
-                "example: minecraft:sheep|REVERSE|ATTRIBUTES will add sheep to attributes modification (since default is a blacklist)", "or minecraft:sheep|ATTRIBUTES will add sheep to everything except attributes"};
+        String[] str = new String[]{"Entities added here will be blacklisted from their assigned flags. Usage:", "<entity registry name> or <namespace> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Having no flags is equal to ALL. Use REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
+                "Examples:", "minecraft:sheep is equal to minecraft:sheep|ALL and excludes sheeps from all modifications", "minecraft:sheep|REVERSE|ATTRIBUTES will add sheep to attributes modification only", "minecraft:sheep|ATTRIBUTES will add sheep to everything except attributes"};
         return String.join("\n", str);
     }
 
@@ -105,8 +105,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         GUARDIAN,
         PARROT,
         TARGETVILLAGER,
-        //TARGETPLAYER,
-        //TARGETHURT,
+        NEUTRALAGGRO,
         REVERSE
 
     }

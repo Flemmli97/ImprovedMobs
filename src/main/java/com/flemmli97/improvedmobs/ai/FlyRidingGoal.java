@@ -43,7 +43,7 @@ public class FlyRidingGoal extends Goal {
         LivingEntity target = this.living.getAttackTarget();
         if (target == null || !target.isAlive()) {
             this.targetDelay = 0;
-        } else if (!this.living.isPassenger() && ++this.targetDelay > 100) {
+        } else if (!this.living.isPassenger() && ++this.targetDelay > 60) {
             if (this.wait >= 80 && --this.pathCheckWait <= 0) {
                 if (this.checkFlying()) {
                     this.wait = 0;
@@ -107,6 +107,9 @@ public class FlyRidingGoal extends Goal {
     }
 
     private boolean checkFlying() {
+        //Check if entity tries to move somewhere already
+        if (Math.abs(this.living.moveForward) > 0.005 || Math.abs(this.living.moveStrafing) > 0.005)
+            return false;
         if (this.living.hasNoGravity() || !this.living.isOnGround())
             return false;
         Path path = this.living.getNavigator().getPath();
@@ -123,9 +126,6 @@ public class FlyRidingGoal extends Goal {
             return true;
         LivingEntity target = this.living.getAttackTarget();
         if (target != null && this.living.getDistanceSq(target.getPosX(), target.getPosY(), target.getPosZ()) <= this.getAttackReachSqr(target)) {
-            return riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
-        }
-        if (this.living.getAttackTarget() != null && this.living.getAttackTarget().getDistanceSq(this.living) < 1) {
             return riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
         }
         return false;

@@ -8,7 +8,8 @@ import com.flemmli97.improvedmobs.ai.ItemUseGoal;
 import com.flemmli97.improvedmobs.ai.LadderClimbGoal;
 import com.flemmli97.improvedmobs.ai.StealGoal;
 import com.flemmli97.improvedmobs.ai.WaterRidingGoal;
-import com.flemmli97.improvedmobs.capability.ITileOpened;
+import com.flemmli97.improvedmobs.capability.PlayerDifficultyData;
+import com.flemmli97.improvedmobs.capability.TileCap;
 import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import com.flemmli97.improvedmobs.commands.IMCommand;
 import com.flemmli97.improvedmobs.config.Config;
@@ -25,6 +26,7 @@ import net.minecraft.enchantment.Enchantments;
 import net.minecraft.entity.CreatureEntity;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.IAngerable;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attributes;
@@ -36,17 +38,15 @@ import net.minecraft.entity.ai.goal.RandomWalkingGoal;
 import net.minecraft.entity.item.ItemEntity;
 import net.minecraft.entity.item.TNTEntity;
 import net.minecraft.entity.merchant.villager.AbstractVillagerEntity;
-import net.minecraft.entity.monster.EndermanEntity;
 import net.minecraft.entity.monster.MonsterEntity;
 import net.minecraft.entity.monster.SlimeEntity;
-import net.minecraft.entity.monster.ZombifiedPiglinEntity;
 import net.minecraft.entity.passive.TameableEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.entity.projectile.PotionEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.projectile.SnowballEntity;
 import net.minecraft.inventory.EquipmentSlotType;
-import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.particles.ParticleTypes;
@@ -81,13 +81,14 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.event.server.FMLServerStartingEvent;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Predicate;
 
 public class EventHandler {
 
     public static final ResourceLocation tileCap = new ResourceLocation(ImprovedMobs.MODID, "opened_flag");
+    public static final ResourceLocation playerCap = new ResourceLocation(ImprovedMobs.MODID, "player_difficulty");
     public static final String breaker = ImprovedMobs.MODID + ":Breaker";
+    public static final String flyer = ImprovedMobs.MODID + ":Flyer";
     private static final String modifyArmor = ImprovedMobs.MODID + ":ModifyArmor";
     private static final String modifyHeld = ImprovedMobs.MODID + ":ModifyHeld";
     private static final String modifyAttributes = ImprovedMobs.MODID + ":ModifyAttr";
@@ -95,8 +96,13 @@ public class EventHandler {
 
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<TileEntity> event) {
-        if (event.getObject() instanceof IInventory)
-            event.addCapability(tileCap, new TileCapProvider());
+        event.addCapability(tileCap, new TileCap());
+    }
+
+    @SubscribeEvent
+    public void attachCapabilityPlayer(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof ServerPlayerEntity)
+            event.addCapability(playerCap, new PlayerDifficultyData());
     }
 
     /**
@@ -169,14 +175,23 @@ public class EventHandler {
         boolean mobGriefing = e.getWorld().getGameRules().getBoolean(GameRules.MOB_GRIEFING);
         if (e.getEntity() instanceof MobEntity) {
             MobEntity living = (MobEntity) e.getEntity();
-            boolean canBreak = false;
-            if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
-                    && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
-                living.getPersistentData().putBoolean(breaker, true);
-                canBreak = true;
+            if (living.getPersistentData().contains(breaker)) {
+                if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
+                        && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
+                    living.getPersistentData().putBoolean(breaker, true);
+                } else
+                    living.getPersistentData().putBoolean(breaker, false);
             }
+            if (living.getPersistentData().contains(flyer)) {
+                if (living.world.rand.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist))
+                    living.getPersistentData().putBoolean(flyer, true);
+                else
+                    living.getPersistentData().putBoolean(flyer, false);
+            }
+            boolean canBreak = living.getPersistentData().getBoolean(breaker);
+            boolean canFly = living.getPersistentData().getBoolean(flyer);
             this.applyAttributesAndItems(living);
-            if (living.getPersistentData().getBoolean(breaker)) {
+            if (canBreak) {
                 ((IGoalModifier) living.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
                     if (g instanceof NearestAttackableTargetGoal && living.world.rand.nextFloat() < 0.5) {
                         ((TargetGoalMixin) g).setShouldCheckSight(false);
@@ -185,6 +200,9 @@ public class EventHandler {
                 });
                 if (mobGriefing) {
                     living.goalSelector.addGoal(1, new BlockBreakGoal(living));
+                    //Cause of #115
+                    if (living.getNavigator() == null || living.getNavigator().getNodeProcessor() == null)
+                        throw new NullPointerException("Navigator null! " + living + " ; " + living.getNavigator());
                     ((INodeBreakable) living.getNavigator().getNodeProcessor()).setCanBreakBlocks(true);
                     ItemStack stack = Config.CommonConfig.getRandomBreakingItem(living.getRNG());
                     if (!Config.CommonConfig.shouldDropEquip)
@@ -196,7 +214,7 @@ public class EventHandler {
                 living.goalSelector.addGoal(1, new ItemUseGoal(living, 15));
                 //EntityAITechGuns.applyAI(living);
             }
-            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListBoatWhitelist)) {
+            if (canFly) {
                 //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
                 if (!(((MobEntityMixin) living).getTrueNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity)) {
                     living.goalSelector.addGoal(6, new WaterRidingGoal(living));
@@ -214,23 +232,19 @@ public class EventHandler {
                     living.goalSelector.addGoal(4, new LadderClimbGoal(living));
                 }
             }
-            boolean villager = false;
-            boolean neutral = living instanceof EndermanEntity || living instanceof ZombifiedPiglinEntity;
-            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist)) {
-                villager = true;
-                if (!neutral)
-                    living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, !canBreak || living.world.rand.nextFloat() <= 0.5, null));
-            }
-            if (Config.CommonConfig.neutralAggressiv != 0 && living.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv)
-                if (neutral) {
+            boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
+            boolean aggressive;
+            if ((living instanceof IAngerable) && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.NEUTRALAGGRO, Config.CommonConfig.neutralAggroWhitelist)) {
+                aggressive = Config.CommonConfig.neutralAggressiv != 0 && living.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv;
+                if (aggressive)
                     living.targetSelector.addGoal(1, this.setNoLoS(living, PlayerEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, null));
-                    if (villager)
-                        living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, canBreak || living.world.rand.nextFloat() < 0.5, null));
-                }
+            } else
+                aggressive = true;
+            if (villager && aggressive)
+                living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, !canBreak || living.world.rand.nextFloat() <= 0.5, null));
             List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(living.getType().getRegistryName());
             if (types != null)
                 living.targetSelector.addGoal(3, this.setNoLoS(living, LivingEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
-
         }
         if (e.getEntity() instanceof CreatureEntity) {
             CreatureEntity creature = (CreatureEntity) e.getEntity();
@@ -360,9 +374,9 @@ public class EventHandler {
     public void openTile(PlayerInteractEvent.RightClickBlock e) {
         if (!e.getWorld().isRemote && !e.getPlayer().isSneaking()) {
             TileEntity tile = e.getWorld().getTileEntity(e.getPos());
-            if (tile instanceof IInventory) {
-                Optional<ITileOpened> cap = tile.getCapability(TileCapProvider.OpenedCap, null).resolve();
-                cap.ifPresent(iTileOpened -> iTileOpened.setOpened(tile));
+            if (tile != null) {
+                tile.getCapability(TileCapProvider.OpenedCap, null)
+                        .ifPresent(iTileOpened -> iTileOpened.setOpened(tile));
             }
         }
     }

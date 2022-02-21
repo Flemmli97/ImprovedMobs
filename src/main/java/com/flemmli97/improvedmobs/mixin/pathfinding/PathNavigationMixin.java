@@ -25,7 +25,7 @@ public abstract class PathNavigationMixin {
 
     @ModifyArg(method = "tick", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ai/controller/MovementController;setMoveTo(DDDD)V"), index = 1)
     private double noJumpBreakable(double y) {
-        if(!((INodeBreakable)this.nodeProcessor).canBreakBlocks())
+        if (!((INodeBreakable) this.nodeProcessor).canBreakBlocks())
             return y;
         Vector3d vector3d2 = this.currentPath.getPosition(this.entity);
         if (PathFindingUtils.canBreak(new BlockPos(vector3d2), this.entity)) {
