@@ -5,10 +5,9 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.commands.IMCommand;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
-import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
-import io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric;
 import io.github.flemmli97.improvedmobs.fabric.config.ConfigLoader;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
@@ -33,7 +32,7 @@ public class EventHandler {
     public static final ResourceLocation tileCap = new ResourceLocation(ImprovedMobs.MODID, "opened_flag");
 
     public static void worldJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
-        ImprovedMobsFabric.sendDifficultyPacket(DifficultyData.get(server), handler.player);
+        CrossPlatformStuff.instance().sendDifficultyDataTo(handler.player, server);
     }
 
     public static void serverStart(MinecraftServer server) {

@@ -1,13 +1,14 @@
 package io.github.flemmli97.improvedmobs.forge.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.improvedmobs.forge.capability.TileCapProvider;
-import io.github.flemmli97.improvedmobs.forge.network.PacketDifficulty;
 import io.github.flemmli97.improvedmobs.forge.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.ITileOpened;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.BowItem;
@@ -23,7 +24,7 @@ import java.util.Random;
 
 public class CrossPlatformStuffImpl extends CrossPlatformStuff {
 
-    public void init() {
+    public static void init() {
         INSTANCE = new CrossPlatformStuffImpl();
     }
 
@@ -35,13 +36,15 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
 
     @Override
     public boolean canLoot(BlockEntity blockEntity) {
-        return blockEntity.getCapability(TileCapProvider.CAP).map(ITileOpened::playerOpened).orElse(false) &&
-                blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(cap -> {
-                    for (int i = 0; i < cap.getSlots(); i++)
-                        if (!cap.getStackInSlot(i).isEmpty())
-                            return true;
-                    return false;
-                }).orElse(false);
+        if (blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
+            return blockEntity.getCapability(TileCapProvider.CAP).map(ITileOpened::playerOpened).orElse(false) &&
+                    blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(cap -> {
+                        for (int i = 0; i < cap.getSlots(); i++)
+                            if (!cap.getStackInSlot(i).isEmpty())
+                                return true;
+                        return false;
+                    }).orElse(false);
+        return false;
     }
 
     @Override
@@ -69,8 +72,13 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     }
 
     @Override
+    public void sendDifficultyDataTo(ServerPlayer player, MinecraftServer server) {
+        PacketHandler.sendDifficultyToClient(DifficultyData.get(player.getServer()), player);
+    }
+
+    @Override
     public void sendDifficultyData(DifficultyData data, MinecraftServer server) {
-        PacketHandler.sendToAll(new PacketDifficulty(data), server);
+        PacketHandler.sendDifficultyToAll(data, server);
     }
 
     @Override
@@ -86,5 +94,10 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     @Override
     public boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
         return attackingStack.canDisableShield(held, entity, attacker);
+    }
+
+    @Override
+    public IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
+        return player.getCapability(TileCapProvider.PLAYER_CAP).orElseThrow(() -> new NullPointerException("Player difficulty capability not present!!!"));
     }
 }

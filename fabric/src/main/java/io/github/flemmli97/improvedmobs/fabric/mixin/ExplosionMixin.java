@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import java.util.List;
 
 @Mixin(Explosion.class)
-public class ExplosionMixin {
+public abstract class ExplosionMixin {
 
     @Shadow
     private Entity source;

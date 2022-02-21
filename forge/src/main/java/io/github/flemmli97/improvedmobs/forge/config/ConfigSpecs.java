@@ -51,8 +51,8 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue friendlyFire;
         public final ForgeConfigSpec.ConfigValue<List<String>> petArmorBlackList;
         public final ForgeConfigSpec.BooleanValue petWhiteList;
-
         public final ForgeConfigSpec.BooleanValue doIMDifficulty;
+        public final ForgeConfigSpec.EnumValue<Config.DifficultyType> difficultyType;
 
         //Black-WhiteList
         public final ForgeConfigSpec.ConfigValue<List<String>> flagBlacklist;
@@ -129,13 +129,17 @@ public class ConfigSpecs {
             builder.comment("With default value every difficulty perk maxes out at difficulty 250")/*.translation("improvedmobs.general")*/.push("general");
             this.enableDifficultyScaling = builder.worldRestart().comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").define("Difficulty Delay", 0);
-            this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1"));
+            this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1, 250-0"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             this.shouldPunishTimeSkip = builder.comment("Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.").define("Punish Time Skip", true);
             this.friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
             this.petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.").define("Pet Blacklist", new ArrayList<>());
             this.petWhiteList = builder.comment("Treat pet blacklist as whitelist").define("Pet Whitelist", false);
             this.doIMDifficulty = builder.comment("Increase difficulty with time", "Here untill its back as a gamerule").define("Difficulty toggle", true);
+            this.difficultyType = builder.comment("How the difficulty at a position is calculated. Supported values are: ",
+                    "GLOBAL: Serverwide difficulty value",
+                    "PLAYERMAX: Maximum difficulty of players in a 128 radius around the position",
+                    "PLAYERMEAN: Average difficulty of players in a 128 radius around the position").defineEnum("Difficulty type", Config.DifficultyType.GLOBAL);
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");

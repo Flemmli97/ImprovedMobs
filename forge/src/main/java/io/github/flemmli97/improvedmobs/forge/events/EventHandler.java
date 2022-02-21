@@ -3,10 +3,13 @@ package io.github.flemmli97.improvedmobs.forge.events;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.commands.IMCommand;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
+import io.github.flemmli97.improvedmobs.forge.capability.PlayerDifficultyData;
 import io.github.flemmli97.improvedmobs.forge.capability.TileCap;
 import io.github.flemmli97.improvedmobs.forge.config.ConfigLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
@@ -23,16 +26,21 @@ import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.world.ExplosionEvent;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 public class EventHandler {
 
     public static final ResourceLocation tileCap = new ResourceLocation(ImprovedMobs.MODID, "opened_flag");
+    public static final ResourceLocation tilePlayer = new ResourceLocation(ImprovedMobs.MODID, "player_cap");
 
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<BlockEntity> event) {
-        event.getObject().getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
-                .ifPresent(c -> event.addCapability(tileCap, new TileCap()));
+        event.addCapability(tileCap, new TileCap());
+    }
+
+    @SubscribeEvent
+    public void attachPlayerCapability(AttachCapabilitiesEvent<Entity> event) {
+        if (event.getObject() instanceof ServerPlayer)
+            event.addCapability(tilePlayer, new PlayerDifficultyData());
     }
 
     /**

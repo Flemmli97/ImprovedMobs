@@ -1,23 +1,12 @@
 package io.github.flemmli97.improvedmobs.forge.network;
 
 import io.github.flemmli97.improvedmobs.client.ClientEvents;
-import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
 
-public class PacketDifficulty {
-
-    private final float difficulty;
-
-    private PacketDifficulty(float difficulty) {
-        this.difficulty = difficulty;
-    }
-
-    public PacketDifficulty(DifficultyData data) {
-        this.difficulty = data.getDifficulty();
-    }
+public record PacketDifficulty(float difficulty) {
 
     public static PacketDifficulty read(FriendlyByteBuf buf) {
         return new PacketDifficulty(buf.readFloat());

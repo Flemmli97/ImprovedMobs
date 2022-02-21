@@ -6,6 +6,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
 
+import java.util.function.Supplier;
+
 public class DifficultyValuesImpl extends DifficultyValues {
 
     public static void init() {
@@ -13,9 +15,9 @@ public class DifficultyValuesImpl extends DifficultyValues {
     }
 
     @Override
-    public float getDifficulty(Level level, BlockPos pos, float defaultVal) {
+    public float getDifficulty(Level level, BlockPos pos, Supplier<Float> defaultVal) {
         if (Config.CommonConfig.useScalingHealthMod)
             return (float) SHDifficulty.areaDifficulty(level, pos);
-        return defaultVal;
+        return defaultVal.get();
     }
 }

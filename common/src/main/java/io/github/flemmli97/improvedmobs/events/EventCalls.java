@@ -78,13 +78,13 @@ public class EventCalls {
                     if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
                         i += 1;
                     while (i > 0) {
-                        data.increaseDifficultyBy(shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(data.getDifficulty()) : 0, level.getDayTime(), level.getServer());
+                        data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current) : 0f, level.getDayTime(), level.getServer());
                         i--;
                     }//data.increaseDifficultyBy(shouldIncrease ? level.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0 : 0, level.getDayTime());
                 }
             } else {
                 if (level.getDayTime() - data.getPrevTime() > 2400) {
-                    data.increaseDifficultyBy(shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(data.getDifficulty()) : 0, level.getDayTime(), level.getServer());
+                    data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current) : 0, level.getDayTime(), level.getServer());
                     //data.increaseDifficultyBy(shouldIncrease ? level.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0 : 0, level.getDayTime());
                 }
             }
@@ -117,7 +117,7 @@ public class EventCalls {
         }
         if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
             ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
-                if (g instanceof NearestAttackableTargetGoal && mob.level.random.nextFloat() < 0.7) {
+                if (mob.level.random.nextFloat() < 0.7) {
                     ((TargetGoalMixin) g).setShouldCheckSight(false);
                     ((NearestTargetGoalMixin) g).getTargetEntitySelector().ignoreLineOfSight();
                 }

@@ -35,6 +35,7 @@ public class Config {
         public static List<String> petArmorBlackList;
         public static boolean petWhiteList;
         public static boolean doIMDifficulty;
+        public static DifficultyType difficultyType = DifficultyType.GLOBAL;
 
         //Black-WhiteList
         public static EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
@@ -140,5 +141,11 @@ public class Config {
         public Weight getWeight() {
             return Weight.of(this.weight);
         }
+    }
+
+    public enum DifficultyType {
+        GLOBAL,
+        PLAYERMAX,
+        PLAYERMEAN
     }
 }

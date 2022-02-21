@@ -1,6 +1,9 @@
 package io.github.flemmli97.improvedmobs.forge.network;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -24,17 +27,26 @@ public class PacketHandler {
         dispatcher.registerMessage(id++, PacketDifficulty.class, PacketDifficulty::write, PacketDifficulty::read, PacketDifficulty::handle);
     }
 
-    public static <T> void sendToClient(T message, ServerPlayer player) {
+    public static <T> void sendDifficultyToClient(DifficultyData data, ServerPlayer player) {
         if (hasChannel(player))
-            dispatcher.sendTo(message, player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+            dispatcher.sendTo(new PacketDifficulty(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() :
+                    CrossPlatformStuff.instance().getPlayerDifficultyData(player).getDifficultyLevel()), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
-    public static <T> void sendToAll(T message, MinecraftServer server) {
-        Packet<?> pkt = dispatcher.toVanillaPacket(message, NetworkDirection.PLAY_TO_CLIENT);
-        server.getPlayerList().getPlayers().forEach(player -> {
-            if (hasChannel(player))
-                player.connection.send(pkt);
-        });
+    public static <T> void sendDifficultyToAll(DifficultyData data, MinecraftServer server) {
+        if (Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL) {
+            Packet<?> pkt = dispatcher.toVanillaPacket(new PacketDifficulty(data.getDifficulty()), NetworkDirection.PLAY_TO_CLIENT);
+            server.getPlayerList().getPlayers().forEach(player -> {
+                if (hasChannel(player))
+                    player.connection.send(pkt);
+            });
+        } else {
+            server.getPlayerList().getPlayers().forEach(player -> {
+                if (hasChannel(player))
+                    player.connection.send(dispatcher.toVanillaPacket(
+                            new PacketDifficulty(CrossPlatformStuff.instance().getPlayerDifficultyData(player).getDifficultyLevel()), NetworkDirection.PLAY_TO_CLIENT));
+            });
+        }
     }
 
     private static boolean hasChannel(ServerPlayer player) {

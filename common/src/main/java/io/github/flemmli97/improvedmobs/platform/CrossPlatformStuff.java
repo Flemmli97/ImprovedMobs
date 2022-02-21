@@ -1,8 +1,10 @@
 package io.github.flemmli97.improvedmobs.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.BowItem;
@@ -32,6 +34,8 @@ public abstract class CrossPlatformStuff {
 
     public abstract SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos);
 
+    public abstract void sendDifficultyDataTo(ServerPlayer player, MinecraftServer server);
+
     public abstract void sendDifficultyData(DifficultyData data, MinecraftServer server);
 
     public abstract Path configDirPath();
@@ -39,4 +43,6 @@ public abstract class CrossPlatformStuff {
     public abstract AbstractArrow customBowArrow(BowItem item, AbstractArrow def);
 
     public abstract boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
+
+    public abstract IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player);
 }

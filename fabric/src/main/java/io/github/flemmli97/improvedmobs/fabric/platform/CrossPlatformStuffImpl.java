@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.fabric.platform;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.ITileOpened;
@@ -9,6 +10,7 @@ import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
@@ -74,6 +76,11 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     }
 
     @Override
+    public void sendDifficultyDataTo(ServerPlayer player, MinecraftServer server) {
+        ImprovedMobsFabric.sendDifficultyPacket(DifficultyData.get(server), player);
+    }
+
+    @Override
     public void sendDifficultyData(DifficultyData data, MinecraftServer server) {
         ImprovedMobsFabric.sendDifficultyPacketToAll(data, server);
     }
@@ -91,5 +98,10 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     @Override
     public boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
         return (attackingStack.getItem() instanceof AxeItem || attackingStack.is(FabricToolTags.AXES)) && held.getItem() instanceof ShieldItem;
+    }
+
+    @Override
+    public IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
+        return ((IPlayerDifficulty) player);
     }
 }
