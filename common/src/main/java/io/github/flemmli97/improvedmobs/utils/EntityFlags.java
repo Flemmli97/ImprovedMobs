@@ -17,6 +17,7 @@ public class EntityFlags {
     public boolean isThrownEntity, rideSummon;
 
     public FlagType canBreakBlocks = FlagType.UNDEF;
+    public FlagType canFly = FlagType.UNDEF;
 
     private int shieldCooldown;
 
@@ -29,6 +30,7 @@ public class EntityFlags {
     public CompoundTag save() {
         CompoundTag tag = new CompoundTag();
         tag.putInt("CanBreakBlocks", this.canBreakBlocks.ordinal());
+        tag.putInt("CanFly", this.canFly.ordinal());
         tag.putBoolean("ModifiedArmor", this.modifyArmor);
         tag.putBoolean("ModifiedHeld", this.modifyHeldItems);
         tag.putBoolean("ModifiedAttributes", this.modifyAttributes);
@@ -42,6 +44,7 @@ public class EntityFlags {
 
     public void load(CompoundTag nbt) {
         this.canBreakBlocks = FlagType.values()[nbt.getInt("CanBreakBlocks")];
+        this.canFly = FlagType.values()[nbt.getInt("CanFly")];
         this.modifyArmor = nbt.getBoolean("ModifiedArmor");
         this.modifyHeldItems = nbt.getBoolean("ModifiedHeld");
         this.modifyAttributes = nbt.getBoolean("ModifiedAttributes");

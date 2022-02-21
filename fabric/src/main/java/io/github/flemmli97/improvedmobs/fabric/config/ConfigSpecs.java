@@ -170,7 +170,7 @@ public final class ConfigSpecs {
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
 
             //builder.comment("Settings regarding custom ai for mobs").push("ai");
-            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. " + BreakableBlocks.use(), "If you includery common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("minecraft:fence_gates", "minecraft:wooden_doors", "c:glass", "c:glass_panes", "minecraft:glass"));
+            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken.", BreakableBlocks.use(), "Note: If you include common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("minecraft:fence_gates", "minecraft:wooden_doors", "c:glass", "c:glass_panes", "minecraft:glass"));
             this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Block as Blacklist", false);
             this.useBlockBreakSound = builder.comment("Use the block breaking sound instead of a knocking sound").define("Sound", false);
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").define("Breaker Chance", 0.3);

@@ -115,6 +115,12 @@ public class EventCalls {
             } else
                 flags.canBreakBlocks = EntityFlags.FlagType.FALSE;
         }
+        if (flags.canFly == EntityFlags.FlagType.UNDEF) {
+            if (mob.level.random.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
+                flags.canFly = EntityFlags.FlagType.TRUE;
+            } else
+                flags.canFly = EntityFlags.FlagType.FALSE;
+        }
         if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
             ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
                 if (mob.level.random.nextFloat() < 0.7) {
@@ -143,7 +149,7 @@ public class EventCalls {
                 mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
             }
         }
-        if (mob.level.random.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
+        if (flags.canFly == EntityFlags.FlagType.TRUE) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
             if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof FlyingPathNavigation) && !(mob instanceof Slime)) {
                 mob.goalSelector.addGoal(6, new FlyRidingGoal(mob));

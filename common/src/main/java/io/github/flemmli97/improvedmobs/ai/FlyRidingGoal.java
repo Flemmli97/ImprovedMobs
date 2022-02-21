@@ -45,7 +45,7 @@ public class FlyRidingGoal extends Goal {
         LivingEntity target = this.living.getTarget();
         if (target == null || !target.isAlive()) {
             this.targetDelay = 0;
-        } else if (!this.living.isPassenger() && ++this.targetDelay > 100) {
+        } else if (!this.living.isPassenger() && ++this.targetDelay > 60) {
             if (this.wait >= 80 && --this.pathCheckWait <= 0) {
                 if (this.checkFlying()) {
                     this.wait = 0;
@@ -109,6 +109,9 @@ public class FlyRidingGoal extends Goal {
     }
 
     private boolean checkFlying() {
+        //Check if entity tries to move somewhere already
+        if (Math.abs(this.living.xxa) > 0.005 || Math.abs(this.living.zza) > 0.005)
+            return false;
         if (this.living.isNoGravity() || !this.living.isOnGround())
             return false;
         Path path = this.living.getNavigation().getPath();

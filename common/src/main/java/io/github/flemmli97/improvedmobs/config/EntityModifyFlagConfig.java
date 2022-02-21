@@ -101,8 +101,8 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         GUARDIAN,
         PARROT,
         TARGETVILLAGER,
+        NEUTRALAGGRO,
         REVERSE,
-        NEUTRALAGGRO
 
     }
 }

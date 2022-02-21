@@ -92,6 +92,6 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     }
 
     public static String use() {
-        return "Usage: <registry name;classname;tag> put \"!\" infront to exclude blocks";
+        return "Usage: <registry name;classname;tag;namespace> put \"!\" infront to exclude blocks";
     }
 }

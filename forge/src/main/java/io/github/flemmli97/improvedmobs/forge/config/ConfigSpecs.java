@@ -89,7 +89,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.ConfigValue<List<String>> autoTargets;
         public final ForgeConfigSpec.ConfigValue<Double> difficultyBreak;
         public final ForgeConfigSpec.ConfigValue<Double> difficultySteal;
-        public final ForgeConfigSpec.ConfigValue<Double> flyAIChance;
+        public final ForgeConfigSpec.DoubleValue flyAIChance;
 
         //Equipment
         public final ForgeConfigSpec.ConfigValue<List<String>> equipmentModBlacklist;
@@ -167,7 +167,7 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");
-            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. " + BreakableBlocks.use(), "If you includery common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("forge:glass", "forge:glass_panes", "minecraft:fence_gates", "forge:fence_gates", "minecraft:wooden_doors"));
+            this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. ", BreakableBlocks.use(), "Note: If you include common blocks (like grass blocks) the pathfinding will be a bit strange").define("Block Whitelist", Lists.newArrayList("forge:glass", "forge:glass_panes", "minecraft:fence_gates", "forge:fence_gates", "minecraft:wooden_doors"));
             this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Block as Blacklist", false);
             this.useBlockBreakSound = builder.comment("Use the block breaking sound instead of a knocking sound").define("Sound", false);
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);
@@ -180,7 +180,7 @@ public class ConfigSpecs {
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
-            this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").define("Fly Chance", 0.5);
+            this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").defineInRange("Fly Chance", 0.5, 0, 1);
             builder.pop();
 
             builder.comment("Configs regarding mobs spawning with equipment").push("equipment");
