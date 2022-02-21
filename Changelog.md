@@ -3,6 +3,7 @@ Improved Mobs 1.9.0
 - Internal changes
 - Fix capability null crash
 - Fix crash with armor ingredients
+- New flag NEUTRALAGGRO to finetune mobs that are affected by the neutral aggressive feature
 
 Improved Mobs 1.8.1
 ================

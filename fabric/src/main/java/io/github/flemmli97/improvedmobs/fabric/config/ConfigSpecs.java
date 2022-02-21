@@ -72,6 +72,7 @@ public final class ConfigSpecs {
         public final CommentedVal<Boolean> mobListBoatWhitelist;
         public final CommentedVal<Boolean> mobListFlyWhitelist;
         public final CommentedVal<Boolean> targetVillagerWhitelist;
+        public final CommentedVal<Boolean> neutralAggroWhitelist;
 
         //Debug
         public final CommentedVal<Boolean> debugPath;
@@ -143,7 +144,7 @@ public final class ConfigSpecs {
             this.doIMDifficulty = builder.comment("Increase difficulty with time", "Here untill its back as a gamerule").define("Difficulty toggle", true);
 
             //builder.comment("Black/Whitelist for various stuff").push("list");
-            this.entityBlacklist = builder.comment("By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage:", EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
+            this.entityBlacklist = builder.comment(EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
             this.flagBlacklist = builder.comment("Put the above flags here to completly disable them.").define("Flag Blacklist", new ArrayList<>());
             this.mobAttributeWhitelist = builder.comment("Treat ATTRIBUTES flags as whitelist").define("Attribute Whitelist", false);
             this.armorMobWhitelist = builder.comment("Treat ARMOR flags as whitelist").define("Armor Equip Whitelist", false);
@@ -155,6 +156,7 @@ public final class ConfigSpecs {
             this.mobListBoatWhitelist = builder.comment("Treat GUARDIAN flags as whitelist").define("Guardian Whitelist", false);
             this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Parrot Whitelist", false);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", false);
+            this.neutralAggroWhitelist = builder.comment("Treat NEUTRALAGGRO flags as whitelist").define("Neutral Aggro Whitelist", false);
 
             //builder.comment("Debugging").push("debug");
             this.debugPath = builder.comment("Enable showing of entity paths").define("Path Debugging", false);

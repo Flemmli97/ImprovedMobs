@@ -49,6 +49,7 @@ public class Config {
         public static boolean mobListBoatWhitelist;
         public static boolean mobListFlyWhitelist;
         public static boolean targetVillagerWhitelist;
+        public static boolean neutralAggroWhitelist;
 
         //Debug
         public static boolean debugPath;

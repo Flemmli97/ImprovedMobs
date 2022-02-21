@@ -67,6 +67,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue mobListBoatWhitelist;
         public final ForgeConfigSpec.BooleanValue mobListFlyWhitelist;
         public final ForgeConfigSpec.BooleanValue targetVillagerWhitelist;
+        public final ForgeConfigSpec.BooleanValue neutralAggroWhitelist;
 
         //Debug
         public final ForgeConfigSpec.BooleanValue debugPath;
@@ -138,7 +139,7 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");
-            this.entityBlacklist = builder.comment("By default the mod only modifies EntityMobs. Add other entities here if you want to apply modifications to them. Usage:", EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
+            this.entityBlacklist = builder.comment(EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
             this.flagBlacklist = builder.comment("Put the above flags here to completly disable them.").define("Flag Blacklist", new ArrayList<>());
             this.mobAttributeWhitelist = builder.comment("Treat ATTRIBUTES flags as whitelist").define("Attribute Whitelist", false);
             this.armorMobWhitelist = builder.comment("Treat ARMOR flags as whitelist").define("Armor Equip Whitelist", false);
@@ -150,6 +151,7 @@ public class ConfigSpecs {
             this.mobListBoatWhitelist = builder.comment("Treat GUARDIAN flags as whitelist").define("Guardian Whitelist", false);
             this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Parrot Whitelist", false);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", false);
+            this.neutralAggroWhitelist = builder.comment("Treat NEUTRALAGGRO flags as whitelist").define("Neutral Aggro Whitelist", false);
             builder.pop();
 
             builder.comment("Debugging").push("debug");

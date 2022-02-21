@@ -43,6 +43,7 @@ public class ConfigLoader {
         Config.CommonConfig.mobListBoatWhitelist = ConfigSpecs.commonConf.mobListBoatWhitelist.get();
         Config.CommonConfig.mobListFlyWhitelist = ConfigSpecs.commonConf.mobListFlyWhitelist.get();
         Config.CommonConfig.targetVillagerWhitelist = ConfigSpecs.commonConf.targetVillagerWhitelist.get();
+        Config.CommonConfig.neutralAggroWhitelist = ConfigSpecs.commonConf.neutralAggroWhitelist.get();
 
         Config.CommonConfig.debugPath = ConfigSpecs.commonConf.debugPath.get();
 

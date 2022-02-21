@@ -9,7 +9,6 @@ import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.Tag;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
@@ -33,9 +32,10 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
         if (!Config.CommonConfig.breakTileEntities && state.hasBlockEntity())
             return false;
         if (Config.CommonConfig.breakingAsBlacklist) {
-            return this.tags.stream().noneMatch(state::is) && !this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).toString());
+            return this.tags.stream().noneMatch(state::is) && !this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).toString())
+                    && !this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).getNamespace());
         }
-        return this.tags.stream().anyMatch(state::is) || this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).toString());
+        return this.tags.stream().anyMatch(state::is) || this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).getNamespace()) || this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).toString());
     }
 
     @Override
@@ -65,7 +65,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
             Tag<Block> tag = BlockTags.getAllTags().getTag(new ResourceLocation(s));
             if (tag != null)
                 tags.add(tag);
-            else if (RegistryHelper.instance().blocks().getFromId(new ResourceLocation(s)) != Blocks.AIR)
+            else
                 list.add(s);
         } else {
             Class<?> clss = null;
