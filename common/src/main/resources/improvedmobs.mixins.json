@@ -15,7 +15,9 @@
     "pathfinding.FlyNodeMixin",
     "pathfinding.GroundNodeMixin",
     "pathfinding.PathNavigationMixin",
-    "pathfinding.NodeEvaluatorMixin"
+    "pathfinding.NodeEvaluatorMixin",
+    "pathfinding.performance.FlyNodeEvaluatorMixin",
+    "pathfinding.performance.WalkNodeEvaluatorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

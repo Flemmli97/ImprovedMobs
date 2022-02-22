@@ -1,3 +1,9 @@
+Improved Mobs 1.10.0
+================
+- Improve vanilla pathfinding performance  
+  Most noticable with big (flying) mobs (though vanilla doesnt have them)  
+  This feature might become a separate mod in the future since it doesnt really fit in here
+
 Improved Mobs 1.9.0
 ================
 - Internal changes
