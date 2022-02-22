@@ -108,14 +108,15 @@ public class FlyRidingGoal extends Goal {
 
     private boolean checkFlying() {
         //Check if entity tries to move somewhere already
-        if (Math.abs(this.living.moveForward) > 0.005 || Math.abs(this.living.moveStrafing) > 0.005)
+        LivingEntity target = this.living.getAttackTarget();
+        if (Math.abs(this.living.moveForward) > 0.005 || Math.abs(this.living.moveStrafing) > 0.005 || this.living.getDistanceSq(target.getPosX(), target.getPosY(), target.getPosZ()) <= this.getAttackReachSqr(target))
             return false;
         if (this.living.hasNoGravity() || !this.living.isOnGround())
             return false;
         Path path = this.living.getNavigator().getPath();
         if (path == null || (path.isFinished() && !path.reachesTarget())) {
-            Path flyer = this.flyer.pathfind(this.living.getAttackTarget(), 1);
-            double dist = path == null ? this.living.getPosition().manhattanDistance(this.living.getAttackTarget().getPosition()) : path.func_224769_l();
+            Path flyer = this.flyer.pathfind(target, 1);
+            double dist = path == null ? this.living.getPosition().manhattanDistance(target.getPosition()) : path.func_224769_l();
             return flyer != null && (flyer.reachesTarget() || flyer.func_224769_l() < dist);
         }
         return false;
