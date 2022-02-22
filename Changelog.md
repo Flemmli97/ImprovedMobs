@@ -1,3 +1,8 @@
+Improved Mobs 1.9.0b
+================
+- Legacy scaling health support.  
+  Cause the more up to date one conflicts with some mods
+
 Improved Mobs 1.9.0
 ================
 - New flag NEUTRALAGGRO to finetune mobs that are affected by the neutral aggressive feature

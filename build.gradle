@@ -95,8 +95,12 @@ minecraft {
     }
 }
 
-sourceSets.main.resources {
-    srcDir 'src/generated/resources'
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/generated/resources'
+        }
+    }
 }
 
 repositories {
@@ -138,6 +142,7 @@ jar {
                 "MixinConfigs"            : "${modid}.mixins.json"
         ])
     }
+    exclude 'net/silentchaos512/scalinghealth/**'
 }
 
 jar.finalizedBy('reobfJar')

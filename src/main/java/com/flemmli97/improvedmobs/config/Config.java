@@ -8,6 +8,7 @@ import net.minecraft.util.WeightedRandom;
 import net.minecraft.util.text.TextFormatting;
 import net.minecraft.world.server.ServerWorld;
 import net.minecraftforge.fml.ModList;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +70,7 @@ public class Config {
 
         //Integration
         public static boolean useScalingHealthMod = true;
+        public static boolean legacyScalingHealth;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks();
@@ -162,6 +164,8 @@ public class Config {
             debugPath = ConfigSpecs.commonConf.debugPath.get();
 
             useScalingHealthMod = ConfigSpecs.commonConf.useScalingHealthMod.get() && ModList.get().isLoaded("scalinghealth");
+            legacyScalingHealth = ModList.get().getModContainerById("scalinghealth")
+                    .map(container -> container.getModInfo().getVersion().compareTo(new DefaultArtifactVersion("4.0.5+5")) <= 0).orElse(false);
 
             breakableBlocks.readFromString(ConfigSpecs.commonConf.breakableBlocks.get());
             breakingAsBlacklist = ConfigSpecs.commonConf.breakingAsBlacklist.get();

@@ -14,7 +14,6 @@ import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
-import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
 
 import java.util.List;
 import java.util.function.Function;
@@ -38,8 +37,11 @@ public class DifficultyData extends WorldSavedData {
     }
 
     public static float getDifficulty(World world, LivingEntity e) {
-        if (Config.CommonConfig.useScalingHealthMod)
-            return (float) SHDifficulty.areaDifficulty(world, e.getPosition());
+        if (Config.CommonConfig.useScalingHealthMod) {
+            if (Config.CommonConfig.legacyScalingHealth)
+                return (float) net.silentchaos512.scalinghealth.utils.SHDifficulty.areaDifficulty(world, e.getPosition());
+            return (float) net.silentchaos512.scalinghealth.utils.config.SHDifficulty.areaDifficulty(world, e.getPosition());
+        }
         BlockPos pos = e.getPosition();
         switch (Config.CommonConfig.difficultyType) {
             case GLOBAL:
