@@ -1,3 +1,7 @@
+Improved Mobs 1.10.1
+================
+- Fix lithium incompability
+
 Improved Mobs 1.10.0
 ================
 - Improve vanilla pathfinding performance  

@@ -1,0 +1,9 @@
+{
+  "required": false,
+  "minVersion": "0.8",
+  "package": "com.flemmli97.improvedmobs.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "mixins": [
+    "pathfinding.performance.WalkNodeStaticMixin"
+  ]
+}
