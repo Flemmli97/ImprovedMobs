@@ -17,7 +17,7 @@ configurations {
 
 loom {
     forge {
-        mixinConfigs = ["improvedmobs.mixins.json"]
+        mixinConfigs = ["improvedmobs.mixins.json", "improvedmobs.mixins.compat.json"]
     }
 }
 

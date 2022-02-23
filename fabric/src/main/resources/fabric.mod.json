@@ -25,6 +25,7 @@
   },
   "mixins": [
     "improvedmobs.mixins.json",
+    "improvedmobs.mixins.compat.json",
     "improvedmobs.fabric.mixins.json"
   ],
   "accessWidener": "improvedmobs.accesswidener",
