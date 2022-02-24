@@ -82,6 +82,11 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     }
 
     @Override
+    public void sendConfigSync(ServerPlayer player) {
+        PacketHandler.sendConfigSync(player);
+    }
+
+    @Override
     public Path configDirPath() {
         return FMLPaths.CONFIGDIR.get();
     }

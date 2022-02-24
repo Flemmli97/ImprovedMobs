@@ -38,6 +38,8 @@ public abstract class CrossPlatformStuff {
 
     public abstract void sendDifficultyData(DifficultyData data, MinecraftServer server);
 
+    public abstract void sendConfigSync(ServerPlayer player);
+
     public abstract Path configDirPath();
 
     public abstract AbstractArrow customBowArrow(BowItem item, AbstractArrow def);

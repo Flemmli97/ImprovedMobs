@@ -86,6 +86,11 @@ public class CrossPlatformStuffImpl extends CrossPlatformStuff {
     }
 
     @Override
+    public void sendConfigSync(ServerPlayer player) {
+        ImprovedMobsFabric.sendConfigCync(player);
+    }
+
+    @Override
     public Path configDirPath() {
         return FabricLoader.getInstance().getConfigDir();
     }

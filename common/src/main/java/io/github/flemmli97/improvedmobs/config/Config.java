@@ -21,6 +21,9 @@ public class Config {
         public static ChatFormatting color = ChatFormatting.DARK_PURPLE;
         public static float scale = 1;
         public static boolean showDifficulty;
+
+        public static boolean showDifficultyServerSync;
+
     }
 
     public static class CommonConfig {

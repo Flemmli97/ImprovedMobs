@@ -20,7 +20,9 @@ import io.github.flemmli97.improvedmobs.utils.Utils;
 import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -64,6 +66,11 @@ import java.util.List;
 import java.util.function.Predicate;
 
 public class EventCalls {
+
+    public static void worldJoin(ServerPlayer player, MinecraftServer server) {
+        CrossPlatformStuff.instance().sendDifficultyDataTo(player, server);
+        CrossPlatformStuff.instance().sendConfigSync(player);
+    }
 
     public static void increaseDifficulty(ServerLevel level) {
         if (!Config.CommonConfig.enableDifficultyScaling)

@@ -1,3 +1,7 @@
+Improved Mobs 1.10.2
+================
+- Fix difficulty not showing on server
+
 Improved Mobs 1.10.1
 ================
 - Fix lithium incompability

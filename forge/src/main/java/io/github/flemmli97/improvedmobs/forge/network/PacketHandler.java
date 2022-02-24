@@ -25,6 +25,7 @@ public class PacketHandler {
     public static void register() {
         int id = 0;
         dispatcher.registerMessage(id++, PacketDifficulty.class, PacketDifficulty::write, PacketDifficulty::read, PacketDifficulty::handle);
+        dispatcher.registerMessage(id++, PacketConfig.class, PacketConfig::write, PacketConfig::read, PacketConfig::handle);
     }
 
     public static <T> void sendDifficultyToClient(DifficultyData data, ServerPlayer player) {
@@ -47,6 +48,11 @@ public class PacketHandler {
                             new PacketDifficulty(CrossPlatformStuff.instance().getPlayerDifficultyData(player).getDifficultyLevel()), NetworkDirection.PLAY_TO_CLIENT));
             });
         }
+    }
+
+    public static <T> void sendConfigSync(ServerPlayer player) {
+        if (hasChannel(player))
+            dispatcher.sendTo(new PacketConfig(), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
     private static boolean hasChannel(ServerPlayer player) {

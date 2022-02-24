@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.forge.events;
 
 import io.github.flemmli97.improvedmobs.events.EventCalls;
-import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
@@ -14,7 +13,7 @@ public class DifficultyHandler {
     @SubscribeEvent
     public void worldJoin(EntityJoinWorldEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && !event.getEntity().level.isClientSide) {
-            CrossPlatformStuff.instance().sendDifficultyDataTo(player, player.getServer());
+            EventCalls.worldJoin(player, player.getServer());
         }
     }
 

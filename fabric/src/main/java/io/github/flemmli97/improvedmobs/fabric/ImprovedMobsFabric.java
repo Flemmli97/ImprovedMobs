@@ -29,6 +29,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class ImprovedMobsFabric implements ModInitializer {
 
     public static final ResourceLocation difficultyPacket = new ResourceLocation(ImprovedMobs.MODID, "difficulty");
+    public static final ResourceLocation configPacket = new ResourceLocation(ImprovedMobs.MODID, "config");
 
     @Override
     public void onInitialize() {
@@ -66,5 +67,13 @@ public class ImprovedMobsFabric implements ModInitializer {
             if (ServerPlayNetworking.canSend(player, difficultyPacket))
                 ServerPlayNetworking.send(player, difficultyPacket, buf);
         });
+    }
+
+    public static void sendConfigCync(ServerPlayer player) {
+        if (!ServerPlayNetworking.canSend(player, configPacket))
+            return;
+        FriendlyByteBuf buf = PacketByteBufs.create();
+        buf.writeBoolean(Config.CommonConfig.useScalingHealthMod);
+        ServerPlayNetworking.send(player, configPacket, buf);
     }
 }
