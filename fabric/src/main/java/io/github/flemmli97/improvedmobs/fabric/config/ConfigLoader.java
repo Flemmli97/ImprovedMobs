@@ -12,7 +12,7 @@ import java.util.List;
 public class ConfigLoader {
 
     public static InteractionResult loadClient() {
-        ConfigSpecs.ClientConfigVals specs = ConfigSpecs.clientConfig.getElement();
+        ConfigSpecs.ClientConfigVals specs = ConfigSpecs.clientConfigSpecs;
         Config.ClientConfig.guiX = specs.guiX.get();
         Config.ClientConfig.guiY = specs.guiY.get();
         Config.ClientConfig.color = specs.color.get();
@@ -22,7 +22,7 @@ public class ConfigLoader {
     }
 
     public static InteractionResult loadCommon() {
-        ConfigSpecs.CommonConfigVals specs = ConfigSpecs.commonConfig.getElement();
+        ConfigSpecs.CommonConfigVals specs = ConfigSpecs.commonConfigSpecs;
         Config.CommonConfig.enableDifficultyScaling = specs.enableDifficultyScaling.get();
         Config.CommonConfig.difficultyDelay = specs.difficultyDelay.get();
         Config.CommonConfig.ignorePlayers = specs.ignorePlayers.get();
@@ -117,7 +117,7 @@ public class ConfigLoader {
     }
 
     public static void serverInit(ServerLevel world) {
-        ConfigSpecs.CommonConfigVals vals = ConfigSpecs.commonConfig.getElement();
+        ConfigSpecs.CommonConfigVals vals = ConfigSpecs.commonConfigSpecs;
         List<? extends String> l = vals.entityBlacklist.get();
         if (l.size() == 1 && l.get(0).equals("UNINITIALIZED")) {
             Config.CommonConfig.entityBlacklist.initDefault(world);

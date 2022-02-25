@@ -23,18 +23,18 @@ public class ConfigSpecs {
 
     static class ClientConfigVals {
 
-        public final ForgeConfigSpec.ConfigValue<Integer> guiX;
-        public final ForgeConfigSpec.ConfigValue<Integer> guiY;
-        public final ForgeConfigSpec.ConfigValue<ChatFormatting> color;
-        public final ForgeConfigSpec.ConfigValue<Double> scale;
+        public final ForgeConfigSpec.IntValue guiX;
+        public final ForgeConfigSpec.IntValue guiY;
+        public final ForgeConfigSpec.EnumValue<ChatFormatting> color;
+        public final ForgeConfigSpec.DoubleValue scale;
         public final ForgeConfigSpec.BooleanValue showDifficulty;
 
         public ClientConfigVals(ForgeConfigSpec.Builder builder) {
             builder/*.translation("improvedmobs.gui")*/.comment("Gui Configs").push("gui");
-            this.guiX = builder.define("Gui X", 5);
-            this.guiY = builder.define("Gui Y", 5);
+            this.guiX = builder.defineInRange("Gui X", 5, 0, Integer.MAX_VALUE);
+            this.guiY = builder.defineInRange("Gui Y", 5, 0, Integer.MAX_VALUE);
             this.color = builder.comment("Textformatting codes for the display of the difficulty").defineEnum("Difficulty color", ChatFormatting.DARK_PURPLE);
-            this.scale = builder.comment("Scaling of the difficulty text").define("Text Scale", 1D);
+            this.scale = builder.comment("Scaling of the difficulty text").defineInRange("Text Scale", 1D, 0, Double.MAX_VALUE);
             this.showDifficulty = builder.comment("Show the the difficulty text").define("Show Difficulty", true);
             builder.pop();
         }
@@ -44,7 +44,7 @@ public class ConfigSpecs {
 
         //General
         public final ForgeConfigSpec.BooleanValue enableDifficultyScaling;
-        public final ForgeConfigSpec.ConfigValue<Integer> difficultyDelay;
+        public final ForgeConfigSpec.IntValue difficultyDelay;
         public final ForgeConfigSpec.ConfigValue<List<String>> increaseHandler;
         public final ForgeConfigSpec.BooleanValue ignorePlayers;
         public final ForgeConfigSpec.BooleanValue shouldPunishTimeSkip;
@@ -80,15 +80,15 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue breakingAsBlacklist;
         public final ForgeConfigSpec.BooleanValue useBlockBreakSound;
         public final ForgeConfigSpec.DoubleValue breakerChance;
-        public final ForgeConfigSpec.ConfigValue<Integer> breakerInitCooldown;
-        public final ForgeConfigSpec.ConfigValue<Integer> breakerCooldown;
+        public final ForgeConfigSpec.IntValue breakerInitCooldown;
+        public final ForgeConfigSpec.IntValue breakerCooldown;
         public final ForgeConfigSpec.DoubleValue stealerChance;
         public final ForgeConfigSpec.BooleanValue breakTileEntities;
         public final ForgeConfigSpec.ConfigValue<List<String>> breakingItems;
         public final ForgeConfigSpec.DoubleValue neutralAggressiv;
         public final ForgeConfigSpec.ConfigValue<List<String>> autoTargets;
-        public final ForgeConfigSpec.ConfigValue<Double> difficultyBreak;
-        public final ForgeConfigSpec.ConfigValue<Double> difficultySteal;
+        public final ForgeConfigSpec.DoubleValue difficultyBreak;
+        public final ForgeConfigSpec.DoubleValue difficultySteal;
         public final ForgeConfigSpec.DoubleValue flyAIChance;
 
         //Equipment
@@ -100,35 +100,35 @@ public class ConfigSpecs {
 
         public final ForgeConfigSpec.DoubleValue baseEquipChance;
         public final ForgeConfigSpec.DoubleValue baseEquipChanceAdd;
-        public final ForgeConfigSpec.ConfigValue<Double> diffEquipAdd;
+        public final ForgeConfigSpec.DoubleValue diffEquipAdd;
         public final ForgeConfigSpec.DoubleValue baseWeaponChance;
-        public final ForgeConfigSpec.ConfigValue<Double> diffWeaponChance;
+        public final ForgeConfigSpec.DoubleValue diffWeaponChance;
         public final ForgeConfigSpec.DoubleValue baseEnchantChance;
-        public final ForgeConfigSpec.ConfigValue<Double> diffEnchantAdd;
+        public final ForgeConfigSpec.DoubleValue diffEnchantAdd;
         public final ForgeConfigSpec.ConfigValue<List<String>> enchantCalc;
         public final ForgeConfigSpec.DoubleValue baseItemChance;
-        public final ForgeConfigSpec.ConfigValue<Double> diffItemChanceAdd;
+        public final ForgeConfigSpec.DoubleValue diffItemChanceAdd;
         public final ForgeConfigSpec.BooleanValue shouldDropEquip;
 
         //Attributes
-        public final ForgeConfigSpec.ConfigValue<Double> healthIncrease;
-        public final ForgeConfigSpec.ConfigValue<Double> healthMax;
-        public final ForgeConfigSpec.ConfigValue<Double> roundHP;
-        public final ForgeConfigSpec.ConfigValue<Double> damageIncrease;
-        public final ForgeConfigSpec.ConfigValue<Double> damageMax;
-        public final ForgeConfigSpec.ConfigValue<Double> speedIncrease;
+        public final ForgeConfigSpec.DoubleValue healthIncrease;
+        public final ForgeConfigSpec.DoubleValue healthMax;
+        public final ForgeConfigSpec.DoubleValue roundHP;
+        public final ForgeConfigSpec.DoubleValue damageIncrease;
+        public final ForgeConfigSpec.DoubleValue damageMax;
+        public final ForgeConfigSpec.DoubleValue speedIncrease;
         public final ForgeConfigSpec.DoubleValue speedMax;
-        public final ForgeConfigSpec.ConfigValue<Double> knockbackIncrease;
-        public final ForgeConfigSpec.ConfigValue<Double> knockbackMax;
-        public final ForgeConfigSpec.ConfigValue<Double> magicResIncrease;
+        public final ForgeConfigSpec.DoubleValue knockbackIncrease;
+        public final ForgeConfigSpec.DoubleValue knockbackMax;
+        public final ForgeConfigSpec.DoubleValue magicResIncrease;
         public final ForgeConfigSpec.DoubleValue magicResMax;
-        public final ForgeConfigSpec.ConfigValue<Double> projectileIncrease;
-        public final ForgeConfigSpec.ConfigValue<Double> projectileMax;
+        public final ForgeConfigSpec.DoubleValue projectileIncrease;
+        public final ForgeConfigSpec.DoubleValue projectileMax;
 
         public CommonConfigVals(ForgeConfigSpec.Builder builder) {
             builder.comment("With default value every difficulty perk maxes out at difficulty 250")/*.translation("improvedmobs.general")*/.push("general");
             this.enableDifficultyScaling = builder.worldRestart().comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
-            this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").define("Difficulty Delay", 0);
+            this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").defineInRange("Difficulty Delay", 0, 0, Integer.MAX_VALUE);
             this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1, 250-0"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             this.shouldPunishTimeSkip = builder.comment("Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.").define("Punish Time Skip", true);
@@ -171,15 +171,15 @@ public class ConfigSpecs {
             this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Block as Blacklist", false);
             this.useBlockBreakSound = builder.comment("Use the block breaking sound instead of a knocking sound").define("Sound", false);
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);
-            this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").define("Breaker Initial Cooldown", 120);
-            this.breakerCooldown = builder.comment("Cooldown for breaking blocks").define("Breaker Cooldown", 20);
+            this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").defineInRange("Breaker Initial Cooldown", 120, 0, Integer.MAX_VALUE);
+            this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", 20, 0, Integer.MAX_VALUE);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items").defineInRange("Stealer Chance", 0.3, 0, 1);
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1", "minecraft:iron_axe;2"));
             this.breakTileEntities = builder.comment("Should mobs be able to break tile entities? Evaluated before the break list").define("Break Tiles", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").defineInRange("Neutral Aggressive Chance", 0.2, 0, 1);
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());
-            this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
-            this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
+            this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").defineInRange("Difficulty Break AI", 0D, 0, Double.MAX_VALUE);
+            this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").defineInRange("Difficulty Steal AI", 0D, 0, Double.MAX_VALUE);
             this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").defineInRange("Fly Chance", 0.5, 0, 1);
             builder.pop();
 
@@ -191,31 +191,31 @@ public class ConfigSpecs {
             this.entityItemConfig = builder.comment("Blacklist for specific mobs and items they shouldnt use (e.g. skeletons already use bows)", EntityItemConfig.use()).define("Entity Item Use Blacklist", Config.CommonConfig.entityItemConfig.writeToString());
             this.baseEquipChance = builder.comment("Base chance that a mob can have one piece of armor").defineInRange("Equipment Chance", 0.1, 0, 1);
             this.baseEquipChanceAdd = builder.comment("Base chance for each additional armor pieces").defineInRange("Additional Equipment Chance", 0.3, 0, 1);
-            this.diffEquipAdd = builder.comment("Adds additional x*difficulty% to base equip chance").define("Equipment Addition", 0.3);
+            this.diffEquipAdd = builder.comment("Adds additional x*difficulty% to base equip chance").defineInRange("Equipment Addition", 0.3, 0, Double.MAX_VALUE);
             this.baseWeaponChance = builder.comment("Chance for mobs to have a weapon").defineInRange("Weapon Chance", 0.05, 0, 1);
-            this.diffWeaponChance = builder.comment("Adds additional x*difficulty% to base weapon chance").define("Weapon Chance Add", 0.3);
+            this.diffWeaponChance = builder.comment("Adds additional x*difficulty% to base weapon chance").defineInRange("Weapon Chance Add", 0.3, 0, Double.MAX_VALUE);
             this.baseEnchantChance = builder.comment("Base chance for each armor pieces to get enchanted").defineInRange("Enchanting Chance", 0.2, 0, 1);
-            this.diffEnchantAdd = builder.comment("Adds additional x*difficulty% to base enchanting chance").define("Enchanting Addition", 0.2);
+            this.diffEnchantAdd = builder.comment("Adds additional x*difficulty% to base enchanting chance").defineInRange("Enchanting Addition", 0.2, 0, Double.MAX_VALUE);
             this.enchantCalc = builder.comment("Specify min and max enchanting levels according to difficulty. difficulty-minLevel-maxLevel").define("Enchanting Calc", Lists.newArrayList("0-5-10", "25-5-15", "50-10-17", "100-15-25", "200-20-30", "250-30-35"));
             this.baseItemChance = builder.comment("Chance for mobs to have an item in offhand").defineInRange("Item Equip Chance", 0.05, 0, 1);
-            this.diffItemChanceAdd = builder.comment("Adds additional x*difficulty% to base item chance").define("Item Chance add", 0.2);
+            this.diffItemChanceAdd = builder.comment("Adds additional x*difficulty% to base item chance").defineInRange("Item Chance add", 0.2, 0, Double.MAX_VALUE);
             this.shouldDropEquip = builder.comment("Should mobs drop the armor equipped through this mod? (Other methods e.g. through vanilla is not included)").define("Should drop equipment", false);
             builder.pop();
 
             builder.comment("Settings for attribute modifiers").push("attributes");
-            this.healthIncrease = builder.comment("Health will be multiplied by difficulty*0.016*x. Set to 0 to disable").define("Health Increase Multiplier", 1.0);
-            this.healthMax = builder.comment("Health will be multiplied by at maximum this. Set to 0 means no limit").define("Max Health Increase", 5.0);
-            this.roundHP = builder.comment("Round health to the nearest x. Set to 0 to disable").define("Round HP", 0.5);
-            this.damageIncrease = builder.comment("Damage will be multiplied by difficulty*0.008*x. Set to 0 to disable").define("Damage Increase Multiplier", 1.0);
-            this.damageMax = builder.comment("Damage will be multiplied by at maximum this. Set to 0 means no limit").define("Max Damage Increase", 3.0);
-            this.speedIncrease = builder.comment("Speed will be increased by difficulty*0.0008*x. Set to 0 to disable").define("Speed Increase", 1.0);
+            this.healthIncrease = builder.comment("Health will be multiplied by difficulty*0.016*x. Set to 0 to disable").defineInRange("Health Increase Multiplier", 1.0, 0, Double.MAX_VALUE);
+            this.healthMax = builder.comment("Health will be multiplied by at maximum this. Set to 0 means no limit").defineInRange("Max Health Increase", 5.0, 0, Double.MAX_VALUE);
+            this.roundHP = builder.comment("Round health to the nearest x. Set to 0 to disable").defineInRange("Round HP", 0.5, 0, Double.MAX_VALUE);
+            this.damageIncrease = builder.comment("Damage will be multiplied by difficulty*0.008*x. Set to 0 to disable").defineInRange("Damage Increase Multiplier", 1.0, 0, Double.MAX_VALUE);
+            this.damageMax = builder.comment("Damage will be multiplied by at maximum this. Set to 0 means no limit").defineInRange("Max Damage Increase", 3.0, 0, Double.MAX_VALUE);
+            this.speedIncrease = builder.comment("Speed will be increased by difficulty*0.0008*x. Set to 0 to disable").defineInRange("Speed Increase", 1.0, 0, Double.MAX_VALUE);
             this.speedMax = builder.comment("Maximum increase in speed").defineInRange("Max Speed", 0.1, 0, 1);
-            this.knockbackIncrease = builder.comment("Knockback will be increased by difficulty*0.002*x. Set to 0 to disable").define("Knockback Increase", 1.0);
-            this.knockbackMax = builder.comment("Maximum increase in knockback").define("Max Knockback", 0.5);
-            this.magicResIncrease = builder.comment("Magic resistance will be increased by difficulty*0.0016*x. Set to 0 to disable").define("Magic Resistance Increase", 1.0);
+            this.knockbackIncrease = builder.comment("Knockback will be increased by difficulty*0.002*x. Set to 0 to disable").defineInRange("Knockback Increase", 1.0, 0, Double.MAX_VALUE);
+            this.knockbackMax = builder.comment("Maximum increase in knockback").defineInRange("Max Knockback", 0.5, 0, 1);
+            this.magicResIncrease = builder.comment("Magic resistance will be increased by difficulty*0.0016*x. Set to 0 to disable").defineInRange("Magic Resistance Increase", 1.0, 0, Double.MAX_VALUE);
             this.magicResMax = builder.comment("Maximum increase in magic resistance. Magic reduction is percentage").defineInRange("Max Magic Resistance", 0.4, 0, 1);
-            this.projectileIncrease = builder.comment("Projectile Damage will be multiplied by 1+difficulty*0.008*x. Set to 0 to disable").define("Projectile Damage Increase", 1.0);
-            this.projectileMax = builder.comment("Projectile damage will be multiplied by maximum of this").define("Max Projectile Damage", 2.0);
+            this.projectileIncrease = builder.comment("Projectile Damage will be multiplied by 1+difficulty*0.008*x. Set to 0 to disable").defineInRange("Projectile Damage Increase", 1.0, 0, Double.MAX_VALUE);
+            this.projectileMax = builder.comment("Projectile damage will be multiplied by maximum of this").defineInRange("Max Projectile Damage", 2.0, 0, Double.MAX_VALUE);
             builder.pop();
         }
     }

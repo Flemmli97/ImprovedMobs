@@ -1,3 +1,9 @@
+Improved Mobs 1.10.3
+================
+- TenshiLib 1.6.0 compat
+- Fabric: You will need to update your configs.  
+  A backup of the old config will be created
+
 Improved Mobs 1.10.2
 ================
 - Fix difficulty not showing on server
