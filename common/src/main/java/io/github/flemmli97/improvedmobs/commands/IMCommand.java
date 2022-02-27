@@ -63,9 +63,9 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            IPlayerDifficulty data = CrossPlatformStuff.instance().getPlayerDifficultyData(player);
+            IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
             data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
-            CrossPlatformStuff.instance().sendDifficultyDataTo(player, server);
+            CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
             src.getSource().sendSuccess(new TextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         }
         return profs.size();
@@ -76,9 +76,9 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            IPlayerDifficulty data = CrossPlatformStuff.instance().getPlayerDifficultyData(player);
+            IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
             data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
-            CrossPlatformStuff.instance().sendDifficultyDataTo(player, server);
+            CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
             src.getSource().sendSuccess(new TextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         }
         return profs.size();

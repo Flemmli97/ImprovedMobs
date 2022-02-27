@@ -2,7 +2,7 @@ package io.github.flemmli97.improvedmobs.config;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
-import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
+import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
@@ -32,10 +32,10 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
         if (!Config.CommonConfig.breakTileEntities && state.hasBlockEntity())
             return false;
         if (Config.CommonConfig.breakingAsBlacklist) {
-            return this.tags.stream().noneMatch(state::is) && !this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).toString())
-                    && !this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).getNamespace());
+            return this.tags.stream().noneMatch(state::is) && !this.blocks.contains(PlatformUtils.INSTANCE.blocks().getIDFrom(state.getBlock()).toString())
+                    && !this.blocks.contains(PlatformUtils.INSTANCE.blocks().getIDFrom(state.getBlock()).getNamespace());
         }
-        return this.tags.stream().anyMatch(state::is) || this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).getNamespace()) || this.blocks.contains(RegistryHelper.instance().blocks().getIDFrom(state.getBlock()).toString());
+        return this.tags.stream().anyMatch(state::is) || this.blocks.contains(PlatformUtils.INSTANCE.blocks().getIDFrom(state.getBlock()).getNamespace()) || this.blocks.contains(PlatformUtils.INSTANCE.blocks().getIDFrom(state.getBlock()).toString());
     }
 
     @Override
@@ -79,9 +79,9 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
                 }
             }
             if (clss != null)
-                for (Block block : RegistryHelper.instance().blocks().getIterator()) {
+                for (Block block : PlatformUtils.INSTANCE.blocks().getIterator()) {
                     if (clss.isInstance(block))
-                        list.add(RegistryHelper.instance().blocks().getIDFrom(block).toString());
+                        list.add(PlatformUtils.INSTANCE.blocks().getIDFrom(block).toString());
                 }
         }
     }

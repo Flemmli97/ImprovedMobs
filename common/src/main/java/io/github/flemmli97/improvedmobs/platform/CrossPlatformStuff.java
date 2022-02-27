@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.tenshilib.platform.InitUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,35 +17,33 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.nio.file.Path;
 import java.util.Random;
 
-public abstract class CrossPlatformStuff {
+public interface CrossPlatformStuff {
 
-    protected static CrossPlatformStuff INSTANCE;
+    CrossPlatformStuff INSTANCE = InitUtil.getPlatformInstance(CrossPlatformStuff.class,
+            "io.github.flemmli97.improvedmobs.fabric.platform.CrossPlatformStuffImpl",
+            "io.github.flemmli97.improvedmobs.forge.platform.CrossPlatformStuffImpl");
 
-    public static CrossPlatformStuff instance() {
-        return INSTANCE;
-    }
+    void onPlayerOpen(BlockEntity blockEntity);
 
-    public abstract void onPlayerOpen(BlockEntity blockEntity);
+    boolean canLoot(BlockEntity blockEntity);
 
-    public abstract boolean canLoot(BlockEntity blockEntity);
+    ItemStack lootRandomItem(BlockEntity blockEntity, Random rand);
 
-    public abstract ItemStack lootRandomItem(BlockEntity blockEntity, Random rand);
+    boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos);
 
-    public abstract boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos);
+    SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos);
 
-    public abstract SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos);
+    void sendDifficultyDataTo(ServerPlayer player, MinecraftServer server);
 
-    public abstract void sendDifficultyDataTo(ServerPlayer player, MinecraftServer server);
+    void sendDifficultyData(DifficultyData data, MinecraftServer server);
 
-    public abstract void sendDifficultyData(DifficultyData data, MinecraftServer server);
+    void sendConfigSync(ServerPlayer player);
 
-    public abstract void sendConfigSync(ServerPlayer player);
+    Path configDirPath();
 
-    public abstract Path configDirPath();
+    AbstractArrow customBowArrow(BowItem item, AbstractArrow def);
 
-    public abstract AbstractArrow customBowArrow(BowItem item, AbstractArrow def);
+    boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
 
-    public abstract boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
-
-    public abstract IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player);
+    IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player);
 }

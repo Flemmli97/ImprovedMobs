@@ -5,7 +5,7 @@ import io.github.flemmli97.improvedmobs.config.EnchantCalcConf;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.tenshilib.common.utils.MathUtils;
-import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
+import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
@@ -29,8 +29,8 @@ import java.util.function.Function;
 
 public class Utils {
 
-    public static final Function<Entity, ResourceLocation> entityID = e -> RegistryHelper.instance().entities().getIDFrom(e.getType());
-    public static final Function<Item, ResourceLocation> itemID = e -> RegistryHelper.instance().items().getIDFrom(e);
+    public static final Function<Entity, ResourceLocation> entityID = e -> PlatformUtils.INSTANCE.entities().getIDFrom(e.getType());
+    public static final Function<Item, ResourceLocation> itemID = e -> PlatformUtils.INSTANCE.items().getIDFrom(e);
 
     public static <T> boolean isInList(T entry, List<? extends String> list, boolean reverse, Function<T, ResourceLocation> mapper) {
         if (reverse)

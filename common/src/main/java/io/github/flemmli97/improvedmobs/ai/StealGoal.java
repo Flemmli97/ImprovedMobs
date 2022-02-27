@@ -38,7 +38,7 @@ public class StealGoal extends MoveToBlockGoal {
         BlockEntity tile = this.entity.level.getBlockEntity(this.blockPos);
 
         if (tile != null && this.stealDelay == 0 && this.entity.distanceToSqr(Vec3.atCenterOf(this.blockPos)) < 5 && this.canSee()) {
-            ItemStack drop = CrossPlatformStuff.instance().lootRandomItem(tile, this.entity.getRandom());
+            ItemStack drop = CrossPlatformStuff.INSTANCE.lootRandomItem(tile, this.entity.getRandom());
             this.entity.level.playSound(null, this.entity.blockPosition(), SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.3F, 1);
             this.entity.swing(InteractionHand.MAIN_HAND);
             ItemEntity item = new ItemEntity(this.entity.level, this.entity.getX(), this.entity.getY(), this.entity.getZ(), drop);
@@ -58,7 +58,7 @@ public class StealGoal extends MoveToBlockGoal {
     protected boolean isValidTarget(LevelReader world, BlockPos pos) {
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile != null) {
-            return CrossPlatformStuff.instance().canLoot(tile);
+            return CrossPlatformStuff.INSTANCE.canLoot(tile);
         }
         return false;
     }

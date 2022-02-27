@@ -8,11 +8,7 @@ import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
 
 import java.util.function.Supplier;
 
-public class DifficultyValuesImpl extends DifficultyValues {
-
-    public static void init() {
-        INSTANCE = new DifficultyValuesImpl();
-    }
+public class DifficultyValuesImpl implements DifficultyValues {
 
     @Override
     public float getDifficulty(Level level, BlockPos pos, Supplier<Float> defaultVal) {

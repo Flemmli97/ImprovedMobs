@@ -44,7 +44,7 @@ public class AIUtils {
         ItemStack itemstack = entity.getProjectile(entity.getItemInHand(ProjectileUtil.getWeaponHoldingHand(entity, Items.BOW)));
         AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(entity, itemstack, distanceFactor);
         if (entity.getMainHandItem().getItem() instanceof BowItem)
-            abstractarrowentity = CrossPlatformStuff.instance().customBowArrow((BowItem) entity.getMainHandItem().getItem(), abstractarrowentity);
+            abstractarrowentity = CrossPlatformStuff.INSTANCE.customBowArrow((BowItem) entity.getMainHandItem().getItem(), abstractarrowentity);
         double d0 = target.getX() - entity.getX();
         double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
         double d2 = target.getZ() - entity.getZ();

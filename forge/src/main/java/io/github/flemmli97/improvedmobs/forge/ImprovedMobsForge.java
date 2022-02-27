@@ -11,8 +11,6 @@ import io.github.flemmli97.improvedmobs.forge.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.forge.events.DifficultyHandler;
 import io.github.flemmli97.improvedmobs.forge.events.EventHandler;
 import io.github.flemmli97.improvedmobs.forge.network.PacketHandler;
-import io.github.flemmli97.improvedmobs.forge.platform.CrossPlatformStuffImpl;
-import io.github.flemmli97.improvedmobs.forge.platform.integration.DifficultyValuesImpl;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -32,8 +30,6 @@ import java.io.File;
 public class ImprovedMobsForge {
 
     public ImprovedMobsForge() {
-        CrossPlatformStuffImpl.init();
-        DifficultyValuesImpl.init();
         File file = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").toFile();
         if (!file.exists())
             file.mkdir();

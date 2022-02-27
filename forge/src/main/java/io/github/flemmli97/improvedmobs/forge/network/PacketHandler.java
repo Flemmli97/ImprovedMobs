@@ -31,7 +31,7 @@ public class PacketHandler {
     public static <T> void sendDifficultyToClient(DifficultyData data, ServerPlayer player) {
         if (hasChannel(player))
             dispatcher.sendTo(new PacketDifficulty(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() :
-                    CrossPlatformStuff.instance().getPlayerDifficultyData(player).getDifficultyLevel()), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                    CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel()), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <T> void sendDifficultyToAll(DifficultyData data, MinecraftServer server) {
@@ -45,7 +45,7 @@ public class PacketHandler {
             server.getPlayerList().getPlayers().forEach(player -> {
                 if (hasChannel(player))
                     player.connection.send(dispatcher.toVanillaPacket(
-                            new PacketDifficulty(CrossPlatformStuff.instance().getPlayerDifficultyData(player).getDifficultyLevel()), NetworkDirection.PLAY_TO_CLIENT));
+                            new PacketDifficulty(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel()), NetworkDirection.PLAY_TO_CLIENT));
             });
         }
     }

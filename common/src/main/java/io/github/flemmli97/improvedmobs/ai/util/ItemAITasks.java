@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.ai.util;
 
 import io.github.flemmli97.improvedmobs.config.Config;
-import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
+import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -65,13 +65,13 @@ public class ItemAITasks {
     }
 
     private static boolean blockedAI(Mob entity, Item item) {
-        return (Config.CommonConfig.mobListUseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(RegistryHelper.instance().items().getIDFrom(item).toString()))
-                || Config.CommonConfig.itemuseBlacklist.contains(RegistryHelper.instance().items().getIDFrom(item).toString())
+        return (Config.CommonConfig.mobListUseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
+                || Config.CommonConfig.itemuseBlacklist.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString())
                 || Config.CommonConfig.entityItemConfig.preventUse(entity, item);
     }
 
     private static void initVanilla() {
-        for (Item item : RegistryHelper.instance().items().getIterator()) {
+        for (Item item : PlatformUtils.INSTANCE.items().getIterator()) {
             if (item instanceof SplashPotionItem)
                 registerAI(item, ItemAIs.SPLASH);
             if (item instanceof LingeringPotionItem)

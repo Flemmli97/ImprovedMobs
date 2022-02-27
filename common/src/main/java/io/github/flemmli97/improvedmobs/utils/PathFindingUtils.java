@@ -126,7 +126,7 @@ public class PathFindingUtils {
 
     public static int createLadderNodeFor(int nodeID, Node[] nodes, Node origin, Function<BlockPos, Node> nodeGetter, BlockGetter getter, Mob mob) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(origin.x, origin.y + 1, origin.z);
-        if (CrossPlatformStuff.instance().isLadder(getter.getBlockState(pos), mob, pos)) {
+        if (CrossPlatformStuff.INSTANCE.isLadder(getter.getBlockState(pos), mob, pos)) {
             Node node = nodeGetter.apply(pos);
             if (node != null && !node.closed) {
                 node.costMalus = 0;
@@ -136,7 +136,7 @@ public class PathFindingUtils {
             }
         }
         pos.set(pos.getX(), pos.getY() - 2, pos.getZ());
-        if (CrossPlatformStuff.instance().isLadder(getter.getBlockState(pos), mob, pos)) {
+        if (CrossPlatformStuff.INSTANCE.isLadder(getter.getBlockState(pos), mob, pos)) {
             Node node = nodeGetter.apply(pos);
             if (node != null && !node.closed) {
                 node.costMalus = 0;

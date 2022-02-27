@@ -17,7 +17,7 @@ import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.utils.Utils;
-import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
+import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
@@ -68,8 +68,8 @@ import java.util.function.Predicate;
 public class EventCalls {
 
     public static void worldJoin(ServerPlayer player, MinecraftServer server) {
-        CrossPlatformStuff.instance().sendDifficultyDataTo(player, server);
-        CrossPlatformStuff.instance().sendConfigSync(player);
+        CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
+        CrossPlatformStuff.INSTANCE.sendConfigSync(player);
     }
 
     public static void increaseDifficulty(ServerLevel level) {
@@ -179,7 +179,7 @@ public class EventCalls {
             aggressive = true;
         if (villager && aggressive)
             mob.targetSelector.addGoal(2, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
-        List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(RegistryHelper.instance().entities().getIDFrom(mob.getType()));
+        List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(PlatformUtils.INSTANCE.entities().getIDFrom(mob.getType()));
         if (types != null)
             mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
         if (mob instanceof PathfinderMob pathfinderMob && DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultySteal && mobGriefing
@@ -280,7 +280,7 @@ public class EventCalls {
                 }
             } else if (source instanceof LivingEntity) {
                 LivingEntity attacker = (LivingEntity) source;
-                if (CrossPlatformStuff.instance().canDisableShield(attacker.getMainHandItem(), target.getUseItem(), target, attacker)) {
+                if (CrossPlatformStuff.INSTANCE.canDisableShield(attacker.getMainHandItem(), target.getUseItem(), target, attacker)) {
                     triggerDisableShield(attacker, target);
                 }
             }
@@ -304,7 +304,7 @@ public class EventCalls {
         if (!player.level.isClientSide && !player.isShiftKeyDown()) {
             BlockEntity tile = player.level.getBlockEntity(pos);
             if (tile != null) {
-                CrossPlatformStuff.instance().onPlayerOpen(tile);
+                CrossPlatformStuff.INSTANCE.onPlayerOpen(tile);
             }
         }
     }

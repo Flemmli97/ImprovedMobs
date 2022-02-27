@@ -3,7 +3,7 @@ package io.github.flemmli97.improvedmobs.config;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
 import io.github.flemmli97.tenshilib.common.utils.ArrayUtils;
-import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
+import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -23,20 +23,20 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
 
     public void initDefault(Level world) {
         this.map.clear();
-        for (EntityType<?> entry : RegistryHelper.instance().entities().getIterator()) {
+        for (EntityType<?> entry : PlatformUtils.INSTANCE.entities().getIterator()) {
             try {
                 Entity e = entry.create(world);
                 if (!(e instanceof Mob) || e instanceof Enemy)
                     continue;
-                this.map.put(RegistryHelper.instance().entities().getIDFrom(entry).toString(), EnumSet.of(Flags.ALL));
+                this.map.put(PlatformUtils.INSTANCE.entities().getIDFrom(entry).toString(), EnumSet.of(Flags.ALL));
             } catch (Exception e) {
-                ImprovedMobs.logger.error("Error during default entity config for EntityType {}, skipping this type. Cause: {}", RegistryHelper.instance().entities().getIDFrom(entry), e.getMessage());
+                ImprovedMobs.logger.error("Error during default entity config for EntityType {}, skipping this type. Cause: {}", PlatformUtils.INSTANCE.entities().getIDFrom(entry), e.getMessage());
             }
         }
     }
 
     public boolean hasFlag(Mob living, Flags flag, boolean reverse) {
-        ResourceLocation res = RegistryHelper.instance().entities().getIDFrom(living.getType());
+        ResourceLocation res = PlatformUtils.INSTANCE.entities().getIDFrom(living.getType());
         if (res == null)
             return true;
         if (Config.CommonConfig.flagBlacklist.contains(flag.toString()))

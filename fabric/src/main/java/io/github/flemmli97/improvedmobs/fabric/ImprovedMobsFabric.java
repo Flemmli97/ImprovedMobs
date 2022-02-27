@@ -6,8 +6,6 @@ import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.fabric.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
-import io.github.flemmli97.improvedmobs.fabric.platform.CrossPlatformStuffImpl;
-import io.github.flemmli97.improvedmobs.fabric.platform.integration.DifficultyValuesImpl;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
@@ -33,8 +31,6 @@ public class ImprovedMobsFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        CrossPlatformStuffImpl.init();
-        DifficultyValuesImpl.init();
         ServerTickEvents.END_WORLD_TICK.register(EventCalls::increaseDifficulty);
         ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
         CommandRegistrationCallback.EVENT.register(EventHandler::registerCommand);
@@ -51,7 +47,7 @@ public class ImprovedMobsFabric implements ModInitializer {
         if (!ServerPlayNetworking.canSend(player, difficultyPacket))
             return;
         FriendlyByteBuf buf = PacketByteBufs.create();
-        buf.writeFloat(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() : CrossPlatformStuff.instance().getPlayerDifficultyData(player).getDifficultyLevel());
+        buf.writeFloat(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() : CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel());
         ServerPlayNetworking.send(player, difficultyPacket, buf);
     }
 
@@ -63,7 +59,7 @@ public class ImprovedMobsFabric implements ModInitializer {
         }
         PlayerLookup.all(server).forEach(player -> {
             if (!global)
-                buf.writeFloat(CrossPlatformStuff.instance().getPlayerDifficultyData(player).getDifficultyLevel());
+                buf.writeFloat(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel());
             if (ServerPlayNetworking.canSend(player, difficultyPacket))
                 ServerPlayNetworking.send(player, difficultyPacket, buf);
         });

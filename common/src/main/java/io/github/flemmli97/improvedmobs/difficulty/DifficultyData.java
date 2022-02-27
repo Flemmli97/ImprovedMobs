@@ -45,7 +45,7 @@ public class DifficultyData extends SavedData {
             case PLAYERMAX -> () -> {
                 float diff = 0;
                 for (Player player : world.getNearbyPlayers(TargetingConditions.forNonCombat(), null, new AABB(-128, -128, -128, 128, 128, 128).move(pos))) {
-                    float pD = CrossPlatformStuff.instance().getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
                     if (pD > diff)
                         diff = pD;
                 }
@@ -55,12 +55,12 @@ public class DifficultyData extends SavedData {
                 float diff = 0;
                 List<Player> list = world.getNearbyPlayers(TargetingConditions.forNonCombat(), null, new AABB(-128, -128, -128, 128, 128, 128).move(pos));
                 for (Player player : list) {
-                    diff += CrossPlatformStuff.instance().getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
                 }
                 return diff / list.size();
             };
         };
-        return DifficultyValues.instance().getDifficulty(world, e.blockPosition(), sup);
+        return DifficultyValues.INSTANCE.getDifficulty(world, e.blockPosition(), sup);
     }
 
     public void increaseDifficultyBy(Function<Float, Float> increase, long time, MinecraftServer server) {
@@ -68,22 +68,22 @@ public class DifficultyData extends SavedData {
         this.prevTime = time;
         server.getPlayerList().getPlayers()
                 .forEach(player -> {
-                    IPlayerDifficulty pd = CrossPlatformStuff.instance().getPlayerDifficultyData(player);
+                    IPlayerDifficulty pd = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
                     pd.setDifficultyLevel(pd.getDifficultyLevel() + increase.apply(pd.getDifficultyLevel()));
                 });
         this.setDirty();
-        CrossPlatformStuff.instance().sendDifficultyData(this, server);
+        CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
     }
 
     public void setDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel = level;
-        CrossPlatformStuff.instance().sendDifficultyData(this, server);
+        CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
         this.setDirty();
     }
 
     public void addDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel += level;
-        CrossPlatformStuff.instance().sendDifficultyData(this, server);
+        CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
         this.setDirty();
     }
 

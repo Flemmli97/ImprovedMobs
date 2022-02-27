@@ -4,7 +4,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
-import io.github.flemmli97.tenshilib.platform.registry.RegistryHelper;
+import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -34,7 +34,7 @@ public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
             String[] sub = s.replace(" ", "").split("-");
             if (sub.length < 2)
                 continue;
-            EntityType<?> type = RegistryHelper.instance().entities().getFromId(new ResourceLocation(sub[1]));
+            EntityType<?> type = PlatformUtils.INSTANCE.entities().getFromId(new ResourceLocation(sub[1]));
             if (type == null) {
                 ImprovedMobs.logger.error("Entity {} does not exist/is not registered", sub[1]);
                 continue;
@@ -52,7 +52,7 @@ public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
         List<String> l = new ArrayList<>();
         for (Entry<ResourceLocation, List<EntityType<?>>> ent : this.map.entrySet()) {
             for (EntityType<?> type : ent.getValue()) {
-                l.add(ent.getKey().toString() + "-" + RegistryHelper.instance().entities().getIDFrom(type));
+                l.add(ent.getKey().toString() + "-" + PlatformUtils.INSTANCE.entities().getIDFrom(type));
             }
         }
         return l;

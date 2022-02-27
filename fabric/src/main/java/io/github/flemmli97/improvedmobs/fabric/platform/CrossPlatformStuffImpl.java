@@ -26,11 +26,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import java.nio.file.Path;
 import java.util.Random;
 
-public class CrossPlatformStuffImpl extends CrossPlatformStuff {
-
-    public static void init() {
-        INSTANCE = new CrossPlatformStuffImpl();
-    }
+public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
