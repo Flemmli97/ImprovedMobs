@@ -25,6 +25,11 @@ public abstract class ServerPlayerMixin implements IPlayerDifficulty {
         this.save(compound);
     }
 
+    @Inject(method = "restoreFrom", at = @At("RETURN"))
+    private void copyOld(ServerPlayer oldPlayer, boolean alive, CallbackInfo info) {
+        this.imDifficultyLevel = ((IPlayerDifficulty) oldPlayer).getDifficultyLevel();
+    }
+
     @Override
     public void setDifficultyLevel(float level) {
         this.imDifficultyLevel = level;
