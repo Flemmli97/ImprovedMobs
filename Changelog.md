@@ -4,6 +4,10 @@ Improved Mobs 1.10.3
 - Fabric: You will need to update your configs.  
   A backup of the old config will be created
 - Fix player difficulty reset on death
+- Prevent piglins holding offhand items cause since it clashes with bartering they throw it out immediately
+- Fix dividing through 0 when using PLAYERMEAN and no players around  
+  Noticable with structure mobs
+- Increase the player check range to 256 (doubt any modded server uses 16 render distance)
 
 Improved Mobs 1.10.2
 ================
