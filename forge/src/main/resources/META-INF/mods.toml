@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[38,)"
+loaderVersion="[39,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/ImprovedMobs/issues"
 [[mods]]
@@ -19,6 +19,6 @@ side="BOTH"
 [[dependencies.improvedmobs]]
 modId="tenshilib"
 mandatory=true
-versionRange="[1.18.1-1.5.0,)"
+versionRange="[1.18.1-1.6.0,)"
 ordering="NONE"
 side="BOTH"
