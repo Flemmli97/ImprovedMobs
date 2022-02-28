@@ -9,8 +9,10 @@ import net.minecraft.block.BlockState;
 import net.minecraft.enchantment.EnchantmentHelper;
 import net.minecraft.entity.MobEntity;
 import net.minecraft.entity.ai.attributes.Attribute;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
 import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.attributes.ModifiableAttributeInstance;
+import net.minecraft.entity.monster.piglin.AbstractPiglinEntity;
 import net.minecraft.inventory.EquipmentSlotType;
 import net.minecraft.item.ItemStack;
 import net.minecraft.loot.RandomValueRange;
@@ -22,6 +24,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 
 import java.util.List;
+import java.util.UUID;
 
 public class GeneralHelperMethods {
 
@@ -79,6 +82,9 @@ public class GeneralHelperMethods {
                 living.setItemStackToSlot(EquipmentSlotType.MAINHAND, stack);
             }
         }
+        // Cause bartering they throw it out immediately
+        if (living instanceof AbstractPiglinEntity)
+            return;
         add = DifficultyData.getDifficulty(living.world, living) * Config.CommonConfig.diffItemChanceAdd * 0.01F;
         if (Config.CommonConfig.baseItemChance != 0 && living.getRNG().nextFloat() < (Config.CommonConfig.baseItemChance + add)) {
             if (living.getHeldItemOffhand().isEmpty()) {
@@ -162,22 +168,22 @@ public class GeneralHelperMethods {
         }
     }
 
+    private static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
+
     public static void modifyAttr(MobEntity living, Attribute att, double value, double max, boolean multiply) {
         ModifiableAttributeInstance inst = living.getAttribute(att);
-        if (inst == null)
+        if (inst == null || inst.getModifier(attMod) != null)
             return;
         double oldValue = inst.getBaseValue();
         value *= DifficultyData.getDifficulty(living.world, living);
         if (multiply) {
             value = Math.min(value, max - 1);
-            value = oldValue * (1 + value);
+            value = oldValue * value;
             if (att == Attributes.MAX_HEALTH)
                 value = Config.CommonConfig.roundHP > 0 ? MathUtils.roundTo(value, Config.CommonConfig.roundHP) : value;
         } else {
             value = Math.min(value, max);
-            value = oldValue + value;
         }
-        inst.setBaseValue(value);
-        //ForgeMod.SWIM_SPEED
+        inst.applyPersistentModifier(new AttributeModifier(attMod, "im_modifier", value, AttributeModifier.Operation.ADDITION));
     }
 }

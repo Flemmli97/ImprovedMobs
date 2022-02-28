@@ -4,17 +4,18 @@ import com.flemmli97.improvedmobs.capability.PlayerDifficultyData;
 import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.network.PacketHandler;
-import net.minecraft.entity.EntityPredicate;
+import com.google.common.collect.Lists;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.util.math.AxisAlignedBB;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.vector.Vector3d;
+import net.minecraft.world.IEntityReader;
 import net.minecraft.world.World;
 import net.minecraft.world.storage.WorldSavedData;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
@@ -42,13 +43,13 @@ public class DifficultyData extends WorldSavedData {
                 return (float) net.silentchaos512.scalinghealth.utils.SHDifficulty.areaDifficulty(world, e.getPosition());
             return (float) net.silentchaos512.scalinghealth.utils.config.SHDifficulty.areaDifficulty(world, e.getPosition());
         }
-        BlockPos pos = e.getPosition();
+        Vector3d pos = e.getPositionVec();
         switch (Config.CommonConfig.difficultyType) {
             case GLOBAL:
                 return DifficultyData.get(world).getDifficulty();
             case PLAYERMAX:
                 float diff = 0;
-                for (PlayerEntity player : world.getTargettablePlayersWithinAABB(EntityPredicate.DEFAULT.allowInvulnerable(), null, new AxisAlignedBB(-128, -128, -128, 128, 128, 128).offset(pos))) {
+                for (PlayerEntity player : playersIn(world, pos, 256)) {
                     float pD = TileCapProvider.getPlayerDifficultyData((ServerPlayerEntity) player).getDifficultyLevel();
                     if (pD > diff)
                         diff = pD;
@@ -56,13 +57,24 @@ public class DifficultyData extends WorldSavedData {
                 return diff;
             case PLAYERMEAN:
                 diff = 0;
-                List<PlayerEntity> list = world.getTargettablePlayersWithinAABB(EntityPredicate.DEFAULT.allowInvulnerable(), null, new AxisAlignedBB(-128, -128, -128, 128, 128, 128).offset(pos));
+                List<PlayerEntity> list = playersIn(world, pos, 256);
+                if (list.isEmpty())
+                    return 0f;
                 for (PlayerEntity player : list) {
                     diff += TileCapProvider.getPlayerDifficultyData((ServerPlayerEntity) player).getDifficultyLevel();
                 }
                 return diff / list.size();
         }
         return 0;
+    }
+
+    private static List<PlayerEntity> playersIn(IEntityReader getter, Vector3d pos, double radius) {
+        ArrayList<PlayerEntity> list = Lists.newArrayList();
+        for (PlayerEntity player : getter.getPlayers()) {
+            if (player.getPositionVec().isWithinDistanceOf(pos, radius))
+                list.add(player);
+        }
+        return list;
     }
 
     public void increaseDifficultyBy(Function<Float, Float> increase, long time, MinecraftServer server) {

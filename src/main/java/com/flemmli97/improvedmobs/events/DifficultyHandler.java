@@ -1,5 +1,7 @@
 package com.flemmli97.improvedmobs.events;
 
+import com.flemmli97.improvedmobs.capability.PlayerDifficultyData;
+import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
 import com.flemmli97.improvedmobs.network.PacketHandler;
@@ -8,6 +10,7 @@ import net.minecraft.entity.player.ServerPlayerEntity;
 import net.minecraft.world.World;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DifficultyHandler {
@@ -41,6 +44,15 @@ public class DifficultyHandler {
                     //data.increaseDifficultyBy(shouldIncrease ? e.world.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0 : 0, e.world.getDayTime());
                 }
             }
+        }
+    }
+
+    @SubscribeEvent
+    public void readOnDeath(PlayerEvent.Clone event) {
+        if (event.getPlayer() instanceof ServerPlayerEntity) {
+            event.getPlayer().getCapability(TileCapProvider.PlayerCap).ifPresent(data ->
+                    data.setDifficultyLevel(event.getOriginal().getCapability(TileCapProvider.PlayerCap).map(PlayerDifficultyData::getDifficultyLevel).orElse(0f)));
+            PacketHandler.sendDifficultyToClient(DifficultyData.get(event.getPlayer().world), (ServerPlayerEntity) event.getPlayer());
         }
     }
 }
