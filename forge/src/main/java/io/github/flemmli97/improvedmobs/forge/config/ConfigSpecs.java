@@ -138,8 +138,8 @@ public class ConfigSpecs {
             this.doIMDifficulty = builder.comment("Increase difficulty with time", "Here untill its back as a gamerule").define("Difficulty toggle", true);
             this.difficultyType = builder.comment("How the difficulty at a position is calculated. Supported values are: ",
                     "GLOBAL: Serverwide difficulty value",
-                    "PLAYERMAX: Maximum difficulty of players in a 128 radius around the position",
-                    "PLAYERMEAN: Average difficulty of players in a 128 radius around the position").defineEnum("Difficulty type", Config.DifficultyType.GLOBAL);
+                    "PLAYERMAX: Maximum difficulty of players in a 256 radius around the position",
+                    "PLAYERMEAN: Average difficulty of players in a 256 radius around the position").defineEnum("Difficulty type", Config.DifficultyType.GLOBAL);
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");

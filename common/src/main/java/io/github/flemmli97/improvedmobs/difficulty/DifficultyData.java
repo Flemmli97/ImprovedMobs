@@ -1,20 +1,21 @@
 package io.github.flemmli97.improvedmobs.difficulty;
 
+import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.platform.integration.DifficultyValues;
-import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.targeting.TargetingConditions;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.EntityGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.Vec3;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -39,12 +40,12 @@ public class DifficultyData extends SavedData {
     public static float getDifficulty(Level world, LivingEntity e) {
         if (!(world instanceof ServerLevel))
             return 0;
-        BlockPos pos = e.blockPosition();
+        Vec3 pos = e.position();
         Supplier<Float> sup = switch (Config.CommonConfig.difficultyType) {
             case GLOBAL -> () -> DifficultyData.get(world.getServer()).getDifficulty();
             case PLAYERMAX -> () -> {
                 float diff = 0;
-                for (Player player : world.getNearbyPlayers(TargetingConditions.forNonCombat(), null, new AABB(-128, -128, -128, 128, 128, 128).move(pos))) {
+                for (Player player : playersIn(world, pos, 256)) {
                     float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
                     if (pD > diff)
                         diff = pD;
@@ -53,7 +54,9 @@ public class DifficultyData extends SavedData {
             };
             case PLAYERMEAN -> () -> {
                 float diff = 0;
-                List<Player> list = world.getNearbyPlayers(TargetingConditions.forNonCombat(), null, new AABB(-128, -128, -128, 128, 128, 128).move(pos));
+                List<Player> list = playersIn(world, pos, 256);
+                if (list.isEmpty())
+                    return 0f;
                 for (Player player : list) {
                     diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
                 }
@@ -61,6 +64,15 @@ public class DifficultyData extends SavedData {
             };
         };
         return DifficultyValues.INSTANCE.getDifficulty(world, e.blockPosition(), sup);
+    }
+
+    private static List<Player> playersIn(EntityGetter getter, Vec3 pos, double radius) {
+        ArrayList<Player> list = Lists.newArrayList();
+        for (Player player : getter.players()) {
+            if (player.position().closerThan(pos, radius))
+                list.add(player);
+        }
+        return list;
     }
 
     public void increaseDifficultyBy(Function<Float, Float> increase, long time, MinecraftServer server) {

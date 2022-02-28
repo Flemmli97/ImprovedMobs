@@ -31,7 +31,7 @@ public class DifficultyHandler {
     @SubscribeEvent
     public void readOnDeath(PlayerEvent.Clone event) {
         if (event.getPlayer() instanceof ServerPlayer serverPlayer) {
-            if(event.isWasDeath())
+            if (event.isWasDeath())
                 event.getOriginal().reviveCaps();
             serverPlayer.getCapability(TileCapProvider.PLAYER_CAP).ifPresent(data -> data.setDifficultyLevel(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) event.getOriginal()).getDifficultyLevel()));
             CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(serverPlayer.getServer()), serverPlayer.getServer());
