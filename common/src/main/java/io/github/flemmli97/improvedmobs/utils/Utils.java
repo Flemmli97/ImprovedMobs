@@ -79,7 +79,7 @@ public class Utils {
                 living.setItemSlot(EquipmentSlot.MAINHAND, stack);
             }
         }
-        //
+        // Cause bartering they throw it out immediately
         if (living instanceof AbstractPiglin)
             return;
         add = difficulty * Config.CommonConfig.diffItemChanceAdd * 0.01F;
