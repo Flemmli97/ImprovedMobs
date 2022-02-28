@@ -17,7 +17,9 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
@@ -25,6 +27,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 
 public class Utils {
@@ -76,7 +79,10 @@ public class Utils {
                 living.setItemSlot(EquipmentSlot.MAINHAND, stack);
             }
         }
-        add = DifficultyData.getDifficulty(living.level, living) * Config.CommonConfig.diffItemChanceAdd * 0.01F;
+        //
+        if (living instanceof AbstractPiglin)
+            return;
+        add = difficulty * Config.CommonConfig.diffItemChanceAdd * 0.01F;
         if (Config.CommonConfig.baseItemChance != 0 && living.getRandom().nextFloat() < (Config.CommonConfig.baseItemChance + add)) {
             if (living.getOffhandItem().isEmpty()) {
                 ItemStack stack = EquipmentList.getEquip(living, EquipmentSlot.OFFHAND, difficulty);
@@ -149,22 +155,22 @@ public class Utils {
         return f;
     }
 
+    private static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
+
     public static void modifyAttr(Mob living, Attribute att, double value, double max, boolean multiply) {
         AttributeInstance inst = living.getAttribute(att);
-        if (inst == null)
+        if (inst == null || inst.getModifier(attMod) != null)
             return;
         double oldValue = inst.getBaseValue();
         value *= DifficultyData.getDifficulty(living.level, living);
         if (multiply) {
             value = Math.min(value, max - 1);
-            value = oldValue * (1 + value);
+            value = oldValue * value;
             if (att == Attributes.MAX_HEALTH)
                 value = Config.CommonConfig.roundHP > 0 ? MathUtils.roundTo(value, Config.CommonConfig.roundHP) : value;
         } else {
             value = Math.min(value, max);
-            value = oldValue + value;
         }
-        inst.setBaseValue(value);
-        //ForgeMod.SWIM_SPEED
+        inst.addPermanentModifier(new AttributeModifier(attMod, "im_modifier", value, AttributeModifier.Operation.ADDITION));
     }
 }
