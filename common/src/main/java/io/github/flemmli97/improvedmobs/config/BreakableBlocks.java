@@ -4,9 +4,10 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
-import net.minecraft.tags.Tag;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -15,13 +16,14 @@ import net.minecraft.world.phys.shapes.CollisionContext;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
 
     private final Set<String> blocks = new HashSet<>();
     private List<String> configString = new ArrayList<>();
-    private final Set<Tag<Block>> tags = new HashSet<>();
+    private final Set<HolderSet<Block>> tags = new HashSet<>();
     private boolean initialized;
 
     public boolean canBreak(BlockState state, BlockPos pos, BlockGetter level, CollisionContext ctx) {
@@ -49,7 +51,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     private void initialize() {
         this.initialized = true;
         Set<String> blackList = new HashSet<>();
-        Set<Tag<Block>> blackListTags = new HashSet<>();
+        Set<HolderSet<Block>> blackListTags = new HashSet<>();
         for (String s : this.configString) {
             if (s.startsWith("!"))
                 addBlocks(s.substring(1), blackList, blackListTags);
@@ -60,13 +62,10 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
         this.tags.removeAll(blackListTags);
     }
 
-    private static void addBlocks(String s, Set<String> list, Set<Tag<Block>> tags) {
+    private static void addBlocks(String s, Set<String> list, Set<HolderSet<Block>> tags) {
         if (s.contains(":")) {
-            Tag<Block> tag = BlockTags.getAllTags().getTag(new ResourceLocation(s));
-            if (tag != null)
-                tags.add(tag);
-            else
-                list.add(s);
+            Optional<HolderSet.Named<Block>> tag = Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(s)));
+            tag.ifPresent(tags::add);
         } else {
             Class<?> clss = null;
             try {

@@ -1,3 +1,7 @@
+Improved Mobs 1.10.4
+================
+- 1.18.2
+
 Improved Mobs 1.10.3
 ================
 - TenshiLib 1.6.0 compat

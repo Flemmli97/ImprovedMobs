@@ -6,17 +6,20 @@ import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.ITileOpened;
-import net.fabricmc.fabric.api.tool.attribute.v1.FabricToolTags;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.AxeItem;
 import net.minecraft.world.item.BowItem;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.level.block.SoundType;
@@ -27,6 +30,9 @@ import java.nio.file.Path;
 import java.util.Random;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
+
+    public static final TagKey<Item> fabricAxe = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("fabric", "axes"));
+    public static final TagKey<Item> commonAxe = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("c", "axes"));
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
@@ -98,7 +104,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
-        return (attackingStack.getItem() instanceof AxeItem || attackingStack.is(FabricToolTags.AXES)) && held.getItem() instanceof ShieldItem;
+        return (attackingStack.getItem() instanceof AxeItem || attackingStack.is(fabricAxe) || attackingStack.is(commonAxe)) && held.getItem() instanceof ShieldItem;
     }
 
     @Override
