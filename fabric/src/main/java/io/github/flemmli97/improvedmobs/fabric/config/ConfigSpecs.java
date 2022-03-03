@@ -32,7 +32,7 @@ public final class ConfigSpecs {
 
     public static void initCommonConfig() {
         Pair<JsonConfig<CommentedJsonConfig>, CommonConfigVals> pair = CommentedJsonConfig.Builder
-                .create(FabricLoader.getInstance().getConfigDir().resolve("improvedmobs").resolve("client.json"), 1, CommonConfigVals::new);
+                .create(FabricLoader.getInstance().getConfigDir().resolve("improvedmobs").resolve("common.json"), 1, CommonConfigVals::new);
         commonConfig = pair.getKey();
         commonConfigSpecs = pair.getValue();
     }
@@ -143,7 +143,7 @@ public final class ConfigSpecs {
             //builder.comment("With default value every difficulty perk maxes out at difficulty 250").push("general");
             this.enableDifficultyScaling = builder.comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").defineInRange("Difficulty Delay", 0, 0, Integer.MAX_VALUE);
-            this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1, 250-0"));
+            this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1", "250-0"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             this.shouldPunishTimeSkip = builder.comment("Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.").define("Punish Time Skip", true);
             this.friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
@@ -157,7 +157,7 @@ public final class ConfigSpecs {
 
             //builder.comment("Black/Whitelist for various stuff").push("list");
             this.entityBlacklist = builder.comment(EntityModifyFlagConfig.use()).define("More Entities", Lists.newArrayList("UNINITIALIZED"));
-            this.flagBlacklist = builder.comment("Put the above flags here to completly disable them.").define("Flag Blacklist", new ArrayList<>());
+            this.flagBlacklist = builder.comment("Any of the following ", EntityModifyFlagConfig.Flags.toggable().toString(), "added here will disable that feature.", "E.g. [\"GUARDIAN\"] will disable the guardian feature").define("Flag Blacklist", new ArrayList<>());
             this.mobAttributeWhitelist = builder.comment("Treat ATTRIBUTES flags as whitelist").define("Attribute Whitelist", false);
             this.armorMobWhitelist = builder.comment("Treat ARMOR flags as whitelist").define("Armor Equip Whitelist", false);
             this.heldMobWhitelist = builder.comment("Treat HELDITEMS flags as whitelist").define("Held Equip Whitelist", false);

@@ -1,3 +1,9 @@
+Improved Mobs 1.10.5
+================
+- Fix config issues on fabric
+- Change some config comments
+- Fix default config of increase handler being faulty
+
 Improved Mobs 1.10.4
 ================
 - 1.18.2

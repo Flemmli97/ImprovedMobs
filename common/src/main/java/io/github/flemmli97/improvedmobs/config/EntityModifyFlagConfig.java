@@ -12,6 +12,7 @@ import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.List;
@@ -102,7 +103,13 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         PARROT,
         TARGETVILLAGER,
         NEUTRALAGGRO,
-        REVERSE,
+        REVERSE;
 
+        public static List<Flags> toggable() {
+            List<Flags> all = new ArrayList<>(Arrays.asList(Flags.values()));
+            all.remove(Flags.ALL);
+            all.remove(Flags.REVERSE);
+            return all;
+        }
     }
 }
