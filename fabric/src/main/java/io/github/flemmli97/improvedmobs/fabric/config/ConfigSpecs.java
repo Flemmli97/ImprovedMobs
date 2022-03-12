@@ -51,6 +51,8 @@ public final class ConfigSpecs {
             this.color = builder.comment("Textformatting codes for the display of the difficulty").define("Difficulty color", ChatFormatting.DARK_PURPLE);
             this.scale = builder.comment("Scaling of the difficulty text").defineInRange("Text Scale", 1D, 0, Double.MAX_VALUE);
             this.showDifficulty = builder.comment("Show the the difficulty text").define("Show Difficulty", true);
+
+            builder.registerReloadHandler(ConfigLoader::loadClient);
         }
     }
 
@@ -224,6 +226,8 @@ public final class ConfigSpecs {
             this.magicResMax = builder.comment("Maximum increase in magic resistance. Magic reduction is percentage").defineInRange("Max Magic Resistance", 0.4, 0, 1);
             this.projectileIncrease = builder.comment("Projectile Damage will be multiplied by 1+difficulty*0.008*x. Set to 0 to disable").defineInRange("Projectile Damage Increase", 1.0, 0, Double.MAX_VALUE);
             this.projectileMax = builder.comment("Projectile damage will be multiplied by maximum of this").defineInRange("Max Projectile Damage", 2.0, 0, Double.MAX_VALUE);
+
+            builder.registerReloadHandler(ConfigLoader::loadCommon);
         }
     }
 }

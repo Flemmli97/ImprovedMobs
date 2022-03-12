@@ -25,6 +25,8 @@ repositories {
         name = "TenshiLib"
         url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
     }
+    maven { url "https://maven.shedaniel.me/" }
+    maven { url "https://maven.terraformersmc.com/releases/" }
 }
 
 dependencies {
@@ -35,6 +37,12 @@ dependencies {
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
     modImplementation "${tenshilib_dep}:fabric"
+
+    modApi("${cloth_config}") {
+        exclude(group: "net.fabricmc.fabric-api")
+    }
+    modImplementation "${mod_menu}"
+
 }
 
 processResources {
