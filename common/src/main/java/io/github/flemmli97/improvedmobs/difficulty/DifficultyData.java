@@ -46,7 +46,7 @@ public class DifficultyData extends SavedData {
             case PLAYERMAX -> () -> {
                 float diff = 0;
                 for (Player player : playersIn(world, pos, 256)) {
-                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
                     if (pD > diff)
                         diff = pD;
                 }
@@ -58,7 +58,7 @@ public class DifficultyData extends SavedData {
                 if (list.isEmpty())
                     return 0f;
                 for (Player player : list) {
-                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
                 }
                 return diff / list.size();
             };
@@ -79,10 +79,7 @@ public class DifficultyData extends SavedData {
         this.difficultyLevel += increase.apply(this.getDifficulty());
         this.prevTime = time;
         server.getPlayerList().getPlayers()
-                .forEach(player -> {
-                    IPlayerDifficulty pd = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
-                    pd.setDifficultyLevel(pd.getDifficultyLevel() + increase.apply(pd.getDifficultyLevel()));
-                });
+                .forEach(player -> CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(pd -> pd.setDifficultyLevel(pd.getDifficultyLevel() + increase.apply(pd.getDifficultyLevel()))));
         this.setDirty();
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
     }

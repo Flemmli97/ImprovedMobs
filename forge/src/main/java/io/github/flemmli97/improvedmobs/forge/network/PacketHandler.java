@@ -3,6 +3,7 @@ package io.github.flemmli97.improvedmobs.forge.network;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
@@ -31,7 +32,7 @@ public class PacketHandler {
     public static <T> void sendDifficultyToClient(DifficultyData data, ServerPlayer player) {
         if (hasChannel(player))
             dispatcher.sendTo(new PacketDifficulty(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() :
-                    CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel()), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                    CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <T> void sendDifficultyToAll(DifficultyData data, MinecraftServer server) {
@@ -45,7 +46,7 @@ public class PacketHandler {
             server.getPlayerList().getPlayers().forEach(player -> {
                 if (hasChannel(player))
                     player.connection.send(dispatcher.toVanillaPacket(
-                            new PacketDifficulty(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel()), NetworkDirection.PLAY_TO_CLIENT));
+                            new PacketDifficulty(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)), NetworkDirection.PLAY_TO_CLIENT));
             });
         }
     }

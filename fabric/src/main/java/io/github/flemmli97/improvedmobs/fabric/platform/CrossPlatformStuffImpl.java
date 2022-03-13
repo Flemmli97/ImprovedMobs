@@ -27,6 +27,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Random;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
@@ -108,7 +109,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
-        return ((IPlayerDifficulty) player);
+    public Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player) {
+        return Optional.of((IPlayerDifficulty) player);
     }
 }

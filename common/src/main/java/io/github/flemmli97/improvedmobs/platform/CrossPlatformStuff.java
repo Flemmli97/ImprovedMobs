@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Random;
 
 public interface CrossPlatformStuff {
@@ -45,5 +46,5 @@ public interface CrossPlatformStuff {
 
     boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
 
-    IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player);
+    Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player);
 }

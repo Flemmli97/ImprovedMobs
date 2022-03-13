@@ -7,7 +7,6 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -63,10 +62,11 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
-            data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
-            CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
-            src.getSource().sendSuccess(new TextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+            CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(data -> {
+                data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
+                CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
+                src.getSource().sendSuccess(new TextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+            });
         }
         return profs.size();
     }
@@ -76,10 +76,11 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
-            data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
-            CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
-            src.getSource().sendSuccess(new TextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+            CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(data -> {
+                data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
+                CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
+                src.getSource().sendSuccess(new TextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+            });
         }
         return profs.size();
     }

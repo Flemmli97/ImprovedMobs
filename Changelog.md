@@ -1,3 +1,8 @@
+Improved Mobs 1.10.6
+================
+- Fabric: Mod menu config support
+- Fix crash when player data is not present usually caused by death
+
 Improved Mobs 1.10.5
 ================
 - Fix config issues on fabric

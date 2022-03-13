@@ -20,6 +20,7 @@ import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.nio.file.Path;
+import java.util.Optional;
 import java.util.Random;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
@@ -98,7 +99,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
-        return player.getCapability(TileCapProvider.PLAYER_CAP).orElseThrow(() -> new NullPointerException("Player difficulty capability not present!!!"));
+    public Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player) {
+        return player.getCapability(TileCapProvider.PLAYER_CAP).resolve();
     }
 }
