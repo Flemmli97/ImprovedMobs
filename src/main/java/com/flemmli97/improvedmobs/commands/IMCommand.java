@@ -1,6 +1,5 @@
 package com.flemmli97.improvedmobs.commands;
 
-import com.flemmli97.improvedmobs.capability.PlayerDifficultyData;
 import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import com.flemmli97.improvedmobs.config.EquipmentList;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
@@ -61,10 +60,11 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayerEntity player = server.getPlayerList().getPlayerByUUID(prof.getId());
-            PlayerDifficultyData data = TileCapProvider.getPlayerDifficultyData(player);
-            data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
-            PacketHandler.sendDifficultyToClient(DifficultyData.get(player.world), player);
-            src.getSource().sendFeedback(new StringTextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.mergeWithFormatting(TextFormatting.GOLD)), true);
+            TileCapProvider.getPlayerDifficultyData(player).ifPresent(data -> {
+                data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
+                PacketHandler.sendDifficultyToClient(DifficultyData.get(player.world), player);
+                src.getSource().sendFeedback(new StringTextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.mergeWithFormatting(TextFormatting.GOLD)), true);
+            });
         }
         return profs.size();
     }
@@ -74,10 +74,11 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayerEntity player = server.getPlayerList().getPlayerByUUID(prof.getId());
-            PlayerDifficultyData data = TileCapProvider.getPlayerDifficultyData(player);
-            data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
-            PacketHandler.sendDifficultyToClient(DifficultyData.get(player.world), player);
-            src.getSource().sendFeedback(new StringTextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.mergeWithFormatting(TextFormatting.GOLD)), true);
+            TileCapProvider.getPlayerDifficultyData(player).ifPresent(data -> {
+                data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
+                PacketHandler.sendDifficultyToClient(DifficultyData.get(player.world), player);
+                src.getSource().sendFeedback(new StringTextComponent("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.mergeWithFormatting(TextFormatting.GOLD)), true);
+            });
         }
         return profs.size();
     }

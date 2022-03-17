@@ -1,3 +1,7 @@
+Improved Mobs 1.10.6
+================
+- Fix crash when player data is not present usually caused by death
+
 Improved Mobs 1.10.3
 ================
 - Fix player difficulty reset on death

@@ -50,7 +50,7 @@ public class DifficultyData extends WorldSavedData {
             case PLAYERMAX:
                 float diff = 0;
                 for (PlayerEntity player : playersIn(world, pos, 256)) {
-                    float pD = TileCapProvider.getPlayerDifficultyData((ServerPlayerEntity) player).getDifficultyLevel();
+                    float pD = TileCapProvider.getPlayerDifficultyData((ServerPlayerEntity) player).map(PlayerDifficultyData::getDifficultyLevel).orElse(0f);
                     if (pD > diff)
                         diff = pD;
                 }
@@ -61,7 +61,7 @@ public class DifficultyData extends WorldSavedData {
                 if (list.isEmpty())
                     return 0f;
                 for (PlayerEntity player : list) {
-                    diff += TileCapProvider.getPlayerDifficultyData((ServerPlayerEntity) player).getDifficultyLevel();
+                    diff += TileCapProvider.getPlayerDifficultyData((ServerPlayerEntity) player).map(PlayerDifficultyData::getDifficultyLevel).orElse(0f);
                 }
                 return diff / list.size();
         }
@@ -82,8 +82,7 @@ public class DifficultyData extends WorldSavedData {
         this.prevTime = time;
         server.getPlayerList().getPlayers()
                 .forEach(player -> {
-                    PlayerDifficultyData pd = TileCapProvider.getPlayerDifficultyData(player);
-                    pd.setDifficultyLevel(pd.getDifficultyLevel() + increase.apply(pd.getDifficultyLevel()));
+                    TileCapProvider.getPlayerDifficultyData(player).ifPresent(pd -> pd.setDifficultyLevel(pd.getDifficultyLevel() + increase.apply(pd.getDifficultyLevel())));
                 });
         this.markDirty();
         PacketHandler.sendDifficultyToAll(this, server);

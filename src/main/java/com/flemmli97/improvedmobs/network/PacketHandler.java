@@ -1,6 +1,7 @@
 package com.flemmli97.improvedmobs.network;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
+import com.flemmli97.improvedmobs.capability.PlayerDifficultyData;
 import com.flemmli97.improvedmobs.capability.TileCapProvider;
 import com.flemmli97.improvedmobs.config.Config;
 import com.flemmli97.improvedmobs.difficulty.DifficultyData;
@@ -30,7 +31,7 @@ public class PacketHandler {
     public static <T> void sendDifficultyToClient(DifficultyData data, ServerPlayerEntity player) {
         if (hasChannel(player))
             dispatcher.sendTo(new PacketDifficulty(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() :
-                    TileCapProvider.getPlayerDifficultyData(player).getDifficultyLevel()), player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
+                    TileCapProvider.getPlayerDifficultyData(player).map(PlayerDifficultyData::getDifficultyLevel).orElse(0f)), player.connection.getNetworkManager(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <T> void sendDifficultyToAll(DifficultyData data, MinecraftServer server) {
@@ -44,7 +45,7 @@ public class PacketHandler {
             server.getPlayerList().getPlayers().forEach(player -> {
                 if (hasChannel(player))
                     player.connection.sendPacket(dispatcher.toVanillaPacket(
-                            new PacketDifficulty(TileCapProvider.getPlayerDifficultyData(player).getDifficultyLevel()), NetworkDirection.PLAY_TO_CLIENT));
+                            new PacketDifficulty(TileCapProvider.getPlayerDifficultyData(player).map(PlayerDifficultyData::getDifficultyLevel).orElse(0f)), NetworkDirection.PLAY_TO_CLIENT));
             });
         }
     }
