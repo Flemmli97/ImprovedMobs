@@ -1,3 +1,9 @@
+Improved Mobs 1.10.7
+================
+- Move item name validation for equipment.json so it doesn't mess up the loading  
+  Fixes the list sometimes not working
+- Fix mobs not breaking blocks
+
 Improved Mobs 1.10.6
 ================
 - Fix crash when player data is not present usually caused by death

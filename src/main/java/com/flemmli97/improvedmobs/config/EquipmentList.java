@@ -68,6 +68,7 @@ public class EquipmentList {
         try {
             File conf = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").resolve("equipment.json").toFile();
             JsonObject confObj = new JsonObject();
+            List<String> errors = new ArrayList<>();
             if (!conf.exists()) {
                 initDefaultVals();
                 conf.createNewFile();
@@ -78,7 +79,6 @@ public class EquipmentList {
                     confObj = new JsonObject();
                 reader.close();
                 //Read and update from config
-                List<String> errors = new ArrayList<>();
                 for (EquipmentSlotType key : EquipmentSlotType.values()) {
                     if (confObj.has(key.toString())) {
                         JsonObject obj = (JsonObject) confObj.get(key.toString());
@@ -100,8 +100,6 @@ public class EquipmentList {
                             equips.put(key, new WeightedItemstackList());
                     }
                 }
-                if (!errors.isEmpty())
-                    throw new InvalidItemNameException("Invalid item names for following values: " + errors);
             }
             JsonArray comment = new JsonArray();
             comment.add("Mobs will be able to equip items declared here");
@@ -133,6 +131,8 @@ public class EquipmentList {
             JsonWriter wr = GSON.newJsonWriter(new FileWriter(conf));
             GSON.toJson(confObj, JsonObject.class, wr);
             wr.close();
+            if (!errors.isEmpty())
+                throw new InvalidItemNameException("No items with following names exist: " + errors);
         } catch (IOException | IllegalStateException e) {
             ImprovedMobs.logger.error("Error initializing equipment");
             e.printStackTrace();
@@ -334,8 +334,7 @@ public class EquipmentList {
                     e.printStackTrace();
                 }
             }
-            Item it = ForgeRegistries.ITEMS.getValue(new ResourceLocation(itemReg));
-            if (it == null) {
+            if (!ForgeRegistries.ITEMS.containsKey(new ResourceLocation(itemReg))) {
                 errors.add(itemReg);
                 this.item = null;
             } else
