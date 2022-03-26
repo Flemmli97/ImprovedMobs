@@ -175,14 +175,14 @@ public class EventHandler {
         boolean mobGriefing = e.getWorld().getGameRules().getBoolean(GameRules.MOB_GRIEFING);
         if (e.getEntity() instanceof MobEntity) {
             MobEntity living = (MobEntity) e.getEntity();
-            if (living.getPersistentData().contains(breaker)) {
+            if (!living.getPersistentData().contains(breaker)) {
                 if (DifficultyData.getDifficulty(living.world, living) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && e.getEntity().world.rand.nextFloat() < Config.CommonConfig.breakerChance
                         && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
                     living.getPersistentData().putBoolean(breaker, true);
                 } else
                     living.getPersistentData().putBoolean(breaker, false);
             }
-            if (living.getPersistentData().contains(flyer)) {
+            if (!living.getPersistentData().contains(flyer)) {
                 if (living.world.rand.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist))
                     living.getPersistentData().putBoolean(flyer, true);
                 else
