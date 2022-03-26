@@ -1,3 +1,8 @@
+Improved Mobs 1.10.7
+================
+- Move item name validation for equipment.json so it doesn't mess up the loading  
+  Fixes the list sometimes not working
+
 Improved Mobs 1.10.6
 ================
 - Fabric: Mod menu config support
