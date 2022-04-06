@@ -14,6 +14,7 @@ import io.github.flemmli97.improvedmobs.forge.network.PacketHandler;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.IExtensionPoint;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -30,6 +31,7 @@ import java.io.File;
 public class ImprovedMobsForge {
 
     public ImprovedMobsForge() {
+        ModLoadingContext.get().registerExtensionPoint(IExtensionPoint.DisplayTest.class, () -> new IExtensionPoint.DisplayTest(() -> "*", (s1, s2) -> true));
         File file = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").toFile();
         if (!file.exists())
             file.mkdir();
