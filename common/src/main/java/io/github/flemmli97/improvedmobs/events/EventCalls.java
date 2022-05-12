@@ -177,8 +177,10 @@ public class EventCalls {
                 mob.targetSelector.addGoal(1, setNoLoS(mob, Player.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
         } else
             aggressive = true;
-        if (villager && aggressive)
-            mob.targetSelector.addGoal(2, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
+        if (villager && aggressive) {
+            ((IGoalModifier) mob.targetSelector).goalRemovePredicate(g -> g instanceof NearestTargetGoalMixin target && target.targetTypeClss() == AbstractVillager.class);
+            mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
+        }
         List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(PlatformUtils.INSTANCE.entities().getIDFrom(mob.getType()));
         if (types != null)
             mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
