@@ -4,7 +4,9 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
 import io.github.flemmli97.tenshilib.common.utils.ArrayUtils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
+import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -22,14 +24,25 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
 
     private final Map<String, EnumSet<Flags>> map = new HashMap<>();
 
+    @SuppressWarnings("deprecation")
     public void initDefault(Level world) {
         this.map.clear();
         for (EntityType<?> entry : PlatformUtils.INSTANCE.entities().getIterator()) {
             try {
                 Entity e = entry.create(world);
-                if (!(e instanceof Mob) || e instanceof Enemy)
+                if (!(e instanceof Mob))
                     continue;
-                this.map.put(PlatformUtils.INSTANCE.entities().getIDFrom(entry).toString(), EnumSet.of(Flags.ALL));
+                EnumSet<Flags> set = EnumSet.noneOf(Flags.class);
+                for (Flags flag : Flags.values()) {
+                    if (flag.tag == null)
+                        continue;
+                    if (entry.builtInRegistryHolder().is(flag.tag))
+                        set.add(flag);
+                }
+                if (set.isEmpty() && !(e instanceof Enemy))
+                    set.add(Flags.ALL);
+                if (!set.isEmpty())
+                    this.map.put(PlatformUtils.INSTANCE.entities().getIDFrom(entry).toString(), set);
             } catch (Exception e) {
                 ImprovedMobs.logger.error("Error during default entity config for EntityType {}, skipping this type. Cause: {}", PlatformUtils.INSTANCE.entities().getIDFrom(entry), e.getMessage());
             }
@@ -91,19 +104,32 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
 
     public enum Flags {
 
-        ALL,
-        ATTRIBUTES,
-        ARMOR,
-        HELDITEMS,
-        BLOCKBREAK,
-        USEITEM,
-        LADDER,
-        STEAL,
-        GUARDIAN,
-        PARROT,
-        TARGETVILLAGER,
-        NEUTRALAGGRO,
-        REVERSE;
+        ALL(null),
+        ATTRIBUTES("attributes"),
+        ARMOR("armor"),
+        HELDITEMS("helditems"),
+        BLOCKBREAK("blockbreak"),
+        USEITEM("useitem"),
+        LADDER("ladder"),
+        STEAL("steal"),
+        GUARDIAN("guardian"),
+        PARROT("parrot"),
+        TARGETVILLAGER("villager"),
+        NEUTRALAGGRO("neutral"),
+        REVERSE(null);
+
+        /**
+         * Used in initializing the default list. Here for easier tweaking of the default list by other mods.
+         * Not for endusers
+         */
+        public final TagKey<EntityType<?>> tag;
+
+        Flags(String id) {
+            if (id == null)
+                this.tag = null;
+            else
+                this.tag = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(ImprovedMobs.MODID, "default_blacklist_" + id));
+        }
 
         public static List<Flags> toggable() {
             List<Flags> all = new ArrayList<>(Arrays.asList(Flags.values()));

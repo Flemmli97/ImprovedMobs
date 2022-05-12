@@ -1,3 +1,9 @@
+Improved Mobs 1.10.8
+================
+- Remove duplicate target ai regarding villagers if mob already targets villagers
+- Add option to define default flags for entities used in config initialization
+  Useful for other mods. Not really for endusers
+
 Improved Mobs 1.10.7
 ================
 - Move item name validation for equipment.json so it doesn't mess up the loading  
