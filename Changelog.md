@@ -1,3 +1,7 @@
+Improved Mobs 1.10.9
+================
+- Fix potential nullpointer in pathfinding
+
 Improved Mobs 1.10.8
 ================
 - Remove duplicate target ai regarding villagers if mob already targets villagers

@@ -71,7 +71,7 @@ public abstract class GroundNodeMixin extends NodeEvaluator {
             return nodeEvaluator.getBlockPathType(getter, x, y, z);
         BlockPos pos = new BlockPos(x, y, z);
         BlockState state = getter.getBlockState(pos);
-        if (this.breakableMap.computeIfAbsent(BlockPos.asLong(x, y, z), l -> Config.CommonConfig.breakableBlocks.canBreak(state, pos, getter, CollisionContext.of(this.mob)))) {
+        if (this.breakableMap.computeIfAbsent(BlockPos.asLong(x, y, z), l -> Config.CommonConfig.breakableBlocks.canBreak(state, pos, getter, this.mob == null ? CollisionContext.empty() : CollisionContext.of(this.mob)))) {
             return BlockPathTypes.WALKABLE;
         }
         return nodeEvaluator.getBlockPathType(getter, x, y, z);
