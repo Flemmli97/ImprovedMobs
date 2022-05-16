@@ -240,8 +240,10 @@ public class EventHandler {
                     living.targetSelector.addGoal(1, this.setNoLoS(living, PlayerEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, null));
             } else
                 aggressive = true;
-            if (villager && aggressive)
-                living.targetSelector.addGoal(2, this.setNoLoS(living, AbstractVillagerEntity.class, !canBreak || living.world.rand.nextFloat() <= 0.5, null));
+            if (villager && aggressive) {
+                ((IGoalModifier) living.targetSelector).goalRemovePredicate(g -> g instanceof NearestTargetGoalMixin && ((NearestTargetGoalMixin) g).targetTypeClss() == AbstractVillagerEntity.class);
+                living.targetSelector.addGoal(3, this.setNoLoS(living, AbstractVillagerEntity.class, !canBreak || living.world.rand.nextFloat() <= 0.5, null));
+            }
             List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(living.getType().getRegistryName());
             if (types != null)
                 living.targetSelector.addGoal(3, this.setNoLoS(living, LivingEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, (l) -> types.contains(l.getType())));

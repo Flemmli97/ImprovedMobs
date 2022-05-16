@@ -1,3 +1,8 @@
+Improved Mobs 1.10.9
+================
+- Fix potential nullpointer in pathfinding
+- Remove duplicate target ai regarding villagers if mob already targets villagers
+
 Improved Mobs 1.10.7
 ================
 - Move item name validation for equipment.json so it doesn't mess up the loading  

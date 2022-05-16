@@ -71,7 +71,7 @@ public abstract class GroundNodeMixin extends NodeProcessor {
             return nodeEvaluator.getFloorNodeType(getter, x, y, z);
         BlockPos pos = new BlockPos(x, y, z);
         BlockState state = getter.getBlockState(pos);
-        if (this.breakableMap.computeIfAbsent(BlockPos.pack(x, y, z), l -> Config.CommonConfig.breakableBlocks.canBreak(state, pos, getter, ISelectionContext.forEntity(this.entity)))) {
+        if (this.breakableMap.computeIfAbsent(BlockPos.pack(x, y, z), l -> Config.CommonConfig.breakableBlocks.canBreak(state, pos, getter, this.entity == null ? ISelectionContext.dummy() : ISelectionContext.forEntity(this.entity)))) {
             return PathNodeType.WALKABLE;
         }
         return nodeEvaluator.getFloorNodeType(getter, x, y, z);
