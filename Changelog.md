@@ -1,3 +1,7 @@
+Improved Mobs 1.10.10
+================
+- Forge: Fixing problems with capability loading on player clone
+
 Improved Mobs 1.10.9
 ================
 - Fix potential nullpointer in pathfinding

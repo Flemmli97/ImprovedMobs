@@ -31,12 +31,15 @@ public class DifficultyHandler {
     @SubscribeEvent
     public void readOnDeath(PlayerEvent.Clone event) {
         if (event.getPlayer() instanceof ServerPlayer serverPlayer) {
-            if (event.isWasDeath())
+            boolean rev = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) event.getOriginal()).isPresent();
+            if (!rev)
                 event.getOriginal().reviveCaps();
             CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer)
                     .ifPresent(data -> data.setDifficultyLevel(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) event.getOriginal())
                             .map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)));
             CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(serverPlayer.getServer()), serverPlayer.getServer());
+            if (!rev)
+                event.getOriginal().invalidateCaps();
         }
     }
 }
