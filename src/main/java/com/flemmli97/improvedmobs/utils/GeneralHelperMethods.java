@@ -177,12 +177,12 @@ public class GeneralHelperMethods {
         double oldValue = inst.getBaseValue();
         value *= DifficultyData.getDifficulty(living.world, living);
         if (multiply) {
-            value = Math.min(value, max - 1);
+            value = max <= 0 ? value : Math.min(value, max - 1);
             value = oldValue * value;
             if (att == Attributes.MAX_HEALTH)
                 value = Config.CommonConfig.roundHP > 0 ? MathUtils.roundTo(value, Config.CommonConfig.roundHP) : value;
         } else {
-            value = Math.min(value, max);
+            value = max <= 0 ? value : Math.min(value, max);
         }
         inst.applyPersistentModifier(new AttributeModifier(attMod, "im_modifier", value, AttributeModifier.Operation.ADDITION));
     }

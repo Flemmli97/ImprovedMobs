@@ -1,3 +1,7 @@
+Improved Mobs 1.10.11
+================
+- Fix unlimited max value for attribute not working
+
 Improved Mobs 1.10.9
 ================
 - Fix potential nullpointer in pathfinding
