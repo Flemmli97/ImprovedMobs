@@ -1,3 +1,7 @@
+Improved Mobs 1.10.11
+================
+- Fix unlimited max value for attribute not working
+
 Improved Mobs 1.10.10
 ================
 - Forge: Fixing problems with capability loading on player clone

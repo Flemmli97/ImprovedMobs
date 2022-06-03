@@ -164,12 +164,12 @@ public class Utils {
         double oldValue = inst.getBaseValue();
         value *= DifficultyData.getDifficulty(living.level, living);
         if (multiply) {
-            value = Math.min(value, max - 1);
+            value = max <= 0 ? value : Math.min(value, max - 1);
             value = oldValue * value;
             if (att == Attributes.MAX_HEALTH)
                 value = Config.CommonConfig.roundHP > 0 ? MathUtils.roundTo(value, Config.CommonConfig.roundHP) : value;
         } else {
-            value = Math.min(value, max);
+            value = max <= 0 ? value : Math.min(value, max);
         }
         inst.addPermanentModifier(new AttributeModifier(attMod, "im_modifier", value, AttributeModifier.Operation.ADDITION));
     }
