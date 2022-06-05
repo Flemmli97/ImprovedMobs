@@ -87,6 +87,7 @@ public class Config {
         public static int repairTick = 200;
         public static float difficultyBreak;
         public static float difficultySteal;
+        public static float guardianAIChance;
         public static float flyAIChance;
 
         //Equipment
@@ -195,6 +196,7 @@ public class Config {
             repairTick = ConfigSpecs.commonConf.repairTick.get();
             difficultyBreak = ConfigSpecs.commonConf.difficultyBreak.get().floatValue();
             difficultySteal = ConfigSpecs.commonConf.difficultySteal.get().floatValue();
+            guardianAIChance = ConfigSpecs.commonConf.guardianAIChance.get().floatValue();
             flyAIChance = ConfigSpecs.commonConf.flyAIChance.get().floatValue();
 
             equipmentModBlacklist = ConfigSpecs.commonConf.equipmentModBlacklist.get();

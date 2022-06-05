@@ -1,3 +1,9 @@
+Improved Mobs 1.10.12
+================
+- Fix unlimited max value for projectile dmg bonus not working
+- Add guardian ai chance config. So not every mob can ride a guardian
+- Fix guardian blacklist using parrot flag...
+
 Improved Mobs 1.10.11
 ================
 - Fix unlimited max value for attribute not working

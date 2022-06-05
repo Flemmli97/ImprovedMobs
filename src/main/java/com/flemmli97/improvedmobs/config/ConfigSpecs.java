@@ -89,6 +89,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.ConfigValue<Integer> repairTick;
         public final ForgeConfigSpec.ConfigValue<Double> difficultyBreak;
         public final ForgeConfigSpec.ConfigValue<Double> difficultySteal;
+        public final ForgeConfigSpec.DoubleValue guardianAIChance;
         public final ForgeConfigSpec.ConfigValue<Double> flyAIChance;
 
         //Equipment
@@ -184,6 +185,7 @@ public class ConfigSpecs {
             this.repairTick = builder.comment("Delay for the coroutil repair block. Coroutil integration needs to be enabled").define("Repair Ticks", 500);
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").define("Difficulty Break AI", 0D);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").define("Difficulty Steal AI", 0D);
+            this.guardianAIChance = builder.comment("Chance for mobs to be able to ride a guardian").defineInRange("Guardian Chance", 1d, 0, 1);
             this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").define("Fly Chance", 0.5);
             builder.pop();
 

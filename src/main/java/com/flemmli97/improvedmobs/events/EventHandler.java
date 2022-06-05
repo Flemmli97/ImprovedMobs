@@ -183,7 +183,7 @@ public class EventHandler {
                     living.getPersistentData().putBoolean(breaker, false);
             }
             if (!living.getPersistentData().contains(flyer)) {
-                if (living.world.rand.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist))
+                if (living.world.rand.nextFloat() < Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist))
                     living.getPersistentData().putBoolean(flyer, true);
                 else
                     living.getPersistentData().putBoolean(flyer, false);
@@ -216,14 +216,14 @@ public class EventHandler {
             }
             if (canFly) {
                 //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
-                if (!(((MobEntityMixin) living).getTrueNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity)) {
-                    living.goalSelector.addGoal(6, new WaterRidingGoal(living));
-                }
-            }
-            if (living.world.rand.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
-                //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
                 if (!(((MobEntityMixin) living).getTrueNavigator() instanceof FlyingPathNavigator) && !(living instanceof SlimeEntity)) {
                     living.goalSelector.addGoal(6, new FlyRidingGoal(living));
+                }
+            }
+            if (living.world.rand.nextFloat() < Config.CommonConfig.guardianAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
+                //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
+                if (!(((MobEntityMixin) living).getTrueNavigator() instanceof SwimmerPathNavigator) && !(living instanceof SlimeEntity)) {
+                    living.goalSelector.addGoal(6, new WaterRidingGoal(living));
                 }
             }
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
@@ -235,14 +235,14 @@ public class EventHandler {
             boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
             boolean aggressive;
             if ((living instanceof IAngerable) && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.NEUTRALAGGRO, Config.CommonConfig.neutralAggroWhitelist)) {
-                aggressive = Config.CommonConfig.neutralAggressiv != 0 && living.world.rand.nextFloat() <= Config.CommonConfig.neutralAggressiv;
+                aggressive = Config.CommonConfig.neutralAggressiv != 0 && living.world.rand.nextFloat() < Config.CommonConfig.neutralAggressiv;
                 if (aggressive)
                     living.targetSelector.addGoal(1, this.setNoLoS(living, PlayerEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, null));
             } else
                 aggressive = true;
             if (villager && aggressive) {
                 ((IGoalModifier) living.targetSelector).goalRemovePredicate(g -> g instanceof NearestTargetGoalMixin && ((NearestTargetGoalMixin) g).targetTypeClss() == AbstractVillagerEntity.class);
-                living.targetSelector.addGoal(3, this.setNoLoS(living, AbstractVillagerEntity.class, !canBreak || living.world.rand.nextFloat() <= 0.5, null));
+                living.targetSelector.addGoal(3, this.setNoLoS(living, AbstractVillagerEntity.class, !canBreak || living.world.rand.nextFloat() < 0.5, null));
             }
             List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(living.getType().getRegistryName());
             if (types != null)
@@ -283,21 +283,22 @@ public class EventHandler {
             living.getPersistentData().putBoolean(enchanted, true);
         }
         if (living.getPersistentData().getBoolean(modifyAttributes)) {
+            float difficulty = DifficultyData.getDifficulty(living.world, living);
             if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
-                GeneralHelperMethods.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, true);
+                GeneralHelperMethods.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, difficulty, true);
                 living.setHealth(living.getMaxHealth());
             }
             if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod)
-                GeneralHelperMethods.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, true);
+                GeneralHelperMethods.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, difficulty, true);
             if (Config.CommonConfig.speedIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, false);
+                GeneralHelperMethods.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, difficulty, false);
             if (Config.CommonConfig.knockbackIncrease != 0)
-                GeneralHelperMethods.modifyAttr(living, Attributes.KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, false);
+                GeneralHelperMethods.modifyAttr(living, Attributes.KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, difficulty, false);
             if (Config.CommonConfig.magicResIncrease != 0)
-                IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Config.CommonConfig.magicResIncrease * 0.0016f, Config.CommonConfig.magicResMax);
+                IMAttributes.apply(living, IMAttributes.Attribute.MAGIC_RES, Math.min(Config.CommonConfig.magicResIncrease * 0.0016f * difficulty, Config.CommonConfig.magicResMax));
             //GeneralHelperMethods.modifyAttr(living, IMAttributes.MAGIC_RES, Config.ServerConfig.magicResIncrease * 0.0016, Config.ServerConfig.magicResMax, false);
             if (Config.CommonConfig.projectileIncrease != 0)
-                IMAttributes.apply(living, IMAttributes.Attribute.PROJ_BOOST, Config.CommonConfig.projectileIncrease * 0.008f, Config.CommonConfig.projectileMax);
+                IMAttributes.apply(living, IMAttributes.Attribute.PROJ_BOOST, Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, 1 - Config.CommonConfig.projectileIncrease));
             //GeneralHelperMethods.modifyAttr(living, IMAttributes.PROJ_BOOST, Config.ServerConfig.projectileIncrease * 0.008, Config.ServerConfig.projectileMax, false);
             living.getPersistentData().putBoolean(modifyAttributes, false);
         }
