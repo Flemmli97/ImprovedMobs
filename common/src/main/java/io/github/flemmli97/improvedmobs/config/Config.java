@@ -75,6 +75,7 @@ public class Config {
         public static MobClassMapConfig autoTargets = new MobClassMapConfig();
         public static float difficultyBreak;
         public static float difficultySteal;
+        public static float guardianAIChance;
         public static float flyAIChance;
 
         //Equipment

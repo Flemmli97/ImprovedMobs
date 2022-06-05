@@ -105,6 +105,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<List<String>> autoTargets;
         public final CommentedJsonConfig.DoubleVal difficultyBreak;
         public final CommentedJsonConfig.DoubleVal difficultySteal;
+        public final CommentedJsonConfig.DoubleVal guardianAIChance;
         public final CommentedJsonConfig.DoubleVal flyAIChance;
 
         //Equipment
@@ -192,6 +193,7 @@ public final class ConfigSpecs {
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").defineInRange("Difficulty Break AI", 0D, 0, Double.MAX_VALUE);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").defineInRange("Difficulty Steal AI", 0D, 0, Double.MAX_VALUE);
+            this.guardianAIChance = builder.comment("Chance for mobs to be able to ride a guardian").defineInRange("Guardian Chance", 1d, 0, 1);
             this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").defineInRange("Fly Chance", 0.5, 0, 1);
 
             //builder.comment("Configs regarding mobs spawning with equipment").push("equipment");

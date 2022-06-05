@@ -81,6 +81,7 @@ public class ConfigLoader {
         Config.CommonConfig.autoTargets.readFromString(specs.autoTargets.get());
         Config.CommonConfig.difficultyBreak = specs.difficultyBreak.get().floatValue();
         Config.CommonConfig.difficultySteal = specs.difficultySteal.get().floatValue();
+        Config.CommonConfig.guardianAIChance = specs.guardianAIChance.get().floatValue();
         Config.CommonConfig.flyAIChance = specs.flyAIChance.get().floatValue();
 
         Config.CommonConfig.equipmentModBlacklist = specs.equipmentModBlacklist.get();

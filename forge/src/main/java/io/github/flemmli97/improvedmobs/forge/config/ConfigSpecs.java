@@ -89,6 +89,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.ConfigValue<List<String>> autoTargets;
         public final ForgeConfigSpec.DoubleValue difficultyBreak;
         public final ForgeConfigSpec.DoubleValue difficultySteal;
+        public final ForgeConfigSpec.DoubleValue guardianAIChance;
         public final ForgeConfigSpec.DoubleValue flyAIChance;
 
         //Equipment
@@ -180,6 +181,7 @@ public class ConfigSpecs {
             this.autoTargets = builder.comment("List for of pairs containing which mobs auto target others. Syntax is " + MobClassMapConfig.use()).define("Auto Target List", new ArrayList<>());
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").defineInRange("Difficulty Break AI", 0D, 0, Double.MAX_VALUE);
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").defineInRange("Difficulty Steal AI", 0D, 0, Double.MAX_VALUE);
+            this.guardianAIChance = builder.comment("Chance for mobs to be able to ride a guardian").defineInRange("Guardian Chance", 1d, 0, 1);
             this.flyAIChance = builder.comment("Chance for mobs to be able to ride a parrot").defineInRange("Fly Chance", 0.5, 0, 1);
             builder.pop();
 
