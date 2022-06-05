@@ -157,12 +157,12 @@ public class Utils {
 
     private static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
 
-    public static void modifyAttr(Mob living, Attribute att, double value, double max, boolean multiply) {
+    public static void modifyAttr(Mob living, Attribute att, double value, double max, float difficulty, boolean multiply) {
         AttributeInstance inst = living.getAttribute(att);
         if (inst == null || inst.getModifier(attMod) != null)
             return;
         double oldValue = inst.getBaseValue();
-        value *= DifficultyData.getDifficulty(living.level, living);
+        value *= difficulty;
         if (multiply) {
             value = max <= 0 ? value : Math.min(value, max - 1);
             value = oldValue * value;

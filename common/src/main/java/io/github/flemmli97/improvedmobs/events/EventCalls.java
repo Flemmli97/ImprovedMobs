@@ -123,7 +123,7 @@ public class EventCalls {
                 flags.canBreakBlocks = EntityFlags.FlagType.FALSE;
         }
         if (flags.canFly == EntityFlags.FlagType.UNDEF) {
-            if (mob.level.random.nextFloat() <= Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
+            if (mob.level.random.nextFloat() < Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
                 flags.canFly = EntityFlags.FlagType.TRUE;
             } else
                 flags.canFly = EntityFlags.FlagType.FALSE;
@@ -150,7 +150,7 @@ public class EventCalls {
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
             mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 15));
         }
-        if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
+        if (mob.level.random.nextFloat() < Config.CommonConfig.guardianAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
             if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof WaterBoundPathNavigation) && !(mob instanceof Slime)) {
                 mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
@@ -172,7 +172,7 @@ public class EventCalls {
         boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
         boolean aggressive;
         if ((mob instanceof NeutralMob) && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.NEUTRALAGGRO, Config.CommonConfig.neutralAggroWhitelist)) {
-            aggressive = Config.CommonConfig.neutralAggressiv != 0 && mob.level.random.nextFloat() <= Config.CommonConfig.neutralAggressiv;
+            aggressive = Config.CommonConfig.neutralAggressiv != 0 && mob.level.random.nextFloat() < Config.CommonConfig.neutralAggressiv;
             if (aggressive)
                 mob.targetSelector.addGoal(1, setNoLoS(mob, Player.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
         } else
@@ -220,20 +220,22 @@ public class EventCalls {
         }
         if (!flags.modifyAttributes) {
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
+                float difficulty = DifficultyData.getDifficulty(living.level, living);
                 if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
-                    Utils.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, true);
+                    Utils.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, difficulty, true);
                     living.setHealth(living.getMaxHealth());
                 }
                 if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod)
-                    Utils.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, true);
+                    Utils.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, difficulty, true);
                 if (Config.CommonConfig.speedIncrease != 0)
-                    Utils.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, false);
+                    Utils.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, difficulty, false);
                 if (Config.CommonConfig.knockbackIncrease != 0)
-                    Utils.modifyAttr(living, Attributes.KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, false);
+                    Utils.modifyAttr(living, Attributes.KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, difficulty, false);
                 if (Config.CommonConfig.magicResIncrease != 0)
-                    EntityFlags.get(living).magicReg = Math.min(Config.CommonConfig.magicResIncrease * 0.0016f, Config.CommonConfig.magicResMax);
+                    EntityFlags.get(living).magicReg = Math.min(Config.CommonConfig.magicResIncrease * 0.0016f * difficulty, Config.CommonConfig.magicResMax);
                 if (Config.CommonConfig.projectileIncrease != 0)
-                    EntityFlags.get(living).projMult = 1 + Math.min(Config.CommonConfig.projectileIncrease * 0.008f, Config.CommonConfig.projectileMax);
+                    EntityFlags.get(living).projMult = 1 +
+                            Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, 1 - Config.CommonConfig.projectileMax);
             }
             flags.modifyAttributes = true;
         }
