@@ -34,6 +34,7 @@ public class Utils {
 
     public static final Function<Entity, ResourceLocation> entityID = e -> PlatformUtils.INSTANCE.entities().getIDFrom(e.getType());
     public static final Function<Item, ResourceLocation> itemID = e -> PlatformUtils.INSTANCE.items().getIDFrom(e);
+    public static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
 
     public static <T> boolean isInList(T entry, List<? extends String> list, boolean reverse, Function<T, ResourceLocation> mapper) {
         if (reverse)
@@ -154,8 +155,6 @@ public class Utils {
             f /= 5.0F;
         return f;
     }
-
-    private static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
 
     public static void modifyAttr(Mob living, Attribute att, double value, double max, float difficulty, boolean multiply) {
         AttributeInstance inst = living.getAttribute(att);
