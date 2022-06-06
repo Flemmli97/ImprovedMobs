@@ -44,6 +44,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<ChatFormatting> color;
         public final CommentedJsonConfig.DoubleVal scale;
         public final CommentedJsonConfig.CommentedVal<Boolean> showDifficulty;
+        public final CommentedJsonConfig.CommentedVal<Config.DifficultyBarLocation> location;
 
         public ClientConfigVals(CommentedJsonConfig.Builder builder) {
             this.guiX = builder.defineInRange("Gui X", 5, 0, Integer.MAX_VALUE);
@@ -51,6 +52,7 @@ public final class ConfigSpecs {
             this.color = builder.comment("Textformatting codes for the display of the difficulty").define("Difficulty color", ChatFormatting.DARK_PURPLE);
             this.scale = builder.comment("Scaling of the difficulty text").defineInRange("Text Scale", 1D, 0, Double.MAX_VALUE);
             this.showDifficulty = builder.comment("Show the the difficulty text").define("Show Difficulty", true);
+            this.location = builder.comment("Relative location of the difficulty text in regards to the screen.").define("Difficulty location", Config.DifficultyBarLocation.TOPLEFT);
 
             builder.registerReloadHandler(ConfigLoader::loadClient);
         }

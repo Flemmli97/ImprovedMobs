@@ -16,6 +16,7 @@ public class ConfigLoader {
         Config.ClientConfig.color = ConfigSpecs.clientConf.color.get();
         Config.ClientConfig.scale = ConfigSpecs.clientConf.scale.get().floatValue();
         Config.ClientConfig.showDifficulty = ConfigSpecs.clientConf.showDifficulty.get();
+        Config.ClientConfig.location = ConfigSpecs.clientConf.location.get();
     }
 
     public static void loadCommon() {

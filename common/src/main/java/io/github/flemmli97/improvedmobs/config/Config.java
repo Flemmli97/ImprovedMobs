@@ -21,6 +21,7 @@ public class Config {
         public static ChatFormatting color = ChatFormatting.DARK_PURPLE;
         public static float scale = 1;
         public static boolean showDifficulty;
+        public static DifficultyBarLocation location = DifficultyBarLocation.TOPLEFT;
 
         public static boolean showDifficultyServerSync;
 
@@ -151,5 +152,12 @@ public class Config {
         GLOBAL,
         PLAYERMAX,
         PLAYERMEAN
+    }
+
+    public enum DifficultyBarLocation {
+        TOPRIGHT,
+        TOPLEFT,
+        BOTTOMRIGHT,
+        BOTTOMLEFT
     }
 }

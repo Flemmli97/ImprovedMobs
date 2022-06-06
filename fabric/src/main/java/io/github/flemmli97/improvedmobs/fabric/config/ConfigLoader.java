@@ -18,6 +18,7 @@ public class ConfigLoader {
         Config.ClientConfig.color = specs.color.get();
         Config.ClientConfig.scale = specs.scale.get().floatValue();
         Config.ClientConfig.showDifficulty = specs.showDifficulty.get();
+        Config.ClientConfig.location = specs.location.get();
         return InteractionResult.CONSUME;
     }
 

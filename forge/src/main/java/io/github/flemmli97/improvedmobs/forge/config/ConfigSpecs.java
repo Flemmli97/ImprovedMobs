@@ -28,6 +28,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.EnumValue<ChatFormatting> color;
         public final ForgeConfigSpec.DoubleValue scale;
         public final ForgeConfigSpec.BooleanValue showDifficulty;
+        public final ForgeConfigSpec.EnumValue<Config.DifficultyBarLocation> location;
 
         public ClientConfigVals(ForgeConfigSpec.Builder builder) {
             builder/*.translation("improvedmobs.gui")*/.comment("Gui Configs").push("gui");
@@ -36,6 +37,7 @@ public class ConfigSpecs {
             this.color = builder.comment("Textformatting codes for the display of the difficulty").defineEnum("Difficulty color", ChatFormatting.DARK_PURPLE);
             this.scale = builder.comment("Scaling of the difficulty text").defineInRange("Text Scale", 1D, 0, Double.MAX_VALUE);
             this.showDifficulty = builder.comment("Show the the difficulty text").define("Show Difficulty", true);
+            this.location = builder.comment("Relative location of the difficulty text in regards to the screen.").defineEnum("Difficulty location", Config.DifficultyBarLocation.TOPLEFT);
             builder.pop();
         }
     }

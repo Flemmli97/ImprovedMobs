@@ -32,9 +32,19 @@ public class ClientEvents {
         float scale = Config.ClientConfig.scale;
         stack.scale(scale, scale, scale);
         int width = font.width(txt);
-        GuiComponent.blit(stack, Config.ClientConfig.guiX, Config.ClientConfig.guiY, 0, 0, 4 + width, 17, 256, 256);
-        GuiComponent.blit(stack, Config.ClientConfig.guiX + 4 + width, Config.ClientConfig.guiY, 183, 0, 3, 17, 256, 256);
-        font.draw(stack, new TranslatableComponent("improvedmobs.overlay.difficulty", String.format(java.util.Locale.US, "%.1f", clientDifficulty)).withStyle(Config.ClientConfig.color), Config.ClientConfig.guiX + 4, Config.ClientConfig.guiY + 5, 0);
+        int x = Config.ClientConfig.guiX;
+        int y = Config.ClientConfig.guiY;
+        switch (Config.ClientConfig.location) {
+            case TOPRIGHT -> x = Minecraft.getInstance().getWindow().getGuiScaledWidth() - 7 - width - Config.ClientConfig.guiX;
+            case BOTTOMRIGHT -> {
+                x = Minecraft.getInstance().getWindow().getGuiScaledWidth() - 7 - width - Config.ClientConfig.guiX;
+                y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 17 - Config.ClientConfig.guiY;
+            }
+            case BOTTOMLEFT -> y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 17 - Config.ClientConfig.guiY;
+        }
+        GuiComponent.blit(stack, x, y, 0, 0, 4 + width, 17, 256, 256);
+        GuiComponent.blit(stack, x + 4 + width, y, 183, 0, 3, 17, 256, 256);
+        font.draw(stack, new TranslatableComponent("improvedmobs.overlay.difficulty", String.format(java.util.Locale.US, "%.1f", clientDifficulty)).withStyle(Config.ClientConfig.color), x + 4, y + 5, 0);
         stack.popPose();
     }
 
