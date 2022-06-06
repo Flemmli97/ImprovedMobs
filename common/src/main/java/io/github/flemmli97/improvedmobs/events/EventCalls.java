@@ -235,7 +235,7 @@ public class EventCalls {
                     EntityFlags.get(living).magicReg = Math.min(Config.CommonConfig.magicResIncrease * 0.0016f * difficulty, Config.CommonConfig.magicResMax);
                 if (Config.CommonConfig.projectileIncrease != 0)
                     EntityFlags.get(living).projMult = 1 +
-                            Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, 1 - Config.CommonConfig.projectileMax);
+                            (Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, Config.CommonConfig.projectileMax - 1));
             }
             flags.modifyAttributes = true;
         }
