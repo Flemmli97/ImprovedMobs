@@ -2,10 +2,13 @@ package com.flemmli97.improvedmobs.ai;
 
 import com.flemmli97.improvedmobs.ImprovedMobs;
 import com.flemmli97.improvedmobs.mixin.MobEntityMixin;
+import com.flemmli97.improvedmobs.utils.GeneralHelperMethods;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.MobEntity;
+import net.minecraft.entity.ai.attributes.AttributeModifier;
+import net.minecraft.entity.ai.attributes.Attributes;
 import net.minecraft.entity.ai.goal.Goal;
 import net.minecraft.entity.passive.ParrotEntity;
 import net.minecraft.pathfinding.FlyingPathNavigator;
@@ -20,7 +23,7 @@ public class FlyRidingGoal extends Goal {
 
     public static final ResourceLocation EMPTY = new ResourceLocation(ImprovedMobs.MODID, "empty");
     protected final MobEntity living;
-    private int wait = 0, pathCheckWait, flyDelay, targetDelay;
+    private int iddle, pathCheckWait, flyDelay, targetDelay;
     private boolean start;
 
     private PathNavigator flyer;
@@ -43,16 +46,15 @@ public class FlyRidingGoal extends Goal {
         LivingEntity target = this.living.getAttackTarget();
         if (target == null || !target.isAlive()) {
             this.targetDelay = 0;
-        } else if (!this.living.isPassenger() && ++this.targetDelay > 60) {
-            if (this.wait >= 80 && --this.pathCheckWait <= 0) {
+        } else if (!this.living.isPassenger() && ++this.targetDelay > 40) {
+            if (--this.pathCheckWait <= 0) {
+                this.pathCheckWait = 25;
                 if (this.checkFlying()) {
-                    this.wait = 0;
                     this.targetDelay = 0;
+                    this.iddle = 0;
                     return true;
                 }
-                this.pathCheckWait = 25;
             }
-            this.wait++;
         }
         return false;
     }
@@ -61,10 +63,10 @@ public class FlyRidingGoal extends Goal {
     public boolean shouldContinueExecuting() {
         if (this.living.getRidingEntity() instanceof ParrotEntity) {
             if (this.living.getAttackTarget() == null)
-                this.wait++;
+                this.iddle++;
             else
-                this.wait = 0;
-            return this.wait < 100;
+                this.iddle = 0;
+            return this.iddle < 100;
         }
         return false;
     }
@@ -73,7 +75,7 @@ public class FlyRidingGoal extends Goal {
     public void resetTask() {
         this.living.stopRiding();
         this.living.addPotionEffect(new EffectInstance(Effects.SLOW_FALLING, 200, 1));
-        this.wait = 0;
+        this.iddle = 0;
         this.targetDelay = 0;
     }
 
@@ -89,6 +91,11 @@ public class FlyRidingGoal extends Goal {
                 ParrotEntity boat = EntityType.PARROT.create(this.living.world);
                 BlockPos pos = this.living.getPosition();
                 boat.setLocationAndAngles(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.rotationYaw, this.living.rotationPitch);
+                AttributeModifier mod = this.living.getAttribute(Attributes.MOVEMENT_SPEED)
+                        .getModifier(GeneralHelperMethods.attMod);
+                if (mod != null)
+                    boat.getAttribute(Attributes.FLYING_SPEED)
+                            .applyPersistentModifier(new AttributeModifier(GeneralHelperMethods.attMod, "ride.fly.boost", mod.getAmount() * 1.2, AttributeModifier.Operation.ADDITION));
                 if (this.living.world.hasNoCollisions(boat)) {
                     ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
                     boat.getPersistentData().putBoolean(ImprovedMobs.waterRiding, true);
@@ -115,6 +122,9 @@ public class FlyRidingGoal extends Goal {
             return false;
         Path path = this.living.getNavigator().getPath();
         if (path == null || (path.isFinished() && !path.reachesTarget())) {
+            Path ground = this.living.getNavigator().pathfind(this.living.getAttackTarget(), 1);
+            if (ground != null && ground.reachesTarget())
+                return false;
             Path flyer = this.flyer.pathfind(target, 1);
             double dist = path == null ? this.living.getPosition().manhattanDistance(target.getPosition()) : path.func_224769_l();
             return flyer != null && (flyer.reachesTarget() || flyer.func_224769_l() < dist);
@@ -128,6 +138,17 @@ public class FlyRidingGoal extends Goal {
         LivingEntity target = this.living.getAttackTarget();
         if (target != null && this.living.getDistanceSq(target.getPosX(), target.getPosY(), target.getPosZ()) <= this.getAttackReachSqr(target)) {
             return riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
+        }
+        PathNavigator trueNav = ((MobEntityMixin) this.living).getTrueNavigator();
+        if (target != null) {
+            if (this.living.getDistanceSq(target.getPosX(), target.getPosY(), target.getPosZ()) <= this.getAttackReachSqr(target))
+                return riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
+            if (--this.pathCheckWait > 0)
+                return false;
+            Path ground = trueNav.pathfind(target, 1);
+            this.pathCheckWait = 25;
+            if (ground != null && ground.reachesTarget())
+                return riding.world.getBlockState(riding.getPosition().down()).getMaterial().isSolid();
         }
         return false;
     }

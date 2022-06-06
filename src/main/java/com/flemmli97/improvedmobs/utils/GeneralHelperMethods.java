@@ -28,6 +28,8 @@ import java.util.UUID;
 
 public class GeneralHelperMethods {
 
+    public static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
+
     public static boolean isMobInList(MobEntity living, List<? extends String> list, boolean reverse) {
         if (reverse)
             return !isMobInList(living, list, false);
@@ -167,8 +169,6 @@ public class GeneralHelperMethods {
             return getBreakSpeed(entityLiving, main, state) / hardness / 100F;
         }
     }
-
-    private static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
 
     public static void modifyAttr(MobEntity living, Attribute att, double value, double max, float difficulty, boolean multiply) {
         ModifiableAttributeInstance inst = living.getAttribute(att);
