@@ -1,3 +1,10 @@
+Improved Mobs 1.10.13
+================
+- Fix projectile dmg mult not working. This time for real
+- Make parrot riding ai better
+- Config Difficulty location:  
+  Allow difficulty bar to be placed relative to screen
+
 Improved Mobs 1.10.12
 ================
 - Fix unlimited max value for projectile dmg bonus not working
