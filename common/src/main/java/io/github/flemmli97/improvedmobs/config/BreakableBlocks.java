@@ -65,7 +65,10 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     private static void addBlocks(String s, Set<String> list, Set<HolderSet<Block>> tags) {
         if (s.contains(":")) {
             Optional<HolderSet.Named<Block>> tag = Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(s)));
-            tag.ifPresent(tags::add);
+            if(tag.isPresent())
+                tags.add(tag.get());
+            else
+                list.add(s);
         } else {
             Class<?> clss = null;
             try {

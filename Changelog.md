@@ -1,3 +1,7 @@
+Improved Mobs 1.10.14
+================
+- Fix adding blocks to breaklist not working
+
 Improved Mobs 1.10.13
 ================
 - Fix projectile dmg mult not working. This time for real
