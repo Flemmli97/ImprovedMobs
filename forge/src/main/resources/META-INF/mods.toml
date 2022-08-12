@@ -16,7 +16,7 @@ mandatory=true
 versionRange="[1.19,)"
 ordering="NONE"
 side="BOTH"
-[[dependencies.mobbattle]]
+[[dependencies.improvedmobs]]
 modId="forge"
 mandatory=true
 versionRange="[41.1.0,)"

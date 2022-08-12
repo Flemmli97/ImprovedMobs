@@ -34,6 +34,7 @@
   "accessWidener": "improvedmobs.accesswidener",
   "depends": {
     "fabric": "*",
-    "minecraft": ">=1.19"
+    "minecraft": ">=1.19",
+    "tenshilib": ">=1.19-1.6.9"
   }
 }
