@@ -8,8 +8,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiComponent;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Locale;
@@ -28,7 +28,7 @@ public class ClientEvents {
         RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
         RenderSystem.setShaderTexture(0, tex);
         Font font = Minecraft.getInstance().font;
-        MutableComponent txt = new TranslatableComponent("improvedmobs.overlay.difficulty", String.format(Locale.US, "%.1f", clientDifficulty)).withStyle(Config.ClientConfig.color);
+        MutableComponent txt = Component.translatable("improvedmobs.overlay.difficulty", String.format(Locale.US, "%.1f", clientDifficulty)).withStyle(Config.ClientConfig.color);
         float scale = Config.ClientConfig.scale;
         stack.scale(scale, scale, scale);
         int width = font.width(txt);
@@ -44,7 +44,7 @@ public class ClientEvents {
         }
         GuiComponent.blit(stack, x, y, 0, 0, 4 + width, 17, 256, 256);
         GuiComponent.blit(stack, x + 4 + width, y, 183, 0, 3, 17, 256, 256);
-        font.draw(stack, new TranslatableComponent("improvedmobs.overlay.difficulty", String.format(java.util.Locale.US, "%.1f", clientDifficulty)).withStyle(Config.ClientConfig.color), x + 4, y + 5, 0);
+        font.draw(stack, Component.translatable("improvedmobs.overlay.difficulty", String.format(java.util.Locale.US, "%.1f", clientDifficulty)).withStyle(Config.ClientConfig.color), x + 4, y + 5, 0);
         stack.popPose();
     }
 

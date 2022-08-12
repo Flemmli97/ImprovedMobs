@@ -3,6 +3,7 @@ package io.github.flemmli97.improvedmobs.config;
 import io.github.flemmli97.tenshilib.api.config.ItemWrapper;
 import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.Weight;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
@@ -10,7 +11,6 @@ import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class Config {
 
@@ -120,7 +120,7 @@ public class Config {
         public static float projectileIncrease;
         public static float projectileMax;
 
-        public static ItemStack getRandomBreakingItem(Random rand) {
+        public static ItemStack getRandomBreakingItem(RandomSource rand) {
             int total = WeightedRandom.getTotalWeight(breakingItem);
             if (breakingItem.size() == 0 || total <= 0)
                 return ItemStack.EMPTY;

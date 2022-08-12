@@ -1,14 +1,11 @@
 package io.github.flemmli97.improvedmobs.fabric.events;
 
-import com.mojang.brigadier.CommandDispatcher;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
-import io.github.flemmli97.improvedmobs.commands.IMCommand;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.fabric.config.ConfigLoader;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -47,10 +44,6 @@ public class EventHandler {
     public static void worldLoad(MinecraftServer server, ServerLevel world) {
         if (world.dimension() == Level.OVERWORLD)
             ConfigLoader.serverInit(world);
-    }
-
-    public static void registerCommand(CommandDispatcher<CommandSourceStack> dispatcher, boolean dedicated) {
-        IMCommand.register(dispatcher);
     }
 
     public static void onEntityLoad(Entity entity, ServerLevel world) {

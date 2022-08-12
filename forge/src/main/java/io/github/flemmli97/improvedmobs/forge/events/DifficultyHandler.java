@@ -8,29 +8,29 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class DifficultyHandler {
 
     @SubscribeEvent
-    public void worldJoin(EntityJoinWorldEvent event) {
+    public void worldJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && !event.getEntity().level.isClientSide) {
             EventCalls.worldJoin(player, player.getServer());
         }
     }
 
     @SubscribeEvent
-    public void increaseDifficulty(TickEvent.WorldTickEvent e) {
-        if (e.phase == TickEvent.Phase.END && e.world instanceof ServerLevel world && world.dimension() == Level.OVERWORLD) {
+    public void increaseDifficulty(TickEvent.LevelTickEvent e) {
+        if (e.phase == TickEvent.Phase.END && e.level instanceof ServerLevel world && world.dimension() == Level.OVERWORLD) {
             EventCalls.increaseDifficulty(world);
         }
     }
 
     @SubscribeEvent
     public void readOnDeath(PlayerEvent.Clone event) {
-        if (event.getPlayer() instanceof ServerPlayer serverPlayer) {
+        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             boolean rev = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) event.getOriginal()).isPresent();
             if (!rev)
                 event.getOriginal().reviveCaps();

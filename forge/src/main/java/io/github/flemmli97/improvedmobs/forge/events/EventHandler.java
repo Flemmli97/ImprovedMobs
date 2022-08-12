@@ -16,15 +16,15 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.RegisterCommandsEvent;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.event.world.ExplosionEvent;
-import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class EventHandler {
@@ -44,13 +44,13 @@ public class EventHandler {
     }
 
     /**
-     * Move the init of default config to {@link WorldEvent.Load} cause {@link ServerStartingEvent} is too late.
+     * Move the init of default config to {@link LevelEvent.Load} cause {@link ServerStartingEvent} is too late.
      * Entities are already loaded at that point
      */
     @SubscribeEvent
-    public void worldLoad(WorldEvent.Load event) {
-        if (event.getWorld() instanceof ServerLevel && ((ServerLevel) event.getWorld()).dimension() == Level.OVERWORLD) {
-            ConfigLoader.serverInit((ServerLevel) event.getWorld());
+    public void worldLoad(LevelEvent.Load event) {
+        if (event.getLevel() instanceof ServerLevel serverLevel && serverLevel.dimension() == Level.OVERWORLD) {
+            ConfigLoader.serverInit(serverLevel);
         }
     }
 
@@ -60,7 +60,7 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void onEntityLoad(EntityJoinWorldEvent e) {
+    public void onEntityLoad(EntityJoinLevelEvent e) {
         if (e.getEntity() instanceof Mob mob) {
             EventCalls.onEntityLoad(mob);
         }
@@ -68,28 +68,28 @@ public class EventHandler {
 
     @SubscribeEvent
     public void hurtEvent(LivingHurtEvent e) {
-        e.setAmount(EventCalls.hurtEvent(e.getEntityLiving(), e.getSource(), e.getAmount()));
+        e.setAmount(EventCalls.hurtEvent(e.getEntity(), e.getSource(), e.getAmount()));
     }
 
     @SubscribeEvent
-    public void removeBoats(LivingEvent.LivingUpdateEvent event) {
-        EventCalls.entityTick(event.getEntityLiving());
+    public void removeBoats(LivingEvent.LivingTickEvent event) {
+        EventCalls.entityTick(event.getEntity());
     }
 
     @SubscribeEvent
     public void attackEvent(LivingAttackEvent e) {
-        if (EventCalls.onAttackEvent(e.getEntityLiving(), e.getSource()))
+        if (EventCalls.onAttackEvent(e.getEntity(), e.getSource()))
             e.setCanceled(true);
     }
 
     @SubscribeEvent
     public void openTile(PlayerInteractEvent.RightClickBlock e) {
-        EventCalls.openTile(e.getPlayer(), e.getPos());
+        EventCalls.openTile(e.getEntity(), e.getPos());
     }
 
     @SubscribeEvent
     public void equipPet(PlayerInteractEvent.EntityInteract e) {
-        if (EventCalls.equipPet(e.getPlayer(), e.getHand(), e.getTarget()))
+        if (EventCalls.equipPet(e.getEntity(), e.getHand(), e.getTarget()))
             e.setCanceled(true);
     }
 

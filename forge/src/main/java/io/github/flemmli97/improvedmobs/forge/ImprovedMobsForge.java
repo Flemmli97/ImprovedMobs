@@ -42,7 +42,7 @@ public class ImprovedMobsForge {
         modBus.addListener(ImprovedMobsForge::conf);
         modBus.addListener(TileCapProvider::register);
         if (FMLEnvironment.dist == Dist.CLIENT)
-            modBus.addListener(ClientEventHandler::setup);
+            ClientEventHandler.setup();
         MinecraftForge.EVENT_BUS.register(new EventHandler());
     }
 

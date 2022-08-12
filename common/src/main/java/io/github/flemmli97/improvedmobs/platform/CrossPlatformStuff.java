@@ -6,6 +6,7 @@ import io.github.flemmli97.tenshilib.platform.InitUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.BowItem;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.Random;
 
 public interface CrossPlatformStuff {
 
@@ -28,7 +28,7 @@ public interface CrossPlatformStuff {
 
     boolean canLoot(BlockEntity blockEntity);
 
-    ItemStack lootRandomItem(BlockEntity blockEntity, Random rand);
+    ItemStack lootRandomItem(BlockEntity blockEntity, RandomSource rand);
 
     boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos);
 

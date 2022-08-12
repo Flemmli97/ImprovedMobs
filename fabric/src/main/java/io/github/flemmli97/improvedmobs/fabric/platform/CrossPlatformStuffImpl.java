@@ -14,6 +14,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -28,7 +29,6 @@ import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
 import java.util.Optional;
-import java.util.Random;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
@@ -48,7 +48,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public ItemStack lootRandomItem(BlockEntity blockEntity, Random rand) {
+    public ItemStack lootRandomItem(BlockEntity blockEntity, RandomSource rand) {
         if (blockEntity instanceof Container inv) {
             try {
                 if (!inv.isEmpty()) {

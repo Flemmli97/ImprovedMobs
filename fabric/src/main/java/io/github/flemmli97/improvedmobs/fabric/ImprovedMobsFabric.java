@@ -1,6 +1,7 @@
 package io.github.flemmli97.improvedmobs.fabric;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.commands.IMCommand;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
@@ -9,7 +10,7 @@ import io.github.flemmli97.improvedmobs.fabric.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -34,7 +35,7 @@ public class ImprovedMobsFabric implements ModInitializer {
     public void onInitialize() {
         ServerTickEvents.END_WORLD_TICK.register(EventCalls::increaseDifficulty);
         ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
-        CommandRegistrationCallback.EVENT.register(EventHandler::registerCommand);
+        CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> IMCommand.register(dispatcher));
         ServerEntityEvents.ENTITY_LOAD.register(EventHandler::onEntityLoad);
         UseBlockCallback.EVENT.register(EventHandler::openTile);
         UseEntityCallback.EVENT.register(EventHandler::equipPet);

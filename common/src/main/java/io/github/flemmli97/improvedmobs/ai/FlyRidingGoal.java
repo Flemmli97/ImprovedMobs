@@ -139,7 +139,7 @@ public class FlyRidingGoal extends Goal {
         LivingEntity target = this.living.getTarget();
         PathNavigation trueNav = ((MobEntityMixin) this.living).getTrueNavigator();
         if (target != null) {
-            if (BehaviorUtils.isWithinMeleeAttackRange(this.living, target))
+            if (BehaviorUtils.isWithinAttackRange(this.living, target, 0))
                 return riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid();
             if (--this.pathCheckWait > 0)
                 return false;
