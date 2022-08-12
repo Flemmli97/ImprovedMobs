@@ -1,6 +1,7 @@
 Improved Mobs 1.10.14
 ================
 - Fix adding blocks to breaklist not working
+- Update to 1.19
 
 Improved Mobs 1.10.13
 ================
