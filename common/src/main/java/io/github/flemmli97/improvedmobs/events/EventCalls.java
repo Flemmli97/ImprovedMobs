@@ -232,7 +232,7 @@ public class EventCalls {
                 if (Config.CommonConfig.knockbackIncrease != 0)
                     Utils.modifyAttr(living, Attributes.KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, difficulty, false);
                 if (Config.CommonConfig.magicResIncrease != 0)
-                    EntityFlags.get(living).magicReg = Math.min(Config.CommonConfig.magicResIncrease * 0.0016f * difficulty, Config.CommonConfig.magicResMax);
+                    EntityFlags.get(living).magicRes = Math.min(Config.CommonConfig.magicResIncrease * 0.0016f * difficulty, Config.CommonConfig.magicResMax);
                 if (Config.CommonConfig.projectileIncrease != 0)
                     EntityFlags.get(living).projMult = 1 +
                             (Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, Config.CommonConfig.projectileMax - 1));
@@ -246,7 +246,7 @@ public class EventCalls {
             return dmg * (EntityFlags.get(source.getEntity()).projMult);
         if (entity instanceof Monster) {
             if (source.isMagic())
-                return dmg * (1 - EntityFlags.get(entity).magicReg);
+                return dmg * (1 - EntityFlags.get(entity).magicRes);
         }
         return dmg;
     }
