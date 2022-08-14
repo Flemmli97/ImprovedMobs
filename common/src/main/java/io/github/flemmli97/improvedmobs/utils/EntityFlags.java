@@ -21,7 +21,7 @@ public class EntityFlags {
 
     private int shieldCooldown;
 
-    public float magicReg, projMult;
+    public float magicRes, projMult = 1;
 
     public void disableShield() {
         this.shieldCooldown = 120;
@@ -37,7 +37,7 @@ public class EntityFlags {
         tag.putBoolean("GearEnchanted", this.enchantGear);
         tag.putBoolean("IsThrown", this.isThrownEntity);
         tag.putBoolean("IsRideSummoned", this.rideSummon);
-        tag.putFloat("MagicRes", this.magicReg);
+        tag.putFloat("MagicRes", this.magicRes);
         tag.putFloat("ProjBoost", this.projMult);
         return tag;
     }
@@ -51,7 +51,7 @@ public class EntityFlags {
         this.enchantGear = nbt.getBoolean("GearEnchanted");
         this.isThrownEntity = nbt.getBoolean("IsThrown");
         this.rideSummon = nbt.getBoolean("IsRideSummoned");
-        this.magicReg = nbt.getFloat("MagicRes");
+        this.magicRes = nbt.getFloat("MagicRes");
         this.projMult = nbt.getFloat("ProjBoost");
     }
 
