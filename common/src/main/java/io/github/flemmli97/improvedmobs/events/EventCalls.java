@@ -116,21 +116,21 @@ public class EventCalls {
         }
         boolean mobGriefing = mob.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
         if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEF) {
-            if (DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && mob.level.random.nextFloat() < Config.CommonConfig.breakerChance
+            if (DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.breakerChance
                     && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
                 flags.canBreakBlocks = EntityFlags.FlagType.TRUE;
             } else
                 flags.canBreakBlocks = EntityFlags.FlagType.FALSE;
         }
         if (flags.canFly == EntityFlags.FlagType.UNDEF) {
-            if (mob.level.random.nextFloat() < Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
+            if (mob.getRandom().nextFloat() < Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
                 flags.canFly = EntityFlags.FlagType.TRUE;
             } else
                 flags.canFly = EntityFlags.FlagType.FALSE;
         }
         if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
             ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
-                if (mob.level.random.nextFloat() < 0.7) {
+                if (mob.getRandom().nextFloat() < 0.7) {
                     ((TargetGoalMixin) g).setShouldCheckSight(false);
                     ((NearestTargetGoalMixin) g).getTargetEntitySelector().ignoreLineOfSight();
                 }
@@ -150,7 +150,7 @@ public class EventCalls {
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
             mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 15));
         }
-        if (mob.level.random.nextFloat() < Config.CommonConfig.guardianAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
+        if (mob.getRandom().nextFloat() < Config.CommonConfig.guardianAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
             if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof WaterBoundPathNavigation) && !(mob instanceof Slime)) {
                 mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
@@ -172,20 +172,20 @@ public class EventCalls {
         boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
         boolean aggressive;
         if ((mob instanceof NeutralMob) && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.NEUTRALAGGRO, Config.CommonConfig.neutralAggroWhitelist)) {
-            aggressive = Config.CommonConfig.neutralAggressiv != 0 && mob.level.random.nextFloat() < Config.CommonConfig.neutralAggressiv;
+            aggressive = Config.CommonConfig.neutralAggressiv != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.neutralAggressiv;
             if (aggressive)
-                mob.targetSelector.addGoal(1, setNoLoS(mob, Player.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
+                mob.targetSelector.addGoal(1, setNoLoS(mob, Player.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, null));
         } else
             aggressive = true;
         if (villager && aggressive) {
             ((IGoalModifier) mob.targetSelector).goalRemovePredicate(g -> g instanceof NearestTargetGoalMixin target && target.targetTypeClss() == AbstractVillager.class);
-            mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
+            mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, null));
         }
         List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(PlatformUtils.INSTANCE.entities().getIDFrom(mob.getType()));
         if (types != null)
-            mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
+            mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, (l) -> types.contains(l.getType())));
         if (mob instanceof PathfinderMob pathfinderMob && DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultySteal && mobGriefing
-                && Config.CommonConfig.stealerChance != 0 && mob.level.random.nextFloat() < Config.CommonConfig.stealerChance
+                && Config.CommonConfig.stealerChance != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.stealerChance
                 && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
             pathfinderMob.goalSelector.addGoal(5, new StealGoal(pathfinderMob));
         }

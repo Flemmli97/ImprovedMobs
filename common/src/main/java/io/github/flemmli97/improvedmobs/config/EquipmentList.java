@@ -57,7 +57,7 @@ public class EquipmentList {
         WeightedItemstackList eq = equips.get(slot);
         if (eq == null || eq.list.isEmpty() || eq.getTotalWeight(difficulty) <= 0)
             return ItemStack.EMPTY;
-        int index = e.level.random.nextInt(eq.getTotalWeight(difficulty));
+        int index = e.getRandom().nextInt(eq.getTotalWeight(difficulty));
         for (WeightedItemstack entry : eq.list) {
             if ((index -= entry.getWeight(difficulty)) >= 0) continue;
             return entry.getItem();

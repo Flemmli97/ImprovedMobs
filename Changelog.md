@@ -1,3 +1,7 @@
+Improved Mobs 1.10.16
+================
+- Use entities random instead of the levels which should fix random crashes with it
+
 Improved Mobs 1.10.15
 ================
 - Fix projectiles doing no dmg if projectile increase is disabled
