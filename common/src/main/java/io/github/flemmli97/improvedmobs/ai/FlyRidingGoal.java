@@ -46,7 +46,7 @@ public class FlyRidingGoal extends Goal {
             return true;
         }
         LivingEntity target = this.living.getTarget();
-        if (target == null || !target.isAlive()) {
+        if (target == null || !target.isAlive() || !this.living.isWithinRestriction(target.blockPosition())) {
             this.targetDelay = 0;
         } else if (!this.living.isPassenger() && ++this.targetDelay > 40) {
             if (--this.pathCheckWait <= 0) {
