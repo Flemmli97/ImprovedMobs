@@ -2,9 +2,12 @@ package io.github.flemmli97.improvedmobs.utils;
 
 import io.github.flemmli97.improvedmobs.mixinhelper.IEntityData;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
 public class EntityFlags {
+
+    public static final String TAG_ID = "IMFlags";
 
     public boolean ladderClimber;
 
@@ -14,7 +17,7 @@ public class EntityFlags {
 
     public boolean modifyArmor, modifyHeldItems, modifyAttributes, enchantGear;
 
-    public boolean isThrownEntity, rideSummon;
+    public boolean isThrownEntity;
 
     public FlagType canBreakBlocks = FlagType.UNDEF;
     public FlagType canFly = FlagType.UNDEF;
@@ -22,6 +25,8 @@ public class EntityFlags {
     private int shieldCooldown;
 
     public float magicRes, projMult = 1;
+
+    public ResourceLocation serverSideEntityID;
 
     public void disableShield() {
         this.shieldCooldown = 120;
@@ -36,7 +41,6 @@ public class EntityFlags {
         tag.putBoolean("ModifiedAttributes", this.modifyAttributes);
         tag.putBoolean("GearEnchanted", this.enchantGear);
         tag.putBoolean("IsThrown", this.isThrownEntity);
-        tag.putBoolean("IsRideSummoned", this.rideSummon);
         tag.putFloat("MagicRes", this.magicRes);
         tag.putFloat("ProjBoost", this.projMult);
         return tag;
@@ -50,9 +54,10 @@ public class EntityFlags {
         this.modifyAttributes = nbt.getBoolean("ModifiedAttributes");
         this.enchantGear = nbt.getBoolean("GearEnchanted");
         this.isThrownEntity = nbt.getBoolean("IsThrown");
-        this.rideSummon = nbt.getBoolean("IsRideSummoned");
         this.magicRes = nbt.getFloat("MagicRes");
         this.projMult = nbt.getFloat("ProjBoost");
+        if (nbt.contains("ServerSideEntityID"))
+            this.serverSideEntityID = new ResourceLocation(nbt.getString("ServerSideEntityID"));
     }
 
     public boolean isShieldDisabled() {

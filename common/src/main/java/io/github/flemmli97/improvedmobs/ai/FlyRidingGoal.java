@@ -1,29 +1,21 @@
 package io.github.flemmli97.improvedmobs.ai;
 
-import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.entities.FlyingSummonEntity;
 import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
-import io.github.flemmli97.improvedmobs.utils.EntityFlags;
-import io.github.flemmli97.improvedmobs.utils.Utils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.animal.Parrot;
 import net.minecraft.world.level.pathfinder.Path;
 
 public class FlyRidingGoal extends Goal {
 
-    public static final ResourceLocation EMPTY = new ResourceLocation(ImprovedMobs.MODID, "empty");
     protected final Mob living;
     private int iddle, pathCheckWait, flyDelay, targetDelay;
     private boolean start;
@@ -42,11 +34,11 @@ public class FlyRidingGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (this.living.getVehicle() instanceof Parrot) {
+        if (this.living.getVehicle() instanceof FlyingSummonEntity) {
             return true;
         }
         LivingEntity target = this.living.getTarget();
-        if (target == null || !target.isAlive()) {
+        if (target == null || !target.isAlive() || !this.living.isWithinRestriction(target.blockPosition())) {
             this.targetDelay = 0;
         } else if (!this.living.isPassenger() && ++this.targetDelay > 40) {
             if (--this.pathCheckWait <= 0) {
@@ -63,7 +55,7 @@ public class FlyRidingGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (this.living.getVehicle() instanceof Parrot) {
+        if (this.living.getVehicle() instanceof FlyingSummonEntity) {
             if (this.living.getTarget() == null)
                 this.iddle++;
             else
@@ -90,17 +82,10 @@ public class FlyRidingGoal extends Goal {
     public void tick() {
         if (this.start) {
             if (!this.living.isPassenger()) {
-                Parrot boat = EntityType.PARROT.create(this.living.level);
+                FlyingSummonEntity boat = new FlyingSummonEntity(this.living.level);
                 BlockPos pos = this.living.blockPosition();
                 boat.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.getYRot(), this.living.getXRot());
-                AttributeModifier mod = this.living.getAttribute(Attributes.MOVEMENT_SPEED)
-                        .getModifier(Utils.attMod);
-                if (mod != null)
-                    boat.getAttribute(Attributes.FLYING_SPEED)
-                            .addPermanentModifier(new AttributeModifier(Utils.attMod, "ride.fly.boost", mod.getAmount() * 1.2, AttributeModifier.Operation.ADDITION));
-                if (this.living.level.noCollision(boat)) {
-                    ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
-                    EntityFlags.get(boat).rideSummon = true;
+                if (boat.doesntCollideWithRidden(this.living)) {
                     this.living.level.addFreshEntity(boat);
                     this.living.startRiding(boat);
                     this.flyDelay = 0;
@@ -109,7 +94,7 @@ public class FlyRidingGoal extends Goal {
             this.start = false;
         }
         Entity entity = this.living.getVehicle();
-        if (!(entity instanceof Parrot) || !entity.isAlive())
+        if (!(entity instanceof FlyingSummonEntity) || !entity.isAlive())
             return;
         if (++this.flyDelay >= 40 && this.isOnLand(entity))
             this.living.stopRiding();
