@@ -50,6 +50,8 @@ public class ConfigLoader {
         Config.CommonConfig.debugPath = ConfigSpecs.commonConf.debugPath.get();
 
         Config.CommonConfig.useScalingHealthMod = ConfigSpecs.commonConf.useScalingHealthMod.get() && ModList.get().isLoaded("scalinghealth");
+        Config.CommonConfig.usePlayerEXMod = ConfigSpecs.commonConf.usePlayerEXMod.get() && ModList.get().isLoaded("playerex");
+        Config.CommonConfig.useLevelZMod = ConfigSpecs.commonConf.useLevelZMod.get() && ModList.get().isLoaded("levelz");
 
         Config.CommonConfig.breakableBlocks.readFromString(ConfigSpecs.commonConf.breakableBlocks.get());
         Config.CommonConfig.breakingAsBlacklist = ConfigSpecs.commonConf.breakingAsBlacklist.get();

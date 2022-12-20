@@ -54,6 +54,8 @@ public class ConfigLoader {
         Config.CommonConfig.debugPath = specs.debugPath.get();
 
         Config.CommonConfig.useScalingHealthMod = specs.useScalingHealthMod.get() && FabricLoader.getInstance().isModLoaded("scalinghealth");
+        Config.CommonConfig.usePlayerEXMod = specs.usePlayerEXMod.get() && FabricLoader.getInstance().isModLoaded("playerex");
+        Config.CommonConfig.useLevelZMod = specs.useLevelZMod.get() && FabricLoader.getInstance().isModLoaded("levelz");
 
         Config.CommonConfig.breakableBlocks.readFromString(specs.breakableBlocks.get());
         Config.CommonConfig.breakingAsBlacklist = specs.breakingAsBlacklist.get();

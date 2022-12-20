@@ -8,14 +8,15 @@ import java.util.function.Supplier;
 
 public class PacketConfig {
 
-    private final boolean scalingHealth;
+    private final boolean showDifficulty;
 
     private PacketConfig(FriendlyByteBuf buf) {
-        this.scalingHealth = buf.readBoolean();
+        this.showDifficulty = buf.readBoolean();
     }
 
     public PacketConfig() {
-        this.scalingHealth = Config.CommonConfig.useScalingHealthMod;
+        this.showDifficulty = Config.CommonConfig.useScalingHealthMod
+                || Config.CommonConfig.usePlayerEXMod || Config.CommonConfig.useLevelZMod;
     }
 
     public static PacketConfig read(FriendlyByteBuf buf) {
@@ -23,11 +24,11 @@ public class PacketConfig {
     }
 
     public static void write(PacketConfig pkt, FriendlyByteBuf buf) {
-        buf.writeBoolean(pkt.scalingHealth);
+        buf.writeBoolean(pkt.showDifficulty);
     }
 
     public static void handle(PacketConfig pkt, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> Config.ClientConfig.showDifficultyServerSync = !pkt.scalingHealth);
+        ctx.get().enqueueWork(() -> Config.ClientConfig.showDifficultyServerSync = !pkt.showDifficulty);
         ctx.get().setPacketHandled(true);
     }
 }

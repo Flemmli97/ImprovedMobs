@@ -76,6 +76,8 @@ public class ConfigSpecs {
 
         //Integration
         public final ForgeConfigSpec.BooleanValue useScalingHealthMod;
+        public final ForgeConfigSpec.BooleanValue usePlayerEXMod;
+        public final ForgeConfigSpec.BooleanValue useLevelZMod;
 
         //AI
         public final ForgeConfigSpec.ConfigValue<List<String>> breakableBlocks;
@@ -168,6 +170,8 @@ public class ConfigSpecs {
 
             builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
+            this.usePlayerEXMod = builder.comment("If true and playerEx is installed will use the level from playerEx as difficulty").define("Use Player EX Mod", true);
+            this.useLevelZMod = builder.comment("If true and LevelZ is installed will use the the total skill level from LevelZ as difficulty").define("Use LevelZ Mod", true);
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");
