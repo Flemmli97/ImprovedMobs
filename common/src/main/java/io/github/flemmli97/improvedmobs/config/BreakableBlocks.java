@@ -8,11 +8,14 @@ import net.minecraft.core.HolderSet;
 import net.minecraft.core.Registry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -26,9 +29,11 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
     private final Set<HolderSet<Block>> tags = new HashSet<>();
     private boolean initialized;
 
-    public boolean canBreak(BlockState state, BlockPos pos, BlockGetter level, CollisionContext ctx) {
+    public boolean canBreak(BlockState state, BlockPos pos, BlockGetter level, @Nullable Entity entity, CollisionContext ctx) {
         if (!this.initialized)
             this.initialize();
+        if (!Config.CommonConfig.idleBreak && entity instanceof Mob mob && mob.getTarget() == null)
+            return false;
         if (state.getCollisionShape(level, pos, ctx).isEmpty())
             return false;
         if (!Config.CommonConfig.breakTileEntities && state.hasBlockEntity())
