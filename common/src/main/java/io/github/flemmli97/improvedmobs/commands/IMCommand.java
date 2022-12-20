@@ -5,8 +5,10 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -23,6 +25,7 @@ public class IMCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("improvedmobs")
+                .executes(IMCommand::getDifficulty)
                 .then(Commands.literal("reloadJson").requires(src -> src.hasPermission(2)).executes(IMCommand::reloadJson))
                 .then(Commands.literal("difficulty").requires(src -> src.hasPermission(2))
                         .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile())
@@ -83,5 +86,18 @@ public class IMCommand {
             });
         }
         return profs.size();
+    }
+
+    private static int getDifficulty(CommandContext<CommandSourceStack> src) throws CommandSyntaxException {
+        float diff;
+        if (Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL)
+            diff = DifficultyData.get(src.getSource().getServer())
+                    .getDifficulty();
+        else {
+            ServerPlayer player = src.getSource().getPlayerOrException();
+            diff = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
+        }
+        src.getSource().sendSuccess(new TextComponent("Difficulty: " + diff).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+        return 1;
     }
 }
