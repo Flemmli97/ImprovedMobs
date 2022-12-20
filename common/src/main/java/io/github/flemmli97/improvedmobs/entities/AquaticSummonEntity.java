@@ -5,7 +5,10 @@ import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -15,6 +18,8 @@ import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathFinder;
+import net.minecraft.world.level.pathfinder.SwimNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 
 public class AquaticSummonEntity extends RiddenSummonEntity {
@@ -22,6 +27,9 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
     public static final ResourceLocation SUMMONED_AQUATIC_ID = new ResourceLocation(ImprovedMobs.MODID, "aquatic_entity");
 
     private static final EntityDataAccessor<Boolean> DATA_ID_MOVING = SynchedEntityData.defineId(AquaticSummonEntity.class, EntityDataSerializers.BOOLEAN);
+
+    private Vec3 leapDir;
+    private int leapTick;
 
     public AquaticSummonEntity(Level level) {
         super(EntityType.GUARDIAN, level);
@@ -50,29 +58,51 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
 
     @Override
     protected PathNavigation createNavigation(Level level) {
-        return new WaterBoundPathNavigation(this, level);
+        return new WaterBoundPathNavigation(this, level) {
+
+            @Override
+            protected PathFinder createPathFinder(int i) {
+                this.nodeEvaluator = new SwimNodeEvaluator(true);
+                return new PathFinder(this.nodeEvaluator, i);
+            }
+
+            @Override
+            protected boolean canUpdatePath() {
+                return this.isInLiquid();
+            }
+        };
     }
 
     @Override
     public void aiStep() {
         super.aiStep();
-        if (!this.isVehicle())
-            this.remove(RemovalReason.KILLED);
+        --this.leapTick;
+        if (this.leapTick < 0 || this.isOnGround())
+            this.leapDir = null;
         if (this.isInWaterOrBubble()) {
             this.setAirSupply(300);
         }
     }
 
     @Override
+    public int getMaxHeadXRot() {
+        return 180;
+    }
+
+    @Override
     public void travel(Vec3 travelVector) {
         if (this.isEffectiveAi() && this.isInWater()) {
             this.moveRelative(0.1f, travelVector);
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.85));
             this.move(MoverType.SELF, this.getDeltaMovement());
             this.setDeltaMovement(this.getDeltaMovement().scale(0.9));
             if (!this.isMoving() && this.getTarget() == null) {
                 this.setDeltaMovement(this.getDeltaMovement().add(0.0, -0.005, 0.0));
             }
         } else {
+            if (this.leapDir != null) {
+                this.move(MoverType.SELF, this.leapDir);
+            }
             super.travel(travelVector);
         }
     }
@@ -87,45 +117,65 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
         return true;
     }
 
+    @Override
+    protected SoundEvent getHurtSound(DamageSource damageSource) {
+        return SoundEvents.GUARDIAN_HURT;
+    }
+
+    @Override
+    protected SoundEvent getDeathSound() {
+        return SoundEvents.GUARDIAN_DEATH;
+    }
+
+    @Override
+    public float getVoicePitch() {
+        return super.getVoicePitch() * 0.8f;
+    }
+
+    public void setLeapDir(Vec3 dir) {
+        this.leapDir = dir;
+        this.leapTick = 20;
+    }
+
     /**
      * Copy of Guardian.GuardianMoveControl
      */
     protected static class AquaticMoveControl extends MoveControl {
 
-        private final AquaticSummonEntity guardian;
+        private final AquaticSummonEntity mount;
 
-        public AquaticMoveControl(AquaticSummonEntity guardian) {
-            super(guardian);
-            this.guardian = guardian;
+        public AquaticMoveControl(AquaticSummonEntity mob) {
+            super(mob);
+            this.mount = mob;
         }
 
         @Override
         public void tick() {
-            if (this.operation != MoveControl.Operation.MOVE_TO || this.guardian.getNavigation().isDone()) {
-                this.guardian.setSpeed(0.0f);
-                this.guardian.setMoving(false);
+            if (this.operation != MoveControl.Operation.MOVE_TO || this.mount.getNavigation().isDone()) {
+                this.mount.setSpeed(0.0f);
+                this.mount.setMoving(false);
                 return;
             }
-            Vec3 dir = new Vec3(this.wantedX - this.guardian.getX(), this.wantedY - this.guardian.getY(), this.wantedZ - this.guardian.getZ());
-            double d = dir.length();
-            double e = dir.x / d;
-            double f = dir.y / d;
-            double g = dir.z / d;
+            Vec3 dir = new Vec3(this.wantedX - this.mount.getX(), this.wantedY - this.mount.getY(), this.wantedZ - this.mount.getZ());
+            double len = dir.length();
+            double e = dir.x / len;
+            double f = dir.y / len;
+            double g = dir.z / len;
             float h = (float) (Mth.atan2(dir.z, dir.x) * Mth.RAD_TO_DEG) - 90.0f;
-            this.guardian.setYRot(this.rotlerp(this.guardian.getYRot(), h, 90.0f));
-            this.guardian.yBodyRot = this.guardian.getYRot();
-            float i = (float) (this.speedModifier * this.guardian.getAttributeValue(Attributes.MOVEMENT_SPEED));
-            float j = Mth.lerp(0.125f, this.guardian.getSpeed(), i);
-            this.guardian.setSpeed(j);
-            double k = Math.sin((this.guardian.tickCount + this.guardian.getId()) * 0.5) * 0.05;
-            double l = Math.cos(this.guardian.getYRot() * Mth.DEG_TO_RAD);
-            double m = Math.sin(this.guardian.getYRot() * Mth.DEG_TO_RAD);
-            double n = Math.sin((this.guardian.tickCount + this.guardian.getId()) * 0.75) * 0.05;
-            this.guardian.setDeltaMovement(this.guardian.getDeltaMovement().add(k * l, n * (m + l) * 0.25 + j * f * 0.1, k * m));
-            LookControl lookControl = this.guardian.getLookControl();
-            double o = this.guardian.getX() + e * 2.0;
-            double p = this.guardian.getEyeY() + f / d;
-            double q = this.guardian.getZ() + g * 2.0;
+            this.mount.setYRot(this.rotlerp(this.mount.getYRot(), h, 90.0f));
+            this.mount.yBodyRot = this.mount.getYRot();
+            float i = (float) (this.speedModifier * this.mount.getAttributeValue(Attributes.MOVEMENT_SPEED));
+            float j = Mth.lerp(0.125f, this.mount.getSpeed(), i);
+            this.mount.setSpeed(j);
+            double k = Math.sin((this.mount.tickCount + this.mount.getId()) * 0.5) * 0.05;
+            double l = Math.cos(this.mount.getYRot() * Mth.DEG_TO_RAD);
+            double m = Math.sin(this.mount.getYRot() * Mth.DEG_TO_RAD);
+            double n = Math.sin((this.mount.tickCount + this.mount.getId()) * 0.75) * 0.05;
+            this.mount.setDeltaMovement(this.mount.getDeltaMovement().add(k * l * 0.8, n * (m + l) * 0.15 + j * f * 0.1, k * m * 0.8));
+            LookControl lookControl = this.mount.getLookControl();
+            double o = this.mount.getX() + e * 2.0;
+            double p = this.mount.getEyeY() + f / len;
+            double q = this.mount.getZ() + g * 2.0;
             double r = lookControl.getWantedX();
             double s = lookControl.getWantedY();
             double t = lookControl.getWantedZ();
@@ -134,8 +184,8 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
                 s = p;
                 t = q;
             }
-            this.guardian.getLookControl().setLookAt(Mth.lerp(0.125, r, o), Mth.lerp(0.125, s, p), Mth.lerp(0.125, t, q), 10.0f, 40.0f);
-            this.guardian.setMoving(true);
+            this.mount.getLookControl().setLookAt(Mth.lerp(0.125, r, o), Mth.lerp(0.125, s, p), Mth.lerp(0.125, t, q), 10.0f, 40.0f);
+            this.mount.setMoving(true);
         }
     }
 }

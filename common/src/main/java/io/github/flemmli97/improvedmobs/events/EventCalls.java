@@ -135,7 +135,7 @@ public class EventCalls {
         }
         applyAttributesAndItems(mob);
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
-            mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 15));
+            mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 12));
         }
         if (mob.level.random.nextFloat() < Config.CommonConfig.guardianAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things

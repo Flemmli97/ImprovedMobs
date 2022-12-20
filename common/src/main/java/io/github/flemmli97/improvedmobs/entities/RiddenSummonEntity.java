@@ -22,6 +22,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,6 +30,8 @@ import org.jetbrains.annotations.Nullable;
  * Entity thats used as vehicle. Has some properties like bounding box expansion and unable to hold items
  */
 public abstract class RiddenSummonEntity extends Mob {
+
+    private boolean clearedAI;
 
     public RiddenSummonEntity(EntityType<? extends Mob> entityType, Level level) {
         super(entityType, level);
@@ -41,6 +44,13 @@ public abstract class RiddenSummonEntity extends Mob {
     @Override
     public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag) {
         return spawnData;
+    }
+
+    @Override
+    public boolean hurt(DamageSource source, float amount) {
+        if (this.getPassengers().contains(source.getEntity()))
+            return false;
+        return super.hurt(source, amount);
     }
 
     @Override
@@ -132,6 +142,10 @@ public abstract class RiddenSummonEntity extends Mob {
     @Override
     public void aiStep() {
         super.aiStep();
+        if (!this.clearedAI) {
+            this.clearedAI = true;
+            this.removeFreeWill();
+        }
         if (!this.isVehicle())
             this.remove(RemovalReason.KILLED);
     }
@@ -150,8 +164,13 @@ public abstract class RiddenSummonEntity extends Mob {
     @Override
     public CompoundTag saveWithoutId(CompoundTag compound) {
         CompoundTag tag = super.saveWithoutId(compound);
-        tag.getCompound(EntityFlags.TAG_ID).putString("ServerSideEntityID", this.serverSideID().toString());
+        tag.getCompound(EntityFlags.TAG_ID).putString(EntityFlags.SERVER_ENTITY_TAG_ID, this.serverSideID().toString());
         return tag;
+    }
+
+    @Override
+    protected ResourceLocation getDefaultLootTable() {
+        return BuiltInLootTables.EMPTY;
     }
 
     public abstract ResourceLocation serverSideID();

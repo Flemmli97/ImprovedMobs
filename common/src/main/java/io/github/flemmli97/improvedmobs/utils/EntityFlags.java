@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity;
 public class EntityFlags {
 
     public static final String TAG_ID = "IMFlags";
+    public static final String SERVER_ENTITY_TAG_ID = "ServerSideEntityID";
 
     public boolean ladderClimber;
 
@@ -56,8 +57,8 @@ public class EntityFlags {
         this.isThrownEntity = nbt.getBoolean("IsThrown");
         this.magicRes = nbt.getFloat("MagicRes");
         this.projMult = nbt.getFloat("ProjBoost");
-        if (nbt.contains("ServerSideEntityID"))
-            this.serverSideEntityID = new ResourceLocation(nbt.getString("ServerSideEntityID"));
+        if (nbt.contains(SERVER_ENTITY_TAG_ID))
+            this.serverSideEntityID = new ResourceLocation(nbt.getString(SERVER_ENTITY_TAG_ID));
     }
 
     public boolean isShieldDisabled() {

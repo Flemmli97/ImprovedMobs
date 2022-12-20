@@ -13,6 +13,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityDimensions;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -47,7 +48,12 @@ public class FlyingSummonEntity extends RiddenSummonEntity {
 
     @Override
     protected PathNavigation createNavigation(Level level) {
-        FlyingPathNavigation flyingPathNavigation = new FlyingPathNavigation(this, level);
+        FlyingPathNavigation flyingPathNavigation = new FlyingPathNavigation(this, level) {
+            @Override
+            public boolean isStableDestination(BlockPos pos) {
+                return true;
+            }
+        };
         flyingPathNavigation.setCanOpenDoors(false);
         flyingPathNavigation.setCanFloat(true);
         flyingPathNavigation.setCanPassDoors(true);
@@ -68,6 +74,8 @@ public class FlyingSummonEntity extends RiddenSummonEntity {
             float widthPassenger = passenger.getBbWidth();
             int w = (int) ((widthPassenger - 0.8f) / 0.2f);
             this.entityData.set(DATA_ID_SIZE, w);
+            if (passenger instanceof Mob mob)
+                ((FlyingPathNavigation) this.getNavigation()).setCanOpenDoors(mob.getNavigation().getNodeEvaluator().canOpenDoors());
         }
         super.addPassenger(passenger);
     }
@@ -123,6 +131,11 @@ public class FlyingSummonEntity extends RiddenSummonEntity {
         return SoundEvents.PHANTOM_DEATH;
     }
 
+    @Override
+    public float getVoicePitch() {
+        return super.getVoicePitch() * 0.8f;
+    }
+
     protected static class CustomFlyMoveControl extends MoveControl {
 
         private float speed;
@@ -148,10 +161,17 @@ public class FlyingSummonEntity extends RiddenSummonEntity {
 
             double horLen = Math.sqrt(dir.x() * dir.x() + dir.z() * dir.z());
             this.mob.setXRot(Mth.wrapDegrees((float) (-(Mth.atan2(dir.y(), horLen) * Mth.RAD_TO_DEG))));
-            this.mob.setYRot(Mth.wrapDegrees((float) (Mth.atan2(dir.z(), dir.x()) * Mth.RAD_TO_DEG) - 90.0f));
+            float newRot = Mth.wrapDegrees((float) (Mth.atan2(dir.z(), dir.x()) * Mth.RAD_TO_DEG));
+            this.mob.setYRot(Mth.approachDegrees(rotPre + 90, newRot, 8.0f) - 90.0f);
             this.mob.yBodyRot = this.mob.getYRot();
 
-            this.speed = Mth.degreesDifferenceAbs(rotPre, this.mob.getYRot()) < 3.0f ? Mth.approach(this.speed, 1.8f, 0.007f * (1.8f / this.speed)) : Mth.approach(this.speed, 0.2f, 0.025f);
+            float throttleTreshold = 12;
+            if (!this.mob.getNavigation().isDone()) {
+                BlockPos target = this.mob.getNavigation().getPath().getTarget();
+                if (this.mob.distanceToSqr(target.getX() + 0.5, target.getY(), target.getZ() + 0.5) < 4.5)
+                    throttleTreshold = 3;
+            }
+            this.speed = Mth.degreesDifferenceAbs(rotPre, this.mob.getYRot()) < throttleTreshold ? Mth.approach(this.speed, 1.8f, 0.009f * (1.8f / this.speed)) : Mth.approach(this.speed, 0.2f, 0.025f);
 
             Vec3 moveDir = Vec3.directionFromRotation(this.mob.getXRot(), this.mob.getYRot());
             double xDir = this.speed * moveDir.x() * 0.02;

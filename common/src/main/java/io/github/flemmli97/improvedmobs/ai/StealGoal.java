@@ -29,7 +29,7 @@ public class StealGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canUse() {
-        if(this.entity instanceof OwnableEntity ownable && ownable.getOwnerUUID() != null)
+        if (this.entity instanceof OwnableEntity ownable && ownable.getOwnerUUID() != null)
             return false;
         return super.canUse() && this.entity.getTarget() == null;
     }

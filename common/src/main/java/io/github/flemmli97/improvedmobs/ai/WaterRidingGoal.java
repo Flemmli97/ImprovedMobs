@@ -83,13 +83,14 @@ public class WaterRidingGoal extends Goal {
             this.start = false;
         }
         Entity entity = this.living.getVehicle();
-        if (!(entity instanceof AquaticSummonEntity) || !entity.isAlive())
+        if (!(entity instanceof AquaticSummonEntity mount) || !entity.isAlive())
             return;
         this.living.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 10, 1, false, false));
         if (this.nearShore(entity, 0)) {
             this.jumpingTick = 20;
-            Vec3 facing = entity.getLookAngle().scale(0.5).add(entity.getDeltaMovement());
-            entity.setDeltaMovement(new Vec3(facing.x, 1, facing.z));
+            Vec3 facing = entity.getLookAngle().scale(0.5).add(entity.getDeltaMovement()).scale(0.7);
+            entity.setDeltaMovement(new Vec3(0, 1, 0));
+            mount.setLeapDir(new Vec3(facing.x, 0, facing.z));
         }
         if (this.jumpingTick-- > 0) {
             Vec3 facing = entity.getLookAngle().scale(0.5);

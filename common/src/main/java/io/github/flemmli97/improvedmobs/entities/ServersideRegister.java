@@ -3,6 +3,7 @@ package io.github.flemmli97.improvedmobs.entities;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.TickTask;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
 
@@ -17,17 +18,20 @@ public class ServersideRegister {
     public static void replaceEntity(Entity entity) {
         EntityFlags flags = EntityFlags.get(entity);
         if (flags.serverSideEntityID != null) {
-            Function<Level, Entity> f = ENTITIES.get(flags.serverSideEntityID);
-            if (f != null) {
-                Entity newE = f.apply(entity.level);
-                CompoundTag tag = entity.saveWithoutId(new CompoundTag());
-                tag.remove(Entity.UUID_TAG);
-                newE.load(tag);
-                entity.level.addFreshEntity(newE);
-                if (entity.getFirstPassenger() != null)
-                    entity.getFirstPassenger().startRiding(newE);
-                entity.discard();
-            }
+            //Needs a slight delay. Else client gets ghost entities
+            entity.getServer().tell(new TickTask(1, () -> {
+                Function<Level, Entity> f = ENTITIES.get(flags.serverSideEntityID);
+                if (f != null) {
+                    Entity newE = f.apply(entity.level);
+                    CompoundTag tag = entity.saveWithoutId(new CompoundTag());
+                    tag.remove(Entity.UUID_TAG);
+                    newE.load(tag);
+                    entity.discard();
+                    entity.level.addFreshEntity(newE);
+                    if (entity.getFirstPassenger() != null)
+                        entity.getFirstPassenger().startRiding(newE);
+                }
+            }));
         }
     }
 
