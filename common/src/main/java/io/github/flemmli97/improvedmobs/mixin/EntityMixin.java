@@ -24,7 +24,7 @@ public abstract class EntityMixin implements IEntityData {
 
     @Inject(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
     private void saveData(CompoundTag compoundTag, CallbackInfoReturnable<CompoundTag> info) {
-        compoundTag.put("IMFlags", this.imFlags.save());
+        compoundTag.put(EntityFlags.TAG_ID, this.imFlags.save());
     }
 
     @Override
