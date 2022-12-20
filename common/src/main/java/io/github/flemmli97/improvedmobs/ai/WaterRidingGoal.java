@@ -9,6 +9,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.monster.Guardian;
@@ -32,7 +33,10 @@ public class WaterRidingGoal extends Goal {
         if (this.living.getVehicle() instanceof Guardian) {
             return true;
         }
-        if (this.living.isInWater() && !this.living.isPassenger() && this.living.getTarget() != null && this.living.getTarget().isAlive()) {
+        LivingEntity target = this.living.getTarget();
+        if (target == null || !target.isAlive() || !this.living.isWithinRestriction(target.blockPosition()))
+            return false;
+        if (this.living.isInWater() && !this.living.isPassenger()) {
             if (this.wait == 80) {
                 this.wait = 0;
                 return true;
