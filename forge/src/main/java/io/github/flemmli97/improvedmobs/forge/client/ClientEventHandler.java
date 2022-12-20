@@ -3,7 +3,6 @@ package io.github.flemmli97.improvedmobs.forge.client;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.client.ClientCalls;
 import io.github.flemmli97.improvedmobs.client.ClientEvents;
-import io.github.flemmli97.improvedmobs.config.Config;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
@@ -24,8 +23,7 @@ public class ClientEventHandler {
     public static void showDifficulty(RegisterGuiOverlaysEvent e) {
         e.registerBelow(VanillaGuiOverlay.EXPERIENCE_BAR.id(), overlayID.getPath(),
                 (forgeGui, poseStack, partialTicks, width, length) -> {
-                    if (Config.CommonConfig.enableDifficultyScaling)
-                        ClientEvents.showDifficulty(poseStack);
+                    ClientEvents.showDifficulty(poseStack);
                 });
     }
 

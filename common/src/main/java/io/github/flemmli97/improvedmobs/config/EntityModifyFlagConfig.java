@@ -98,7 +98,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
 
     public static String use() {
         String[] str = new String[]{"Entities added here will be blacklisted from their assigned flags. Usage:", "<entity registry name> or <namespace> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Having no flags is equal to ALL. Use REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
-                "Examples:", "minecraft:sheep is equal to minecraft:sheep|ALL and excludes sheeps from all modifications", "minecraft:sheep|REVERSE|ATTRIBUTES will add sheep to attributes modification only", "minecraft:sheep|ATTRIBUTES will add sheep to everything except attributes"};
+                "Examples (without <>):", "<minecraft:sheep> (equal to minecraft:sheep|ALL) excludes sheeps from all modifications", "<minecraft:sheep|REVERSE|ATTRIBUTES will> add sheep to attributes modification only", "<minecraft:sheep|ATTRIBUTES> will add sheep to everything except attributes", "<minecraft> blacklists all minecraft mobs from everything"};
         return String.join("\n", str);
     }
 
