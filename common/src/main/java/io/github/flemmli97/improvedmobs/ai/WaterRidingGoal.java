@@ -1,18 +1,15 @@
 package io.github.flemmli97.improvedmobs.ai;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
-import io.github.flemmli97.improvedmobs.utils.EntityFlags;
+import io.github.flemmli97.improvedmobs.entities.AquaticSummonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.entity.monster.Guardian;
 import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.Vec3;
 
@@ -30,7 +27,7 @@ public class WaterRidingGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        if (this.living.getVehicle() instanceof Guardian) {
+        if (this.living.getVehicle() instanceof AquaticSummonEntity) {
             return true;
         }
         LivingEntity target = this.living.getTarget();
@@ -48,7 +45,7 @@ public class WaterRidingGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        if (this.living.getVehicle() instanceof Guardian) {
+        if (this.living.getVehicle() instanceof AquaticSummonEntity) {
             if (this.living.getTarget() == null)
                 this.wait++;
             else
@@ -73,12 +70,12 @@ public class WaterRidingGoal extends Goal {
     public void tick() {
         if (this.start) {
             if (!this.living.isPassenger()) {
-                Guardian boat = EntityType.GUARDIAN.create(this.living.level);
+                AquaticSummonEntity boat = new AquaticSummonEntity(this.living.level);
                 BlockPos pos = this.living.blockPosition();
                 boat.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.getYRot(), this.living.getXRot());
                 if (this.living.level.noCollision(boat)) {
-                    ((MobEntityMixin) boat).setDeathLootTable(EMPTY);
-                    EntityFlags.get(boat).rideSummon = true;
+                    //((MobEntityMixin) boat).setDeathLootTable(EMPTY);
+                    //EntityFlags.get(boat).rideSummon = true;
                     this.living.level.addFreshEntity(boat);
                     this.living.startRiding(boat);
                 }
@@ -86,13 +83,14 @@ public class WaterRidingGoal extends Goal {
             this.start = false;
         }
         Entity entity = this.living.getVehicle();
-        if (!(entity instanceof Guardian) || !entity.isAlive())
+        if (!(entity instanceof AquaticSummonEntity mount) || !entity.isAlive())
             return;
         this.living.addEffect(new MobEffectInstance(MobEffects.WATER_BREATHING, 10, 1, false, false));
         if (this.nearShore(entity, 0)) {
             this.jumpingTick = 20;
-            Vec3 facing = entity.getLookAngle().scale(0.5).add(entity.getDeltaMovement());
-            entity.setDeltaMovement(new Vec3(facing.x, 1, facing.z));
+            Vec3 facing = entity.getLookAngle().scale(0.5).add(entity.getDeltaMovement()).scale(0.7);
+            entity.setDeltaMovement(new Vec3(0, 1, 0));
+            mount.setLeapDir(new Vec3(facing.x, 0, facing.z));
         }
         if (this.jumpingTick-- > 0) {
             Vec3 facing = entity.getLookAngle().scale(0.5);

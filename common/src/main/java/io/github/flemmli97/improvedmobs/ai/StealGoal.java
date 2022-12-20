@@ -5,6 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.ai.goal.MoveToBlockGoal;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -28,6 +29,8 @@ public class StealGoal extends MoveToBlockGoal {
 
     @Override
     public boolean canUse() {
+        if (this.entity instanceof OwnableEntity ownable && ownable.getOwnerUUID() != null)
+            return false;
         return super.canUse() && this.entity.getTarget() == null;
     }
 

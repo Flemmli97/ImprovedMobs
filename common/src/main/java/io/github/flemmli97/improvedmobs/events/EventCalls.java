@@ -9,6 +9,7 @@ import io.github.flemmli97.improvedmobs.ai.WaterRidingGoal;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.entities.ServersideRegister;
 import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixin.TargetGoalMixin;
@@ -34,10 +35,7 @@ import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.ai.goal.LookAtPlayerGoal;
-import net.minecraft.world.entity.ai.goal.RandomStrollGoal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
@@ -102,18 +100,7 @@ public class EventCalls {
         if (mob.level.isClientSide)
             return;
         EntityFlags flags = EntityFlags.get(mob);
-        if (flags.rideSummon) {
-            if (!flags.modifyAttributes) {
-                flags.modifyAttributes = true;
-                AttributeInstance inst = mob.getAttribute(Attributes.MAX_HEALTH);
-                if (inst != null)
-                    inst.setBaseValue(5);
-                mob.setHealth(mob.getMaxHealth());
-            }
-            ((IGoalModifier) mob.goalSelector).goalRemovePredicate((g) -> !(g instanceof LookAtPlayerGoal || g instanceof RandomStrollGoal));
-            ((IGoalModifier) mob.targetSelector).goalRemovePredicate((g) -> true);
-            return;
-        }
+        ServersideRegister.replaceEntity(mob);
         boolean mobGriefing = mob.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
         if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEF) {
             if (DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.breakerChance
@@ -148,7 +135,7 @@ public class EventCalls {
         }
         applyAttributesAndItems(mob);
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
-            mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 15));
+            mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 12));
         }
         if (mob.getRandom().nextFloat() < Config.CommonConfig.guardianAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
@@ -253,8 +240,6 @@ public class EventCalls {
 
     public static void entityTick(LivingEntity entity) {
         if (entity instanceof Mob mob) {
-            if (EntityFlags.get(mob).rideSummon && !mob.isVehicle())
-                mob.remove(Entity.RemovalReason.KILLED);
             if (Config.CommonConfig.debugPath && !mob.level.isClientSide) {
                 Path path = mob.getNavigation().getPath();
                 if (path != null) {
@@ -352,8 +337,8 @@ public class EventCalls {
             living.level.addFreshEntity(entityitem);
         }
         ItemStack copy = stack.copy();
-        stack.setCount(1);
-        living.setItemSlot(slot, stack.copy());
+        copy.setCount(1);
+        living.setItemSlot(slot, copy);
         if (!player.isCreative())
             stack.shrink(1);
     }
