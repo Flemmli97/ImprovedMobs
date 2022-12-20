@@ -65,22 +65,22 @@ public class AIUtils {
         entity.level.addFreshEntity(tridententity);
     }
 
-    public static boolean tryPlaceLava(Level worldIn, BlockPos posIn) {
-        BlockState iblockstate = worldIn.getBlockState(posIn);
-        Material material = iblockstate.getMaterial();
+    public static boolean tryPlaceLava(Level level, BlockPos pos) {
+        BlockState state = level.getBlockState(pos);
+        Material material = state.getMaterial();
         boolean flag = !material.isSolid();
-        boolean flag1 = iblockstate.getMaterial().isReplaceable();
+        boolean flag1 = state.getMaterial().isReplaceable();
 
-        if (!worldIn.isEmptyBlock(posIn) && !flag && !flag1) {
+        if (!state.getFluidState().isEmpty())
             return false;
-        } else {
-            if (!worldIn.isClientSide && (flag || flag1) && !material.isLiquid()) {
-                worldIn.destroyBlock(posIn, true);
-            }
-            worldIn.playSound(null, posIn, SoundEvents.BUCKET_EMPTY_LAVA, SoundSource.BLOCKS, 1.0F, 1.0F);
-            worldIn.setBlock(posIn, Blocks.LAVA.defaultBlockState().setValue(LiquidBlock.LEVEL, 1), 11);
-            return true;
+        if (!state.isAir() && !flag && !flag1)
+            return false;
+        if (!level.isClientSide && (flag || flag1) && !material.isLiquid()) {
+            level.destroyBlock(pos, true);
         }
+        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY_LAVA, SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.setBlock(pos, Blocks.LAVA.defaultBlockState().setValue(LiquidBlock.LEVEL, 1), 11);
+        return true;
     }
 
     public static boolean isBadPotion(ItemStack stack) {
