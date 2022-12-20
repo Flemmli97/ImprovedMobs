@@ -84,6 +84,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.DoubleValue breakerChance;
         public final ForgeConfigSpec.IntValue breakerInitCooldown;
         public final ForgeConfigSpec.IntValue breakerCooldown;
+        public final ForgeConfigSpec.BooleanValue idleBreak;
         public final ForgeConfigSpec.DoubleValue stealerChance;
         public final ForgeConfigSpec.BooleanValue breakTileEntities;
         public final ForgeConfigSpec.ConfigValue<List<String>> breakingItems;
@@ -176,6 +177,7 @@ public class ConfigSpecs {
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);
             this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").defineInRange("Breaker Initial Cooldown", 120, 0, Integer.MAX_VALUE);
             this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", 20, 0, Integer.MAX_VALUE);
+            this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", false);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items").defineInRange("Stealer Chance", 0.3, 0, 1);
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1", "minecraft:iron_axe;2"));
             this.breakTileEntities = builder.comment("Should mobs be able to break tile entities? Evaluated before the break list").define("Break Tiles", true);

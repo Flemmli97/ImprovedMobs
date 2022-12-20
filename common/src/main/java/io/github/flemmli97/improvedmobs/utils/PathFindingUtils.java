@@ -148,12 +148,11 @@ public class PathFindingUtils {
         return nodeID;
     }
 
-    private static boolean canBreak(BlockState state, BlockPos pos, Mob entity) {
-        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
+    public static boolean canBreak(BlockPos pos, Mob entity) {
+        return canBreak(entity.level.getBlockState(pos), pos, entity);
     }
 
-    public static boolean canBreak(BlockPos pos, Mob entity) {
-        BlockState state = entity.level.getBlockState(pos);
-        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
+    private static boolean canBreak(BlockState state, BlockPos pos, Mob entity) {
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, entity, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
     }
 }

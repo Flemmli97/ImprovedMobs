@@ -169,7 +169,7 @@ public class BlockBreakGoal extends Goal {
     }
 
     private boolean canBreak(LivingEntity entity, BlockState state, BlockPos pos, ItemStack item, ItemStack itemOff) {
-        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, CollisionContext.of(entity)) && (Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff));
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, entity, CollisionContext.of(entity)) && (Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff));
     }
 
     private boolean aboveTarget() {

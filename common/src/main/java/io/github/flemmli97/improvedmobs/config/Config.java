@@ -69,6 +69,7 @@ public class Config {
         public static float breakerChance;
         public static int breakerInitCooldown;
         public static int breakerCooldown;
+        public static boolean idleBreak;
         public static float stealerChance;
         public static boolean breakTileEntities;
         public static List<WeightedItem> breakingItem = new ArrayList<>();
