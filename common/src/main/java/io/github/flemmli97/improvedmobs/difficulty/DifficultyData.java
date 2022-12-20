@@ -66,7 +66,7 @@ public class DifficultyData extends SavedData {
         return DifficultyValues.INSTANCE.getDifficulty(world, e.blockPosition(), sup);
     }
 
-    private static List<Player> playersIn(EntityGetter getter, Vec3 pos, double radius) {
+    public static List<Player> playersIn(EntityGetter getter, Vec3 pos, double radius) {
         ArrayList<Player> list = Lists.newArrayList();
         for (Player player : getter.players()) {
             if (player.position().closerThan(pos, radius))

@@ -27,6 +27,14 @@ repositories {
     }
     maven { url "https://maven.shedaniel.me/" }
     maven { url "https://maven.terraformersmc.com/releases/" }
+    maven {
+        name = "CurseMaven"
+        url "https://www.cursemaven.com"
+    }
+    maven {
+        name = 'Ladysnake Mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
+    }
 }
 
 dependencies {
@@ -43,6 +51,10 @@ dependencies {
     }
     modImplementation "${mod_menu}"
 
+    //CompileOnly cause not getting all deps... get a maven pls
+    modCompileOnly "${playerex}"
+    modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:4.2.0"
+    modCompileOnly "${levelz}"
 }
 
 processResources {

@@ -61,6 +61,8 @@ public class Config {
 
         //Integration
         public static boolean useScalingHealthMod = true;
+        public static boolean usePlayerEXMod = true;
+        public static boolean useLevelZMod = true;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks();

@@ -71,7 +71,8 @@ public class ImprovedMobsFabric implements ModInitializer {
         if (!ServerPlayNetworking.canSend(player, configPacket))
             return;
         FriendlyByteBuf buf = PacketByteBufs.create();
-        buf.writeBoolean(Config.CommonConfig.useScalingHealthMod);
+        buf.writeBoolean(Config.CommonConfig.useScalingHealthMod
+                || Config.CommonConfig.usePlayerEXMod || Config.CommonConfig.useLevelZMod);
         ServerPlayNetworking.send(player, configPacket, buf);
     }
 }
