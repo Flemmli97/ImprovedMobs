@@ -3,7 +3,6 @@ package io.github.flemmli97.improvedmobs.utils;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EnchantCalcConf;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
-import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.tenshilib.common.utils.MathUtils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
@@ -47,9 +46,8 @@ public class Utils {
         return item.isCorrectToolForDrops(block) || !block.requiresCorrectToolForDrops();
     }
 
-    public static void equipArmor(Mob living) {
+    public static void equipArmor(Mob living, float difficulty) {
         if (Config.CommonConfig.baseEquipChance != 0) {
-            float difficulty = DifficultyData.getDifficulty(living.level, living);
             float time = difficulty * Config.CommonConfig.diffEquipAdd * 0.01F;
             if (living.getRandom().nextFloat() < (Config.CommonConfig.baseEquipChance + time)) {
                 for (EquipmentSlot slot : EquipmentSlot.values()) {
@@ -69,8 +67,7 @@ public class Utils {
         }
     }
 
-    public static void equipHeld(Mob living) {
-        float difficulty = DifficultyData.getDifficulty(living.level, living);
+    public static void equipHeld(Mob living, float difficulty) {
         float add = difficulty * Config.CommonConfig.diffWeaponChance * 0.01F;
         if (Config.CommonConfig.baseWeaponChance != 0 && living.getRandom().nextFloat() < (Config.CommonConfig.baseWeaponChance + add)) {
             if (living.getMainHandItem().isEmpty()) {
@@ -94,16 +91,15 @@ public class Utils {
         }
     }
 
-    public static void enchantGear(Mob living) {
-        float diff = DifficultyData.getDifficulty(living.level, living);
-        EnchantCalcConf.Value val = Config.CommonConfig.enchantCalc.get(diff);
+    public static void enchantGear(Mob living, float difficulty) {
+        EnchantCalcConf.Value val = Config.CommonConfig.enchantCalc.get(difficulty);
         if (val.max == 0)
             return;
         for (EquipmentSlot entityequipmentslot : EquipmentSlot.values()) {
             ItemStack itemstack = living.getItemBySlot(entityequipmentslot);
             if (itemstack.isEnchanted())
                 continue;
-            if (!itemstack.isEmpty() && living.getRandom().nextFloat() < (Config.CommonConfig.baseEnchantChance + (diff * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
+            if (!itemstack.isEmpty() && living.getRandom().nextFloat() < (Config.CommonConfig.baseEnchantChance + (difficulty * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
                 EnchantmentHelper.enchantItem(living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min, val.max), true);
             }
         }
