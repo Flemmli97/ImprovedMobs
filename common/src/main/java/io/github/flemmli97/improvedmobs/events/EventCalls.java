@@ -102,8 +102,9 @@ public class EventCalls {
         EntityFlags flags = EntityFlags.get(mob);
         ServersideRegister.replaceEntity(mob);
         boolean mobGriefing = mob.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        float difficulty = DifficultyData.getDifficulty(mob.level, mob);
         if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEF) {
-            if (DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && mob.level.random.nextFloat() < Config.CommonConfig.breakerChance
+            if (difficulty >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && mob.level.random.nextFloat() < Config.CommonConfig.breakerChance
                     && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
                 flags.canBreakBlocks = EntityFlags.FlagType.TRUE;
             } else
@@ -133,7 +134,7 @@ public class EventCalls {
                 }
             }
         }
-        applyAttributesAndItems(mob);
+        applyAttributesAndItems(mob, difficulty);
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
             mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 12));
         }
@@ -171,7 +172,7 @@ public class EventCalls {
         List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(PlatformUtils.INSTANCE.entities().getIDFrom(mob.getType()));
         if (types != null)
             mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, (l) -> types.contains(l.getType())));
-        if (mob instanceof PathfinderMob pathfinderMob && DifficultyData.getDifficulty(mob.level, mob) >= Config.CommonConfig.difficultySteal && mobGriefing
+        if (mob instanceof PathfinderMob pathfinderMob && difficulty >= Config.CommonConfig.difficultySteal && mobGriefing
                 && Config.CommonConfig.stealerChance != 0 && mob.level.random.nextFloat() < Config.CommonConfig.stealerChance
                 && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
             pathfinderMob.goalSelector.addGoal(5, new StealGoal(pathfinderMob));
@@ -189,25 +190,24 @@ public class EventCalls {
         return goal;
     }
 
-    private static void applyAttributesAndItems(Mob living) {
+    private static void applyAttributesAndItems(Mob living, float difficulty) {
         EntityFlags flags = EntityFlags.get(living);
         if (!flags.modifyArmor) {
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist))
-                Utils.equipArmor(living);
+                Utils.equipArmor(living, difficulty);
             flags.modifyArmor = true;
         }
         if (!flags.modifyHeldItems) {
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.CommonConfig.heldMobWhitelist))
-                Utils.equipHeld(living);
+                Utils.equipHeld(living, difficulty);
             flags.modifyHeldItems = true;
         }
         if (!flags.enchantGear) {
-            Utils.enchantGear(living);
+            Utils.enchantGear(living, difficulty);
             flags.enchantGear = true;
         }
         if (!flags.modifyAttributes) {
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
-                float difficulty = DifficultyData.getDifficulty(living.level, living);
                 if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
                     Utils.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, difficulty, true);
                     living.setHealth(living.getMaxHealth());
