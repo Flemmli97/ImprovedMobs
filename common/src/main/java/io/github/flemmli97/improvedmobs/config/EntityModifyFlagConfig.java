@@ -113,7 +113,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         LADDER("ladder"),
         STEAL("steal"),
         GUARDIAN("guardian"),
-        PARROT("parrot"),
+        PHANTOM("phantom"),
         TARGETVILLAGER("villager"),
         NEUTRALAGGRO("neutral"),
         REVERSE(null);

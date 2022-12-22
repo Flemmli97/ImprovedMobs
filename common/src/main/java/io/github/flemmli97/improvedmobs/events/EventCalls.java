@@ -111,7 +111,7 @@ public class EventCalls {
                 flags.canBreakBlocks = EntityFlags.FlagType.FALSE;
         }
         if (flags.canFly == EntityFlags.FlagType.UNDEF) {
-            if (mob.level.random.nextFloat() < Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
+            if (mob.level.random.nextFloat() < Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PHANTOM, Config.CommonConfig.mobListFlyWhitelist)) {
                 flags.canFly = EntityFlags.FlagType.TRUE;
             } else
                 flags.canFly = EntityFlags.FlagType.FALSE;
