@@ -71,9 +71,6 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue targetVillagerWhitelist;
         public final ForgeConfigSpec.BooleanValue neutralAggroWhitelist;
 
-        //Debug
-        public final ForgeConfigSpec.BooleanValue debugPath;
-
         //Integration
         public final ForgeConfigSpec.BooleanValue useScalingHealthMod;
         public final ForgeConfigSpec.BooleanValue usePlayerEXMod;
@@ -159,13 +156,9 @@ public class ConfigSpecs {
             this.mobListLadderWhitelist = builder.comment("Treat LADDER flags as whitelist").define("Ladder Whitelist", false);
             this.mobListStealWhitelist = builder.comment("Treat STEAL flags as whitelist").define("Steal Whitelist", false);
             this.mobListBoatWhitelist = builder.comment("Treat GUARDIAN flags as whitelist").define("Guardian Whitelist", false);
-            this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Parrot Whitelist", false);
+            this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Phantom Whitelist", false);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", false);
             this.neutralAggroWhitelist = builder.comment("Treat NEUTRALAGGRO flags as whitelist").define("Neutral Aggro Whitelist", false);
-            builder.pop();
-
-            builder.comment("Debugging").push("debug");
-            this.debugPath = builder.comment("Enable showing of entity paths").define("Path Debugging", false);
             builder.pop();
 
             builder.comment("Settings for mod integration").push("integration");
