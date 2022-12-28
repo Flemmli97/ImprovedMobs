@@ -19,7 +19,6 @@ import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.ProjectileImpactEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
-import net.minecraftforge.event.entity.living.LivingEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerInteractEvent;
 import net.minecraftforge.event.level.ExplosionEvent;
@@ -69,11 +68,6 @@ public class EventHandler {
     @SubscribeEvent
     public void hurtEvent(LivingHurtEvent e) {
         e.setAmount(EventCalls.hurtEvent(e.getEntity(), e.getSource(), e.getAmount()));
-    }
-
-    @SubscribeEvent
-    public void removeBoats(LivingEvent.LivingTickEvent event) {
-        EventCalls.entityTick(event.getEntity());
     }
 
     @SubscribeEvent

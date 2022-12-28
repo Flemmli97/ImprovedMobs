@@ -56,9 +56,6 @@ public class Config {
         public static boolean targetVillagerWhitelist;
         public static boolean neutralAggroWhitelist;
 
-        //Debug
-        public static boolean debugPath;
-
         //Integration
         public static boolean useScalingHealthMod = true;
         public static boolean usePlayerEXMod = true;

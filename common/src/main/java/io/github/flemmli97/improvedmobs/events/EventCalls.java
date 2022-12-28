@@ -20,7 +20,6 @@ import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.utils.Utils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -56,7 +55,6 @@ import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
@@ -236,19 +234,6 @@ public class EventCalls {
                 return dmg * (1 - EntityFlags.get(entity).magicRes);
         }
         return dmg;
-    }
-
-    public static void entityTick(LivingEntity entity) {
-        if (entity instanceof Mob mob) {
-            if (Config.CommonConfig.debugPath && !mob.level.isClientSide) {
-                Path path = mob.getNavigation().getPath();
-                if (path != null) {
-                    for (int i = 0; i < path.getNodeCount(); i++)
-                        ((ServerLevel) mob.level).sendParticles(ParticleTypes.NOTE, path.getNode(i).x + 0.5, path.getNode(i).y + 0.2, path.getNode(i).z + 0.5, 1, 0, 0, 0, 0);
-                    ((ServerLevel) mob.level).sendParticles(ParticleTypes.HEART, path.getEndNode().x + 0.5, path.getEndNode().y + 0.2, path.getEndNode().z + 0.5, 1, 0, 0, 0, 0);
-                }
-            }
-        }
     }
 
     public static boolean onAttackEvent(LivingEntity target, DamageSource damagesource) {

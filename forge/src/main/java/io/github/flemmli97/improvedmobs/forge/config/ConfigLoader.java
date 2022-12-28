@@ -47,8 +47,6 @@ public class ConfigLoader {
         Config.CommonConfig.targetVillagerWhitelist = ConfigSpecs.commonConf.targetVillagerWhitelist.get();
         Config.CommonConfig.neutralAggroWhitelist = ConfigSpecs.commonConf.neutralAggroWhitelist.get();
 
-        Config.CommonConfig.debugPath = ConfigSpecs.commonConf.debugPath.get();
-
         Config.CommonConfig.useScalingHealthMod = ConfigSpecs.commonConf.useScalingHealthMod.get() && ModList.get().isLoaded("scalinghealth");
         Config.CommonConfig.usePlayerEXMod = ConfigSpecs.commonConf.usePlayerEXMod.get() && ModList.get().isLoaded("playerex");
         Config.CommonConfig.useLevelZMod = ConfigSpecs.commonConf.useLevelZMod.get() && ModList.get().isLoaded("levelz");

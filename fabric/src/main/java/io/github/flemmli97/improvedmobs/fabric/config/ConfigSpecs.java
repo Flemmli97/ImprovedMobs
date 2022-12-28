@@ -87,9 +87,6 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> targetVillagerWhitelist;
         public final CommentedJsonConfig.CommentedVal<Boolean> neutralAggroWhitelist;
 
-        //Debug
-        public final CommentedJsonConfig.CommentedVal<Boolean> debugPath;
-
         //Integration
         public final CommentedJsonConfig.CommentedVal<Boolean> useScalingHealthMod;
         public final CommentedJsonConfig.CommentedVal<Boolean> usePlayerEXMod;
@@ -174,12 +171,9 @@ public final class ConfigSpecs {
             this.mobListLadderWhitelist = builder.comment("Treat LADDER flags as whitelist").define("Ladder Whitelist", false);
             this.mobListStealWhitelist = builder.comment("Treat STEAL flags as whitelist").define("Steal Whitelist", false);
             this.mobListBoatWhitelist = builder.comment("Treat GUARDIAN flags as whitelist").define("Guardian Whitelist", false);
-            this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Parrot Whitelist", false);
+            this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Phantom Whitelist", false);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", false);
             this.neutralAggroWhitelist = builder.comment("Treat NEUTRALAGGRO flags as whitelist").define("Neutral Aggro Whitelist", false);
-
-            //builder.comment("Debugging").push("debug");
-            this.debugPath = builder.comment("Enable showing of entity paths").define("Path Debugging", false);
 
             //builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
