@@ -65,7 +65,7 @@ public class ItemAITasks {
     }
 
     private static boolean blockedAI(Mob entity, Item item) {
-        return (Config.CommonConfig.mobListUseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
+        return (Config.CommonConfig.itemuseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
                 || Config.CommonConfig.itemuseBlacklist.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString())
                 || Config.CommonConfig.entityItemConfig.preventUse(entity, item);
     }

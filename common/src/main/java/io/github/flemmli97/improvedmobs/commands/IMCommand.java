@@ -19,7 +19,6 @@ import net.minecraft.network.chat.Style;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-import java.awt.*;
 import java.util.Collection;
 
 public class IMCommand {
@@ -98,7 +97,7 @@ public class IMCommand {
             ServerPlayer player = src.getSource().getPlayerOrException();
             diff = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
         }
-        src.getSource().sendSuccess(new TextComponent("Difficulty: " + diff).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+        src.getSource().sendSuccess(Component.literal("Difficulty: " + diff).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
 }
