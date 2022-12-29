@@ -1,7 +1,3 @@
-Improved Mobs 1.10.16
-================
-- Use entities random instead of the levels which should fix random crashes with it
-
 Improved Mobs 1.11.0
 ================
 - The water/flying mounts (aka Guardians and Parrots) are now server sided entities.  
@@ -12,6 +8,10 @@ Improved Mobs 1.11.0
 - **-->Config names got changed!<--** some ambiguity cleared. Older configs will get overwritten
 - Added playerEx and LevelZ support: Will use player levels from the mod instead of the difficulty from this mod
   Note: The GLOBAL "Difficulty type" config will then instead be the same as PLAYERMEAN
+
+Improved Mobs 1.10.16
+================
+- Use entities random instead of the levels which should fix random crashes with it
 
 Improved Mobs 1.10.15
 ================
