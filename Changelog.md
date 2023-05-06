@@ -1,13 +1,16 @@
 Improved Mobs 1.11.0
 ================
-- The water/flying mounts (aka Guardians and Parrots) are now server sided entities.  
-  Allows for more flexibility like e.g. make it so mobs riding them cant suffocate in ceilings/walls.  
-  On the client they are displayed as Guardians and Phantoms
-- Add config option for if mobs should break blocks when idle
-- ./improvedmobs command now prints the current difficulty to chat
-- **-->Config names got changed!<--** some ambiguity cleared. Older configs will get overwritten
-- Added playerEx and LevelZ support: Will use player levels from the mod instead of the difficulty from this mod
-  Note: The GLOBAL "Difficulty type" config will then instead be the same as PLAYERMEAN
+- Update to 1.19.4
+<i>
+  - The water/flying mounts (aka Guardians and Parrots) are now server sided entities.  
+    Allows for more flexibility like e.g. make it so mobs riding them cant suffocate in ceilings/walls.  
+    On the client they are displayed as Guardians and Phantoms
+  - Add config option for if mobs should break blocks when idle
+  - ./improvedmobs command now prints the current difficulty to chat
+  - **-->Config names got changed!<--** some ambiguity cleared. Older configs will get overwritten
+  - Added playerEx and LevelZ support: Will use player levels from the mod instead of the difficulty from this mod
+    Note: The GLOBAL "Difficulty type" config will then instead be the same as PLAYERMEAN
+  </i>
 
 Improved Mobs 1.10.16
 ================
