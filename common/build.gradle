@@ -21,7 +21,7 @@ repositories {
 }
 
 dependencies {
-    modCompileOnly "${tenshilib_dep}:fabric"
+    modCompileOnly "${tenshilib_dep}-fabric"
 }
 
 publishing {

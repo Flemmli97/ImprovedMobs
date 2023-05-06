@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -172,7 +171,7 @@ public class EquipmentList {
                 }
             }
             if (item instanceof ArmorItem) {
-                switch (((ArmorItem) item).getSlot()) {
+                switch (((ArmorItem) item).getEquipmentSlot()) {
                     case FEET -> addItemTo(EquipmentSlot.FEET, item);
                     case CHEST -> addItemTo(EquipmentSlot.CHEST, item);
                     case HEAD -> addItemTo(EquipmentSlot.HEAD, item);
@@ -196,20 +195,19 @@ public class EquipmentList {
         return PlatformUtils.INSTANCE.items().getIDFrom(item).getNamespace().equals("mobbattle");
     }
 
-    private static Field techGunDmg, techgunAIAttackTime, techgunAIBurstCount, techgunAIburstAttackTime;
-    private static final List<String> defaultZeroWeight = Lists.newArrayList("techguns:nucleardeathray", "techguns:grenadelauncher", "techguns:tfg", "techguns:guidedmissilelauncher", "techguns:rocketlauncher");
+    private static final List<String> DEFAULT_ZERO_WEIGHT = Lists.newArrayList();
 
     private static float[] getDefaultWeight(Item item) {
-        if (defaultZeroWeight.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
+        if (DEFAULT_ZERO_WEIGHT.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
             return new float[]{0, 0};
         int weight = 1500;
         float quality = 0;
         if (item instanceof ArmorItem armor) {
-            float fullProt = armor.getMaterial().getDefenseForSlot(EquipmentSlot.HEAD) + armor.getMaterial().getDefenseForSlot(EquipmentSlot.CHEST) + armor.getMaterial().getDefenseForSlot(EquipmentSlot.LEGS)
-                    + armor.getMaterial().getDefenseForSlot(EquipmentSlot.FEET);
+            float fullProt = armor.getMaterial().getDefenseForType(ArmorItem.Type.HELMET) + armor.getMaterial().getDefenseForType(ArmorItem.Type.CHESTPLATE) + armor.getMaterial().getDefenseForType(ArmorItem.Type.LEGGINGS)
+                    + armor.getMaterial().getDefenseForType(ArmorItem.Type.BOOTS);
             float toughness = armor.getMaterial().getToughness();
-            float averageDurability = (armor.getMaterial().getDurabilityForSlot(EquipmentSlot.HEAD) + armor.getMaterial().getDurabilityForSlot(EquipmentSlot.CHEST) + armor.getMaterial().getDurabilityForSlot(EquipmentSlot.LEGS)
-                    + armor.getMaterial().getDurabilityForSlot(EquipmentSlot.FEET)) / 4.0F;
+            float averageDurability = (armor.getMaterial().getDurabilityForType(ArmorItem.Type.HELMET) + armor.getMaterial().getDurabilityForType(ArmorItem.Type.CHESTPLATE) + armor.getMaterial().getDurabilityForType(ArmorItem.Type.LEGGINGS)
+                    + armor.getMaterial().getDurabilityForType(ArmorItem.Type.BOOTS)) / 4.0F;
             if (averageDurability < 0)
                 averageDurability = 0;
             float ench = armor.getEnchantmentValue();

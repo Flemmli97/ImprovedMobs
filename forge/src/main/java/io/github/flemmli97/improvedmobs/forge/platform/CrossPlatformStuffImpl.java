@@ -17,8 +17,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fml.loading.FMLPaths;
-import net.minecraftforge.items.CapabilityItemHandler;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -33,9 +33,9 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public boolean canLoot(BlockEntity blockEntity) {
-        if (blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
+        if (blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).isPresent())
             return blockEntity.getCapability(TileCapProvider.CAP).map(ITileOpened::playerOpened).orElse(false) &&
-                    blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(cap -> {
+                    blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER).map(cap -> {
                         for (int i = 0; i < cap.getSlots(); i++)
                             if (!cap.getStackInSlot(i).isEmpty())
                                 return true;
@@ -46,7 +46,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public ItemStack lootRandomItem(BlockEntity blockEntity, RandomSource rand) {
-        return blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY)
+        return blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER)
                 .map(cap -> {
                     ItemStack drop = cap.extractItem(rand.nextInt(cap.getSlots()), 1, false);
                     int tries = 0;

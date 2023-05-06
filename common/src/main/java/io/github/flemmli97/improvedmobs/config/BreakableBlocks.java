@@ -5,7 +5,8 @@ import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderSet;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -69,7 +70,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
 
     private static void addBlocks(String s, Set<String> list, Set<HolderSet<Block>> tags) {
         if (s.contains(":")) {
-            Optional<HolderSet.Named<Block>> tag = Registry.BLOCK.getTag(TagKey.create(Registry.BLOCK_REGISTRY, new ResourceLocation(s)));
+            Optional<HolderSet.Named<Block>> tag = BuiltInRegistries.BLOCK.getTag(TagKey.create(Registries.BLOCK, new ResourceLocation(s)));
             if (tag.isPresent())
                 tags.add(tag.get());
             else

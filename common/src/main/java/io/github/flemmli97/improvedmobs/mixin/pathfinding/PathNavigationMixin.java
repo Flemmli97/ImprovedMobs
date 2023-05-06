@@ -24,7 +24,7 @@ public abstract class PathNavigationMixin {
 
     @Inject(method = "getGroundY", at = @At(value = "HEAD"), cancellable = true)
     private void noJumpBreakable(Vec3 pos, CallbackInfoReturnable<Double> info) {
-        if (((INodeBreakable) this.nodeEvaluator).canBreakBlocks() && PathFindingUtils.canBreak(new BlockPos(pos), this.mob)) {
+        if (((INodeBreakable) this.nodeEvaluator).canBreakBlocks() && PathFindingUtils.canBreak(BlockPos.containing(pos), this.mob)) {
             info.setReturnValue(pos.y - 0.5);
             info.cancel();
         }

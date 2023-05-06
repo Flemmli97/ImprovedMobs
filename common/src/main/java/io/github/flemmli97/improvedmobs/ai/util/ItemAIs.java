@@ -426,7 +426,7 @@ public class ItemAIs {
         @Override
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             double dis = entity.position().distanceTo(target.position());
-            if (dis < 8 && AIUtils.tryPlaceLava(entity.level, new BlockPos(target.getX() - 2 + entity.level.random.nextInt(4), target.getY() - 1 + entity.level.random.nextInt(2), target.getZ() - 2 + entity.level.random.nextInt(4)))) {
+            if (dis < 8 && AIUtils.tryPlaceLava(entity.level, BlockPos.containing(target.getX() - 2 + entity.level.random.nextInt(4), target.getY() - 1 + entity.level.random.nextInt(2), target.getZ() - 2 + entity.level.random.nextInt(4)))) {
                 entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 240, 1, true, false));
             }
         }

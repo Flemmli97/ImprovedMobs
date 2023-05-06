@@ -15,6 +15,7 @@
     "pathfinding.GroundNodeMixin",
     "pathfinding.PathNavigationMixin",
     "pathfinding.NodeEvaluatorMixin",
+    "pathfinding.SwimNodeEvaluatorMixin",
     "pathfinding.performance.FlyNodeEvaluatorMixin",
     "pathfinding.performance.WalkNodeEvaluatorMixin"
   ],

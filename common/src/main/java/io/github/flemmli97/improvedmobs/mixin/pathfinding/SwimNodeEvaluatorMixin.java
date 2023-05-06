@@ -4,9 +4,9 @@ import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.utils.PathFindingUtils;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
-import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
+import net.minecraft.world.level.pathfinder.SwimNodeEvaluator;
 import net.minecraft.world.phys.AABB;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -15,8 +15,12 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-@Mixin(value = FlyNodeEvaluator.class)
-public abstract class FlyNodeMixin extends NodeEvaluator {
+/**
+ * Duplicate of {@link FlyNodeMixin} but with SwimNodeEvaluator
+ * See {@link <a href="https://github.com/SpongePowered/Mixin/issues/603">...</a>} as to why
+ */
+@Mixin(value = SwimNodeEvaluator.class)
+public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator {
 
     @Unique
     private final Object2BooleanMap<AABB> collisionBreakableCache = new Object2BooleanOpenHashMap<>();

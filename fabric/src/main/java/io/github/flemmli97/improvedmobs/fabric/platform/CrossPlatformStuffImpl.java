@@ -8,7 +8,7 @@ import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.ITileOpened;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -32,8 +32,8 @@ import java.util.Optional;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
-    public static final TagKey<Item> fabricAxe = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("fabric", "axes"));
-    public static final TagKey<Item> commonAxe = TagKey.create(Registry.ITEM_REGISTRY, new ResourceLocation("c", "axes"));
+    public static final TagKey<Item> fabricAxe = TagKey.create(Registries.ITEM, new ResourceLocation("fabric", "axes"));
+    public static final TagKey<Item> commonAxe = TagKey.create(Registries.ITEM, new ResourceLocation("c", "axes"));
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {

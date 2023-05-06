@@ -23,6 +23,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
@@ -227,10 +228,10 @@ public class EventCalls {
     }
 
     public static float hurtEvent(LivingEntity entity, DamageSource source, float dmg) {
-        if (source.isProjectile() && source.getEntity() instanceof Monster)
+        if (source.is(DamageTypeTags.IS_PROJECTILE) && source.getEntity() instanceof Monster)
             return dmg * (EntityFlags.get(source.getEntity()).projMult);
         if (entity instanceof Monster) {
-            if (source.isMagic())
+            if (source.is(DamageTypeTags.WITCH_RESISTANT_TO))
                 return dmg * (1 - EntityFlags.get(entity).magicRes);
         }
         return dmg;
@@ -290,22 +291,14 @@ public class EventCalls {
                 ItemStack heldItem = player.getMainHandItem();
                 if (heldItem.getItem() instanceof ArmorItem) {
                     ArmorItem armor = (ArmorItem) heldItem.getItem();
-                    EquipmentSlot type = armor.getSlot();
+                    EquipmentSlot type = armor.getEquipmentSlot();
                     switch (type) {
-                        case HEAD:
-                            equipPetItem(player, mob, heldItem, EquipmentSlot.HEAD);
-                            break;
-                        case CHEST:
-                            equipPetItem(player, mob, heldItem, EquipmentSlot.CHEST);
-                            break;
-                        case LEGS:
-                            equipPetItem(player, mob, heldItem, EquipmentSlot.LEGS);
-                            break;
-                        case FEET:
-                            equipPetItem(player, mob, heldItem, EquipmentSlot.FEET);
-                            break;
-                        default:
-                            break;
+                        case HEAD -> equipPetItem(player, mob, heldItem, EquipmentSlot.HEAD);
+                        case CHEST -> equipPetItem(player, mob, heldItem, EquipmentSlot.CHEST);
+                        case LEGS -> equipPetItem(player, mob, heldItem, EquipmentSlot.LEGS);
+                        case FEET -> equipPetItem(player, mob, heldItem, EquipmentSlot.FEET);
+                        default -> {
+                        }
                     }
                     return true;
                 }
@@ -345,7 +338,7 @@ public class EventCalls {
     public static void explosion(Explosion explosion, Entity source, List<Entity> affectedEntities) {
         if (source instanceof PrimedTnt && EntityFlags.get(source).isThrownEntity) {
             explosion.getToBlow().clear();
-            LivingEntity igniter = explosion.getSourceMob();
+            LivingEntity igniter = explosion.getIndirectSourceEntity();
             if (igniter instanceof Mob) {
                 affectedEntities.removeIf(e -> !e.equals(((Mob) igniter).getTarget()));
             }

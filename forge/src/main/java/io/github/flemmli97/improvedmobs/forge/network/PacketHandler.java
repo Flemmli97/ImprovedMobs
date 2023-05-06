@@ -32,7 +32,7 @@ public class PacketHandler {
     public static <T> void sendDifficultyToClient(DifficultyData data, ServerPlayer player) {
         if (hasChannel(player))
             dispatcher.sendTo(new PacketDifficulty(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() :
-                    CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                    CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <T> void sendDifficultyToAll(DifficultyData data, MinecraftServer server) {
@@ -53,7 +53,7 @@ public class PacketHandler {
 
     public static <T> void sendConfigSync(ServerPlayer player) {
         if (hasChannel(player))
-            dispatcher.sendTo(new PacketConfig(), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+            dispatcher.sendTo(new PacketConfig(), player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
     }
 
     private static boolean hasChannel(ServerPlayer player) {

@@ -4,7 +4,7 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
 import io.github.flemmli97.tenshilib.common.utils.ArrayUtils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
-import net.minecraft.core.Registry;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -128,7 +128,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
             if (id == null)
                 this.tag = null;
             else
-                this.tag = TagKey.create(Registry.ENTITY_TYPE_REGISTRY, new ResourceLocation(ImprovedMobs.MODID, "default_blacklist_" + id));
+                this.tag = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(ImprovedMobs.MODID, "default_blacklist_" + id));
         }
 
         public static List<Flags> toggable() {

@@ -6,7 +6,6 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.item.PrimedTnt;
-import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
@@ -28,7 +27,7 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
             info.cancel();
             tnt.remove(RemovalReason.KILLED);
             if (!tnt.level.isClientSide)
-                tnt.level.explode(tnt, tnt.getX(), tnt.getY(0.0625D), tnt.getZ(), 4.0F, Explosion.BlockInteraction.BREAK);
+                tnt.level.explode(tnt, tnt.getX(), tnt.getY(0.0625D), tnt.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
         }
     }
 

@@ -4,6 +4,7 @@ import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.Utils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -129,7 +130,7 @@ public class BlockBreakGoal extends Goal {
             this.digTimer++;
             if (this.digTimer % 5 == 0) {
                 SoundType sound = CrossPlatformStuff.INSTANCE.blockSound(state, this.living, this.markedLoc);
-                this.living.level.playSound(null, this.markedLoc, Config.CommonConfig.useBlockBreakSound ? sound.getBreakSound() : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F);
+                this.living.level.playSeededSound(null, this.markedLoc.getX() + 0.5, this.markedLoc.getY() + 0.5, this.markedLoc.getZ() + 0.5, Config.CommonConfig.useBlockBreakSound ? BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound.getBreakSound()) : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F, this.living.level.getRandom().nextLong());
                 this.living.swing(InteractionHand.MAIN_HAND);
                 this.living.getLookControl().setLookAt(this.markedLoc.getX(), this.markedLoc.getY(), this.markedLoc.getZ(), 0.0F, 0.0F);
                 this.living.level.destroyBlockProgress(this.living.getId(), this.markedLoc, (int) (str) * this.digTimer * 10);

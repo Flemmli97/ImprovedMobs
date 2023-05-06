@@ -113,8 +113,8 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
     }
 
     @Override
-    public boolean rideableUnderWater() {
-        return true;
+    public boolean dismountsUnderwater() {
+        return false;
     }
 
     @Override
