@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[41,)"
+loaderVersion="[45,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/ImprovedMobs/issues"
 [[mods]]
@@ -13,18 +13,18 @@ description='''Improved AI and customizations for mobs.'''
 [[dependencies.improvedmobs]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.19,)"
+versionRange="[1.19.4,)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.improvedmobs]]
 modId="forge"
 mandatory=true
-versionRange="[41.1.0,)"
+versionRange="[45.0.22,)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.improvedmobs]]
 modId="tenshilib"
 mandatory=true
-versionRange="[1.19-1.6.9,)"
+versionRange="[1.19.4-1.6.15,)"
 ordering="NONE"
 side="BOTH"
