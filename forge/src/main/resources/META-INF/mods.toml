@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[40,)"
+loaderVersion="[${loader_version},)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/Flemmli97/ImprovedMobs/issues"
 [[mods]]
@@ -13,7 +13,13 @@ description='''Improved AI and customizations for mobs.'''
 [[dependencies.improvedmobs]]
 modId="minecraft"
 mandatory=true
-versionRange="[1.18.2,)"
+versionRange="[${mcversion},)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.improvedmobs]]
+modId="forge"
+mandatory=true
+versionRange="[${forge_version},)"
 ordering="NONE"
 side="BOTH"
 [[dependencies.improvedmobs]]
