@@ -25,6 +25,6 @@ side="BOTH"
 [[dependencies.improvedmobs]]
 modId="tenshilib"
 mandatory=true
-versionRange="[1.19.4-1.6.15,)"
+versionRange="[${tenshilib_version},)"
 ordering="NONE"
 side="BOTH"

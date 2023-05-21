@@ -44,7 +44,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-    modImplementation "${tenshilib_dep}-fabric"
+    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_dep}-fabric"
 
     modApi("${cloth_config}") {
         exclude(group: "net.fabricmc.fabric-api")
@@ -61,7 +61,8 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version, "homepage": curse_page_fabric, "mcversion": minecraft_version, "fabric_version": fabric_version
+        expand "version": project.version, "homepage": curse_page_fabric,
+                "mcversion": minecraft_version, "fabric_version": fabric_version, "tenshilib_version": tenshilib_version
     }
 }
 

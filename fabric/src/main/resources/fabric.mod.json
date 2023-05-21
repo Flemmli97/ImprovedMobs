@@ -35,6 +35,6 @@
   "depends": {
     "fabric": ">=${fabric_version}",
     "minecraft": ">=${mcversion}",
-    "tenshilib": ">=1.19.4-1.6.15"
+    "tenshilib": ">=${tenshilib_version}"
   }
 }

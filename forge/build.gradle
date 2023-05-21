@@ -39,7 +39,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    modImplementation "${tenshilib_dep}-forge"
+    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_dep}-forge"
 
     // modRuntimeOnly "${sillib_dep}"
     modCompileOnly "${scalhealth_dep}"
@@ -50,7 +50,8 @@ processResources {
 
     def loader_version = (forge_version =~ /([0-9]+)\.([0-9]+)\.([0-9]+)/)[0][1]
     filesMatching("META-INF/mods.toml") {
-        expand "version": project.version, "loader_version": loader_version, "homepage": curse_page_forge, "mcversion": minecraft_version, "forge_version": forge_version
+        expand "version": project.version, "loader_version": loader_version, "homepage": curse_page_forge,
+                "mcversion": minecraft_version, "forge_version": forge_version, "tenshilib_version": tenshilib_version
     }
 }
 
