@@ -44,7 +44,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionFabric")) { transitive false }
 
-    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_dep}-fabric"
+    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-fabric"
 
     modApi("${cloth_config}") {
         exclude(group: "net.fabricmc.fabric-api")

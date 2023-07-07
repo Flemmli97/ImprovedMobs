@@ -39,7 +39,7 @@ dependencies {
     common(project(path: ":common", configuration: "namedElements")) { transitive false }
     shadowCommon(project(path: ":common", configuration: "transformProductionForge")) { transitive = false }
 
-    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_dep}-forge"
+    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-forge"
 
     // modRuntimeOnly "${sillib_dep}"
     modCompileOnly "${scalhealth_dep}"
