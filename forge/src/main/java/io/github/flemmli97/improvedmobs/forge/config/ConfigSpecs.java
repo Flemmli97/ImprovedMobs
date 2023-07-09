@@ -206,10 +206,10 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Settings for attribute modifiers").push("attributes");
-            this.healthIncrease = builder.comment("Health will be multiplied by difficulty*0.016*x. Set to 0 to disable").defineInRange("Health Increase Multiplier", 1.0, 0, Double.MAX_VALUE);
+            this.healthIncrease = builder.comment("Health will be multiplied by 1 + difficulty*0.016*x. Set to 0 to disable").defineInRange("Health Increase Multiplier", 1.0, 0, Double.MAX_VALUE);
             this.healthMax = builder.comment("Health will be multiplied by at maximum this. Set to 0 means no limit").defineInRange("Max Health Increase", 5.0, 0, Double.MAX_VALUE);
             this.roundHP = builder.comment("Round health to the nearest x. Set to 0 to disable").defineInRange("Round HP", 0.5, 0, Double.MAX_VALUE);
-            this.damageIncrease = builder.comment("Damage will be multiplied by difficulty*0.008*x. Set to 0 to disable").defineInRange("Damage Increase Multiplier", 1.0, 0, Double.MAX_VALUE);
+            this.damageIncrease = builder.comment("Damage will be multiplied by 1 + difficulty*0.008*x. Set to 0 to disable").defineInRange("Damage Increase Multiplier", 1.0, 0, Double.MAX_VALUE);
             this.damageMax = builder.comment("Damage will be multiplied by at maximum this. Set to 0 means no limit").defineInRange("Max Damage Increase", 3.0, 0, Double.MAX_VALUE);
             this.speedIncrease = builder.comment("Speed will be increased by difficulty*0.0008*x. Set to 0 to disable").defineInRange("Speed Increase", 1.0, 0, Double.MAX_VALUE);
             this.speedMax = builder.comment("Maximum increase in speed").defineInRange("Max Speed", 0.1, 0, 1);
@@ -217,7 +217,7 @@ public class ConfigSpecs {
             this.knockbackMax = builder.comment("Maximum increase in knockback").defineInRange("Max Knockback", 0.5, 0, 1);
             this.magicResIncrease = builder.comment("Magic resistance will be increased by difficulty*0.0016*x. Set to 0 to disable").defineInRange("Magic Resistance Increase", 1.0, 0, Double.MAX_VALUE);
             this.magicResMax = builder.comment("Maximum increase in magic resistance. Magic reduction is percentage").defineInRange("Max Magic Resistance", 0.4, 0, 1);
-            this.projectileIncrease = builder.comment("Projectile Damage will be multiplied by 1+difficulty*0.008*x. Set to 0 to disable").defineInRange("Projectile Damage Increase", 1.0, 0, Double.MAX_VALUE);
+            this.projectileIncrease = builder.comment("Projectile Damage will be multiplied by 1 + difficulty*0.008*x. Set to 0 to disable").defineInRange("Projectile Damage Increase", 1.0, 0, Double.MAX_VALUE);
             this.projectileMax = builder.comment("Projectile damage will be multiplied by maximum of this").defineInRange("Max Projectile Damage", 2.0, 0, Double.MAX_VALUE);
             builder.pop();
         }
