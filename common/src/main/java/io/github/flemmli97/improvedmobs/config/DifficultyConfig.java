@@ -9,7 +9,7 @@ import java.util.List;
 
 public class DifficultyConfig implements IConfigListValue<DifficultyConfig> {
 
-    private static final Pair<Float, Float> defaultVal = Pair.of(0f, 1f);
+    private static final Pair<Float, Float> defaultVal = Pair.of(0f, 0.1f);
     private final List<Pair<Float, Float>> vals = new ArrayList<>();
 
     @Override
