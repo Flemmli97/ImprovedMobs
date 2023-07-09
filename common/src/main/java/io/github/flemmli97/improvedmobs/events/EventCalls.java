@@ -76,7 +76,7 @@ public class EventCalls {
             boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !level.getServer().getPlayerList().getPlayers().isEmpty()) && level.getDayTime() > Config.CommonConfig.difficultyDelay;
             DifficultyData data = DifficultyData.get(level.getServer());
             if (Config.CommonConfig.shouldPunishTimeSkip) {
-                long timeDiff = (int) Math.abs(level.getDayTime() - data.getPrevTime());
+                long timeDiff = Math.abs(level.getDayTime() - data.getPrevTime());
                 if (timeDiff > 2400) {
                     long i = timeDiff / 2400;
                     if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
@@ -84,12 +84,11 @@ public class EventCalls {
                     while (i > 0) {
                         data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current) : 0f, level.getDayTime(), level.getServer());
                         i--;
-                    }//data.increaseDifficultyBy(shouldIncrease ? level.getGameRules().getBoolean("doIMDifficulty") ? i / 24000F : 0 : 0, level.getDayTime());
+                    }
                 }
             } else {
                 if (level.getDayTime() - data.getPrevTime() > 2400) {
                     data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current) : 0, level.getDayTime(), level.getServer());
-                    //data.increaseDifficultyBy(shouldIncrease ? level.getGameRules().getBoolean("doIMDifficulty") ? 0.1F : 0 : 0, level.getDayTime());
                 }
             }
         }
