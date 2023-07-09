@@ -5,6 +5,7 @@ Improved Mobs 1.11.1
 - Nullcheck for goal modification
 - Fix 2 configs having the same name and causing issues:
   The config for the USEITEM flag whitelist has been renamed to `Use Flag Whitelist`
+- Fix difficulty sometimes stuck with high playtime (hp)
 
 Improved Mobs 1.11.0
 ================
