@@ -56,7 +56,7 @@ public class EntityFlags {
         this.enchantGear = nbt.getBoolean("GearEnchanted");
         this.isThrownEntity = nbt.getBoolean("IsThrown");
         this.magicRes = nbt.getFloat("MagicRes");
-        this.projMult = nbt.getFloat("ProjBoost");
+        this.projMult = nbt.contains("ProjBoost") ? nbt.getFloat("ProjBoost") : 1;
         if (nbt.contains(SERVER_ENTITY_TAG_ID))
             this.serverSideEntityID = new ResourceLocation(nbt.getString(SERVER_ENTITY_TAG_ID));
     }
