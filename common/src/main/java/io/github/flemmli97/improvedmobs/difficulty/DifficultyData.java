@@ -86,6 +86,7 @@ public class DifficultyData extends SavedData {
 
     public void setDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel = level;
+        this.prevTime = server.overworld().getDayTime();
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
         this.setDirty();
     }
