@@ -17,15 +17,17 @@ public abstract class GoalSelectorMixin implements IGoalModifier {
     @Shadow
     Set<WrappedGoal> availableGoals;
 
+    //No idea what mod causes the wrapped goal to be null but idc anymore...
     @Override
     public void goalRemovePredicate(Predicate<Goal> goal) {
-        this.availableGoals.stream().filter(wrappedGoal -> goal.test(wrappedGoal.getGoal())).filter(WrappedGoal::isRunning).forEach(WrappedGoal::stop);
-        this.availableGoals.removeIf(wrappedGoal -> goal.test(wrappedGoal.getGoal()));
+        this.availableGoals.stream().filter(wrappedGoal -> wrappedGoal != null && goal.test(wrappedGoal.getGoal())).filter(WrappedGoal::isRunning).forEach(WrappedGoal::stop);
+        this.availableGoals.removeIf(wrappedGoal -> wrappedGoal != null && goal.test(wrappedGoal.getGoal()));
     }
 
+    //No idea what mod causes the wrapped goal to be null but idc anymore...
     @SuppressWarnings("unchecked")
     @Override
     public <T extends Goal> void modifyGoal(Class<T> clss, Consumer<T> cons) {
-        this.availableGoals.stream().filter(prio -> clss.isInstance(prio.getGoal())).forEach(prio -> cons.accept((T) prio.getGoal()));
+        this.availableGoals.stream().filter(prio -> prio != null && clss.isInstance(prio.getGoal())).forEach(prio -> cons.accept((T) prio.getGoal()));
     }
 }
