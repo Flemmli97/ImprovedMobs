@@ -54,9 +54,7 @@ public class ImprovedMobsForge {
         } catch (EquipmentList.InvalidItemNameException e) {
             ImprovedMobs.logger.error(e.getMessage());
         }
-        if (Config.CommonConfig.enableDifficultyScaling) {
-            MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
-        }
+        MinecraftForge.EVENT_BUS.register(new DifficultyHandler());
     }
 
     static void conf(ModConfigEvent event) {
