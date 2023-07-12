@@ -1,3 +1,12 @@
+Improved Mobs 1.11.2
+================
+- Fix mobs in some cases riding phantoms despite no benefit
+- Add tag `improved:armor_equippable`. Adding mobs to this tag allows the player to give them armor similar 
+  to giving pets armor.
+- New config value: `Explosion Damage Increase` and `Max Explosion Damage`.
+  So explosion damage are scaled with difficulty now. Default max multiplier is a 75% damage increase
+  achieved at 250 difficulty
+
 Improved Mobs 1.11.1
 ================
 - Fix projectile dmg multiplier sometimes being 0
