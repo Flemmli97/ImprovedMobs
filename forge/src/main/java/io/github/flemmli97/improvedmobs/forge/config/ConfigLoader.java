@@ -112,6 +112,8 @@ public class ConfigLoader {
         Config.CommonConfig.magicResMax = ConfigSpecs.commonConf.magicResMax.get().floatValue();
         Config.CommonConfig.projectileIncrease = ConfigSpecs.commonConf.projectileIncrease.get().floatValue();
         Config.CommonConfig.projectileMax = ConfigSpecs.commonConf.projectileMax.get().floatValue();
+        Config.CommonConfig.explosionIncrease = ConfigSpecs.commonConf.explosionIncrease.get().floatValue();
+        Config.CommonConfig.explosionMax = ConfigSpecs.commonConf.explosionMax.get().floatValue();
     }
 
     public static void serverInit(ServerLevel world) {

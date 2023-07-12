@@ -222,6 +222,9 @@ public class EventCalls {
                 if (Config.CommonConfig.projectileIncrease != 0)
                     EntityFlags.get(living).projMult = 1 +
                             (Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, Config.CommonConfig.projectileMax - 1));
+                if (Config.CommonConfig.explosionIncrease != 0)
+                    EntityFlags.get(living).explosionMult = 1 +
+                            (Config.CommonConfig.explosionMax <= 0 ? Config.CommonConfig.explosionIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.explosionIncrease * 0.008f * difficulty, Config.CommonConfig.explosionMax - 1));
             }
             flags.modifyAttributes = true;
         }
@@ -230,6 +233,8 @@ public class EventCalls {
     public static float hurtEvent(LivingEntity entity, DamageSource source, float dmg) {
         if (source.is(DamageTypeTags.IS_PROJECTILE) && source.getEntity() instanceof Monster)
             return dmg * (EntityFlags.get(source.getEntity()).projMult);
+        if (source.is(DamageTypeTags.IS_EXPLOSION) && source.getEntity() instanceof Monster)
+            return dmg * (EntityFlags.get(source.getEntity()).explosionMult);
         if (entity instanceof Monster) {
             if (source.is(DamageTypeTags.WITCH_RESISTANT_TO))
                 return dmg * (1 - EntityFlags.get(entity).magicRes);

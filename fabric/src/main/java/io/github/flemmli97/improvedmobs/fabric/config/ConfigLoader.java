@@ -116,6 +116,8 @@ public class ConfigLoader {
         Config.CommonConfig.magicResMax = specs.magicResMax.get().floatValue();
         Config.CommonConfig.projectileIncrease = specs.projectileIncrease.get().floatValue();
         Config.CommonConfig.projectileMax = specs.projectileMax.get().floatValue();
+        Config.CommonConfig.explosionIncrease = specs.explosionIncrease.get().floatValue();
+        Config.CommonConfig.explosionMax = specs.explosionMax.get().floatValue();
         return InteractionResult.CONSUME;
     }
 

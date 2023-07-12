@@ -119,6 +119,8 @@ public class Config {
         public static float magicResMax;
         public static float projectileIncrease;
         public static float projectileMax;
+        public static float explosionIncrease;
+        public static float explosionMax;
 
         public static ItemStack getRandomBreakingItem(RandomSource rand) {
             int total = WeightedRandom.getTotalWeight(breakingItem);
