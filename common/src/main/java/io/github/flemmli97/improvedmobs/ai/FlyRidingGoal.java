@@ -13,6 +13,7 @@ import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.pathfinder.Path;
+import net.minecraft.world.level.pathfinder.PathFinder;
 
 public class FlyRidingGoal extends Goal {
 
@@ -25,6 +26,14 @@ public class FlyRidingGoal extends Goal {
     public FlyRidingGoal(Mob living) {
         this.living = living;
         this.flyer = new FlyingPathNavigation(living, living.level) {
+
+            @Override
+            protected PathFinder createPathFinder(int maxVisitedNodes) {
+                this.nodeEvaluator = new FlyNodeEvalRider();
+                this.nodeEvaluator.setCanPassDoors(true);
+                return new PathFinder(this.nodeEvaluator, maxVisitedNodes);
+            }
+
             @Override
             public boolean isStableDestination(BlockPos blockPos) {
                 return true;
