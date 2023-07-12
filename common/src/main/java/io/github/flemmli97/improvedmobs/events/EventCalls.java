@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.events;
 
+import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.BlockBreakGoal;
 import io.github.flemmli97.improvedmobs.ai.FlyRidingGoal;
 import io.github.flemmli97.improvedmobs.ai.ItemUseGoal;
@@ -283,12 +284,11 @@ public class EventCalls {
     }
 
     public static boolean equipPet(Player player, InteractionHand hand, Entity target) {
-        if (hand == InteractionHand.MAIN_HAND && target instanceof Mob mob && mob instanceof OwnableEntity pet && !target.level.isClientSide && player.isShiftKeyDown()
+        if (hand == InteractionHand.MAIN_HAND && target instanceof Mob mob && (mob instanceof OwnableEntity || mob.getType().is(ImprovedMobs.ARMOR_EQUIPPABLE)) && !target.level.isClientSide && player.isShiftKeyDown()
                 && !Utils.isInList(target, Config.CommonConfig.petArmorBlackList, Config.CommonConfig.petWhiteList, Utils.entityID)) {
-            if (player == pet.getOwner()) {
+            if (!(mob instanceof OwnableEntity pet) || player == pet.getOwner()) {
                 ItemStack heldItem = player.getMainHandItem();
-                if (heldItem.getItem() instanceof ArmorItem) {
-                    ArmorItem armor = (ArmorItem) heldItem.getItem();
+                if (heldItem.getItem() instanceof ArmorItem armor) {
                     EquipmentSlot type = armor.getSlot();
                     switch (type) {
                         case HEAD:
