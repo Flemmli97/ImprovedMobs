@@ -224,7 +224,7 @@ public class EventCalls {
                             (Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, Config.CommonConfig.projectileMax - 1));
                 if (Config.CommonConfig.explosionIncrease != 0)
                     EntityFlags.get(living).explosionMult = 1 +
-                            (Config.CommonConfig.explosionMax <= 0 ? Config.CommonConfig.explosionIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.explosionIncrease * 0.008f * difficulty, Config.CommonConfig.explosionMax - 1));
+                            (Config.CommonConfig.explosionMax <= 0 ? Config.CommonConfig.explosionIncrease * 0.0025f * difficulty : Math.min(Config.CommonConfig.explosionIncrease * 0.0025f * difficulty, Config.CommonConfig.explosionMax - 1));
             }
             flags.modifyAttributes = true;
         }
