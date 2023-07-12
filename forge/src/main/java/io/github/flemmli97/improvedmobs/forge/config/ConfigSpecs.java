@@ -127,6 +127,8 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.DoubleValue magicResMax;
         public final ForgeConfigSpec.DoubleValue projectileIncrease;
         public final ForgeConfigSpec.DoubleValue projectileMax;
+        public final ForgeConfigSpec.DoubleValue explosionIncrease;
+        public final ForgeConfigSpec.DoubleValue explosionMax;
 
         public CommonConfigVals(ForgeConfigSpec.Builder builder) {
             builder.comment("Default difficulty caps at 250")/*.translation("improvedmobs.general")*/.push("general");
@@ -219,6 +221,8 @@ public class ConfigSpecs {
             this.magicResMax = builder.comment("Maximum increase in magic resistance. Magic reduction is percentage").defineInRange("Max Magic Resistance", 0.4, 0, 1);
             this.projectileIncrease = builder.comment("Projectile Damage will be multiplied by 1 + difficulty*0.008*x. Set to 0 to disable").defineInRange("Projectile Damage Increase", 1.0, 0, Double.MAX_VALUE);
             this.projectileMax = builder.comment("Projectile damage will be multiplied by maximum of this").defineInRange("Max Projectile Damage", 2.0, 0, Double.MAX_VALUE);
+            this.explosionIncrease = builder.comment("Explosion Damage will be multiplied by 1 + difficulty*0.003*x. Set to 0 to disable").defineInRange("Explosion Damage Increase", 1.0, 0, Double.MAX_VALUE);
+            this.explosionMax = builder.comment("Explosion damage will be multiplied by maximum of this").defineInRange("Max Explosion Damage", 1.75, 0, Double.MAX_VALUE);
             builder.pop();
         }
     }

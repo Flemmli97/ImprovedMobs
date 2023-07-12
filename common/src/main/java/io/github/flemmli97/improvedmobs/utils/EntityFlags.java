@@ -25,7 +25,7 @@ public class EntityFlags {
 
     private int shieldCooldown;
 
-    public float magicRes, projMult = 1;
+    public float magicRes, projMult = 1, explosionMult = 1;
 
     public ResourceLocation serverSideEntityID;
 
@@ -44,6 +44,7 @@ public class EntityFlags {
         tag.putBoolean("IsThrown", this.isThrownEntity);
         tag.putFloat("MagicRes", this.magicRes);
         tag.putFloat("ProjBoost", this.projMult);
+        tag.putFloat("explosionMult", this.explosionMult);
         return tag;
     }
 
@@ -57,6 +58,7 @@ public class EntityFlags {
         this.isThrownEntity = nbt.getBoolean("IsThrown");
         this.magicRes = nbt.getFloat("MagicRes");
         this.projMult = nbt.contains("ProjBoost") ? nbt.getFloat("ProjBoost") : 1;
+        this.explosionMult = nbt.contains("ExplosionBoost") ? nbt.getFloat("ExplosionBoost") : 1;
         if (nbt.contains(SERVER_ENTITY_TAG_ID))
             this.serverSideEntityID = new ResourceLocation(nbt.getString(SERVER_ENTITY_TAG_ID));
     }
