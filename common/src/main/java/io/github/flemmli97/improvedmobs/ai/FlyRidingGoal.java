@@ -121,7 +121,7 @@ public class FlyRidingGoal extends Goal {
             if (ground != null && ground.canReach())
                 return false;
             Path flyer = this.flyer.createPath(this.living.getTarget(), 1);
-            double dist = path == null ? this.living.blockPosition().distManhattan(this.living.getTarget().blockPosition()) : path.getDistToTarget();
+            double dist = path == null || path.getEndNode() == null ? this.living.blockPosition().distManhattan(this.living.getTarget().blockPosition()) : path.getEndNode().distanceManhattan(this.living.getTarget().blockPosition());
             return flyer != null && (flyer.canReach() || flyer.getDistToTarget() < dist);
         }
         return false;
