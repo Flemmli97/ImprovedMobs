@@ -1,4 +1,4 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-1.2/common.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/common.gradle"
 
 loom {
     accessWidenerPath.set project(":fabric").file("src/main/resources/improvedmobs.accesswidener")
