@@ -23,7 +23,6 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -49,33 +48,32 @@ public class AIUtils {
         double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
         double d2 = target.getZ() - entity.getZ();
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.level.getDifficulty().getId() * 4));
+        abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.level().getDifficulty().getId() * 4));
         entity.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
-        entity.level.addFreshEntity(abstractarrowentity);
+        entity.level().addFreshEntity(abstractarrowentity);
     }
 
     public static void tridentAttack(Mob entity, LivingEntity target) {
-        ThrownTrident tridententity = new ThrownTrident(entity.level, entity, new ItemStack(Items.TRIDENT));
+        ThrownTrident tridententity = new ThrownTrident(entity.level(), entity, new ItemStack(Items.TRIDENT));
         double d0 = target.getX() - entity.getX();
         double d1 = target.getY(0.3333333333333333D) - tridententity.getY();
         double d2 = target.getZ() - entity.getZ();
         double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        tridententity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.level.getDifficulty().getId() * 4));
+        tridententity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.level().getDifficulty().getId() * 4));
         entity.playSound(SoundEvents.DROWNED_SHOOT, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
-        entity.level.addFreshEntity(tridententity);
+        entity.level().addFreshEntity(tridententity);
     }
 
     public static boolean tryPlaceLava(Level level, BlockPos pos) {
         BlockState state = level.getBlockState(pos);
-        Material material = state.getMaterial();
-        boolean flag = !material.isSolid();
-        boolean flag1 = state.getMaterial().isReplaceable();
+        boolean flag = !state.isSolid();
+        boolean flag1 = state.canBeReplaced();
 
         if (!state.getFluidState().isEmpty())
             return false;
         if (!state.isAir() && !flag && !flag1)
             return false;
-        if (!level.isClientSide && (flag || flag1) && !material.isLiquid()) {
+        if (!level.isClientSide && (flag || flag1) && !state.liquid()) {
             level.destroyBlock(pos, true);
         }
         level.playSound(null, pos, SoundEvents.BUCKET_EMPTY_LAVA, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -93,7 +91,7 @@ public class AIUtils {
 
     public static void applyPotion(ThrownPotion entity, List<MobEffectInstance> p_213888_1_, @Nullable Entity p_213888_2_) {
         AABB axisalignedbb = entity.getBoundingBox().inflate(4.0D, 2.0D, 4.0D);
-        List<LivingEntity> list = entity.level.getEntitiesOfClass(LivingEntity.class, axisalignedbb);
+        List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class, axisalignedbb);
         for (LivingEntity livingentity : list) {
             if (entity.getOwner() instanceof Mob && !livingentity.equals(((Mob) entity.getOwner()).getTarget()))
                 continue;

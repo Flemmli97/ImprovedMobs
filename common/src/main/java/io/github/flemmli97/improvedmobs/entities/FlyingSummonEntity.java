@@ -69,6 +69,11 @@ public class FlyingSummonEntity extends RiddenSummonEntity {
     }
 
     @Override
+    public double getPassengersRidingOffset() {
+        return this.getType().getDimensions().height * 0.35f; //Phantom riding offset. See Phantom#getStandingEyeHeight
+    }
+
+    @Override
     protected void addPassenger(Entity passenger) {
         if (this.getPassengers().isEmpty()) {
             float widthPassenger = passenger.getBbWidth();

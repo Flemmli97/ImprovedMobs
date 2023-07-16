@@ -22,12 +22,12 @@ public class ServersideRegister {
             entity.getServer().tell(new TickTask(1, () -> {
                 Function<Level, Entity> f = ENTITIES.get(flags.serverSideEntityID);
                 if (f != null) {
-                    Entity newE = f.apply(entity.level);
+                    Entity newE = f.apply(entity.level());
                     CompoundTag tag = entity.saveWithoutId(new CompoundTag());
                     tag.remove(Entity.UUID_TAG);
                     newE.load(tag);
                     entity.discard();
-                    entity.level.addFreshEntity(newE);
+                    entity.level().addFreshEntity(newE);
                     if (entity.getFirstPassenger() != null)
                         entity.getFirstPassenger().startRiding(newE);
                 }

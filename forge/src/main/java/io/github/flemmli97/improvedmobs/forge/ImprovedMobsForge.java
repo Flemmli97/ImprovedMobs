@@ -2,7 +2,6 @@ package io.github.flemmli97.improvedmobs.forge;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
-import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.forge.capability.TileCapProvider;
 import io.github.flemmli97.improvedmobs.forge.client.ClientEventHandler;

@@ -147,7 +147,7 @@ public class Utils {
         }
         if (entity.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(entity))
             f /= 5.0F;
-        if (!entity.isOnGround())
+        if (!entity.onGround())
             f /= 5.0F;
         return f;
     }

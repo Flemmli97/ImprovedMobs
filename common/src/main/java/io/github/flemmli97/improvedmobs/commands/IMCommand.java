@@ -37,11 +37,11 @@ public class IMCommand {
     }
 
     private static int reloadJson(CommandContext<CommandSourceStack> src) {
-        src.getSource().sendSuccess(Component.literal("Reloading equipment.json"), true);
+        src.getSource().sendSuccess(() -> Component.literal("Reloading equipment.json"), true);
         try {
             EquipmentList.initEquip();
         } catch (EquipmentList.InvalidItemNameException e) {
-            src.getSource().sendSuccess(Component.literal(e.getMessage()), false);
+            src.getSource().sendSuccess(() -> Component.literal(e.getMessage()), false);
         }
         return 1;
     }
@@ -49,14 +49,14 @@ public class IMCommand {
     private static int setDifficulty(CommandContext<CommandSourceStack> src) {
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
         data.setDifficulty(FloatArgumentType.getFloat(src, "val"), src.getSource().getServer());
-        src.getSource().sendSuccess(Component.literal("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+        src.getSource().sendSuccess(() -> Component.literal("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
 
     private static int addDifficulty(CommandContext<CommandSourceStack> src) {
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
         data.addDifficulty(FloatArgumentType.getFloat(src, "val"), src.getSource().getServer());
-        src.getSource().sendSuccess(Component.literal("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+        src.getSource().sendSuccess(() -> Component.literal("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
 
@@ -68,7 +68,7 @@ public class IMCommand {
             CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(data -> {
                 data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
                 CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
-                src.getSource().sendSuccess(Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+                src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
             });
         }
         return profs.size();
@@ -82,7 +82,7 @@ public class IMCommand {
             CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(data -> {
                 data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
                 CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
-                src.getSource().sendSuccess(Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+                src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
             });
         }
         return profs.size();
@@ -97,7 +97,7 @@ public class IMCommand {
             ServerPlayer player = src.getSource().getPlayerOrException();
             diff = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
         }
-        src.getSource().sendSuccess(Component.literal("Difficulty: " + diff).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+        src.getSource().sendSuccess(() -> Component.literal("Difficulty: " + diff).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
 }

@@ -16,7 +16,7 @@ public class DifficultyHandler {
 
     @SubscribeEvent
     public void worldJoin(EntityJoinLevelEvent event) {
-        if (event.getEntity() instanceof ServerPlayer player && !event.getEntity().level.isClientSide) {
+        if (event.getEntity() instanceof ServerPlayer player && !event.getEntity().level().isClientSide) {
             EventCalls.worldJoin(player, player.getServer());
         }
     }

@@ -77,7 +77,7 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
     public void aiStep() {
         super.aiStep();
         --this.leapTick;
-        if (this.leapTick < 0 || this.isOnGround())
+        if (this.leapTick < 0 || this.onGround())
             this.leapDir = null;
         if (this.isInWaterOrBubble()) {
             this.setAirSupply(300);

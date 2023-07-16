@@ -176,6 +176,6 @@ public abstract class RiddenSummonEntity extends Mob {
     public abstract ResourceLocation serverSideID();
 
     public boolean doesntCollideWithRidden(Entity rider) {
-        return this.level.noCollision(this, riddenAABB(this.getBoundingBox(), rider.getBoundingBox()));
+        return this.level().noCollision(this, riddenAABB(this.getBoundingBox(), rider.getBoundingBox()));
     }
 }

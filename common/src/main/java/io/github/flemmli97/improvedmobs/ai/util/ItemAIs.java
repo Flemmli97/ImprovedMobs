@@ -38,30 +38,30 @@ public class ItemAIs {
     public static final ItemAI ENCHANTEDBOOK = new ItemAI() {
         @Override
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
-            if (!entity.level.isClientSide) {
-                List<Entity> nearby = entity.level.getEntities(entity, entity.getBoundingBox().inflate(8.0D));
-                List<Entity> nearTarget = entity.level.getEntities(entity.getTarget(), entity.getTarget().getBoundingBox().inflate(2.0D));
-                if (nearby.isEmpty() || nearby.size() == 1 && nearby.get(0) == entity.getTarget() || entity.level.random.nextInt(3) <= 1) {
+            if (!entity.level().isClientSide) {
+                List<Entity> nearby = entity.level().getEntities(entity, entity.getBoundingBox().inflate(8.0D));
+                List<Entity> nearTarget = entity.level().getEntities(entity.getTarget(), entity.getTarget().getBoundingBox().inflate(2.0D));
+                if (nearby.isEmpty() || nearby.size() == 1 && nearby.get(0) == entity.getTarget() || entity.level().random.nextInt(3) <= 1) {
                     if (nearTarget.isEmpty())
                         for (int x = -1; x <= 1; x++)
                             for (int z = -1; z <= 1; z++) {
                                 if (x == 0 || z == 0) {
                                     Vec3 targetMotion = target.getDeltaMovement();
-                                    EvokerFangs fang = new EvokerFangs(entity.level, target.getX() + x + targetMotion.x, target.getY(), target.getZ() + z + targetMotion.z, 0, 5, entity);
-                                    entity.level.addFreshEntity(fang);
+                                    EvokerFangs fang = new EvokerFangs(entity.level(), target.getX() + x + targetMotion.x, target.getY(), target.getZ() + z + targetMotion.z, 0, 5, entity);
+                                    entity.level().addFreshEntity(fang);
                                 }
                             }
                     else {
-                        ShulkerBullet bullet = new ShulkerBullet(entity.level, entity, target, entity.getDirection().getAxis());
+                        ShulkerBullet bullet = new ShulkerBullet(entity.level(), entity, target, entity.getDirection().getAxis());
                         EntityFlags.get(bullet).isThrownEntity = true;
-                        entity.level.addFreshEntity(bullet);
+                        entity.level().addFreshEntity(bullet);
                     }
                 } else {
                     for (int i = 0; i < nearby.size(); i++) {
-                        Entity entityRand = nearby.get(entity.level.random.nextInt(nearby.size()));
+                        Entity entityRand = nearby.get(entity.level().random.nextInt(nearby.size()));
                         if (entityRand instanceof Monster mob && entityRand != entity.getTarget()) {
-                            mob.addEffect(new MobEffectInstance(potionEffects.get(mob.level.random.nextInt(6)).get(), 3600, 1));
-                            entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ELDER_GUARDIAN_CURSE, SoundSource.NEUTRAL, 2F, 1.0F);
+                            mob.addEffect(new MobEffectInstance(potionEffects.get(mob.level().random.nextInt(6)).get(), 3600, 1));
+                            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ELDER_GUARDIAN_CURSE, SoundSource.NEUTRAL, 2F, 1.0F);
                             return;
                         }
                     }
@@ -123,11 +123,11 @@ public class ItemAIs {
         @Override
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             double dis = entity.position().distanceTo(target.position());
-            if (!entity.level.isClientSide) {
-                PrimedTnt tnt = new PrimedTnt(entity.level, entity.getX(), entity.getY(), entity.getZ(), entity);
+            if (!entity.level().isClientSide) {
+                PrimedTnt tnt = new PrimedTnt(entity.level(), entity.getX(), entity.getY(), entity.getZ(), entity);
                 ((ITNTThrowable) tnt).shootFromEntity(entity, entity.getXRot(), entity.getYRot(), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
                 EntityFlags.get(tnt).isThrownEntity = true;
-                entity.level.addFreshEntity(tnt);
+                entity.level().addFreshEntity(tnt);
             }
         }
 
@@ -180,13 +180,13 @@ public class ItemAIs {
             ItemStack stack = entity.getItemInHand(hand);
             if (AIUtils.isBadPotion(stack)) {
                 double dis = entity.position().distanceTo(target.position());
-                entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level.random.nextFloat() * 0.4F + 0.8F));
-                if (!entity.level.isClientSide) {
-                    ThrownPotion potion = new ThrownPotion(entity.level, entity);
+                entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level().random.nextFloat() * 0.4F + 0.8F));
+                if (!entity.level().isClientSide) {
+                    ThrownPotion potion = new ThrownPotion(entity.level(), entity);
                     potion.setItem(stack);
                     potion.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
                     EntityFlags.get(potion).isThrownEntity = true;
-                    entity.level.addFreshEntity(potion);
+                    entity.level().addFreshEntity(potion);
                 }
             }
         }
@@ -219,13 +219,13 @@ public class ItemAIs {
             ItemStack stack = entity.getItemInHand(hand);
             if (AIUtils.isBadPotion(stack)) {
                 double dis = entity.position().distanceTo(target.position());
-                entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level.random.nextFloat() * 0.4F + 0.8F));
-                if (!entity.level.isClientSide) {
-                    ThrownPotion potion = new ThrownPotion(entity.level, entity);
+                entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SPLASH_POTION_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level().random.nextFloat() * 0.4F + 0.8F));
+                if (!entity.level().isClientSide) {
+                    ThrownPotion potion = new ThrownPotion(entity.level(), entity);
                     potion.setItem(stack);
                     potion.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
                     EntityFlags.get(potion).isThrownEntity = true;
-                    entity.level.addFreshEntity(potion);
+                    entity.level().addFreshEntity(potion);
                 }
             }
         }
@@ -257,7 +257,7 @@ public class ItemAIs {
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             ItemStack stack = entity.getItemInHand(hand);
             float vel = CrossbowItem.containsChargedProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
-            CrossbowItem.performShooting(entity.level, entity, hand, stack, vel, 1);
+            CrossbowItem.performShooting(entity.level(), entity, hand, stack, vel, 1);
             CrossbowItem.setCharged(stack, false);
         }
 
@@ -356,12 +356,12 @@ public class ItemAIs {
 
         @Override
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
-            entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level.random.nextFloat() * 0.4F + 0.8F));
-            if (!entity.level.isClientSide) {
-                Snowball snowball = new Snowball(entity.level, entity);
+            entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level().random.nextFloat() * 0.4F + 0.8F));
+            if (!entity.level().isClientSide) {
+                Snowball snowball = new Snowball(entity.level(), entity);
                 snowball.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), 0, 1.5F, 1.0F);
                 EntityFlags.get(snowball).isThrownEntity = true;
-                entity.level.addFreshEntity(snowball);
+                entity.level().addFreshEntity(snowball);
             }
         }
 
@@ -387,8 +387,8 @@ public class ItemAIs {
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             double dis = entity.position().distanceToSqr(target.position());
             if (dis > 49.0) {
-                entity.level.playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level.random.nextFloat() * 0.4F + 0.8F));
-                if (!entity.level.isClientSide) {
+                entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (entity.level().random.nextFloat() * 0.4F + 0.8F));
+                if (!entity.level().isClientSide) {
                     Vec3 v1 = entity.position().subtract(target.position()).normalize().scale(16);
                     double x = 0;
                     double y = 0;
@@ -398,9 +398,9 @@ public class ItemAIs {
                         y = v1.y;
                         z = v1.z;
                     }
-                    ThrownEnderpearl pearl = new ThrownEnderpearl(entity.level, entity);
+                    ThrownEnderpearl pearl = new ThrownEnderpearl(entity.level(), entity);
                     AIUtils.setHeadingToPosition(pearl, target.getX() - x, target.getY() - y, target.getZ() - z, 1.5F, 3.0F);
-                    entity.level.addFreshEntity(pearl);
+                    entity.level().addFreshEntity(pearl);
                 }
             }
         }
@@ -426,7 +426,7 @@ public class ItemAIs {
         @Override
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             double dis = entity.position().distanceTo(target.position());
-            if (dis < 8 && AIUtils.tryPlaceLava(entity.level, BlockPos.containing(target.getX() - 2 + entity.level.random.nextInt(4), target.getY() - 1 + entity.level.random.nextInt(2), target.getZ() - 2 + entity.level.random.nextInt(4)))) {
+            if (dis < 8 && AIUtils.tryPlaceLava(entity.level(), BlockPos.containing(target.getX() - 2 + entity.level().random.nextInt(4), target.getY() - 1 + entity.level().random.nextInt(2), target.getZ() - 2 + entity.level().random.nextInt(4)))) {
                 entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 240, 1, true, false));
             }
         }

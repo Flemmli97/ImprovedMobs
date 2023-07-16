@@ -13,7 +13,7 @@ public class FlyNodeEvalRider extends FlyNodeEvaluator {
     @Override
     public void prepare(PathNavigationRegion level, Mob mob) {
         super.prepare(level, mob);
-        double heightInc = EntityType.PHANTOM.getDimensions().height * 0.75 + mob.getMyRidingOffset();
+        double heightInc = EntityType.PHANTOM.getDimensions().height * 0.35 + mob.getMyRidingOffset();
         this.entityHeight += Math.ceil(heightInc);
     }
 }

@@ -22,8 +22,8 @@ public class ClientEventHandler {
 
     public static void showDifficulty(RegisterGuiOverlaysEvent e) {
         e.registerBelow(VanillaGuiOverlay.EXPERIENCE_BAR.id(), overlayID.getPath(),
-                (forgeGui, poseStack, partialTicks, width, length) -> {
-                    ClientEvents.showDifficulty(poseStack);
+                (forgeGui, graphics, partialTicks, width, length) -> {
+                    ClientEvents.showDifficulty(graphics);
                 });
     }
 

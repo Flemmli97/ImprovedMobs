@@ -25,7 +25,7 @@ public class FlyRidingGoal extends Goal {
 
     public FlyRidingGoal(Mob living) {
         this.living = living;
-        this.flyer = new FlyingPathNavigation(living, living.level) {
+        this.flyer = new FlyingPathNavigation(living, living.level()) {
 
             @Override
             protected PathFinder createPathFinder(int maxVisitedNodes) {
@@ -91,11 +91,11 @@ public class FlyRidingGoal extends Goal {
     public void tick() {
         if (this.start) {
             if (!this.living.isPassenger()) {
-                FlyingSummonEntity boat = new FlyingSummonEntity(this.living.level);
+                FlyingSummonEntity boat = new FlyingSummonEntity(this.living.level());
                 BlockPos pos = this.living.blockPosition();
                 boat.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.getYRot(), this.living.getXRot());
                 if (boat.doesntCollideWithRidden(this.living)) {
-                    this.living.level.addFreshEntity(boat);
+                    this.living.level().addFreshEntity(boat);
                     this.living.startRiding(boat);
                     this.flyDelay = 0;
                 }
@@ -113,7 +113,7 @@ public class FlyRidingGoal extends Goal {
         //Check if entity tries to move somewhere already
         if (Math.abs(this.living.xxa) > 0.005 || Math.abs(this.living.zza) > 0.005)
             return false;
-        if (this.living.isNoGravity() || !this.living.isOnGround())
+        if (this.living.isNoGravity() || !this.living.onGround())
             return false;
         Path path = this.living.getNavigation().getPath();
         if (path == null || (path.isDone() && !path.canReach())) {
@@ -121,26 +121,26 @@ public class FlyRidingGoal extends Goal {
             if (ground != null && ground.canReach())
                 return false;
             Path flyer = this.flyer.createPath(this.living.getTarget(), 1);
-            double dist = path == null ? this.living.blockPosition().distManhattan(this.living.getTarget().blockPosition()) : path.getDistToTarget();
+            double dist = path == null || path.getEndNode() == null ? this.living.blockPosition().distManhattan(this.living.getTarget().blockPosition()) : path.getEndNode().distanceManhattan(this.living.getTarget().blockPosition());
             return flyer != null && (flyer.canReach() || flyer.getDistToTarget() < dist);
         }
         return false;
     }
 
     private boolean isOnLand(Entity riding) {
-        if (this.living.getNavigation().isDone() && riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid())
+        if (this.living.getNavigation().isDone() && riding.level().getBlockState(riding.blockPosition().below()).isSolid())
             return true;
         LivingEntity target = this.living.getTarget();
         PathNavigation trueNav = ((MobEntityMixin) this.living).getTrueNavigator();
         if (target != null) {
             if (BehaviorUtils.isWithinAttackRange(this.living, target, 0))
-                return riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid();
+                return riding.level().getBlockState(riding.blockPosition().below()).isSolid();
             if (--this.pathCheckWait > 0)
                 return false;
             Path ground = trueNav.createPath(target, 1);
             this.pathCheckWait = 25;
             if (ground != null && ground.canReach())
-                return riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid();
+                return riding.level().getBlockState(riding.blockPosition().below()).isSolid();
         }
         return false;
     }

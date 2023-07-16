@@ -1,3 +1,9 @@
+Improved Mobs 1.11.3
+================
+- Port 1.20.1
+~~- Fix Boundingbox for flying summons not calculated correctly~~
+~~- Fix flying ai checking for target pos instead of path end pos~~
+
 Improved Mobs 1.11.2
 ================
 - Fix mobs in some cases riding phantoms despite no benefit

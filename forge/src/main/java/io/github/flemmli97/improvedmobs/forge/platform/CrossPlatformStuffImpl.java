@@ -60,12 +60,12 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos) {
-        return state.isLadder(entity.level, pos, entity);
+        return state.isLadder(entity.level(), pos, entity);
     }
 
     @Override
     public SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos) {
-        return state.getSoundType(entity.level, pos, entity);
+        return state.getSoundType(entity.level(), pos, entity);
     }
 
     @Override

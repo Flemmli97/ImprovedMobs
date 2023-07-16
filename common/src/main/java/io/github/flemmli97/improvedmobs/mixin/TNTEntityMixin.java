@@ -26,8 +26,8 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
         if (EntityFlags.get(tnt).isThrownEntity && tnt.getFuse() == 2) {
             info.cancel();
             tnt.remove(RemovalReason.KILLED);
-            if (!tnt.level.isClientSide)
-                tnt.level.explode(tnt, tnt.getX(), tnt.getY(0.0625D), tnt.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+            if (!tnt.level().isClientSide)
+                tnt.level().explode(tnt, tnt.getX(), tnt.getY(0.0625D), tnt.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
         }
     }
 
@@ -46,6 +46,6 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
         tnt.yRotO = tnt.getYRot();
         tnt.xRotO = tnt.getXRot();
         Vec3 shooterMotion = shooter.getDeltaMovement();
-        tnt.setDeltaMovement(tnt.getDeltaMovement().add(shooterMotion.x, shooter.isOnGround() ? 0.0D : shooterMotion.y, shooterMotion.z));
+        tnt.setDeltaMovement(tnt.getDeltaMovement().add(shooterMotion.x, shooter.onGround() ? 0.0D : shooterMotion.y, shooterMotion.z));
     }
 }

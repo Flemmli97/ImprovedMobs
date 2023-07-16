@@ -38,14 +38,14 @@ public class StealGoal extends MoveToBlockGoal {
     public void tick() {
         super.tick();
         this.stealDelay = Math.max(0, --this.stealDelay);
-        BlockEntity tile = this.entity.level.getBlockEntity(this.blockPos);
+        BlockEntity tile = this.entity.level().getBlockEntity(this.blockPos);
 
         if (tile != null && this.stealDelay == 0 && this.entity.distanceToSqr(Vec3.atCenterOf(this.blockPos)) < 5 && this.canSee()) {
             ItemStack drop = CrossPlatformStuff.INSTANCE.lootRandomItem(tile, this.entity.getRandom());
-            this.entity.level.playSound(null, this.entity.blockPosition(), SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.3F, 1);
+            this.entity.level().playSound(null, this.entity.blockPosition(), SoundEvents.CHEST_OPEN, SoundSource.BLOCKS, 0.3F, 1);
             this.entity.swing(InteractionHand.MAIN_HAND);
-            ItemEntity item = new ItemEntity(this.entity.level, this.entity.getX(), this.entity.getY(), this.entity.getZ(), drop);
-            this.entity.level.addFreshEntity(item);
+            ItemEntity item = new ItemEntity(this.entity.level(), this.entity.getX(), this.entity.getY(), this.entity.getZ(), drop);
+            this.entity.level().addFreshEntity(item);
             this.stealDelay = 150 + this.entity.getRandom().nextInt(45);
         }
     }
@@ -53,7 +53,7 @@ public class StealGoal extends MoveToBlockGoal {
     private boolean canSee() {
         Vec3 eyes = this.entity.getEyePosition(1);
         Vec3 block = Vec3.atCenterOf(this.blockPos);
-        BlockHitResult res = this.entity.level.clip(new ClipContext(eyes, block, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.entity));
+        BlockHitResult res = this.entity.level().clip(new ClipContext(eyes, block, ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, this.entity));
         return res.getType() == HitResult.Type.BLOCK && res.getBlockPos().equals(this.blockPos);
     }
 

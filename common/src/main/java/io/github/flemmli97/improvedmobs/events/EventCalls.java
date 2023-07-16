@@ -96,12 +96,12 @@ public class EventCalls {
     }
 
     public static void onEntityLoad(Mob mob) {
-        if (mob.level.isClientSide)
+        if (mob.level().isClientSide)
             return;
         EntityFlags flags = EntityFlags.get(mob);
         ServersideRegister.replaceEntity(mob);
-        boolean mobGriefing = mob.level.getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-        float difficulty = DifficultyData.getDifficulty(mob.level, mob);
+        boolean mobGriefing = mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+        float difficulty = DifficultyData.getDifficulty(mob.level(), mob);
         if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEF) {
             if (difficulty >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.breakerChance
                     && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
@@ -243,7 +243,7 @@ public class EventCalls {
     }
 
     public static boolean onAttackEvent(LivingEntity target, DamageSource damagesource) {
-        if (!target.level.isClientSide) {
+        if (!target.level().isClientSide) {
             if (!Config.CommonConfig.friendlyFire && target instanceof TamableAnimal) {
                 TamableAnimal pet = (TamableAnimal) target;
                 if (damagesource.getEntity() != null && damagesource.getEntity() == pet.getOwner() && !damagesource.getEntity().isShiftKeyDown()) {
@@ -276,13 +276,13 @@ public class EventCalls {
         if (attacker.getRandom().nextFloat() < f) {
             EntityFlags.get(target).disableShield();
             target.stopUsingItem();
-            target.level.broadcastEntityEvent(target, (byte) 30);
+            target.level().broadcastEntityEvent(target, (byte) 30);
         }
     }
 
     public static void openTile(Player player, BlockPos pos) {
-        if (!player.level.isClientSide && !player.isShiftKeyDown()) {
-            BlockEntity tile = player.level.getBlockEntity(pos);
+        if (!player.level().isClientSide && !player.isShiftKeyDown()) {
+            BlockEntity tile = player.level().getBlockEntity(pos);
             if (tile != null) {
                 CrossPlatformStuff.INSTANCE.onPlayerOpen(tile);
             }
@@ -290,7 +290,7 @@ public class EventCalls {
     }
 
     public static boolean equipPet(Player player, InteractionHand hand, Entity target) {
-        if (hand == InteractionHand.MAIN_HAND && target instanceof Mob mob && (mob instanceof OwnableEntity || mob.getType().is(ImprovedMobs.ARMOR_EQUIPPABLE)) && !target.level.isClientSide && player.isShiftKeyDown()
+        if (hand == InteractionHand.MAIN_HAND && target instanceof Mob mob && (mob instanceof OwnableEntity || mob.getType().is(ImprovedMobs.ARMOR_EQUIPPABLE)) && !target.level().isClientSide && player.isShiftKeyDown()
                 && !Utils.isInList(target, Config.CommonConfig.petArmorBlackList, Config.CommonConfig.petWhiteList, Utils.entityID)) {
             if (!(mob instanceof OwnableEntity pet) || player == pet.getOwner()) {
                 ItemStack heldItem = player.getMainHandItem();
@@ -314,9 +314,9 @@ public class EventCalls {
     private static void equipPetItem(Player player, Mob living, ItemStack stack, EquipmentSlot slot) {
         ItemStack current = living.getItemBySlot(slot);
         if (!current.isEmpty() && !player.isCreative()) {
-            ItemEntity entityitem = new ItemEntity(living.level, living.getX(), living.getY(), living.getZ(), current);
+            ItemEntity entityitem = new ItemEntity(living.level(), living.getX(), living.getY(), living.getZ(), current);
             entityitem.setNoPickUpDelay();
-            living.level.addFreshEntity(entityitem);
+            living.level().addFreshEntity(entityitem);
         }
         ItemStack copy = stack.copy();
         copy.setCount(1);

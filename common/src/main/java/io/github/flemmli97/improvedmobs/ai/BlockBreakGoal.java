@@ -95,7 +95,7 @@ public class BlockBreakGoal extends Goal {
     public void stop() {
         this.breakIndex = 0;
         if (this.markedLoc != null)
-            this.living.level.destroyBlockProgress(this.living.getId(), this.markedLoc, -1);
+            this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, -1);
         this.markedLoc = null;
     }
 
@@ -106,12 +106,12 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.markedLoc == null || this.living.level.getBlockState(this.markedLoc).getCollisionShape(this.living.level, this.markedLoc).isEmpty()) {
+        if (this.markedLoc == null || this.living.level().getBlockState(this.markedLoc).getCollisionShape(this.living.level(), this.markedLoc).isEmpty()) {
             this.digTimer = 0;
             return;
         }
-        BlockState state = this.living.level.getBlockState(this.markedLoc);
-        float str = Utils.getBlockStrength(this.living, state, this.living.level, this.markedLoc);
+        BlockState state = this.living.level().getBlockState(this.markedLoc);
+        float str = Utils.getBlockStrength(this.living, state, this.living.level(), this.markedLoc);
         str = str == Float.POSITIVE_INFINITY ? 1 : str / (1 + str * 6) * (this.digTimer + 1);
         if (str >= 1F) {
             this.digTimer = 0;
@@ -119,7 +119,7 @@ public class BlockBreakGoal extends Goal {
             ItemStack item = this.living.getMainHandItem();
             ItemStack itemOff = this.living.getOffhandItem();
             boolean canHarvest = Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff);
-            this.living.level.destroyBlock(this.markedLoc, canHarvest);
+            this.living.level().destroyBlock(this.markedLoc, canHarvest);
             this.markedLoc = null;
             if (!this.aboveTarget()) {
                 this.living.setSpeed(0);
@@ -130,10 +130,10 @@ public class BlockBreakGoal extends Goal {
             this.digTimer++;
             if (this.digTimer % 5 == 0) {
                 SoundType sound = CrossPlatformStuff.INSTANCE.blockSound(state, this.living, this.markedLoc);
-                this.living.level.playSeededSound(null, this.markedLoc.getX() + 0.5, this.markedLoc.getY() + 0.5, this.markedLoc.getZ() + 0.5, Config.CommonConfig.useBlockBreakSound ? BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound.getBreakSound()) : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F, this.living.level.getRandom().nextLong());
+                this.living.level().playSeededSound(null, this.markedLoc.getX() + 0.5, this.markedLoc.getY() + 0.5, this.markedLoc.getZ() + 0.5, Config.CommonConfig.useBlockBreakSound ? BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound.getBreakSound()) : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F, this.living.level().getRandom().nextLong());
                 this.living.swing(InteractionHand.MAIN_HAND);
                 this.living.getLookControl().setLookAt(this.markedLoc.getX(), this.markedLoc.getY(), this.markedLoc.getZ(), 0.0F, 0.0F);
-                this.living.level.destroyBlockProgress(this.living.getId(), this.markedLoc, (int) (str) * this.digTimer * 10);
+                this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, (int) (str) * this.digTimer * 10);
             }
         }
     }
@@ -147,7 +147,7 @@ public class BlockBreakGoal extends Goal {
             Vec3 target = this.living.getTarget().position();
             if (this.aboveTarget() && Math.abs(target.x - pos.getX()) <= 1 && Math.abs(target.z - pos.getZ()) <= 1) {
                 pos = this.living.blockPosition().below();
-                state = this.living.level.getBlockState(pos);
+                state = this.living.level().getBlockState(pos);
                 if (this.canBreak(this.living, state, pos, item, itemOff)) {
                     this.breakIndex = 0;
                     return pos;
@@ -158,7 +158,7 @@ public class BlockBreakGoal extends Goal {
         BlockPos offset = this.breakAOE.get(this.breakIndex);
         offset = new BlockPos(offset.getX(), this.aboveTarget() ? (-(offset.getY() - this.digHeight)) : offset.getY(), offset.getZ());
         pos = pos.offset(offset.rotate(rot));
-        state = this.living.level.getBlockState(pos);
+        state = this.living.level().getBlockState(pos);
         if (this.canBreak(this.living, state, pos, item, itemOff)) {
             this.breakIndex = 0;
             return pos;
@@ -170,7 +170,7 @@ public class BlockBreakGoal extends Goal {
     }
 
     private boolean canBreak(LivingEntity entity, BlockState state, BlockPos pos, ItemStack item, ItemStack itemOff) {
-        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, entity, CollisionContext.of(entity)) && (Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff));
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level(), entity, CollisionContext.of(entity)) && (Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff));
     }
 
     private boolean aboveTarget() {

@@ -49,7 +49,7 @@ public class PathFindingUtils {
                 int fall = 0;
                 BlockPos.MutableBlockPos lower = new BlockPos.MutableBlockPos(x, y, z);
                 while (below == BlockPathTypes.OPEN) {
-                    if (--y < mob.level.getMinBuildHeight()) {
+                    if (--y < mob.level().getMinBuildHeight()) {
                         return null;
                     }
                     if (fall++ >= mob.getMaxFallDistance()) {
@@ -149,10 +149,10 @@ public class PathFindingUtils {
     }
 
     public static boolean canBreak(BlockPos pos, Mob entity) {
-        return canBreak(entity.level.getBlockState(pos), pos, entity);
+        return canBreak(entity.level().getBlockState(pos), pos, entity);
     }
 
     private static boolean canBreak(BlockState state, BlockPos pos, Mob entity) {
-        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level, entity, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level(), entity, CollisionContext.of(entity)) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
     }
 }

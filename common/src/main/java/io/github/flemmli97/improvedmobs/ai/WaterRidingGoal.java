@@ -4,13 +4,14 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.entities.AquaticSummonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
-import net.minecraft.world.level.material.Material;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
 public class WaterRidingGoal extends Goal {
@@ -70,13 +71,13 @@ public class WaterRidingGoal extends Goal {
     public void tick() {
         if (this.start) {
             if (!this.living.isPassenger()) {
-                AquaticSummonEntity boat = new AquaticSummonEntity(this.living.level);
+                AquaticSummonEntity boat = new AquaticSummonEntity(this.living.level());
                 BlockPos pos = this.living.blockPosition();
                 boat.moveTo(pos.getX() + 0.5, pos.getY(), pos.getZ() + 0.5, this.living.getYRot(), this.living.getXRot());
-                if (this.living.level.noCollision(boat)) {
+                if (this.living.level().noCollision(boat)) {
                     //((MobEntityMixin) boat).setDeathLootTable(EMPTY);
                     //EntityFlags.get(boat).rideSummon = true;
-                    this.living.level.addFreshEntity(boat);
+                    this.living.level().addFreshEntity(boat);
                     this.living.startRiding(boat);
                 }
             }
@@ -104,8 +105,9 @@ public class WaterRidingGoal extends Goal {
     }
 
     private boolean isOnLand(Entity riding) {
-        if (riding.level.getBlockState(riding.blockPosition()).getMaterial() != Material.WATER) {
-            return riding.level.getBlockState(riding.blockPosition().below()).getMaterial().isSolid();
+        BlockState state = riding.level().getBlockState(riding.blockPosition());
+        if (state.getFluidState().is(FluidTags.WATER) && state.liquid()) {
+            return riding.level().getBlockState(riding.blockPosition().below()).isSolid();
         }
         return false;
     }
@@ -113,7 +115,8 @@ public class WaterRidingGoal extends Goal {
     private boolean nearShore(Entity riding, int cliffSize) {
         if (cliffSize < 3) {
             BlockPos pos = riding.blockPosition().relative(riding.getDirection()).above(cliffSize);
-            if (riding.level.getBlockState(pos).getMaterial().isSolid() && !riding.level.getBlockState(pos.above()).getMaterial().blocksMotion())
+            BlockState state = riding.level().getBlockState(pos);
+            if (state.isSolid() && !state.blocksMotion())
                 return true;
             else
                 return this.nearShore(riding, cliffSize + 1);
