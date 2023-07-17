@@ -18,7 +18,7 @@ import net.minecraft.world.level.pathfinder.PathFinder;
 public class FlyRidingGoal extends Goal {
 
     protected final Mob living;
-    private int iddle, pathCheckWait, flyDelay, targetDelay;
+    private int idle, pathCheckWait, flyDelay, targetDelay;
     private boolean start;
 
     private final PathNavigation flyer;
@@ -54,7 +54,7 @@ public class FlyRidingGoal extends Goal {
                 this.pathCheckWait = 25;
                 if (this.checkFlying()) {
                     this.targetDelay = 0;
-                    this.iddle = 0;
+                    this.idle = 0;
                     return true;
                 }
             }
@@ -66,10 +66,10 @@ public class FlyRidingGoal extends Goal {
     public boolean canContinueToUse() {
         if (this.living.getVehicle() instanceof FlyingSummonEntity) {
             if (this.living.getTarget() == null)
-                this.iddle++;
+                this.idle++;
             else
-                this.iddle = 0;
-            return this.iddle < 100;
+                this.idle = 0;
+            return this.idle < 100;
         }
         return false;
     }
@@ -78,7 +78,7 @@ public class FlyRidingGoal extends Goal {
     public void stop() {
         this.living.stopRiding();
         this.living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 200, 1));
-        this.iddle = 0;
+        this.idle = 0;
         this.targetDelay = 0;
     }
 
