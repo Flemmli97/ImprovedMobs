@@ -39,6 +39,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Serial;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -398,9 +399,7 @@ public class EquipmentList {
 
     public static class InvalidItemNameException extends Exception {
 
-        /**
-         *
-         */
+        @Serial
         private static final long serialVersionUID = -6736627280613384759L;
 
         public InvalidItemNameException(String message) {
