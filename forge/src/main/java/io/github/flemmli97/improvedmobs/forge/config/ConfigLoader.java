@@ -60,6 +60,7 @@ public class ConfigLoader {
         Config.CommonConfig.breakerCooldown = ConfigSpecs.commonConf.breakerCooldown.get();
         Config.CommonConfig.idleBreak = ConfigSpecs.commonConf.idleBreak.get();
         Config.CommonConfig.stealerChance = ConfigSpecs.commonConf.stealerChance.get().floatValue();
+        Config.CommonConfig.blackListedContainerBlocks = ConfigSpecs.commonConf.blackListedContainerBlocks.get();
         Config.CommonConfig.breakTileEntities = ConfigSpecs.commonConf.breakTileEntities.get();
 
         Config.CommonConfig.breakingItem.clear();

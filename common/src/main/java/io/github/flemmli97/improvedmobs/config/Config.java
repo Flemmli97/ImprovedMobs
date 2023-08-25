@@ -71,6 +71,7 @@ public class Config {
         public static int breakerCooldown;
         public static boolean idleBreak;
         public static float stealerChance;
+        public static List<String> blackListedContainerBlocks = new ArrayList<>();
         public static boolean breakTileEntities;
         public static List<WeightedItem> breakingItem = new ArrayList<>();
         public static float neutralAggressiv;
