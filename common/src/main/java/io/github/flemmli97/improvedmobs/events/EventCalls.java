@@ -71,7 +71,7 @@ public class EventCalls {
     }
 
     public static void increaseDifficulty(ServerLevel level) {
-        if (!Config.CommonConfig.enableDifficultyScaling)
+        if (!Config.CommonConfig.enableDifficultyScaling || !Config.CommonConfig.difficultyType.increaseDifficulty)
             return;
         if (level.dimension() == Level.OVERWORLD) {
             boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !level.getServer().getPlayerList().getPlayers().isEmpty()) && level.getDayTime() > Config.CommonConfig.difficultyDelay;

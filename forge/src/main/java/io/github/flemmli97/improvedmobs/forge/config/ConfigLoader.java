@@ -30,6 +30,7 @@ public class ConfigLoader {
         Config.CommonConfig.doIMDifficulty = ConfigSpecs.commonConf.doIMDifficulty.get();
         Config.CommonConfig.increaseHandler.readFromString(ConfigSpecs.commonConf.increaseHandler.get());
         Config.CommonConfig.difficultyType = ConfigSpecs.commonConf.difficultyType.get();
+        Config.CommonConfig.centerPos.readFromString(ConfigSpecs.commonConf.centerPos.get());
 
         List<? extends String> l = ConfigSpecs.commonConf.entityBlacklist.get();
         if (l.size() != 1 || !l.get(0).equals("UNINIT"))
