@@ -5,6 +5,7 @@ Improved Mobs 1.11.4
   For a value pair of "x-y" x is the min distance y applies and y is the difficulty at the distance.  
   If difficulty type is `DISTANCE` then `Center Position` is the reference point for the distance, else
   the reference point is the world spawn.
+- Add `Steal Block Blacklist` to blacklist blocks from being stolen from
 
 Improved Mobs 1.11.3
 ================

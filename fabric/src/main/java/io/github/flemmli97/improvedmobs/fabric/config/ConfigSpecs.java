@@ -102,6 +102,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.IntVal breakerCooldown;
         public final CommentedJsonConfig.CommentedVal<Boolean> idleBreak;
         public final CommentedJsonConfig.DoubleVal stealerChance;
+        public final CommentedJsonConfig.CommentedVal<List<String>> blackListedContainerBlocks;
         public final CommentedJsonConfig.CommentedVal<Boolean> breakTileEntities;
         public final CommentedJsonConfig.CommentedVal<List<String>> breakingItems;
         public final CommentedJsonConfig.DoubleVal neutralAggressiv;
@@ -197,6 +198,7 @@ public final class ConfigSpecs {
             this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", 20, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", false);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").defineInRange("Stealer Chance", 0.3, 0, 1);
+            this.blackListedContainerBlocks = builder.comment("List of blocks mobs shouldn't steal from. You can also add a modid to blacklist whole mods").define("Steal Block Blacklist", new ArrayList<>());
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight", "Note: Mobs can only break blocks if the tool they are holding can break the blocks").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1", "minecraft:iron_axe;2"));
             this.breakTileEntities = builder.comment("Should mobs be able to break block entities? Evaluated before the break list").define("Break BlockEntities", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").defineInRange("Neutral Aggressive Chance", 0.1, 0, 1);
