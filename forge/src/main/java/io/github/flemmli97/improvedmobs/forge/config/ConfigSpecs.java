@@ -86,6 +86,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.IntValue breakerCooldown;
         public final ForgeConfigSpec.BooleanValue idleBreak;
         public final ForgeConfigSpec.DoubleValue stealerChance;
+        public final ForgeConfigSpec.ConfigValue<List<String>> blackListedContainerBlocks;
         public final ForgeConfigSpec.BooleanValue breakTileEntities;
         public final ForgeConfigSpec.ConfigValue<List<String>> breakingItems;
         public final ForgeConfigSpec.DoubleValue neutralAggressiv;
@@ -184,6 +185,7 @@ public class ConfigSpecs {
             this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", 20, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", false);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").defineInRange("Stealer Chance", 0.3, 0, 1);
+            this.blackListedContainerBlocks = builder.comment("List of blocks mobs shouldn't steal from. You can also add a modid to blacklist whole mods").define("Steal Block Blacklist", new ArrayList<>());
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight", "Note: Mobs can only break blocks if the tool they are holding can break the blocks").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1", "minecraft:iron_axe;2"));
             this.breakTileEntities = builder.comment("Should mobs be able to break block entities? Evaluated before the break list").define("Break BlockEntities", true);
             this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").defineInRange("Neutral Aggressive Chance", 0.1, 0, 1);

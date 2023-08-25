@@ -1,7 +1,10 @@
 package io.github.flemmli97.improvedmobs.ai;
 
+import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -61,6 +64,9 @@ public class StealGoal extends MoveToBlockGoal {
     protected boolean isValidTarget(LevelReader world, BlockPos pos) {
         BlockEntity tile = world.getBlockEntity(pos);
         if (tile != null) {
+            ResourceLocation res = Registry.BLOCK.getKey(tile.getBlockState().getBlock());
+            if (Config.CommonConfig.blackListedContainerBlocks.contains(res.toString()) || Config.CommonConfig.blackListedContainerBlocks.contains(res.getNamespace()))
+                return false;
             return CrossPlatformStuff.INSTANCE.canLoot(tile);
         }
         return false;
