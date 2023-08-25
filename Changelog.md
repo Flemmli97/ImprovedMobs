@@ -1,3 +1,11 @@
+Improved Mobs 1.11.4
+================
+- Add `DISTANCE` and `DISTANCESPAWN` difficulty type.  
+  Both values change how `Difficulty Increase` config is handled:  
+  For a value pair of "x-y" x is the min distance y applies and y is the difficulty at the distance.  
+  If difficulty type is `DISTANCE` then `Center Position` is the reference point for the distance, else
+  the reference point is the world spawn.
+
 Improved Mobs 1.11.3
 ================
 - Port 1.20.1  

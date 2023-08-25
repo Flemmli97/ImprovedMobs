@@ -71,6 +71,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> petWhiteList;
         public final CommentedJsonConfig.CommentedVal<Boolean> doIMDifficulty;
         public final CommentedJsonConfig.CommentedVal<Config.DifficultyType> difficultyType;
+        public final CommentedJsonConfig.CommentedVal<String> centerPos;
 
         //Black-WhiteList
         public final CommentedJsonConfig.CommentedVal<List<String>> flagBlacklist;
@@ -160,7 +161,12 @@ public final class ConfigSpecs {
             this.difficultyType = builder.comment("How the difficulty at a position is calculated. Supported values are: ",
                     "GLOBAL: Serverwide difficulty value",
                     "PLAYERMAX: Maximum difficulty of players in a 256 radius around the position",
-                    "PLAYERMEAN: Average difficulty of players in a 256 radius around the position").define("Difficulty type", Config.DifficultyType.GLOBAL);
+                    "PLAYERMEAN: Average difficulty of players in a 256 radius around the position",
+                    "DISTANCE: Uses the distance to the position defined in Center Position to define the difficulty",
+                    "DISTANCESPAWN: Uses the distance to the world spawn to define the difficulty",
+                    "If the type is any of the distance types the functionality of Difficulty Increase is changed to the following where the 1. value is the minimum distance and the 2. is the difficulty that applies. ",
+                    "E.g. [\"0-0\",\"1000-5\" translates to 0 difficulty between 0-1000 distance and 5 difficulty for distance >= 1000").define("Difficulty type", Config.DifficultyType.GLOBAL);
+            this.centerPos = builder.comment("Position used for DISTANCE difficulty type").define("Center Position", Config.CommonConfig.centerPos.writeToString());
 
             //builder.comment("Black/Whitelist for various stuff").push("list");
             this.entityBlacklist = builder.comment(EntityModifyFlagConfig.use()).define("Entity Configs", Lists.newArrayList("UNINITIALIZED"));

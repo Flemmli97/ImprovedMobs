@@ -202,7 +202,6 @@ public class EquipmentList {
         if (DEFAULT_ZERO_WEIGHT.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
             return new float[]{0, 0};
         int weight = 1500;
-        float quality = 0;
         if (item instanceof ArmorItem armor) {
             float fullProt = armor.getMaterial().getDefenseForType(ArmorItem.Type.HELMET) + armor.getMaterial().getDefenseForType(ArmorItem.Type.CHESTPLATE) + armor.getMaterial().getDefenseForType(ArmorItem.Type.LEGGINGS)
                     + armor.getMaterial().getDefenseForType(ArmorItem.Type.BOOTS);
@@ -216,16 +215,10 @@ public class EquipmentList {
             float vanillaMulti = (armor.getMaterial() == ArmorMaterials.LEATHER || armor.getMaterial() == ArmorMaterials.GOLD || armor.getMaterial() == ArmorMaterials.CHAIN || armor.getMaterial() == ArmorMaterials.IRON
                     || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8F : 1.1F;
             weight -= (fullProt * fullProt * 2.5 + toughness * toughness * 12 + averageDurability * 0.9 + ench) * rep * vanillaMulti;
-            quality = defaultQualityFromWeight(weight);
-        } else if (item instanceof SwordItem sword) {
-            float dmg = 5 + sword.getDamage();
-            weight -= (dmg * dmg * 2 + item.getMaxDamage() * 0.3);
-            quality = defaultQualityFromWeight(weight);
-        } else if (item instanceof DiggerItem) {
+        } else if (item instanceof SwordItem || item instanceof DiggerItem) {
             ItemStack def = new ItemStack(item);
             double dmg = 5 + ItemUtils.damage(def);
-            weight -= (dmg * dmg * 2 + item.getMaxDamage() * 0.3);
-            quality = defaultQualityFromWeight(weight);
+            weight -= (dmg * dmg * 2 + def.getMaxDamage() * 0.3);
         } else {
             if (item == Items.FLINT_AND_STEEL)
                 weight = 1200;
@@ -250,6 +243,7 @@ public class EquipmentList {
             else if (item instanceof CrossbowItem)
                 weight = 1000;
         }
+        float quality = defaultQualityFromWeight(weight);
         return new float[]{Math.max(weight, 1), quality};
     }
 
@@ -264,7 +258,20 @@ public class EquipmentList {
     }
 
     private static float defaultQualityFromWeight(int weight) {
-        return (1000 - weight) / 125f;
+        float multiplier;
+        if (weight <= 25) {
+            multiplier = -Math.max(0, weight) * 552 + 15000;
+            if (weight < 0) {
+                multiplier = Math.max(multiplier + weight, 0);
+            }
+        } else if (weight <= 500)
+            multiplier = (float) (2476 - 212.9 * Math.log(64.2 * weight - 1212.9));
+        else
+            multiplier = (float) (1571 - 92.1 * Math.log(3452.3 * weight + 91.3));
+        multiplier *= 0.01;
+        weight = Math.max(1, weight);
+        float diff = Math.abs(weight * multiplier - weight);
+        return diff / 250;
     }
 
     public static class WeightedItemstack implements Comparable<WeightedItemstack> {

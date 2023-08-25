@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.EntityGetter;
@@ -38,14 +39,14 @@ public class DifficultyData extends SavedData {
     }
 
     public static float getDifficulty(Level world, LivingEntity e) {
-        if (!(world instanceof ServerLevel))
+        if (!(world instanceof ServerLevel serverLevel))
             return 0;
         Vec3 pos = e.position();
         Supplier<Float> sup = switch (Config.CommonConfig.difficultyType) {
-            case GLOBAL -> () -> DifficultyData.get(world.getServer()).getDifficulty();
+            case GLOBAL -> () -> DifficultyData.get(serverLevel.getServer()).getDifficulty();
             case PLAYERMAX -> () -> {
                 float diff = 0;
-                for (Player player : playersIn(world, pos, 256)) {
+                for (Player player : playersIn(serverLevel, pos, 256)) {
                     float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
                     if (pD > diff)
                         diff = pD;
@@ -54,7 +55,7 @@ public class DifficultyData extends SavedData {
             };
             case PLAYERMEAN -> () -> {
                 float diff = 0;
-                List<Player> list = playersIn(world, pos, 256);
+                List<Player> list = playersIn(serverLevel, pos, 256);
                 if (list.isEmpty())
                     return 0f;
                 for (Player player : list) {
@@ -62,8 +63,10 @@ public class DifficultyData extends SavedData {
                 }
                 return diff / list.size();
             };
+            case DISTANCE -> () -> Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) e.position().distanceToSqr(Config.CommonConfig.centerPos.getPos().getX() + 0.5, e.position().y(), Config.CommonConfig.centerPos.getPos().getZ() + 0.5)));
+            case DISTANCESPAWN -> () -> Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) e.position().distanceToSqr(serverLevel.getSharedSpawnPos().getX() + 0.5, e.position().y(), serverLevel.getSharedSpawnPos().getZ() + 0.5)));
         };
-        return DifficultyValues.INSTANCE.getDifficulty(world, e.blockPosition(), sup);
+        return DifficultyValues.INSTANCE.getDifficulty(serverLevel, e.blockPosition(), sup);
     }
 
     public static List<Player> playersIn(EntityGetter getter, Vec3 pos, double radius) {

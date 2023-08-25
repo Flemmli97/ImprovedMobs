@@ -38,7 +38,7 @@ public class DifficultyValuesImpl implements DifficultyValues {
                 }
                 yield diff;
             }
-            case PLAYERMEAN, GLOBAL -> {
+            case PLAYERMEAN, GLOBAL, DISTANCE, DISTANCESPAWN -> {
                 float diff = 0;
                 List<Player> list = DifficultyData.playersIn(level, vec3, 256);
                 if (list.isEmpty())

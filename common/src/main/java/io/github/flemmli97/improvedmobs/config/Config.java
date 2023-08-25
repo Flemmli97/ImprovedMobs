@@ -40,6 +40,7 @@ public class Config {
         public static boolean petWhiteList;
         public static boolean doIMDifficulty;
         public static DifficultyType difficultyType = DifficultyType.GLOBAL;
+        public static NoHeightBlockPosConfig centerPos = new NoHeightBlockPosConfig();
 
         //Black-WhiteList
         public static EntityModifyFlagConfig entityBlacklist = new EntityModifyFlagConfig();
@@ -151,9 +152,17 @@ public class Config {
     }
 
     public enum DifficultyType {
-        GLOBAL,
-        PLAYERMAX,
-        PLAYERMEAN
+        GLOBAL(true),
+        PLAYERMAX(true),
+        PLAYERMEAN(true),
+        DISTANCE(false),
+        DISTANCESPAWN(false);
+
+        public final boolean increaseDifficulty;
+
+        DifficultyType(boolean increaseDifficulty) {
+            this.increaseDifficulty = increaseDifficulty;
+        }
     }
 
     public enum DifficultyBarLocation {
