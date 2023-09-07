@@ -124,6 +124,11 @@ public class Config {
         public static float explosionIncrease;
         public static float explosionMax;
 
+        public static boolean varySizebyPehkui;
+
+        public static float sizeMax;
+        public static float sizeMin;
+
         public static ItemStack getRandomBreakingItem(RandomSource rand) {
             int total = WeightedRandom.getTotalWeight(breakingItem);
             if (breakingItem.size() == 0 || total <= 0)

@@ -38,6 +38,7 @@ dependencies {
     modCompileOnly "${playerex}"
     modCompileOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:4.2.0"
     modCompileOnly "${levelz}"
+    modCompileOnly "${pehkui}"
 
     modRuntimeOnly "io.github.flemmli97:debugutils:1.20.1-1.0.3-fabric"
 }
