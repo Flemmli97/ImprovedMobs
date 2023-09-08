@@ -233,7 +233,7 @@ public class EventCalls {
 
         if(Config.CommonConfig.varySizebyPehkui)
         {
-            if(!flags.isVariedSize)
+            if(!flags.isVariedSize&&living instanceof Monster)
             Utils.modifyScale(living,Config.CommonConfig.sizeMin,Config.CommonConfig.sizeMax);
             flags.isVariedSize=true;
         }
