@@ -1,3 +1,7 @@
+Improved Mobs 1.11.5
+================
+- `DISTANCE` and `DISTANCESPAWN` difficulty type now updating the difficulty bar on clients
+
 Improved Mobs 1.11.4
 ================
 - Add `DISTANCE` and `DISTANCESPAWN` difficulty type.  

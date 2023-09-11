@@ -70,8 +70,13 @@ public class EventCalls {
     }
 
     public static void increaseDifficulty(ServerLevel level) {
-        if (!Config.CommonConfig.enableDifficultyScaling || !Config.CommonConfig.difficultyType.increaseDifficulty)
+        if (!Config.CommonConfig.enableDifficultyScaling)
             return;
+        if (!Config.CommonConfig.difficultyType.increaseDifficulty) {
+            if (level.getGameTime() % 20 == 0)
+                CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(level.getServer()), level.getServer());
+            return;
+        }
         if (level.dimension() == Level.OVERWORLD) {
             boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !level.getServer().getPlayerList().getPlayers().isEmpty()) && level.getDayTime() > Config.CommonConfig.difficultyDelay;
             DifficultyData data = DifficultyData.get(level.getServer());

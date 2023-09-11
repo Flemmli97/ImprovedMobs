@@ -44,9 +44,12 @@ public class PacketHandler {
             });
         } else {
             server.getPlayerList().getPlayers().forEach(player -> {
-                if (hasChannel(player))
+                if (hasChannel(player)) {
+                    float diff = Config.CommonConfig.difficultyType.increaseDifficulty ? CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)
+                            : DifficultyData.getDifficultyFromDist(player.getLevel(), player.position());
                     player.connection.send(dispatcher.toVanillaPacket(
-                            new PacketDifficulty(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)), NetworkDirection.PLAY_TO_CLIENT));
+                            new PacketDifficulty(diff), NetworkDirection.PLAY_TO_CLIENT));
+                }
             });
         }
     }
