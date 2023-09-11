@@ -63,8 +63,7 @@ public class DifficultyData extends SavedData {
                 }
                 return diff / list.size();
             };
-            case DISTANCE -> () -> Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) e.position().distanceToSqr(Config.CommonConfig.centerPos.getPos().getX() + 0.5, e.position().y(), Config.CommonConfig.centerPos.getPos().getZ() + 0.5)));
-            case DISTANCESPAWN -> () -> Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) e.position().distanceToSqr(serverLevel.getSharedSpawnPos().getX() + 0.5, e.position().y(), serverLevel.getSharedSpawnPos().getZ() + 0.5)));
+            case DISTANCE, DISTANCESPAWN -> () -> getDifficultyFromDist(serverLevel, e.position());
         };
         return DifficultyValues.INSTANCE.getDifficulty(serverLevel, e.blockPosition(), sup);
     }
@@ -106,6 +105,12 @@ public class DifficultyData extends SavedData {
 
     public long getPrevTime() {
         return this.prevTime;
+    }
+
+    public static float getDifficultyFromDist(ServerLevel level, Vec3 pos) {
+        if (Config.CommonConfig.difficultyType == Config.DifficultyType.DISTANCESPAWN)
+            return Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) pos.distanceToSqr(level.getSharedSpawnPos().getX() + 0.5, pos.y(), level.getSharedSpawnPos().getZ() + 0.5)));
+        return Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().getX() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().getZ() + 0.5)));
     }
 
     public void load(CompoundTag nbt) {

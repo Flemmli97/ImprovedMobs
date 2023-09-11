@@ -60,8 +60,12 @@ public class ImprovedMobsFabric implements ModInitializer {
             buf.writeFloat(data.getDifficulty());
         }
         PlayerLookup.all(server).forEach(player -> {
-            if (!global)
-                buf.writeFloat(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f));
+            if (!global) {
+                if (Config.CommonConfig.difficultyType.increaseDifficulty)
+                    buf.writeFloat(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f));
+                else
+                    buf.writeFloat(DifficultyData.getDifficultyFromDist(player.getLevel(), player.position()));
+            }
             if (ServerPlayNetworking.canSend(player, difficultyPacket))
                 ServerPlayNetworking.send(player, difficultyPacket, buf);
         });
