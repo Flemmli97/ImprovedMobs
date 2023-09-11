@@ -64,7 +64,7 @@ public class ImprovedMobsFabric implements ModInitializer {
                 if (Config.CommonConfig.difficultyType.increaseDifficulty)
                     buf.writeFloat(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f));
                 else
-                    buf.writeFloat(DifficultyData.getDifficultyFromDist(player.getLevel(), player.position()));
+                    buf.writeFloat(DifficultyData.getDifficultyFromDist(player.serverLevel(), player.position()));
             }
             if (ServerPlayNetworking.canSend(player, difficultyPacket))
                 ServerPlayNetworking.send(player, difficultyPacket, buf);

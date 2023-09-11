@@ -46,7 +46,7 @@ public class PacketHandler {
             server.getPlayerList().getPlayers().forEach(player -> {
                 if (hasChannel(player)) {
                     float diff = Config.CommonConfig.difficultyType.increaseDifficulty ? CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)
-                            : DifficultyData.getDifficultyFromDist(player.getLevel(), player.position());
+                            : DifficultyData.getDifficultyFromDist(player.serverLevel(), player.position());
                     player.connection.send(dispatcher.toVanillaPacket(
                             new PacketDifficulty(diff), NetworkDirection.PLAY_TO_CLIENT));
                 }
