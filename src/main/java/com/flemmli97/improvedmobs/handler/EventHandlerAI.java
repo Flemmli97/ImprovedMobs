@@ -142,7 +142,7 @@ public class EventHandlerAI {
 		if(e.getEntityLiving() instanceof EntityLiving && !e.getWorld().isRemote){
 			if(GeneralHelperMethods.isMobInList((EntityLiving) e.getEntityLiving(), ConfigHandler.mobListLight, ConfigHandler.mobListLightBlackList)){
 				int light = e.getWorld().getLightFor(EnumSkyBlock.BLOCK, e.getEntity().getPosition());
-				if(light >= ConfigHandler.light){
+				if(light >= ConfigHandler.light && !e.world.getMinecraftServer().getPlayerList().getPlayers().isEmpty()) && e.world.getWorldTime() > ConfigHandler.lightspawnDelay){
 					e.setResult(Result.DENY);
 				}else{
 					e.setResult(Result.ALLOW);
