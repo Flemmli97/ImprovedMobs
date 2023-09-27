@@ -120,7 +120,7 @@ public class ConfigHandler {
 		mobListLight = config.getStringList("Light list", "general", new String[0], "Mobs to include for the new light spawning rules.");
 		mobListLightBlackList = config.getBoolean("Light list blacklist", "general", false, "Turn the list list whitelist to blacklist");
 		light = config.getInt("Light", "general", 7, 0, 15, "Light level, blocks can have at max, so mobs can spawn on them.");
-		lightspawnDelay = config.getInt("Light Spawn Delay", "general", 7, 0, 15, "Delay to not apply the new light spawning rules");
+		lightspawnDelay = config.getInt("Light Spawn Delay", "general", 0, 0, "Delay to not apply the new light spawning rules. One full minecraft day is 24000 ticks");
 		shouldPunishTimeSkip = config.getBoolean("Punish Time Skip", "general", true, "Should punish time skipping with e.g. bed, commands? If false, difficulty will increase by 0.1 regardless of skipped time.");
 		friendlyFire = config.getBoolean("FriendlyFire", "general", false, "Disable/Enable friendly fire for owned pets.");
 		petArmorBlackList = config.getStringList("Pet Blacklist", "general", new String[0], "Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor should be included here.");
