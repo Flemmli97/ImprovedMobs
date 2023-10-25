@@ -51,6 +51,7 @@ public class ConfigLoader {
         Config.CommonConfig.useScalingHealthMod = ConfigSpecs.commonConf.useScalingHealthMod.get() && ModList.get().isLoaded("scalinghealth");
         Config.CommonConfig.usePlayerEXMod = ConfigSpecs.commonConf.usePlayerEXMod.get() && ModList.get().isLoaded("playerex");
         Config.CommonConfig.useLevelZMod = ConfigSpecs.commonConf.useLevelZMod.get() && ModList.get().isLoaded("levelz");
+        Config.CommonConfig.varySizebyPehkui = ConfigSpecs.commonConf.varySizebyPehkui.get()&&ModList.get().isLoaded("pehkui");
 
         Config.CommonConfig.breakableBlocks.readFromString(ConfigSpecs.commonConf.breakableBlocks.get());
         Config.CommonConfig.breakingAsBlacklist = ConfigSpecs.commonConf.breakingAsBlacklist.get();
@@ -116,6 +117,9 @@ public class ConfigLoader {
         Config.CommonConfig.projectileMax = ConfigSpecs.commonConf.projectileMax.get().floatValue();
         Config.CommonConfig.explosionIncrease = ConfigSpecs.commonConf.explosionIncrease.get().floatValue();
         Config.CommonConfig.explosionMax = ConfigSpecs.commonConf.explosionMax.get().floatValue();
+
+        Config.CommonConfig.sizeMax = ConfigSpecs.commonConf.sizeMax.get().floatValue();
+        Config.CommonConfig.sizeMin = ConfigSpecs.commonConf.sizeMin.get().floatValue();
     }
 
     public static void serverInit(ServerLevel world) {
