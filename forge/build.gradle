@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}:forge"
+    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-forge"
 
     // modRuntimeOnly "${sillib_dep}"
     modCompileOnly "${scalhealth_dep}"
