@@ -59,10 +59,8 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import virtuoel.pehkui.api.ScaleTypes;
 
 import java.util.List;
-import java.util.Random;
 import java.util.function.Predicate;
 
 public class EventCalls {
@@ -236,14 +234,14 @@ public class EventCalls {
             flags.modifyAttributes = true;
         }
 
-        if(Config.CommonConfig.varySizebyPehkui)
-        {
-            if(!flags.isVariedSize&&living instanceof Monster)
-            Utils.modifyScale(living,Config.CommonConfig.sizeMin,Config.CommonConfig.sizeMax);
-            flags.isVariedSize=true;
+        if (Config.CommonConfig.varySizebyPehkui) {
+            if (!flags.isVariedSize && living instanceof Monster)
+                Utils.modifyScale(living, Config.CommonConfig.sizeMin, Config.CommonConfig.sizeMax);
+            flags.isVariedSize = true;
         }
 
     }
+
     public static float hurtEvent(LivingEntity entity, DamageSource source, float dmg) {
         if (source.is(DamageTypeTags.IS_PROJECTILE) && source.getEntity() instanceof Monster)
             return dmg * (EntityFlags.get(source.getEntity()).projMult);

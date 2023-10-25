@@ -44,7 +44,7 @@ public class EntityFlags {
         tag.putBoolean("ModifiedAttributes", this.modifyAttributes);
         tag.putBoolean("GearEnchanted", this.enchantGear);
         tag.putBoolean("IsThrown", this.isThrownEntity);
-        tag.putBoolean("IsVariedSize",this.isVariedSize);
+        tag.putBoolean("IsVariedSize", this.isVariedSize);
         tag.putFloat("MagicRes", this.magicRes);
         tag.putFloat("ProjBoost", this.projMult);
         tag.putFloat("explosionMult", this.explosionMult);
@@ -59,7 +59,7 @@ public class EntityFlags {
         this.modifyAttributes = nbt.getBoolean("ModifiedAttributes");
         this.enchantGear = nbt.getBoolean("GearEnchanted");
         this.isThrownEntity = nbt.getBoolean("IsThrown");
-        this.isVariedSize=nbt.getBoolean("IsVariedSize");
+        this.isVariedSize = nbt.getBoolean("IsVariedSize");
         this.magicRes = nbt.getFloat("MagicRes");
         this.projMult = nbt.contains("ProjBoost") ? nbt.getFloat("ProjBoost") : 1;
         this.explosionMult = nbt.contains("ExplosionBoost") ? nbt.getFloat("ExplosionBoost") : 1;

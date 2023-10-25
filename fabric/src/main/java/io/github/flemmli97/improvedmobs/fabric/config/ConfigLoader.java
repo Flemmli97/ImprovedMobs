@@ -55,7 +55,9 @@ public class ConfigLoader {
         Config.CommonConfig.useScalingHealthMod = specs.useScalingHealthMod.get() && FabricLoader.getInstance().isModLoaded("scalinghealth");
         Config.CommonConfig.usePlayerEXMod = specs.usePlayerEXMod.get() && FabricLoader.getInstance().isModLoaded("playerex");
         Config.CommonConfig.useLevelZMod = specs.useLevelZMod.get() && FabricLoader.getInstance().isModLoaded("levelz");
-        Config.CommonConfig.varySizebyPehkui=specs.varySizebyPehkui.get()&&FabricLoader.getInstance().isModLoaded("pehkui");
+        Config.CommonConfig.varySizebyPehkui = specs.varySizebyPehkui.get() && FabricLoader.getInstance().isModLoaded("pehkui");
+        Config.CommonConfig.sizeMax = specs.sizeMax.get().floatValue();
+        Config.CommonConfig.sizeMin = specs.sizeMin.get().floatValue();
 
         Config.CommonConfig.breakableBlocks.readFromString(specs.breakableBlocks.get());
         Config.CommonConfig.breakingAsBlacklist = specs.breakingAsBlacklist.get();
@@ -121,9 +123,6 @@ public class ConfigLoader {
         Config.CommonConfig.projectileMax = specs.projectileMax.get().floatValue();
         Config.CommonConfig.explosionIncrease = specs.explosionIncrease.get().floatValue();
         Config.CommonConfig.explosionMax = specs.explosionMax.get().floatValue();
-        Config.CommonConfig.sizeMax=specs.sizeMax.get().floatValue();
-        Config.CommonConfig.sizeMin=specs.sizeMin.get().floatValue();
-
         return InteractionResult.CONSUME;
     }
 

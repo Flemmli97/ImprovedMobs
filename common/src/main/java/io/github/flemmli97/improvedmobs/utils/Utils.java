@@ -24,14 +24,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import virtuoel.pehkui.api.ScaleTypes;
 
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.function.Function;
-
-import virtuoel.pehkui.api.*;
-import virtuoel.pehkui.util.ScaleUtils;
 
 public class Utils {
 
@@ -172,11 +170,11 @@ public class Utils {
         }
         inst.addPermanentModifier(new AttributeModifier(attMod, "im_modifier", value, AttributeModifier.Operation.ADDITION));
     }
-    public static void modifyScale(Mob living,float min,float max)
-    {
+
+    public static void modifyScale(Mob living, float min, float max) {
         var random = new Random();
         //float minRange= 0.6F,maxRange= 2.0F;
         ScaleTypes.BASE.getScaleData(living).setScaleTickDelay(20);
-        ScaleTypes.BASE.getScaleData(living).setTargetScale(random.nextFloat(min,max));
+        ScaleTypes.BASE.getScaleData(living).setTargetScale(random.nextFloat(min, max));
     }
 }
