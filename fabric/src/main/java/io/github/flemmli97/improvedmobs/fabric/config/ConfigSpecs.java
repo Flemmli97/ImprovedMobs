@@ -129,6 +129,8 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.DoubleVal baseEnchantChance;
         public final CommentedJsonConfig.DoubleVal diffEnchantAdd;
         public final CommentedJsonConfig.CommentedVal<List<String>> enchantCalc;
+        public final CommentedJsonConfig.CommentedVal<List<String>> enchantBlacklist;
+        public final CommentedJsonConfig.CommentedVal<Boolean> enchantWhitelist;
         public final CommentedJsonConfig.DoubleVal baseItemChance;
         public final CommentedJsonConfig.DoubleVal diffItemChanceAdd;
         public final CommentedJsonConfig.CommentedVal<Boolean> shouldDropEquip;
@@ -230,6 +232,8 @@ public final class ConfigSpecs {
             this.baseEnchantChance = builder.comment("Base chance for each armor pieces to get enchanted").defineInRange("Enchanting Chance", 0.2, 0, 1);
             this.diffEnchantAdd = builder.comment("Adds additional x*difficulty% to base enchanting chance").defineInRange("Enchanting Addition", 0.2, 0, Double.MAX_VALUE);
             this.enchantCalc = builder.comment("Specify min and max enchanting levels according to difficulty. difficulty-minLevel-maxLevel").define("Enchanting Calc", Lists.newArrayList("0-5-10", "25-5-15", "50-10-17", "100-15-25", "200-20-30", "250-30-35"));
+            this.enchantBlacklist = builder.comment("Blacklist enchantments from being applied to equipments").define("Enchanting Blacklist", List.of());
+            this.enchantWhitelist = builder.comment("Turn the enchant blacklist to a whitelist").define("Enchanting Whitelist", false);
             this.baseItemChance = builder.comment("Chance for mobs to have an item in offhand").defineInRange("Item Equip Chance", 0.05, 0, 1);
             this.diffItemChanceAdd = builder.comment("Adds additional x*difficulty% to base item chance").defineInRange("Item Chance add", 0.2, 0, Double.MAX_VALUE);
             this.shouldDropEquip = builder.comment("Should mobs drop the armor equipped through this mod? Will not change drops if the mob obtained the armor through other means (e.g. vanilla)").define("Should drop equipment", false);

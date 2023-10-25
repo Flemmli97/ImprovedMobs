@@ -105,6 +105,8 @@ public class Config {
         public static EnchantCalcConf enchantCalc = new EnchantCalcConf();
         public static float baseItemChance;
         public static float diffItemChanceAdd;
+        public static List<String> enchantBlacklist;
+        public static boolean enchantWhitelist;
         public static boolean shouldDropEquip;
 
         //Attributes
