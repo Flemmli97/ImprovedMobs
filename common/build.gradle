@@ -10,8 +10,13 @@ repositories {
         name = "TenshiLib"
         url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
     }
+    maven {
+        url "https://cursemaven.com"
+    }
 }
 
 dependencies {
     modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
+    modCompileOnly "${pehkui}"
+
 }

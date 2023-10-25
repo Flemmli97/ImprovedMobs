@@ -93,6 +93,8 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> usePlayerEXMod;
         public final CommentedJsonConfig.CommentedVal<Boolean> useLevelZMod;
 
+        public final CommentedJsonConfig.CommentedVal<Boolean> varySizebyPehkui;
+
         //AI
         public final CommentedJsonConfig.CommentedVal<List<String>> breakableBlocks;
         public final CommentedJsonConfig.CommentedVal<Boolean> breakingAsBlacklist;
@@ -148,6 +150,10 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.DoubleVal explosionIncrease;
         public final CommentedJsonConfig.DoubleVal explosionMax;
 
+        public final CommentedJsonConfig.DoubleVal sizeMin;
+
+        public final CommentedJsonConfig.DoubleVal sizeMax;
+
         public CommonConfigVals(CommentedJsonConfig.Builder builder) {
             //builder.comment("With default value every difficulty perk maxes out at difficulty 250").push("general");
             this.enableDifficultyScaling = builder.comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
@@ -188,7 +194,9 @@ public final class ConfigSpecs {
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", true);
             this.usePlayerEXMod = builder.comment("If true and playerEx is installed will use the level from playerEx as difficulty").define("Use Player EX Mod", true);
             this.useLevelZMod = builder.comment("If true and LevelZ is installed will use the the total skill level from LevelZ as difficulty").define("Use LevelZ Mod", true);
-
+            this.varySizebyPehkui = builder.comment("Using pehkui to vary the size of mobs").define("Use pehkui Mod", false);
+            this.sizeMax = builder.comment("The Max scale of mobs. Range [1.0,10], default 2.0").defineInRange("Max size Multiplier", 2.0, 1.0, 10.0);
+            this.sizeMin = builder.comment("The Minimum scale of mobs. Range (0,1.0), default 0.5").defineInRange("Minimum size Multiplier", 0.5, 0, 1.0);
             //builder.comment("Settings regarding custom ai for mobs").push("ai");
             this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. ", BreakableBlocks.use(), "Note: If you include common blocks (like grass blocks) the pathfinding can have undesirable results.").define("Block Break Whitelist", Lists.newArrayList("forge:glass", "forge:glass_panes", "minecraft:fence_gates", "forge:fence_gates", "minecraft:wooden_doors"));
             this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Breaklist as Blacklist", false);
