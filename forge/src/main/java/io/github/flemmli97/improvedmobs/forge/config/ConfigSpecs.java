@@ -6,6 +6,7 @@ import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EntityItemConfig;
 import io.github.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import io.github.flemmli97.improvedmobs.config.MobClassMapConfig;
+import io.github.flemmli97.tenshilib.common.config.CommentedJsonConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
@@ -114,6 +115,8 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.DoubleValue baseEnchantChance;
         public final ForgeConfigSpec.DoubleValue diffEnchantAdd;
         public final ForgeConfigSpec.ConfigValue<List<String>> enchantCalc;
+        public final ForgeConfigSpec.ConfigValue<List<String>> enchantBlacklist;
+        public final ForgeConfigSpec.BooleanValue enchantWhitelist;
         public final ForgeConfigSpec.DoubleValue baseItemChance;
         public final ForgeConfigSpec.DoubleValue diffItemChanceAdd;
         public final ForgeConfigSpec.BooleanValue shouldDropEquip;
@@ -215,7 +218,9 @@ public class ConfigSpecs {
             this.diffWeaponChance = builder.comment("Adds additional x*difficulty% to base weapon chance").defineInRange("Weapon Chance Add", 0.3, 0, Double.MAX_VALUE);
             this.baseEnchantChance = builder.comment("Base chance for each armor pieces to get enchanted").defineInRange("Enchanting Chance", 0.2, 0, 1);
             this.diffEnchantAdd = builder.comment("Adds additional x*difficulty% to base enchanting chance").defineInRange("Enchanting Addition", 0.2, 0, Double.MAX_VALUE);
-            this.enchantCalc = builder.comment("Specify min and max enchanting levels according to difficulty. difficulty-minLevel-maxLevel").define("Enchanting Calc", Lists.newArrayList("0-5-10", "25-5-15", "50-10-17", "100-15-25", "200-20-30", "250-30-35"));
+            this.enchantCalc = builder.comment("Specify min and max enchanting levels according to difficulty. difficulty-minLevel-maxLevel").define("Enchanting Calc", Lists.newArrayList("0-5-10", "25-5-15", "50-10-17", "100-15-25", "200-20-30", "250-30-35"), e->true);
+            this.enchantBlacklist = builder.comment("Blacklist enchantments from being applied to equipments").define("Enchanting Blacklist", List.of());
+            this.enchantWhitelist = builder.comment("Turn the enchant blacklist to a whitelist").define("Enchanting Whitelist", false);
             this.baseItemChance = builder.comment("Chance for mobs to have an item in offhand").defineInRange("Item Equip Chance", 0.05, 0, 1);
             this.diffItemChanceAdd = builder.comment("Adds additional x*difficulty% to base item chance").defineInRange("Item Chance add", 0.2, 0, Double.MAX_VALUE);
             this.shouldDropEquip = builder.comment("Should mobs drop the armor equipped through this mod? Will not change drops if the mob obtained the armor through other means (e.g. vanilla)").define("Should drop equipment", false);

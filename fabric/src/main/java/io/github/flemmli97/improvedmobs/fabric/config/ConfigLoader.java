@@ -104,6 +104,8 @@ public class ConfigLoader {
         Config.CommonConfig.baseEnchantChance = specs.baseEnchantChance.get().floatValue();
         Config.CommonConfig.diffEnchantAdd = specs.diffEnchantAdd.get().floatValue();
         Config.CommonConfig.enchantCalc.readFromString(specs.enchantCalc.get());
+        Config.CommonConfig.enchantBlacklist = specs.enchantBlacklist.get();
+        Config.CommonConfig.enchantWhitelist = specs.enchantWhitelist.get();
         Config.CommonConfig.baseItemChance = specs.baseItemChance.get().floatValue();
         Config.CommonConfig.diffItemChanceAdd = specs.diffItemChanceAdd.get().floatValue();
         Config.CommonConfig.shouldDropEquip = specs.shouldDropEquip.get();
