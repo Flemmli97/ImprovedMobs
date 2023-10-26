@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-fabric"
+    modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
     modCompileOnly "${pehkui}"
 
 }
