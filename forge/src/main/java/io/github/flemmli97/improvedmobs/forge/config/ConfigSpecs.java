@@ -78,6 +78,9 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.BooleanValue useScalingHealthMod;
         public final ForgeConfigSpec.BooleanValue usePlayerEXMod;
         public final ForgeConfigSpec.BooleanValue useLevelZMod;
+        public final ForgeConfigSpec.BooleanValue varySizebyPehkui;
+        public final ForgeConfigSpec.DoubleValue sizeMin;
+        public final ForgeConfigSpec.DoubleValue sizeMax;
 
         //AI
         public final ForgeConfigSpec.ConfigValue<List<String>> breakableBlocks;
@@ -135,12 +138,6 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.DoubleValue projectileMax;
         public final ForgeConfigSpec.DoubleValue explosionIncrease;
         public final ForgeConfigSpec.DoubleValue explosionMax;
-
-        public final ForgeConfigSpec.BooleanValue varySizebyPehkui;
-
-        public final ForgeConfigSpec.DoubleValue sizeMin;
-
-        public final ForgeConfigSpec.DoubleValue sizeMax;
 
         public CommonConfigVals(ForgeConfigSpec.Builder builder) {
             builder.comment("Default difficulty caps at 250")/*.translation("improvedmobs.general")*/.push("general");
