@@ -92,8 +92,9 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> useScalingHealthMod;
         public final CommentedJsonConfig.CommentedVal<Boolean> usePlayerEXMod;
         public final CommentedJsonConfig.CommentedVal<Boolean> useLevelZMod;
-
         public final CommentedJsonConfig.CommentedVal<Boolean> varySizebyPehkui;
+        public final CommentedJsonConfig.DoubleVal sizeMin;
+        public final CommentedJsonConfig.DoubleVal sizeMax;
 
         //AI
         public final CommentedJsonConfig.CommentedVal<List<String>> breakableBlocks;
@@ -149,10 +150,6 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.DoubleVal projectileMax;
         public final CommentedJsonConfig.DoubleVal explosionIncrease;
         public final CommentedJsonConfig.DoubleVal explosionMax;
-
-        public final CommentedJsonConfig.DoubleVal sizeMin;
-
-        public final CommentedJsonConfig.DoubleVal sizeMax;
 
         public CommonConfigVals(CommentedJsonConfig.Builder builder) {
             //builder.comment("With default value every difficulty perk maxes out at difficulty 250").push("general");
