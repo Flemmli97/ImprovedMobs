@@ -61,6 +61,9 @@ public class Config {
         public static boolean useScalingHealthMod = true;
         public static boolean usePlayerEXMod = true;
         public static boolean useLevelZMod = true;
+        public static boolean varySizebyPehkui;
+        public static float sizeMax;
+        public static float sizeMin;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks();
