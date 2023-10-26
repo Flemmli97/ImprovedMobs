@@ -1,3 +1,10 @@
+Improved Mobs 1.11.6
+================
+- Fix tenshilib dependency crash
+- Add pehkui support. disabled by default
+- Add enchantment blacklist for equipment
+- Fix configured mod list configs not working
+
 Improved Mobs 1.11.5
 ================
 - `DISTANCE` and `DISTANCESPAWN` difficulty type now updating the difficulty bar on clients
