@@ -6,6 +6,8 @@ import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.tenshilib.common.utils.MathUtils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -22,6 +24,7 @@ import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import virtuoel.pehkui.api.ScaleTypes;
@@ -102,7 +105,16 @@ public class Utils {
             if (itemstack.isEnchanted())
                 continue;
             if (!itemstack.isEmpty() && living.getRandom().nextFloat() < (Config.CommonConfig.baseEnchantChance + (difficulty * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
-                EnchantmentHelper.enchantItem(living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min, val.max), true);
+                List<EnchantmentInstance> enchants = EnchantmentHelper.selectEnchantment(living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min, val.max), true);
+                enchants.forEach(e -> {
+                    ResourceLocation res = BuiltInRegistries.ENCHANTMENT.getKey(e.enchantment);
+                    if (res != null) {
+                        if ((Config.CommonConfig.enchantWhitelist && Config.CommonConfig.enchantBlacklist.contains(res.toString()))
+                                || Config.CommonConfig.enchantBlacklist.contains(res.toString())) {
+                            itemstack.enchant(e.enchantment, e.level);
+                        }
+                    }
+                });
             }
         }
     }
