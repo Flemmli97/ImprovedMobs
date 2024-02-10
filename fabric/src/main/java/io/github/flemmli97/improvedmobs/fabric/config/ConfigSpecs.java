@@ -63,6 +63,7 @@ public final class ConfigSpecs {
         //General
         public final CommentedJsonConfig.CommentedVal<Boolean> enableDifficultyScaling;
         public final CommentedJsonConfig.IntVal difficultyDelay;
+        public final CommentedJsonConfig.CommentedVal<Boolean> ignoreSpawner;
         public final CommentedJsonConfig.CommentedVal<List<String>> increaseHandler;
         public final CommentedJsonConfig.CommentedVal<Boolean> ignorePlayers;
         public final CommentedJsonConfig.CommentedVal<Boolean> shouldPunishTimeSkip;
@@ -158,6 +159,7 @@ public final class ConfigSpecs {
             //builder.comment("With default value every difficulty perk maxes out at difficulty 250").push("general");
             this.enableDifficultyScaling = builder.comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").defineInRange("Difficulty Delay", 0, 0, Integer.MAX_VALUE);
+            this.ignoreSpawner = builder.comment("If true ignores mobs from spawners").define("Ignore Spawner", false);
             this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "-> So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day since a mc day has 24000 ticks) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1", "250-0"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             this.shouldPunishTimeSkip = builder.comment("If true will increase difficulty by the amount of time skipped. Else will only increase difficulty once.").define("Punish Time Skip", true);

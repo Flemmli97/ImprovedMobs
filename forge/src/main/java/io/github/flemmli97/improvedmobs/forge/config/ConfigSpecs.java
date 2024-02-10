@@ -48,6 +48,7 @@ public class ConfigSpecs {
         //General
         public final ForgeConfigSpec.BooleanValue enableDifficultyScaling;
         public final ForgeConfigSpec.IntValue difficultyDelay;
+        public final ForgeConfigSpec.BooleanValue ignoreSpawner;
         public final ForgeConfigSpec.ConfigValue<List<String>> increaseHandler;
         public final ForgeConfigSpec.BooleanValue ignorePlayers;
         public final ForgeConfigSpec.BooleanValue shouldPunishTimeSkip;
@@ -143,6 +144,7 @@ public class ConfigSpecs {
             builder.comment("Default difficulty caps at 250")/*.translation("improvedmobs.general")*/.push("general");
             this.enableDifficultyScaling = builder.comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").defineInRange("Difficulty Delay", 0, 0, Integer.MAX_VALUE);
+            this.ignoreSpawner = builder.comment("If true ignores mobs from spawners").define("Ignore Spawner", false);
             this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day since a mc day has 24000 ticks) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1", "250-0"), stringList());
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             this.shouldPunishTimeSkip = builder.comment("If true will increase difficulty by the amount of time skipped. Else will only increase difficulty once.").define("Punish Time Skip", true);

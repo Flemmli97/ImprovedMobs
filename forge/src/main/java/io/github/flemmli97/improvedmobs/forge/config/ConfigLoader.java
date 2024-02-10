@@ -22,6 +22,7 @@ public class ConfigLoader {
     public static void loadCommon() {
         Config.CommonConfig.enableDifficultyScaling = ConfigSpecs.commonConf.enableDifficultyScaling.get();
         Config.CommonConfig.difficultyDelay = ConfigSpecs.commonConf.difficultyDelay.get();
+        Config.CommonConfig.ignoreSpawner = ConfigSpecs.commonConf.ignoreSpawner.get();
         Config.CommonConfig.ignorePlayers = ConfigSpecs.commonConf.ignorePlayers.get();
         Config.CommonConfig.shouldPunishTimeSkip = ConfigSpecs.commonConf.shouldPunishTimeSkip.get();
         Config.CommonConfig.friendlyFire = ConfigSpecs.commonConf.friendlyFire.get();
