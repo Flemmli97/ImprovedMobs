@@ -19,6 +19,7 @@ import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.SlotAccess;
 import net.minecraft.world.entity.SpawnGroupData;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.ai.goal.WrappedGoal;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -144,6 +145,7 @@ public abstract class RiddenSummonEntity extends Mob {
         super.aiStep();
         if (!this.clearedAI) {
             this.clearedAI = true;
+            this.goalSelector.getRunningGoals().forEach(WrappedGoal::stop);
             this.removeFreeWill();
         }
         if (!this.isVehicle())
