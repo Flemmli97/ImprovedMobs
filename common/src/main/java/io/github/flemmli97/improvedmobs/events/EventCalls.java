@@ -77,7 +77,7 @@ public class EventCalls {
         if (!Config.CommonConfig.enableDifficultyScaling)
             return;
         if (!Config.CommonConfig.difficultyType.increaseDifficulty) {
-            if (level.getGameTime() % 20 == 0)
+            if (level.getGameTime() % 20 == 0 && level.dimension() == Level.OVERWORLD)
                 CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(level.getServer()), level.getServer());
             return;
         }
