@@ -182,13 +182,13 @@ public class EventCalls {
         }
     }
 
-    private static <T extends LivingEntity> NearestAttackableTargetGoal<T> setNoLoS(Mob e, Class<T> clss, boolean sight, Predicate<LivingEntity> pred) {
+    private static <T extends LivingEntity> NearestAttackableTargetGoal<T> setNoLoS(Mob e, Class<T> clss, boolean ignoreSight, Predicate<LivingEntity> pred) {
         NearestAttackableTargetGoal<T> goal;
         if (pred == null)
-            goal = new NearestAttackableTargetGoal<>(e, clss, sight);
+            goal = new NearestAttackableTargetGoal<>(e, clss, !ignoreSight);
         else
-            goal = new NearestAttackableTargetGoal<>(e, clss, 10, sight, false, pred);
-        if (!sight)
+            goal = new NearestAttackableTargetGoal<>(e, clss, 10, !ignoreSight, false, pred);
+        if (ignoreSight)
             ((NearestTargetGoalMixin) goal).getTargetEntitySelector().ignoreLineOfSight();
         return goal;
     }

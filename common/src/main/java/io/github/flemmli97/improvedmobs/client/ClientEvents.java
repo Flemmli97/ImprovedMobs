@@ -35,12 +35,14 @@ public class ClientEvents {
         int x = Config.ClientConfig.guiX;
         int y = Config.ClientConfig.guiY;
         switch (Config.ClientConfig.location) {
-            case TOPRIGHT -> x = Minecraft.getInstance().getWindow().getGuiScaledWidth() - 7 - width - Config.ClientConfig.guiX;
+            case TOPRIGHT ->
+                    x = Minecraft.getInstance().getWindow().getGuiScaledWidth() - 7 - width - Config.ClientConfig.guiX;
             case BOTTOMRIGHT -> {
                 x = Minecraft.getInstance().getWindow().getGuiScaledWidth() - 7 - width - Config.ClientConfig.guiX;
                 y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 17 - Config.ClientConfig.guiY;
             }
-            case BOTTOMLEFT -> y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 17 - Config.ClientConfig.guiY;
+            case BOTTOMLEFT ->
+                    y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 17 - Config.ClientConfig.guiY;
         }
         GuiComponent.blit(stack, x, y, 0, 0, 4 + width, 17, 256, 256);
         GuiComponent.blit(stack, x + 4 + width, y, 183, 0, 3, 17, 256, 256);
