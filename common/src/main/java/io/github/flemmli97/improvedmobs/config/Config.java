@@ -32,6 +32,7 @@ public class Config {
         //General
         public static boolean enableDifficultyScaling;
         public static int difficultyDelay;
+        public static boolean ignoreSpawner;
         public static DifficultyConfig increaseHandler = new DifficultyConfig();
         public static boolean ignorePlayers;
         public static boolean shouldPunishTimeSkip;

@@ -16,6 +16,7 @@ import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixinhelper.IGoalModifier;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
+import io.github.flemmli97.improvedmobs.mixinhelper.ISpawnReason;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
@@ -32,6 +33,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.PathfinderMob;
@@ -103,6 +105,8 @@ public class EventCalls {
 
     public static void onEntityLoad(Mob mob) {
         if (mob.level.isClientSide)
+            return;
+        if (((ISpawnReason) mob).getSpawnReason() == MobSpawnType.SPAWNER && Config.CommonConfig.ignoreSpawner)
             return;
         EntityFlags flags = EntityFlags.get(mob);
         ServersideRegister.replaceEntity(mob);
