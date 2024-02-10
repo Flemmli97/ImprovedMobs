@@ -120,6 +120,7 @@ public class BlockBreakGoal extends Goal {
             ItemStack itemOff = this.living.getOffhandItem();
             boolean canHarvest = Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff);
             this.living.level().destroyBlock(this.markedLoc, canHarvest);
+            this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, -1);
             this.markedLoc = null;
             if (!this.aboveTarget()) {
                 this.living.setSpeed(0);
@@ -133,7 +134,7 @@ public class BlockBreakGoal extends Goal {
                 this.living.level().playSeededSound(null, this.markedLoc.getX() + 0.5, this.markedLoc.getY() + 0.5, this.markedLoc.getZ() + 0.5, Config.CommonConfig.useBlockBreakSound ? BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound.getBreakSound()) : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F, this.living.level().getRandom().nextLong());
                 this.living.swing(InteractionHand.MAIN_HAND);
                 this.living.getLookControl().setLookAt(this.markedLoc.getX(), this.markedLoc.getY(), this.markedLoc.getZ(), 0.0F, 0.0F);
-                this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, (int) (str) * this.digTimer * 10);
+                this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, (int) (str * 10) - 1);
             }
         }
     }
