@@ -24,7 +24,7 @@ public class DifficultyHandler {
     @SubscribeEvent
     public void increaseDifficulty(TickEvent.WorldTickEvent e) {
         if (e.phase == TickEvent.Phase.END && e.world instanceof ServerLevel world && world.dimension() == Level.OVERWORLD) {
-            EventCalls.increaseDifficulty(world);
+            EventCalls.tick(world);
         }
     }
 

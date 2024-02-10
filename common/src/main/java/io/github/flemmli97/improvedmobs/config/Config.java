@@ -72,6 +72,7 @@ public class Config {
         public static float breakerChance;
         public static int breakerInitCooldown;
         public static int breakerCooldown;
+        public static int restoreDelay;
         public static boolean idleBreak;
         public static float stealerChance;
         public static List<String> blackListedContainerBlocks = new ArrayList<>();

@@ -6,7 +6,6 @@ import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EntityItemConfig;
 import io.github.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import io.github.flemmli97.improvedmobs.config.MobClassMapConfig;
-import io.github.flemmli97.tenshilib.common.config.CommentedJsonConfig;
 import net.minecraft.ChatFormatting;
 import net.minecraftforge.common.ForgeConfigSpec;
 import org.apache.commons.lang3.tuple.Pair;
@@ -89,6 +88,7 @@ public class ConfigSpecs {
         public final ForgeConfigSpec.DoubleValue breakerChance;
         public final ForgeConfigSpec.IntValue breakerInitCooldown;
         public final ForgeConfigSpec.IntValue breakerCooldown;
+        public final ForgeConfigSpec.IntValue restoreDelay;
         public final ForgeConfigSpec.BooleanValue idleBreak;
         public final ForgeConfigSpec.DoubleValue stealerChance;
         public final ForgeConfigSpec.ConfigValue<List<String>> blackListedContainerBlocks;
@@ -193,6 +193,7 @@ public class ConfigSpecs {
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);
             this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").defineInRange("Breaker Initial Cooldown", 120, 0, Integer.MAX_VALUE);
             this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", 20, 0, Integer.MAX_VALUE);
+            this.restoreDelay = builder.comment("Blocks will be restored after x ticks being broken. If set to 0 will never restore", "This will not restore block entity data!").defineInRange("Restore delay", Config.CommonConfig.restoreDelay, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", false);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").defineInRange("Stealer Chance", 0.3, 0, 1);
             this.blackListedContainerBlocks = builder.comment("List of blocks mobs shouldn't steal from. You can also add a modid to blacklist whole mods").define("Steal Block Blacklist", new ArrayList<>(), stringList());
@@ -248,7 +249,7 @@ public class ConfigSpecs {
     }
 
     private static Predicate<Object> stringList() {
-        return p -> p instanceof List<?> list && list.stream().allMatch(e->e instanceof String);
+        return p -> p instanceof List<?> list && list.stream().allMatch(e -> e instanceof String);
     }
 
     static {

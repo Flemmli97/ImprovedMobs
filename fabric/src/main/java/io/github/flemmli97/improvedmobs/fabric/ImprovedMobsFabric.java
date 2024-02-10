@@ -32,7 +32,7 @@ public class ImprovedMobsFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        ServerTickEvents.END_WORLD_TICK.register(EventCalls::increaseDifficulty);
+        ServerTickEvents.END_WORLD_TICK.register(EventCalls::tick);
         ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
         CommandRegistrationCallback.EVENT.register(EventHandler::registerCommand);
         ServerEntityEvents.ENTITY_LOAD.register(EventHandler::onEntityLoad);
