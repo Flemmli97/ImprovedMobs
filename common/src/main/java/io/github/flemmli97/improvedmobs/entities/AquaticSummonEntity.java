@@ -1,6 +1,7 @@
 package io.github.flemmli97.improvedmobs.entities;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.ai.WaterNavigation;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -15,11 +16,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.pathfinder.BlockPathTypes;
-import net.minecraft.world.level.pathfinder.PathFinder;
-import net.minecraft.world.level.pathfinder.SwimNodeEvaluator;
 import net.minecraft.world.phys.Vec3;
 
 public class AquaticSummonEntity extends RiddenSummonEntity {
@@ -58,19 +56,7 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
 
     @Override
     protected PathNavigation createNavigation(Level level) {
-        return new WaterBoundPathNavigation(this, level) {
-
-            @Override
-            protected PathFinder createPathFinder(int i) {
-                this.nodeEvaluator = new SwimNodeEvaluator(true);
-                return new PathFinder(this.nodeEvaluator, i);
-            }
-
-            @Override
-            protected boolean canUpdatePath() {
-                return this.isInLiquid();
-            }
-        };
+        return new WaterNavigation(this, level);
     }
 
     @Override
