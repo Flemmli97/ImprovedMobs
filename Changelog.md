@@ -1,3 +1,18 @@
+Improved Mobs 1.11.7
+================
+- New config `Restore delay` allowing broken blocks to be restored after certain time.  
+  Default is 0 (disabled).  
+  Block entity data will not be restored (e.g. chests will spill their contents on being broken 
+  but the content will not be restored)  
+- Add option to ignore mobs from spawner from being affected by this mod
+- Fix enchanting not working
+- Potentially fixing concurrent exception with ridden mobs
+- Fix line of sight check reversed when using neutral aggressive check
+- Fix block breaking progress not working properly
+- Fix a nullpointer with custom pathing
+- Use a custom water navigation for the guardian mount:
+  Fixes an edge case where if a zombie converts to drowned while riding the guardian mount it will crash the game
+
 Improved Mobs 1.11.6
 ================
 - Fix tenshilib dependency crash
