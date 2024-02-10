@@ -103,6 +103,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.DoubleVal breakerChance;
         public final CommentedJsonConfig.IntVal breakerInitCooldown;
         public final CommentedJsonConfig.IntVal breakerCooldown;
+        public final CommentedJsonConfig.IntVal restoreDelay;
         public final CommentedJsonConfig.CommentedVal<Boolean> idleBreak;
         public final CommentedJsonConfig.DoubleVal stealerChance;
         public final CommentedJsonConfig.CommentedVal<List<String>> blackListedContainerBlocks;
@@ -203,6 +204,7 @@ public final class ConfigSpecs {
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", 0.3, 0, 1);
             this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").defineInRange("Breaker Initial Cooldown", 120, 0, Integer.MAX_VALUE);
             this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", 20, 0, Integer.MAX_VALUE);
+            this.restoreDelay = builder.comment("Blocks will be restored after x ticks being broken. If set to 0 will never restore", "This will not restore block entity data!").defineInRange("Restore delay", Config.CommonConfig.restoreDelay, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", false);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").defineInRange("Stealer Chance", 0.3, 0, 1);
             this.blackListedContainerBlocks = builder.comment("List of blocks mobs shouldn't steal from. You can also add a modid to blacklist whole mods").define("Steal Block Blacklist", new ArrayList<>());

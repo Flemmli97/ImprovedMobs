@@ -65,6 +65,7 @@ public class ConfigLoader {
         Config.CommonConfig.breakerChance = specs.breakerChance.get().floatValue();
         Config.CommonConfig.breakerInitCooldown = specs.breakerInitCooldown.get();
         Config.CommonConfig.breakerCooldown = specs.breakerCooldown.get();
+        Config.CommonConfig.restoreDelay = specs.restoreDelay.get();
         Config.CommonConfig.idleBreak = specs.idleBreak.get();
         Config.CommonConfig.stealerChance = specs.stealerChance.get().floatValue();
         Config.CommonConfig.blackListedContainerBlocks = specs.blackListedContainerBlocks.get();

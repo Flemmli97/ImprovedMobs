@@ -2,9 +2,11 @@ package io.github.flemmli97.improvedmobs.ai;
 
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.improvedmobs.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.utils.Utils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -118,7 +120,13 @@ public class BlockBreakGoal extends Goal {
             this.cooldown *= 0.5;
             ItemStack item = this.living.getMainHandItem();
             ItemStack itemOff = this.living.getOffhandItem();
-            boolean canHarvest = Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff);
+            boolean canHarvest;
+            if (Config.CommonConfig.restoreDelay > 0 && this.living.level() instanceof ServerLevel serverLevel) {
+                canHarvest = false;
+                BlockRestorationData.get(serverLevel)
+                        .restore(serverLevel, serverLevel.getBlockState(this.markedLoc), this.markedLoc, this.living);
+            } else
+                canHarvest = Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff);
             this.living.level().destroyBlock(this.markedLoc, canHarvest);
             this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, -1);
             this.markedLoc = null;

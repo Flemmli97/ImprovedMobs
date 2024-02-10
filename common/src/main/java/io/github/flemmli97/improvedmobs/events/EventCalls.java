@@ -17,6 +17,7 @@ import io.github.flemmli97.improvedmobs.mixin.TargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixinhelper.IGoalModifier;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.improvedmobs.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.utils.Utils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
@@ -70,11 +71,12 @@ public class EventCalls {
         CrossPlatformStuff.INSTANCE.sendConfigSync(player);
     }
 
-    public static void increaseDifficulty(ServerLevel level) {
+    public static void tick(ServerLevel level) {
+        BlockRestorationData.get(level).tick(level);
         if (!Config.CommonConfig.enableDifficultyScaling)
             return;
         if (!Config.CommonConfig.difficultyType.increaseDifficulty) {
-            if (level.getGameTime() % 20 == 0)
+            if (level.getGameTime() % 20 == 0 && level.dimension() == Level.OVERWORLD)
                 CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(level.getServer()), level.getServer());
             return;
         }
