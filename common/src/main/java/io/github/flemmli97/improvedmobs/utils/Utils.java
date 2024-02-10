@@ -109,7 +109,7 @@ public class Utils {
                     ResourceLocation res = BuiltInRegistries.ENCHANTMENT.getKey(e.enchantment);
                     if (res != null) {
                         if ((Config.CommonConfig.enchantWhitelist && Config.CommonConfig.enchantBlacklist.contains(res.toString()))
-                                || Config.CommonConfig.enchantBlacklist.contains(res.toString())) {
+                                || !Config.CommonConfig.enchantBlacklist.contains(res.toString())) {
                             itemstack.enchant(e.enchantment, e.level);
                         }
                     }
