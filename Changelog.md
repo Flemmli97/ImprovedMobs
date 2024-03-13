@@ -1,3 +1,13 @@
+Improved Mobs 1.12.0
+================
+- Redid various configs!
+- Entity flag list now accepts tags. Prefix them with #
+- Tags in block break list need to be prefixed with a #. Old configs not using # for tags will not work anymore
+- Add increase per block for distance based difficulty.
+  You can add a triple x-y-z in `Difficulty Increase` instead where z is the increase per block.
+- Add block tags which mobs can see through `improvedmobs:see_through`:
+  Default include glass and leaves
+
 Improved Mobs 1.11.7
 ================
 - New config `Restore delay` allowing broken blocks to be restored after certain time.  
