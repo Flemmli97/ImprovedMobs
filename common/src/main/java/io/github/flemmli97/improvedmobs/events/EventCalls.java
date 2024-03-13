@@ -91,13 +91,13 @@ public class EventCalls {
                     if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
                         i += 1;
                     while (i > 0) {
-                        data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current) : 0f, level.getDayTime(), level.getServer());
+                        data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0f, level.getDayTime(), level.getServer());
                         i--;
                     }
                 }
             } else {
                 if (level.getDayTime() - data.getPrevTime() > 2400) {
-                    data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current) : 0, level.getDayTime(), level.getServer());
+                    data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0, level.getDayTime(), level.getServer());
                 }
             }
         }

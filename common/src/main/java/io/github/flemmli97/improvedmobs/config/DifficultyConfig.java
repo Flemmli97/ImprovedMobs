@@ -9,18 +9,19 @@ import java.util.List;
 
 public class DifficultyConfig implements IConfigListValue<DifficultyConfig> {
 
-    private static final Pair<Float, Float> defaultVal = Pair.of(0f, 0.1f);
-    private final List<Pair<Float, Float>> vals = new ArrayList<>();
+    private static final Pair<Float, Zone> DEFAULT_VAL = Pair.of(0f, new Zone(1, 0.01f));
+    private final List<Pair<Float, Zone>> vals = new ArrayList<>();
 
     @Override
     public DifficultyConfig readFromString(List<String> ss) {
         this.vals.clear();
-        List<Pair<Float, Float>> list = new ArrayList<>();
+        List<Pair<Float, Zone>> list = new ArrayList<>();
         for (String s : ss) {
             String[] parts = s.split("-");
-            if (parts.length != 2)
-                continue;
-            this.vals.add(Pair.of(Float.parseFloat(parts[0]), Float.parseFloat(parts[1])));
+            if (parts.length == 3)
+                list.add(Pair.of(Float.parseFloat(parts[0]), new Zone(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]))));
+            else if (parts.length == 2)
+                list.add(Pair.of(Float.parseFloat(parts[0]), new Zone(Float.parseFloat(parts[1]), 0)));
         }
         list.sort((o1, o2) -> Float.compare(o1.getLeft(), o2.getLeft()));
         this.vals.addAll(list);
@@ -34,7 +35,10 @@ public class DifficultyConfig implements IConfigListValue<DifficultyConfig> {
         return list;
     }
 
-    public float get(float difficulty) {
-        return SearchUtils.searchInfFunc(this.vals, v -> Float.compare(v.getLeft(), difficulty), defaultVal).getRight();
+    public Pair<Float, Zone> get(float difficulty) {
+        return SearchUtils.searchInfFunc(this.vals, v -> Float.compare(v.getLeft(), difficulty), DEFAULT_VAL);
+    }
+
+    public record Zone(float start, float increasePerBlock) {
     }
 }
