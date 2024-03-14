@@ -6,6 +6,7 @@
   "mixins": [
     "ClipContextMixin",
     "EntityMixin",
+    "EntityTypeMixin",
     "GoalSelectorMixin",
     "LivingEntityMixin",
     "MobEntityMixin",
