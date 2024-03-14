@@ -4,8 +4,10 @@
   "package": "io.github.flemmli97.improvedmobs.mixin",
   "compatibilityLevel": "JAVA_16",
   "mixins": [
+    "ClipContextMixin",
     "EntityMixin",
     "GoalSelectorMixin",
+    "LivingEntityMixin",
     "MobEntityMixin",
     "MobMixin",
     "NearestTargetGoalMixin",

@@ -4,6 +4,15 @@ loom {
     forge {
         mixinConfigs = ["improvedmobs.mixins.json", "improvedmobs.mixins.compat.json"]
     }
+    runs {
+        data {
+            data()
+            programArgs "--all", "--mod", "improvedmobs"
+            programArgs "--output", project(":common").file("src/generated/resources").absolutePath
+            programArgs "--existing", file("src/main/resources").absolutePath
+            programArgs "--existing", project(":common").file("src/main/resources").absolutePath
+        }
+    }
 }
 
 ext {

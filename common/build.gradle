@@ -18,5 +18,8 @@ repositories {
 dependencies {
     modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
     modCompileOnly "${pehkui}"
+}
 
+sourceSets.main.resources {
+    srcDir "src/generated/resources"
 }
