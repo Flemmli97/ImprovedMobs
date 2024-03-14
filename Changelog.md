@@ -7,6 +7,7 @@ Improved Mobs 1.12.0
   You can add a triple x-y-z in `Difficulty Increase` instead where z is the increase per block.
 - Add block tags which mobs can see through `improvedmobs:see_through`:
   Default include glass and leaves
+- Serverside entities are handled on creation instead of load now which might fix some stuff
 
 Improved Mobs 1.11.7
 ================
