@@ -4,6 +4,8 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
 import io.github.flemmli97.tenshilib.common.utils.ArrayUtils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
+import net.minecraft.core.Holder;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -23,6 +25,9 @@ import java.util.Map;
 public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlagConfig> {
 
     private final Map<String, EnumSet<Flags>> map = new HashMap<>();
+
+    private final List<String> tagsEntryToResolve = new ArrayList<>();
+    private boolean resolved;
 
     @SuppressWarnings("deprecation")
     public void initDefault(Level world) {
@@ -50,6 +55,8 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
     }
 
     public boolean hasFlag(Mob living, Flags flag, boolean reverse) {
+        if (!this.resolved)
+            this.resolveTags();
         ResourceLocation res = PlatformUtils.INSTANCE.entities().getIDFrom(living.getType());
         if (res == null)
             return true;
@@ -68,6 +75,10 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
     public EntityModifyFlagConfig readFromString(List<String> s) {
         this.map.clear();
         for (String val : s) {
+            if (val.startsWith("#")) {
+                this.tagsEntryToResolve.add(val);
+                continue;
+            }
             String[] subs = val.split("\\|");
             EnumSet<Flags> set;
             if (subs.length == 1)
@@ -80,6 +91,23 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
             this.map.put(subs[0].trim(), set);
         }
         return this;
+    }
+
+    public void resolveTags() {
+        this.resolved = true;
+        for (String val : this.tagsEntryToResolve) {
+            String[] subs = val.substring(1).split("\\|");
+            EnumSet<Flags> set;
+            if (subs.length == 1)
+                set = EnumSet.of(Flags.ALL);
+            else {
+                set = EnumSet.noneOf(Flags.class);
+                for (int i = 1; i < subs.length; i++)
+                    set.add(Flags.valueOf(subs[i].trim()));
+            }
+            Iterable<Holder<EntityType<?>>> tag = BuiltInRegistries.ENTITY_TYPE.getTagOrEmpty(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), new ResourceLocation(subs[0].trim())));
+            tag.forEach(h -> this.map.put(BuiltInRegistries.ENTITY_TYPE.getKey(h.value()).toString(), set));
+        }
     }
 
     @Override
@@ -97,8 +125,9 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
     }
 
     public static String use() {
-        String[] str = new String[]{"Entities added here will be blacklisted from their assigned flags. Usage:", "<entity registry name> or <namespace> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Having no flags is equal to ALL. Use REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
-                "Examples (without <>):", "<minecraft:sheep> (equal to minecraft:sheep|ALL) excludes sheeps from all modifications", "<minecraft:sheep|REVERSE|ATTRIBUTES will> add sheep to attributes modification only", "<minecraft:sheep|ATTRIBUTES> will add sheep to everything except attributes", "<minecraft> blacklists all minecraft mobs from everything"};
+        String[] str = new String[]{"Entities added here will be blacklisted from their assigned flags. Usage:", "<entity registry name> or <namespace> or <#tag> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Having no flags is equal to ALL. Use REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
+                "Examples (without <>):", "<minecraft:sheep> (equal to minecraft:sheep|ALL) excludes sheeps from all modifications", "<minecraft:sheep|REVERSE|ATTRIBUTES will> add sheep to attributes modification only",
+                "<#minecraft:raiders|ATTRIBUTES> will add all entities in the raiders tag to everything except attributes", "<minecraft:sheep|ATTRIBUTES> will add sheep to everything except attributes", "<minecraft> disables everything for all minecraft mobs"};
         return String.join("\n", str);
     }
 
