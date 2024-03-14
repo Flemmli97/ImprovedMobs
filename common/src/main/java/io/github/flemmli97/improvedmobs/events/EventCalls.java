@@ -10,7 +10,6 @@ import io.github.flemmli97.improvedmobs.ai.WaterRidingGoal;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.entities.ServersideRegister;
 import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixin.TargetGoalMixin;
@@ -110,7 +109,6 @@ public class EventCalls {
         if (((ISpawnReason) mob).getSpawnReason() == MobSpawnType.SPAWNER && Config.CommonConfig.ignoreSpawner)
             return;
         EntityFlags flags = EntityFlags.get(mob);
-        ServersideRegister.replaceEntity(mob);
         boolean mobGriefing = mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
         float difficulty = DifficultyData.getDifficulty(mob.level(), mob);
         if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEF) {

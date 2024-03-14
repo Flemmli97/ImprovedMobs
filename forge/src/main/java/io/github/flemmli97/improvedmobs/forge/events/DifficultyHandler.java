@@ -6,7 +6,6 @@ import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.Level;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
