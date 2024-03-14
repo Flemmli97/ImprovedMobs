@@ -160,7 +160,10 @@ public final class ConfigSpecs {
             this.enableDifficultyScaling = builder.comment("Disable/Enables the whole difficulty scaling of this mod. Requires a mc restart").define("Enable difficulty scaling", true);
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldnt increase at the beginning. One full minecraft day is 24000 ticks").defineInRange("Difficulty Delay", 0, 0, Integer.MAX_VALUE);
             this.ignoreSpawner = builder.comment("If true ignores mobs from spawners").define("Ignore Spawner", false);
-            this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.", "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]", "-> So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day since a mc day has 24000 ticks) till it reaches a difficulty of 10.", "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1", "250-0"));
+            this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.",
+                    "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]",
+                    "-> So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day since a mc day has 24000 ticks) till it reaches a difficulty of 10.",
+                    "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Lists.newArrayList("0-0.1", "250-0"));
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", false);
             this.shouldPunishTimeSkip = builder.comment("If true will increase difficulty by the amount of time skipped. Else will only increase difficulty once.").define("Punish Time Skip", true);
             this.friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", false);
@@ -174,7 +177,9 @@ public final class ConfigSpecs {
                     "DISTANCE: Uses the distance to the position defined in Center Position to define the difficulty",
                     "DISTANCESPAWN: Uses the distance to the world spawn to define the difficulty",
                     "If the type is any of the distance types the functionality of Difficulty Increase is changed to the following where the 1. value is the minimum distance and the 2. is the difficulty that applies. ",
-                    "E.g. [\"0-0\",\"1000-5\" translates to 0 difficulty between 0-1000 distance and 5 difficulty for distance >= 1000").define("Difficulty type", Config.DifficultyType.GLOBAL);
+                    "E.g. [\"0-0\",\"1000-5\"] translates to 0 difficulty between 0-1000 distance and 5 difficulty for distance >= 1000",
+                    "You can also define it as a triple x-y-z instead where z is the increase per block in for that area.",
+                    "E.g. [\"0-0-0.1\",\"1000-5-1\"] the difficulty increases between 0-1000 by 0.1 per block and >= 1000 by 1 per block with a starting value of 5").define("Difficulty type", Config.DifficultyType.GLOBAL);
             this.centerPos = builder.comment("Position used for DISTANCE difficulty type").define("Center Position", Config.CommonConfig.centerPos.writeToString());
 
             //builder.comment("Black/Whitelist for various stuff").push("list");

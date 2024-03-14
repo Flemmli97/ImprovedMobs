@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.difficulty;
 
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.config.DifficultyConfig;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.platform.integration.DifficultyValues;
 import net.minecraft.nbt.CompoundTag;
@@ -15,6 +16,7 @@ import net.minecraft.world.level.EntityGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,9 +110,14 @@ public class DifficultyData extends SavedData {
     }
 
     public static float getDifficultyFromDist(ServerLevel level, Vec3 pos) {
-        if (Config.CommonConfig.difficultyType == Config.DifficultyType.DISTANCESPAWN)
-            return Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) pos.distanceToSqr(level.getSharedSpawnPos().getX() + 0.5, pos.y(), level.getSharedSpawnPos().getZ() + 0.5)));
-        return Config.CommonConfig.increaseHandler.get(Mth.sqrt((float) pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().getX() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().getZ() + 0.5)));
+        float dist;
+        if (Config.CommonConfig.difficultyType == Config.DifficultyType.DISTANCESPAWN) {
+            dist = Mth.sqrt((float) pos.distanceToSqr(level.getSharedSpawnPos().getX() + 0.5, pos.y(), level.getSharedSpawnPos().getZ() + 0.5));
+        } else {
+            dist = Mth.sqrt((float) pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().getX() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().getZ() + 0.5));
+        }
+        Pair<Float, DifficultyConfig.Zone> conf = Config.CommonConfig.increaseHandler.get(dist);
+        return conf.getRight().start() + (dist - conf.getLeft()) * conf.getRight().increasePerBlock();
     }
 
     public void load(CompoundTag nbt) {
