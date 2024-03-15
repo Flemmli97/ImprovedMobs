@@ -18,7 +18,6 @@ public class NoHeightBlockPosConfig implements IConfigValue<NoHeightBlockPosConf
             ImprovedMobs.logger.error("Error parsing block pos from config " + e.getMessage());
             return this;
         }
-        ;
         int z;
         try {
             z = Integer.parseInt(split[1]);
@@ -26,7 +25,6 @@ public class NoHeightBlockPosConfig implements IConfigValue<NoHeightBlockPosConf
             ImprovedMobs.logger.error("Error parsing block pos from config " + e.getMessage());
             return this;
         }
-        ;
         this.pos = new BlockPos(x, 0, z);
         return this;
     }

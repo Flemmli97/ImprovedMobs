@@ -165,7 +165,7 @@ public class ConfigSpecs {
                     "E.g. [\"0-0\",\"1000-5\"] translates to 0 difficulty between 0-1000 distance and 5 difficulty for distance >= 1000",
                     "You can also define it as a triple x-y-z instead where z is the increase per block in for that area.",
                     "E.g. [\"0-0-0.1\",\"1000-5-1\"] the difficulty increases between 0-1000 by 0.1 per block and >= 1000 by 1 per block with a starting value of 5").defineEnum("Difficulty type", Config.DifficultyType.GLOBAL);
-            this.centerPos = builder.comment("Position used for DISTANCE difficulty type").define("Center Position", Config.CommonConfig.centerPos.writeToString(), stringList());
+            this.centerPos = builder.comment("Position used for DISTANCE difficulty type").define("Center Position", Config.CommonConfig.centerPos.writeToString());
             builder.pop();
 
             builder.comment("Black/Whitelist for various stuff").push("list");

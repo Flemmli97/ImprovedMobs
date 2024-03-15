@@ -1,3 +1,7 @@
+Improved Mobs 1.12.1
+================
+- Fix centerPos config on forge
+
 Improved Mobs 1.12.0
 ================
 - Redid various configs!
