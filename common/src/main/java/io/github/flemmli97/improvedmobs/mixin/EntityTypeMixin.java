@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.util.Optional;
 
 @Mixin(EntityType.class)
-public class EntityTypeMixin {
+public abstract class EntityTypeMixin {
 
     @Inject(method = "create(Lnet/minecraft/nbt/CompoundTag;Lnet/minecraft/world/level/Level;)Ljava/util/Optional;", at = @At("HEAD"), cancellable = true)
     private static void injectServerEntityOnLoad(CompoundTag compound, Level level, CallbackInfoReturnable<Optional<Entity>> info) {

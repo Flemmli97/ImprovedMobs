@@ -1,3 +1,8 @@
+Improved Mobs 1.12.2
+================
+- Improve mobs seeing through transparent blocks:
+  - Only do the check during targeting which fixes problems with e.g. skeletons shooting at glass
+
 Improved Mobs 1.12.1
 ================
 - Fix centerPos config on forge
