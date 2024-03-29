@@ -12,7 +12,7 @@ import io.github.flemmli97.improvedmobs.config.EntityModifyFlagConfig;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
-import io.github.flemmli97.improvedmobs.mixin.TargetGoalMixin;
+import io.github.flemmli97.improvedmobs.mixin.TargetGoalAccessor;
 import io.github.flemmli97.improvedmobs.mixinhelper.IGoalModifier;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.mixinhelper.ISpawnReason;
@@ -127,7 +127,7 @@ public class EventCalls {
         if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
             ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
                 if (mob.getRandom().nextFloat() < 0.7) {
-                    ((TargetGoalMixin) g).setShouldCheckSight(false);
+                    ((TargetGoalAccessor) g).setShouldCheckSight(false);
                     ((NearestTargetGoalMixin) g).getTargetEntitySelector().ignoreLineOfSight();
                 }
             });

@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClipContext.class)
-public class ClipContextMixin implements IClipContxt {
+public abstract class ClipContextMixin implements IClipContxt {
 
     @Unique
     private boolean IM_checkSeeThrough;

@@ -16,7 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Mob.class)
-public class MobMixin implements ISpawnReason {
+public abstract class MobMixin implements ISpawnReason {
 
     @Unique
     private MobSpawnType improved_mobs_spawnreason;
