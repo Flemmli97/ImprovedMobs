@@ -103,6 +103,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.DoubleVal breakerChance;
         public final CommentedJsonConfig.IntVal breakerInitCooldown;
         public final CommentedJsonConfig.IntVal breakerCooldown;
+        public final CommentedJsonConfig.CommentedVal<Boolean> ignoreHarvestLevel;
         public final CommentedJsonConfig.IntVal restoreDelay;
         public final CommentedJsonConfig.CommentedVal<Boolean> idleBreak;
         public final CommentedJsonConfig.DoubleVal stealerChance;
@@ -115,6 +116,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.DoubleVal difficultySteal;
         public final CommentedJsonConfig.DoubleVal guardianAIChance;
         public final CommentedJsonConfig.DoubleVal flyAIChance;
+        public final CommentedJsonConfig.CommentedVal<Boolean> tntBlockDestruction;
 
         //Equipment
         public final CommentedJsonConfig.CommentedVal<List<String>> equipmentModBlacklist;
@@ -210,6 +212,7 @@ public final class ConfigSpecs {
             this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").defineInRange("Breaker Chance", Config.CommonConfig.breakerChance, 0, 1);
             this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").defineInRange("Breaker Initial Cooldown", Config.CommonConfig.breakerInitCooldown, 0, Integer.MAX_VALUE);
             this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", Config.CommonConfig.breakerCooldown, 0, Integer.MAX_VALUE);
+            this.ignoreHarvestLevel = builder.comment("By default mobs can only break the block they can harvest with the current tool they holding. Set this to true to disable that check (The block will not drop if they cant harvest it though!).").define("Ignore Harvest Check", Config.CommonConfig.ignoreHarvestLevel);
             this.restoreDelay = builder.comment("Blocks will be restored after x ticks being broken. If set to 0 will never restore", "This will not restore block entity data!").defineInRange("Restore delay", Config.CommonConfig.restoreDelay, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", Config.CommonConfig.idleBreak);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").defineInRange("Stealer Chance", Config.CommonConfig.stealerChance, 0, 1);
@@ -222,6 +225,7 @@ public final class ConfigSpecs {
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").defineInRange("Difficulty Steal AI", Config.CommonConfig.difficultySteal, 0, Double.MAX_VALUE);
             this.guardianAIChance = builder.comment("Chance for mobs to be able to summon an aquatic mount").defineInRange("Guardian Chance", Config.CommonConfig.guardianAIChance, 0, 1);
             this.flyAIChance = builder.comment("Chance for mobs to be able to summon a flying mount").defineInRange("Phantom Chance", Config.CommonConfig.flyAIChance, 0, 1);
+            this.tntBlockDestruction = builder.comment("Set this to true to allow tnt thrown by mobs to destroy blocks").define("TNT Block Destruction", Config.CommonConfig.tntBlockDestruction);
 
             //builder.comment("Configs regarding mobs spawning with equipment").push("equipment");
             this.equipmentModBlacklist = builder.comment("Blacklist items from whole mods. Add modid to prevent items from that mod being equipped. (For individual items use the equipment.json)").define("Item Blacklist", Config.CommonConfig.equipmentModBlacklist);

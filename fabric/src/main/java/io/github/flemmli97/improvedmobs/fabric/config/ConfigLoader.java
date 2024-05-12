@@ -66,12 +66,12 @@ public class ConfigLoader {
         Config.CommonConfig.breakerChance = specs.breakerChance.get().floatValue();
         Config.CommonConfig.breakerInitCooldown = specs.breakerInitCooldown.get();
         Config.CommonConfig.breakerCooldown = specs.breakerCooldown.get();
+        Config.CommonConfig.ignoreHarvestLevel = specs.ignoreHarvestLevel.get();
         Config.CommonConfig.restoreDelay = specs.restoreDelay.get();
         Config.CommonConfig.idleBreak = specs.idleBreak.get();
         Config.CommonConfig.stealerChance = specs.stealerChance.get().floatValue();
         Config.CommonConfig.blackListedContainerBlocks = specs.blackListedContainerBlocks.get();
         Config.CommonConfig.breakTileEntities = specs.breakTileEntities.get();
-
         Config.CommonConfig.breakingItem.clear();
         for (String s : specs.breakingItems.get()) {
             s = s.replace(" ", "");
@@ -92,6 +92,7 @@ public class ConfigLoader {
         Config.CommonConfig.difficultySteal = specs.difficultySteal.get().floatValue();
         Config.CommonConfig.guardianAIChance = specs.guardianAIChance.get().floatValue();
         Config.CommonConfig.flyAIChance = specs.flyAIChance.get().floatValue();
+        Config.CommonConfig.tntBlockDestruction = specs.tntBlockDestruction.get();
 
         Config.CommonConfig.equipmentModBlacklist = specs.equipmentModBlacklist.get();
         Config.CommonConfig.equipmentModWhitelist = specs.equipmentModWhitelist.get();
