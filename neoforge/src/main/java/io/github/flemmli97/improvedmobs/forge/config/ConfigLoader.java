@@ -61,12 +61,12 @@ public class ConfigLoader {
         Config.CommonConfig.breakerChance = ConfigSpecs.COMMON_CONF.breakerChance.get().floatValue();
         Config.CommonConfig.breakerInitCooldown = ConfigSpecs.COMMON_CONF.breakerInitCooldown.get();
         Config.CommonConfig.breakerCooldown = ConfigSpecs.COMMON_CONF.breakerCooldown.get();
+        Config.CommonConfig.ignoreHarvestLevel = ConfigSpecs.COMMON_CONF.ignoreHarvestLevel.get();
         Config.CommonConfig.restoreDelay = ConfigSpecs.COMMON_CONF.restoreDelay.get();
         Config.CommonConfig.idleBreak = ConfigSpecs.COMMON_CONF.idleBreak.get();
         Config.CommonConfig.stealerChance = ConfigSpecs.COMMON_CONF.stealerChance.get().floatValue();
         Config.CommonConfig.blackListedContainerBlocks = ConfigSpecs.COMMON_CONF.blackListedContainerBlocks.get();
         Config.CommonConfig.breakTileEntities = ConfigSpecs.COMMON_CONF.breakTileEntities.get();
-
         Config.CommonConfig.breakingItem.clear();
         for (String s : ConfigSpecs.COMMON_CONF.breakingItems.get()) {
             s = s.replace(" ", "");
@@ -87,6 +87,7 @@ public class ConfigLoader {
         Config.CommonConfig.difficultySteal = ConfigSpecs.COMMON_CONF.difficultySteal.get().floatValue();
         Config.CommonConfig.guardianAIChance = ConfigSpecs.COMMON_CONF.guardianAIChance.get().floatValue();
         Config.CommonConfig.flyAIChance = ConfigSpecs.COMMON_CONF.flyAIChance.get().floatValue();
+        Config.CommonConfig.tntBlockDestruction = ConfigSpecs.COMMON_CONF.tntBlockDestruction.get();
 
         Config.CommonConfig.equipmentModBlacklist = ConfigSpecs.COMMON_CONF.equipmentModBlacklist.get();
         Config.CommonConfig.equipmentModWhitelist = ConfigSpecs.COMMON_CONF.equipmentModWhitelist.get();

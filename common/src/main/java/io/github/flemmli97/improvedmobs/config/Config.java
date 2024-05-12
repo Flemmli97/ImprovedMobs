@@ -75,6 +75,7 @@ public class Config {
         public static float breakerChance = 0.3f;
         public static int breakerInitCooldown = 120;
         public static int breakerCooldown = 20;
+        public static boolean ignoreHarvestLevel;
         public static int restoreDelay;
         public static boolean idleBreak;
         public static float stealerChance = 0.3f;
@@ -87,6 +88,7 @@ public class Config {
         public static float difficultySteal;
         public static float guardianAIChance = 0.5f;
         public static float flyAIChance = 0.5f;
+        public static boolean tntBlockDestruction;
 
         //Equipment
         public static List<String> equipmentModBlacklist = new ArrayList<>();

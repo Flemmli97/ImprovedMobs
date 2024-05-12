@@ -46,6 +46,8 @@ public class Utils {
     }
 
     public static boolean canHarvest(BlockState block, ItemStack item) {
+        if (Config.CommonConfig.ignoreHarvestLevel)
+            return true;
         return item.isCorrectToolForDrops(block) || !block.requiresCorrectToolForDrops();
     }
 
