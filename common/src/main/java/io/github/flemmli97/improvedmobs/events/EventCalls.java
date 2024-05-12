@@ -357,7 +357,8 @@ public class EventCalls {
 
     public static void explosion(Explosion explosion, Entity source, List<Entity> affectedEntities) {
         if (source instanceof PrimedTnt && EntityFlags.get(source).isThrownEntity) {
-            explosion.getToBlow().clear();
+            if (!Config.CommonConfig.tntBlockDestruction)
+                explosion.getToBlow().clear();
             LivingEntity igniter = explosion.getIndirectSourceEntity();
             if (igniter instanceof Mob) {
                 affectedEntities.removeIf(e -> !e.equals(((Mob) igniter).getTarget()));
