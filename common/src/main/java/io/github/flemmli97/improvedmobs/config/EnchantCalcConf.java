@@ -23,7 +23,7 @@ public class EnchantCalcConf implements IConfigListValue<EnchantCalcConf> {
             String[] parts = s.split("-");
             if (parts.length != 3)
                 continue;
-            list.add(new Value(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
+            list.add(new Value(Float.parseFloat(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
         }
         list.sort(null);
         this.vals.addAll(list);
@@ -46,7 +46,7 @@ public class EnchantCalcConf implements IConfigListValue<EnchantCalcConf> {
         public final int max;
         public final float diff;
 
-        Value(int diff, int min, int max) {
+        Value(float diff, int min, int max) {
             this.min = min;
             this.max = max;
             this.diff = diff;
