@@ -1,3 +1,9 @@
+Improved Mobs 1.12.3
+================
+- Add `Ignore Harvest Check` to allow breaker mobs to break blocks regardless of the tool
+- Add `TNT Block Destruction`. If true tnt thrown by mobs will destroy blocks
+- Redo the calculation of default equipment weights (Existing configs will not be changed)
+
 Improved Mobs 1.12.2
 ================
 - Improve mobs seeing through transparent blocks:
