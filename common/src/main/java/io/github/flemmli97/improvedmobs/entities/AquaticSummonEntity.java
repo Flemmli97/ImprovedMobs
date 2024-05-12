@@ -17,7 +17,7 @@ import net.minecraft.world.entity.ai.control.LookControl;
 import net.minecraft.world.entity.ai.control.MoveControl;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.phys.Vec3;
 
 public class AquaticSummonEntity extends RiddenSummonEntity {
@@ -31,14 +31,14 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
 
     public AquaticSummonEntity(Level level) {
         super(EntityType.GUARDIAN, level);
-        this.setPathfindingMalus(BlockPathTypes.WATER, 0.0f);
+        this.setPathfindingMalus(PathType.WATER, 0.0f);
         this.moveControl = new AquaticMoveControl(this);
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_MOVING, false);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ID_MOVING, false);
     }
 
     public boolean isMoving() {
@@ -47,11 +47,6 @@ public class AquaticSummonEntity extends RiddenSummonEntity {
 
     protected void setMoving(boolean moving) {
         this.entityData.set(DATA_ID_MOVING, moving);
-    }
-
-    @Override
-    public boolean canBreatheUnderwater() {
-        return true;
     }
 
     @Override

@@ -34,11 +34,7 @@ public class EventHandler {
     public static void serverStart(MinecraftServer server) {
         ConfigLoader.loadCommon();
         ItemAITasks.initAI();
-        try {
-            EquipmentList.initEquip();
-        } catch (EquipmentList.InvalidItemNameException e) {
-            ImprovedMobs.logger.error(e.getMessage());
-        }
+        EquipmentList.initEquip(server.registryAccess());
     }
 
     public static void worldLoad(MinecraftServer server, ServerLevel world) {

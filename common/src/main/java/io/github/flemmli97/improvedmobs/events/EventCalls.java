@@ -16,12 +16,13 @@ import io.github.flemmli97.improvedmobs.mixin.TargetGoalAccessor;
 import io.github.flemmli97.improvedmobs.mixinhelper.IGoalModifier;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.mixinhelper.ISpawnReason;
+import io.github.flemmli97.improvedmobs.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.utils.Utils;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,8 +69,8 @@ import java.util.function.Predicate;
 public class EventCalls {
 
     public static void worldJoin(ServerPlayer player, MinecraftServer server) {
-        CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
-        CrossPlatformStuff.INSTANCE.sendConfigSync(player);
+        CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
+        CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createConfigPacket(), player);
     }
 
     public static void tick(ServerLevel level) {
@@ -177,7 +178,7 @@ public class EventCalls {
             ((IGoalModifier) mob.targetSelector).goalRemovePredicate(g -> g instanceof NearestTargetGoalMixin target && target.targetTypeClss() == AbstractVillager.class);
             mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, null));
         }
-        List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(PlatformUtils.INSTANCE.entities().getIDFrom(mob.getType()));
+        List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()));
         if (types != null)
             mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, (l) -> types.contains(l.getType())));
         if (mob instanceof PathfinderMob pathfinderMob && difficulty >= Config.CommonConfig.difficultySteal && mobGriefing
@@ -307,7 +308,7 @@ public class EventCalls {
 
     public static boolean equipPet(Player player, InteractionHand hand, Entity target) {
         if (hand == InteractionHand.MAIN_HAND && target instanceof Mob mob && (mob instanceof OwnableEntity || mob.getType().is(ImprovedMobs.ARMOR_EQUIPPABLE)) && !target.level().isClientSide && player.isShiftKeyDown()
-                && !Utils.isInList(target, Config.CommonConfig.petArmorBlackList, Config.CommonConfig.petWhiteList, Utils.entityID)) {
+                && !Utils.isInList(target, Config.CommonConfig.petArmorBlackList, Config.CommonConfig.petWhiteList, Utils.ENTITY_ID)) {
             if (!(mob instanceof OwnableEntity pet) || player == pet.getOwner()) {
                 ItemStack heldItem = player.getMainHandItem();
                 if (heldItem.getItem() instanceof ArmorItem armor) {

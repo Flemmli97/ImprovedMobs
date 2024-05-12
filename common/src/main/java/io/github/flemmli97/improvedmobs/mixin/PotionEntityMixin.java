@@ -11,16 +11,14 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.List;
-
 @Mixin(ThrownPotion.class)
 public abstract class PotionEntityMixin {
 
     @Inject(method = "applySplash", at = @At(value = "HEAD"), cancellable = true)
-    private void applyPotion(List<MobEffectInstance> list, @Nullable Entity entity, CallbackInfo info) {
+    private void applyPotion(Iterable<MobEffectInstance> effects, @Nullable Entity entity, CallbackInfo info) {
         if (EntityFlags.get((ThrownPotion) (Object) this).isThrownEntity) {
             info.cancel();
-            AIUtils.applyPotion(((ThrownPotion) (Object) this), list, entity);
+            AIUtils.applyPotion(((ThrownPotion) (Object) this), effects, entity);
         }
     }
 }

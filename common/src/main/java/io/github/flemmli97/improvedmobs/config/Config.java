@@ -1,12 +1,13 @@
 package io.github.flemmli97.improvedmobs.config;
 
-import io.github.flemmli97.tenshilib.api.config.ItemWrapper;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.random.Weight;
 import net.minecraft.util.random.WeightedEntry;
 import net.minecraft.util.random.WeightedRandom;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayList;
@@ -133,29 +134,45 @@ public class Config {
 
         public static ItemStack getRandomBreakingItem(RandomSource rand) {
             int total = WeightedRandom.getTotalWeight(breakingItem);
-            if (breakingItem.size() == 0 || total <= 0)
+            if (breakingItem.isEmpty() || total <= 0)
                 return ItemStack.EMPTY;
-            return WeightedRandom.getRandomItem(rand, breakingItem, total).map(WeightedItem::getItem).map(ItemWrapper::getStack).orElse(ItemStack.EMPTY);
+            return WeightedRandom.getRandomItem(rand, breakingItem, total).map(WeightedItem::getStack).orElse(ItemStack.EMPTY);
         }
     }
 
     public static class WeightedItem implements WeightedEntry {
 
-        private final ItemWrapper item;
+        private final LazyItem item;
         private final int weight;
 
-        public WeightedItem(ItemWrapper item, int weight) {
+        public WeightedItem(String item, int weight) {
             this.weight = weight;
-            this.item = item;
+            this.item = new LazyItem(item);
         }
 
-        public ItemWrapper getItem() {
-            return this.item;
+        public ItemStack getStack() {
+            return this.item.getStack();
         }
 
         @Override
         public Weight getWeight() {
             return Weight.of(this.weight);
+        }
+    }
+
+    private static class LazyItem {
+
+        private final String config;
+        private Item item;
+
+        public LazyItem(String item) {
+            this.config = item;
+        }
+
+        public ItemStack getStack() {
+            if (this.item == null)
+                this.item = BuiltInRegistries.ITEM.get(new ResourceLocation(this.config));
+            return new ItemStack(this.item);
         }
     }
 

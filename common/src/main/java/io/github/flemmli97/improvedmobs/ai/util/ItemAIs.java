@@ -4,6 +4,8 @@ import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.mixinhelper.ITNTThrowable;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -25,15 +27,15 @@ import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.world.item.component.ChargedProjectiles;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.List;
-import java.util.function.Supplier;
 
 public class ItemAIs {
 
-    private final static List<Supplier<MobEffect>> potionEffects = Lists.newArrayList(() -> MobEffects.REGENERATION, () -> MobEffects.MOVEMENT_SPEED,
-            () -> MobEffects.DAMAGE_BOOST, () -> MobEffects.INVISIBILITY, () -> MobEffects.DAMAGE_RESISTANCE, () -> MobEffects.FIRE_RESISTANCE);
+    private final static List<Holder<MobEffect>> POTION_EFFECTS = Lists.newArrayList(MobEffects.REGENERATION, MobEffects.MOVEMENT_SPEED,
+            MobEffects.DAMAGE_BOOST, MobEffects.INVISIBILITY, MobEffects.DAMAGE_RESISTANCE, MobEffects.FIRE_RESISTANCE);
 
     public static final ItemAI ENCHANTEDBOOK = new ItemAI() {
         @Override
@@ -60,7 +62,7 @@ public class ItemAIs {
                     for (int i = 0; i < nearby.size(); i++) {
                         Entity entityRand = nearby.get(entity.level().random.nextInt(nearby.size()));
                         if (entityRand instanceof Monster mob && entityRand != entity.getTarget()) {
-                            mob.addEffect(new MobEffectInstance(potionEffects.get(mob.level().random.nextInt(6)).get(), 3600, 1));
+                            mob.addEffect(new MobEffectInstance(POTION_EFFECTS.get(mob.level().random.nextInt(6)), 3600, 1));
                             entity.level().playSound(null, entity.getX(), entity.getY(), entity.getZ(), SoundEvents.ELDER_GUARDIAN_CURSE, SoundSource.NEUTRAL, 2F, 1.0F);
                             return;
                         }
@@ -153,7 +155,7 @@ public class ItemAIs {
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             double dis = entity.position().distanceTo(target.position());
             if (dis < entity.getBbWidth() + target.getBbWidth() + 0.5 && !target.isOnFire()) {
-                target.setSecondsOnFire(4);
+                target.setRemainingFireTicks(4);
             }
         }
 
@@ -256,9 +258,11 @@ public class ItemAIs {
         @Override
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             ItemStack stack = entity.getItemInHand(hand);
-            float vel = CrossbowItem.containsChargedProjectile(stack, Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
-            CrossbowItem.performShooting(entity.level(), entity, hand, stack, vel, 1);
-            CrossbowItem.setCharged(stack, false);
+            if (stack.getItem() instanceof CrossbowItem crossbow) {
+                ChargedProjectiles projectile = stack.set(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
+                float vel = projectile != null && projectile.contains(Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
+                crossbow.performShooting(entity.level(), entity, hand, stack, vel, 13.5f - entity.level().getDifficulty().getId() * 4, target);
+            }
         }
 
         @Override

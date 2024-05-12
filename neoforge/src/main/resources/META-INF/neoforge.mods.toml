@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[${loader_version},)"
+license="All rights reserved"
+issueTrackerURL="https://github.com/Flemmli97/ImprovedMobs/issues"
+[[mixins]]
+config = "improvedmobs.mixins.json"
+[[mods]]
+modId="improvedmobs"
+version="${version}"
+displayName="Improved Mobs Mod"
+displayURL="${homepage}"
+logoFile="icon.png"
+authors="Flemmli97"
+description='''Improved AI and customizations for mobs.'''
+[[dependencies.improvedmobs]]
+modId="minecraft"
+type="required"
+versionRange="[${mcversion},)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.improvedmobs]]
+modId="neoforge"
+type="required"
+versionRange="[${forge_version},)"
+ordering="NONE"
+side="BOTH"
+[[dependencies.improvedmobs]]
+modId="tenshilib"
+type="required"
+versionRange="[${tenshilib_version},)"
+ordering="NONE"
+side="BOTH"

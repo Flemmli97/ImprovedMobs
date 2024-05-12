@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 public class ImprovedMobs {
 
     public static final String MODID = "improvedmobs";
-    public static final Logger logger = LogManager.getLogger(ImprovedMobs.MODID);
+    public static final Logger LOGGER = LogManager.getLogger(ImprovedMobs.MODID);
 
     public static TagKey<EntityType<?>> ARMOR_EQUIPPABLE = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(MODID, "armor_equippable"));
     public static TagKey<Block> SEE_THROUGH = TagKey.create(Registries.BLOCK, new ResourceLocation(MODID, "see_through"));

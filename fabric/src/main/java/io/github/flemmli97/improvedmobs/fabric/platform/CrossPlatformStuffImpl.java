@@ -3,12 +3,16 @@ package io.github.flemmli97.improvedmobs.fabric.platform;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
-import io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric;
+import io.github.flemmli97.improvedmobs.network.PacketHandler;
+import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import io.github.flemmli97.improvedmobs.utils.ITileOpened;
+import io.github.flemmli97.improvedmobs.utils.ContainerOpened;
+import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -28,7 +32,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
@@ -37,13 +40,13 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
-        ((ITileOpened) blockEntity).setOpened(blockEntity);
+        ((ContainerOpened) blockEntity).setOpened(blockEntity);
     }
 
     @Override
     public boolean canLoot(BlockEntity blockEntity) {
         if (blockEntity instanceof Container container)
-            return ((ITileOpened) blockEntity).playerOpened() && !container.isEmpty();
+            return ((ContainerOpened) blockEntity).playerOpened() && !container.isEmpty();
         return false;
     }
 
@@ -62,7 +65,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
                 }
                 return ItemStack.EMPTY;
             } catch (Exception e) {
-                ImprovedMobs.logger.error("#getSizeInventory and actual size of the inventory (" + inv + ") is not the same.");
+                ImprovedMobs.LOGGER.error("#getSizeInventory and actual size of the inventory (" + inv + ") is not the same.");
             }
         }
         return ItemStack.EMPTY;
@@ -79,18 +82,17 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public void sendDifficultyDataTo(ServerPlayer player, MinecraftServer server) {
-        ImprovedMobsFabric.sendDifficultyPacket(DifficultyData.get(server), player);
+    public void sendClientboundPacket(CustomPacketPayload payload, ServerPlayer player) {
+        if (ServerPlayNetworking.canSend(player, payload.type()))
+            ServerPlayNetworking.send(player, payload);
     }
 
     @Override
     public void sendDifficultyData(DifficultyData data, MinecraftServer server) {
-        ImprovedMobsFabric.sendDifficultyPacketToAll(data, server);
-    }
-
-    @Override
-    public void sendConfigSync(ServerPlayer player) {
-        ImprovedMobsFabric.sendConfigCync(player);
+        PlayerLookup.all(server).forEach(player -> {
+            if (ServerPlayNetworking.canSend(player, S2CDiffcultyValue.TYPE))
+                ServerPlayNetworking.send(player, PacketHandler.createDifficultyPacket(data, player));
+        });
     }
 
     @Override
@@ -99,7 +101,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public AbstractArrow customBowArrow(BowItem item, AbstractArrow def) {
+    public AbstractArrow customBowArrow(BowItem item, ItemStack stack, AbstractArrow def) {
         return def;
     }
 
@@ -109,7 +111,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player) {
-        return Optional.of((IPlayerDifficulty) player);
+    public IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
+        return (IPlayerDifficulty) player;
     }
 }

@@ -22,9 +22,9 @@ public abstract class MobMixin implements ISpawnReason {
     private MobSpawnType improved_mobs_spawnreason;
 
     @Inject(method = "finalizeSpawn", at = @At("HEAD"))
-    private void onFinalize(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag,
+    private void onFinalize(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData,
                             CallbackInfoReturnable<SpawnGroupData> info) {
-        this.improved_mobs_spawnreason = reason;
+        this.improved_mobs_spawnreason = spawnType;
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))

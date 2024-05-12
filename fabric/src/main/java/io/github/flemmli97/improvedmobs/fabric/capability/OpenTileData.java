@@ -1,10 +1,10 @@
 package io.github.flemmli97.improvedmobs.fabric.capability;
 
-import io.github.flemmli97.improvedmobs.utils.ITileOpened;
+import io.github.flemmli97.improvedmobs.utils.ContainerOpened;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public class OpenTileData implements ITileOpened {
+public class OpenTileData implements ContainerOpened {
 
     private boolean opened = false;
 

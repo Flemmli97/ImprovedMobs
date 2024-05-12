@@ -4,6 +4,7 @@ import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.tenshilib.platform.InitUtil;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
@@ -16,7 +17,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import java.nio.file.Path;
-import java.util.Optional;
 
 public interface CrossPlatformStuff {
 
@@ -34,17 +34,15 @@ public interface CrossPlatformStuff {
 
     SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos);
 
-    void sendDifficultyDataTo(ServerPlayer player, MinecraftServer server);
+    void sendClientboundPacket(CustomPacketPayload payload, ServerPlayer player);
 
     void sendDifficultyData(DifficultyData data, MinecraftServer server);
 
-    void sendConfigSync(ServerPlayer player);
-
     Path configDirPath();
 
-    AbstractArrow customBowArrow(BowItem item, AbstractArrow def);
+    AbstractArrow customBowArrow(BowItem item, ItemStack stack, AbstractArrow def);
 
     boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
 
-    Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player);
+    IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player);
 }

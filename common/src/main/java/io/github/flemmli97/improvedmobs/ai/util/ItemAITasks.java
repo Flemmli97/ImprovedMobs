@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.ai.util;
 
 import io.github.flemmli97.improvedmobs.config.Config;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class ItemAITasks {
 
-    private static final Map<Item, ItemAI> itemMap = new HashMap<>();
+    private static final Map<Item, ItemAI> ITEM_MAP = new HashMap<>();
 
     public static void initAI() {
         initVanilla();
@@ -33,12 +33,12 @@ public class ItemAITasks {
      * Register during FMLCommonSetupEvent. Not Thread safe.
      */
     public static void registerAI(Item item, ItemAI ai) {
-        itemMap.put(item, ai);
+        ITEM_MAP.put(item, ai);
     }
 
     @Nullable
     public static ItemAI getAI(Item item) {
-        return itemMap.get(item);
+        return ITEM_MAP.get(item);
     }
 
     @Nullable
@@ -52,9 +52,9 @@ public class ItemAITasks {
             heldOff = entity.getOffhandItem();
         }
         InteractionHand hand = InteractionHand.MAIN_HAND;
-        ItemAI ai = itemMap.get(heldMain.getItem());
+        ItemAI ai = ITEM_MAP.get(heldMain.getItem());
         if (ai == null || ai.prefHand() == ItemAI.UsableHand.OFF || blockedAI(entity, heldMain.getItem()) || !ai.applies(heldMain)) {
-            ai = itemMap.get(heldOff.getItem());
+            ai = ITEM_MAP.get(heldOff.getItem());
             if (ai != null) {
                 if (ai.prefHand() == ItemAI.UsableHand.MAIN || ai.isIncompatibleWith(entity, heldMain) || blockedAI(entity, heldOff.getItem()) || !ai.applies(heldOff))
                     ai = null;
@@ -65,13 +65,13 @@ public class ItemAITasks {
     }
 
     private static boolean blockedAI(Mob entity, Item item) {
-        return (Config.CommonConfig.itemuseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
-                || Config.CommonConfig.itemuseBlacklist.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString())
+        return (Config.CommonConfig.itemuseWhitelist && !Config.CommonConfig.itemuseBlacklist.contains(BuiltInRegistries.ITEM.getKey(item).toString()))
+                || Config.CommonConfig.itemuseBlacklist.contains(BuiltInRegistries.ITEM.getKey(item).toString())
                 || Config.CommonConfig.entityItemConfig.preventUse(entity, item);
     }
 
     private static void initVanilla() {
-        for (Item item : PlatformUtils.INSTANCE.items().getIterator()) {
+        for (Item item : BuiltInRegistries.ITEM) {
             if (item instanceof SplashPotionItem)
                 registerAI(item, ItemAIs.SPLASH);
             if (item instanceof LingeringPotionItem)

@@ -34,8 +34,8 @@ public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator {
     private void breakableNodes(int x, int y, int z, CallbackInfoReturnable<Node> info) {
         if (!((INodeBreakable) this).canBreakBlocks())
             return;
-        Node node = PathFindingUtils.floatingNodeModifier(this.mob, this.level, x, y, z,
-                aabb -> this.collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.level, this.mob, aabb)),
+        Node node = PathFindingUtils.floatingNodeModifier(this.mob, this.currentContext.level(), x, y, z,
+                aabb -> this.collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.currentContext.level(), this.mob, aabb)),
                 p -> super.getNode(p.getX(), p.getY(), p.getZ()));
         if (node != null) {
             info.setReturnValue(node);

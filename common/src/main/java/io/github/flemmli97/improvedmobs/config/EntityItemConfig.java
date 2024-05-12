@@ -2,8 +2,7 @@ package io.github.flemmli97.improvedmobs.config;
 
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.BowItem;
@@ -16,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EntityItemConfig implements IConfigListValue<EntityItemConfig> {
+public class EntityItemConfig {
 
     private final Map<ResourceLocation, List<String>> itemBlacklist = new HashMap<>();
 
@@ -29,12 +28,11 @@ public class EntityItemConfig implements IConfigListValue<EntityItemConfig> {
     }
 
     public boolean preventUse(Entity entity, Item item) {
-        List<String> items = this.itemBlacklist.get(PlatformUtils.INSTANCE.entities().getIDFrom(entity.getType()));
+        List<String> items = this.itemBlacklist.get(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()));
         String remap = this.vanillaRemapping(item);
-        return items != null && (items.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()) || (remap != null && items.contains(remap)));
+        return items != null && (items.contains(BuiltInRegistries.ITEM.getKey(item).toString()) || (remap != null && items.contains(remap)));
     }
 
-    @Override
     public EntityItemConfig readFromString(List<String> list) {
         Map<ResourceLocation, List<String>> temp = new HashMap<>();
         list.forEach(s -> {
@@ -45,14 +43,13 @@ public class EntityItemConfig implements IConfigListValue<EntityItemConfig> {
                     return o;
                 });
             } else
-                ImprovedMobs.logger.error("Invalid entity item config value for {}", s);
+                ImprovedMobs.LOGGER.error("Invalid entity item config value for {}", s);
         });
         this.itemBlacklist.clear();
         this.itemBlacklist.putAll(temp);
         return this;
     }
 
-    @Override
     public List<String> writeToString() {
         List<String> list = new ArrayList<>();
         this.itemBlacklist.forEach((res, il) -> il.forEach(s -> list.add(res.toString() + ";" + s)));

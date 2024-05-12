@@ -1,4 +1,4 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-v1/fabric.gradle"
+apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/mc-architectury-fabric-neoforge/fabric.gradle"
 
 loom {
     accessWidenerPath.set file("src/main/resources/improvedmobs.accesswidener")
@@ -40,5 +40,5 @@ dependencies {
     modCompileOnly "${levelz}"
     modCompileOnly "${pehkui}"
 
-    modRuntimeOnly "io.github.flemmli97:debugutils:1.20.1-1.0.3-fabric"
+    modRuntimeOnly "io.github.flemmli97:debugutils:1.20.6-1.0.5-fabric"
 }

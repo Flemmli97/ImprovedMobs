@@ -1,7 +1,5 @@
 package io.github.flemmli97.improvedmobs.config;
 
-import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -20,7 +18,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
+public class BreakableBlocks {
 
     private final Set<String> blocks = new HashSet<>();
     private List<String> configString = new ArrayList<>();
@@ -35,7 +33,7 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
             return false;
         if (!Config.CommonConfig.breakTileEntities && state.hasBlockEntity())
             return false;
-        ResourceLocation id = PlatformUtils.INSTANCE.blocks().getIDFrom(state.getBlock());
+        ResourceLocation id = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         if (Config.CommonConfig.breakingAsBlacklist) {
             return !this.blocks.contains(id.toString())
                     && !this.blocks.contains(id.getNamespace());
@@ -43,7 +41,6 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
         return this.blocks.contains(id.getNamespace()) || this.blocks.contains(id.toString());
     }
 
-    @Override
     public BreakableBlocks readFromString(List<String> arr) {
         this.blocks.clear();
         this.configString = arr;
@@ -72,7 +69,6 @@ public class BreakableBlocks implements IConfigListValue<BreakableBlocks> {
             blocks.add(s);
     }
 
-    @Override
     public List<String> writeToString() {
         return this.configString;
     }

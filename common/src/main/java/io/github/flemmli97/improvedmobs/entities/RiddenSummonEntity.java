@@ -2,8 +2,10 @@ package io.github.flemmli97.improvedmobs.entities;
 
 import com.google.common.collect.Iterables;
 import io.github.flemmli97.improvedmobs.utils.EntityFlags;
+import net.minecraft.core.Holder;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
@@ -24,6 +26,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
+import net.minecraft.world.level.storage.loot.LootTable;
 import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +46,7 @@ public abstract class RiddenSummonEntity extends Mob {
 
     @Nullable
     @Override
-    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData spawnData, @Nullable CompoundTag dataTag) {
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType reason, @Nullable SpawnGroupData spawnData) {
         return spawnData;
     }
 
@@ -65,13 +68,13 @@ public abstract class RiddenSummonEntity extends Mob {
     }
 
     @Override
-    public boolean hasEffect(MobEffect potion) {
+    public boolean hasEffect(Holder<MobEffect> potion) {
         return false;
     }
 
     @Nullable
     @Override
-    public MobEffectInstance getEffect(MobEffect potion) {
+    public MobEffectInstance getEffect(Holder<MobEffect> potion) {
         return null;
     }
 
@@ -108,14 +111,14 @@ public abstract class RiddenSummonEntity extends Mob {
     }
 
     @Override
-    public EntityDimensions getDimensions(Pose pose) {
+    public EntityDimensions getDefaultDimensions(Pose pose) {
         EntityDimensions dimensions = this.originDimension(pose);
         if (this.isVehicle()) {
             Entity e = this.getFirstPassenger();
             if (e != null) {
                 EntityDimensions otherDim = e.getDimensions(e.getPose());
-                float rideOffsetY = (float) (this.getPassengersRidingOffset() + e.getMyRidingOffset());
-                return EntityDimensions.scalable(Math.max(dimensions.width, otherDim.width), Math.max(dimensions.height, otherDim.height + rideOffsetY));
+                float rideOffsetY = (float) this.getPassengerAttachmentPoint(e, dimensions, 1).y();
+                return EntityDimensions.scalable(Math.max(dimensions.width(), otherDim.width()), Math.max(dimensions.height(), otherDim.height() + rideOffsetY));
             }
         }
         return dimensions;
@@ -145,7 +148,7 @@ public abstract class RiddenSummonEntity extends Mob {
         super.aiStep();
         if (!this.clearedAI) {
             this.clearedAI = true;
-            this.goalSelector.getRunningGoals().forEach(WrappedGoal::stop);
+            this.goalSelector.getAvailableGoals().forEach(WrappedGoal::stop);
             this.removeFreeWill();
         }
         if (!this.isVehicle())
@@ -171,7 +174,7 @@ public abstract class RiddenSummonEntity extends Mob {
     }
 
     @Override
-    protected ResourceLocation getDefaultLootTable() {
+    protected ResourceKey<LootTable> getDefaultLootTable() {
         return BuiltInLootTables.EMPTY;
     }
 

@@ -5,11 +5,13 @@ import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.DifficultyConfig;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.platform.integration.DifficultyValues;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
+import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.EntityGetter;
@@ -25,19 +27,20 @@ import java.util.function.Supplier;
 
 public class DifficultyData extends SavedData {
 
-    private static final String identifier = "Difficulty";
+    private static final String IDENTIFIER = "Difficulty";
+    private static final SavedData.Factory<DifficultyData> FACTORY = new Factory<>(DifficultyData::new, DifficultyData::new, DataFixTypes.LEVEL);
     private float difficultyLevel;
     private long prevTime;
 
     public DifficultyData() {
     }
 
-    private DifficultyData(CompoundTag tag) {
+    private DifficultyData(CompoundTag tag, HolderLookup.Provider provider) {
         this.load(tag);
     }
 
     public static DifficultyData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(DifficultyData::new, DifficultyData::new, identifier);
+        return server.overworld().getDataStorage().computeIfAbsent(FACTORY, IDENTIFIER);
     }
 
     public static float getDifficulty(Level world, LivingEntity e) {
@@ -49,7 +52,7 @@ public class DifficultyData extends SavedData {
             case PLAYERMAX -> () -> {
                 float diff = 0;
                 for (Player player : playersIn(serverLevel, pos, 256)) {
-                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
+                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
                     if (pD > diff)
                         diff = pD;
                 }
@@ -61,7 +64,7 @@ public class DifficultyData extends SavedData {
                 if (list.isEmpty())
                     return 0f;
                 for (Player player : list) {
-                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
+                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
                 }
                 return diff / list.size();
             };
@@ -83,7 +86,10 @@ public class DifficultyData extends SavedData {
         this.difficultyLevel += increase.apply(this.getDifficulty());
         this.prevTime = time;
         server.getPlayerList().getPlayers()
-                .forEach(player -> CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(pd -> pd.setDifficultyLevel(pd.getDifficultyLevel() + increase.apply(pd.getDifficultyLevel()))));
+                .forEach(player -> {
+                    IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+                    data.setDifficultyLevel(data.getDifficultyLevel() + increase.apply(data.getDifficultyLevel()));
+                });
         this.setDirty();
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
     }
@@ -126,7 +132,7 @@ public class DifficultyData extends SavedData {
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound) {
+    public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
         compound.putFloat("Difficulty", this.difficultyLevel);
         compound.putLong("Time", this.prevTime);
         return compound;

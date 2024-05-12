@@ -1,22 +1,27 @@
 package io.github.flemmli97.improvedmobs.config;
 
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
+import com.mojang.datafixers.util.Pair;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.JsonOps;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAI;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import io.github.flemmli97.tenshilib.api.config.ExtendedItemStackWrapper;
+import io.github.flemmli97.tenshilib.common.utils.CodecUtils;
 import io.github.flemmli97.tenshilib.common.utils.ItemUtils;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.nbt.TagParser;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.GsonHelper;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.Mob;
@@ -32,6 +37,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraft.world.item.SwordItem;
 import net.minecraft.world.item.ThrowablePotionItem;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.block.Blocks;
 
@@ -39,37 +46,41 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.Serial;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
 
 public class EquipmentList {
 
-    private static final Map<EquipmentSlot, WeightedItemstackList> equips = new HashMap<>();
+    private static final int CONFIG_VERSION = 2;
+
+    private static final Map<EquipmentSlot, WeightedItemstackList> EQUIPMENTS = new HashMap<>();
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     public static ItemStack getEquip(Mob e, EquipmentSlot slot, float difficulty) {
-        WeightedItemstackList eq = equips.get(slot);
+        WeightedItemstackList eq = EQUIPMENTS.get(slot);
         if (eq == null || eq.list.isEmpty() || eq.getTotalWeight(difficulty) <= 0)
             return ItemStack.EMPTY;
-        int index = e.getRandom().nextInt(eq.getTotalWeight(difficulty));
-        for (WeightedItemstack entry : eq.list) {
+        int index = e.level().random.nextInt(eq.getTotalWeight(difficulty));
+        for (WeightedItemstack entry : eq.filteredList) {
             if ((index -= entry.getWeight(difficulty)) >= 0) continue;
             return entry.getItem();
         }
         return ItemStack.EMPTY;
     }
 
-    public static void initEquip() throws InvalidItemNameException {
+    public static void initEquip(HolderLookup.Provider provider) {
         try {
             File conf = CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json").toFile();
             JsonObject confObj = new JsonObject();
-            List<String> errors = new ArrayList<>();
+            RegistryOps<JsonElement> ops = provider.createSerializationContext(JsonOps.INSTANCE);
             if (!conf.exists()) {
                 initDefaultVals();
                 conf.createNewFile();
@@ -79,241 +90,241 @@ public class EquipmentList {
                 if (confObj == null)
                     confObj = new JsonObject();
                 reader.close();
-                //Read and update from config
-                for (EquipmentSlot key : EquipmentSlot.values()) {
-                    if (confObj.has(key.toString())) {
-                        JsonObject obj = (JsonObject) confObj.get(key.toString());
-                        if (!obj.entrySet().isEmpty())
-                            obj.entrySet().forEach(ent -> {
-                                int weight;
-                                float quality;
-                                if (ent.getValue().isJsonPrimitive()) {
-                                    weight = ent.getValue().getAsInt();
-                                    quality = correctQuality(ent.getKey()) ? defaultQualityFromWeight(weight) : 0;
-                                } else {
-                                    JsonArray entry = ent.getValue().getAsJsonArray();
-                                    weight = entry.get(0).getAsInt();
-                                    quality = entry.get(1).getAsFloat();
-                                }
-                                equips.compute(key, (s, l) -> l == null ? new WeightedItemstackList(new WeightedItemstack(ent.getKey(), weight, quality, errors)) : l.add(new WeightedItemstack(ent.getKey(), weight, quality, errors)));
-                            });
-                        else
-                            equips.put(key, new WeightedItemstackList());
+                int version = GsonHelper.getAsInt(confObj, "version", 1);
+                if (version < CONFIG_VERSION) {
+                    // Legacy config. create a backup and reset to default
+                    ImprovedMobs.LOGGER.debug("You are having a legacy config. A Backup will be created");
+                    createBackup();
+                } else {
+                    //Read and update from config
+                    for (EquipmentSlot key : EquipmentSlot.values()) {
+                        if (confObj.has(key.toString())) {
+                            JsonArray entries = confObj.get(key.toString()).getAsJsonArray();
+                            if (!entries.isEmpty())
+                                entries.forEach(ent -> {
+                                    WeightedItemstack value = WeightedItemstack.CODEC.parse(ops, ent).getOrThrow();
+                                    EQUIPMENTS.compute(key, (s, l) -> l == null ? new WeightedItemstackList(value) : l.add(value));
+                                });
+                            else
+                                EQUIPMENTS.put(key, new WeightedItemstackList());
+                        }
                     }
                 }
             }
             JsonArray comment = new JsonArray();
             comment.add("Mobs will be able to equip items declared here");
-            comment.add("The first number is the weight while the second number is the quality");
+            comment.add("Value is the item. It also accepts item components. The default config has an example with a harming potion");
             comment.add("Weight is the weight of an item. Higher weight means that the item is more likely to get choosen");
             comment.add("Quality is a modifier applied to the weight. The final weight used is weight + quality * current difficulty");
+            confObj.addProperty("version", CONFIG_VERSION);
             confObj.add("__comment", comment);
             for (EquipmentSlot key : EquipmentSlot.values()) {
-                JsonObject eq = confObj.has(key.toString()) ? (JsonObject) confObj.get(key.toString()) : new JsonObject();
-                equips.get(key).list.forEach(w -> {
-                    JsonArray entry = new JsonArray();
-                    entry.add(w.weight);
-                    entry.add(w.quality);
-                    eq.add(w.configString, entry);
-                });
-
-                //Sort json object
-                JsonObject sorted = new JsonObject();
-                List<String> member = new ArrayList<>();
-                eq.entrySet().forEach(ent -> member.add(ent.getKey()));
-                Collections.sort(member);
-
-                member.forEach(s -> sorted.add(s, eq.get(s)));
-                confObj.add(key.toString(), sorted);
-                equips.get(key).finishList();
+                WeightedItemstackList stackList = EQUIPMENTS.get(key);
+                if (stackList != null) {
+                    //Sort json object
+                    JsonArray sorted = new JsonArray();
+                    List<WeightedItemstack> sort = new ArrayList<>(stackList.list);
+                    Collections.sort(sort);
+                    sort.forEach(s -> sorted.add(WeightedItemstack.CODEC.encodeStart(ops, s).getOrThrow()));
+                    confObj.add(key.toString(), sorted);
+                    stackList.finishList();
+                }
             }
             conf.delete();
             conf.createNewFile();
             JsonWriter wr = GSON.newJsonWriter(new FileWriter(conf));
             GSON.toJson(confObj, JsonObject.class, wr);
             wr.close();
-            if (!errors.isEmpty())
-                throw new InvalidItemNameException("No items with following names exist: " + errors);
         } catch (IOException | IllegalStateException e) {
-            ImprovedMobs.logger.error("Error initializing equipment");
+            ImprovedMobs.LOGGER.error("Error initializing equipment");
             e.printStackTrace();
         }
     }
 
+    private static void createBackup() {
+        try {
+            Files.move(CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json"), CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json.bak"));
+            initDefaultVals();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     private static void initDefaultVals() {
-        PlatformUtils.INSTANCE.items().getIterator().forEach(item -> {
+        Map<EquipmentSlot, List<WeightedItemstack>> mapBuilder = new HashMap<>();
+        BiFunction<List<WeightedItemstack>, WeightedItemstack, List<WeightedItemstack>> func = (o, v) -> {
+            if (o == null)
+                return new ArrayList<>(List.of(v));
+            o.add(v);
+            return o;
+        };
+        BuiltInRegistries.ITEM.forEach(item -> {
             if (item instanceof BowItem)
-                addItemTo(EquipmentSlot.MAINHAND, item);
+                addItemTo(mapBuilder, EquipmentSlot.MAINHAND, item);
             ItemAI ai = ItemAITasks.getAI(item);
             if (ai != null) {
                 switch (ai.prefHand()) {
                     case BOTH:
                         if (ai.type() == ItemAI.ItemType.NONSTRAFINGITEM) {
                             float[] weights = getDefaultWeight(item);
-                            WeightedItemstack val = new WeightedItemstack(item, (int) weights[0], weights[1]);
-                            if (!equips.get(EquipmentSlot.MAINHAND).list.contains(val))
-                                equips.compute(EquipmentSlot.OFFHAND, (s, l) -> l == null ? new WeightedItemstackList(val) : l.add(val));
+                            WeightedItemstack val = new WeightedItemstack(new ItemStack(item), (int) weights[0], weights[1]);
+                            if (!mapBuilder.get(EquipmentSlot.MAINHAND).contains(val))
+                                mapBuilder.compute(EquipmentSlot.OFFHAND, (s, l) -> func.apply(l, val));
                         } else {
                             if (item instanceof ThrowablePotionItem) {
-                                String potionItem = PlatformUtils.INSTANCE.items().getIDFrom(item).toString() + "{Potion:\"minecraft:harming\"}";
                                 float[] weights = getDefaultWeight(item);
-                                equips.compute(EquipmentSlot.MAINHAND,
-                                        (s, l) -> l == null ? new WeightedItemstackList(new WeightedItemstack(potionItem, (int) weights[0], weights[1], new ArrayList<>())) : l.add(new WeightedItemstack(potionItem, (int) weights[0], weights[1], new ArrayList<>())));
+                                mapBuilder.compute(EquipmentSlot.MAINHAND,
+                                        (s, l) -> func.apply(l, new WeightedItemstack(PotionContents.createItemStack(item, Potions.HARMING), (int) weights[0], weights[1])));
                             } else
-                                addItemTo(EquipmentSlot.MAINHAND, item);
+                                addItemTo(mapBuilder, EquipmentSlot.MAINHAND, item);
                         }
                         break;
                     case MAIN:
-                        addItemTo(EquipmentSlot.MAINHAND, item);
+                        addItemTo(mapBuilder, EquipmentSlot.MAINHAND, item);
                         break;
                     case OFF:
-                        addItemTo(EquipmentSlot.OFFHAND, item);
+                        addItemTo(mapBuilder, EquipmentSlot.OFFHAND, item);
                         break;
                 }
             }
-            if (item instanceof ArmorItem) {
-                switch (((ArmorItem) item).getEquipmentSlot()) {
-                    case FEET -> addItemTo(EquipmentSlot.FEET, item);
-                    case CHEST -> addItemTo(EquipmentSlot.CHEST, item);
-                    case HEAD -> addItemTo(EquipmentSlot.HEAD, item);
-                    case LEGS -> addItemTo(EquipmentSlot.LEGS, item);
+            if (item instanceof ArmorItem armorItem) {
+                switch (armorItem.getEquipmentSlot()) {
+                    case FEET -> addItemTo(mapBuilder, EquipmentSlot.FEET, item);
+                    case CHEST -> addItemTo(mapBuilder, EquipmentSlot.CHEST, item);
+                    case HEAD -> addItemTo(mapBuilder, EquipmentSlot.HEAD, item);
+                    case LEGS -> addItemTo(mapBuilder, EquipmentSlot.LEGS, item);
                 }
             }
             if (item instanceof SwordItem || item instanceof DiggerItem)
                 if (!defaultBlackLists(item))
-                    addItemTo(EquipmentSlot.MAINHAND, item);
+                    addItemTo(mapBuilder, EquipmentSlot.MAINHAND, item);
         });
+        Map<EquipmentSlot, Pair<Integer, Integer>> minMaxWeight = mapBuilder.entrySet().stream().collect(Collectors.toMap(
+                Map.Entry::getKey,
+                e -> Pair.of(e.getValue().stream().mapToInt(w -> w.weight).min().orElse(1), e.getValue().stream().mapToInt(w -> w.weight).max().orElse(1)),
+                (e1, e2) -> e1,
+                HashMap::new
+        ));
+        for (Map.Entry<EquipmentSlot, List<WeightedItemstack>> entry : mapBuilder.entrySet()) {
+            WeightedItemstackList list = new WeightedItemstackList();
+            int min = (int) (minMaxWeight.get(entry.getKey()).getFirst() * 0.25);
+            int max = minMaxWeight.get(entry.getKey()).getSecond();
+            entry.getValue().forEach(s -> list.add(new WeightedItemstack(s.item, s.weight == 0 ? s.weight : max - s.weight + min, s.quality)));
+            EQUIPMENTS.put(entry.getKey(), list);
+        }
     }
 
-    private static void addItemTo(EquipmentSlot slot, Item item) {
+    private static void addItemTo(Map<EquipmentSlot, List<WeightedItemstack>> map, EquipmentSlot slot, Item item) {
         float[] weights = getDefaultWeight(item);
-        equips.compute(slot, (s, l) -> l == null ? new WeightedItemstackList(new WeightedItemstack(item, (int) weights[0], weights[1])) : l.add(new WeightedItemstack(item, (int) weights[0], weights[1])));
+        map.compute(slot, (s, l) -> {
+            if (l == null)
+                return new ArrayList<>(List.of(new WeightedItemstack(new ItemStack(item), (int) weights[0], weights[1])));
+            l.add(new WeightedItemstack(new ItemStack(item), (int) weights[0], weights[1]));
+            return l;
+        });
     }
 
     private static boolean defaultBlackLists(Item item) {
         if (item instanceof DiggerItem && !(item instanceof AxeItem))
             return true;
-        return PlatformUtils.INSTANCE.items().getIDFrom(item).getNamespace().equals("mobbattle");
+        return BuiltInRegistries.ITEM.getKey(item).getNamespace().equals("mobbattle");
     }
-
-    private static final List<String> DEFAULT_ZERO_WEIGHT = Lists.newArrayList();
 
     private static float[] getDefaultWeight(Item item) {
-        if (DEFAULT_ZERO_WEIGHT.contains(PlatformUtils.INSTANCE.items().getIDFrom(item).toString()))
-            return new float[]{0, 0};
-        int weight = 1500;
+        int inverseWeight = 0;
+        float durability = (float) item.components().getOrDefault(DataComponents.MAX_DAMAGE, 0);
         if (item instanceof ArmorItem armor) {
-            float fullProt = armor.getMaterial().getDefenseForType(ArmorItem.Type.HELMET) + armor.getMaterial().getDefenseForType(ArmorItem.Type.CHESTPLATE) + armor.getMaterial().getDefenseForType(ArmorItem.Type.LEGGINGS)
-                    + armor.getMaterial().getDefenseForType(ArmorItem.Type.BOOTS);
-            float toughness = armor.getMaterial().getToughness();
-            float averageDurability = (armor.getMaterial().getDurabilityForType(ArmorItem.Type.HELMET) + armor.getMaterial().getDurabilityForType(ArmorItem.Type.CHESTPLATE) + armor.getMaterial().getDurabilityForType(ArmorItem.Type.LEGGINGS)
-                    + armor.getMaterial().getDurabilityForType(ArmorItem.Type.BOOTS)) / 4.0F;
-            if (averageDurability < 0)
-                averageDurability = 0;
-            float ench = armor.getEnchantmentValue();
-            float rep = (armor.getMaterial().getRepairIngredient() != null && armor.getMaterial().getRepairIngredient() != Ingredient.EMPTY) ? 0.9F : 1.15F;
-            float vanillaMulti = (armor.getMaterial() == ArmorMaterials.LEATHER || armor.getMaterial() == ArmorMaterials.GOLD || armor.getMaterial() == ArmorMaterials.CHAIN || armor.getMaterial() == ArmorMaterials.IRON
-                    || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8F : 1.1F;
-            weight -= (fullProt * fullProt * 2.5 + toughness * toughness * 12 + averageDurability * 0.9 + ench) * rep * vanillaMulti;
+            float protection = armor.getMaterial().value().getDefense(ArmorItem.Type.HELMET) + armor.getMaterial().value().getDefense(ArmorItem.Type.CHESTPLATE) + armor.getMaterial().value().getDefense(ArmorItem.Type.LEGGINGS)
+                    + armor.getMaterial().value().getDefense(ArmorItem.Type.BOOTS);
+            inverseWeight += protection * protection * 4;
+            float toughness = armor.getMaterial().value().toughness();
+            inverseWeight += toughness * toughness * toughness * 0.5;
+            durability = durability / armor.getType().getDurability(1);
+            if (durability <= 0)
+                durability = 100;
+            inverseWeight += durability * 7;
+            float enchantmentValue = armor.getEnchantmentValue();
+            inverseWeight += enchantmentValue * 5;
+            inverseWeight *= (armor.getMaterial().value().knockbackResistance() * 0.5 + 1);
+            inverseWeight *= (armor.getMaterial().value().repairIngredient() != null && armor.getMaterial().value().repairIngredient().get() != Ingredient.EMPTY) ? 1 : 0.9f;
+            inverseWeight *= (armor.getMaterial() == ArmorMaterials.LEATHER || armor.getMaterial() == ArmorMaterials.GOLD || armor.getMaterial() == ArmorMaterials.CHAIN || armor.getMaterial() == ArmorMaterials.IRON
+                    || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8f : 1;
         } else if (item instanceof SwordItem || item instanceof DiggerItem) {
             ItemStack def = new ItemStack(item);
-            double dmg = 5 + ItemUtils.damage(def);
-            weight -= (dmg * dmg * 2 + def.getMaxDamage() * 0.3);
+            double dmg = ItemUtils.damage(def);
+            if (dmg <= 10)
+                inverseWeight += dmg * dmg * 2 + dmg * 3;
+            else if (dmg <= 30) {
+                dmg -= 10;
+                inverseWeight += dmg * dmg * 1.5 + dmg * 5 + 230;
+            } else {
+                dmg -= 30;
+                inverseWeight += dmg * 12 + 930;
+            }
+            inverseWeight += durability * 1.7;
         } else {
             if (item == Items.FLINT_AND_STEEL)
-                weight = 1200;
+                inverseWeight = 1000;
             else if (item instanceof ShieldItem)
-                weight = 1350;
+                inverseWeight = 750;
             else if (item == Items.LAVA_BUCKET)
-                weight = 900;
+                inverseWeight = 1500;
             else if (item == Items.ENDER_PEARL)
-                weight = 1100;
+                inverseWeight = 1100;
             else if (item == Items.SNOWBALL)
-                weight = 1400;
+                inverseWeight = 550;
             else if (item instanceof ThrowablePotionItem)
-                weight = 1050;
+                inverseWeight = 1500;
             else if (item instanceof BowItem bow)
-                weight = (int) (1300 - bow.getMaxDamage() * 0.5);
+                inverseWeight = 1500 + bow.getDefaultProjectileRange() * 20;
             else if (item == Items.ENCHANTED_BOOK)
-                weight = 1100;
+                inverseWeight = 1600;
             else if (item == Blocks.TNT.asItem())
-                weight = 800;
+                inverseWeight = 1700;
             else if (item == Items.TRIDENT)
-                weight = 900;
-            else if (item instanceof CrossbowItem)
-                weight = 1000;
+                inverseWeight = 2000;
+            else if (item instanceof CrossbowItem crossbow)
+                inverseWeight = 1200 + crossbow.getDefaultProjectileRange() * 18;
+            inverseWeight += durability * 2;
         }
-        float quality = defaultQualityFromWeight(weight);
-        return new float[]{Math.max(weight, 1), quality};
-    }
-
-    private static boolean correctQuality(String itemString) {
-        String itemReg = itemString;
-        if (itemString.contains("{")) {
-            int idx = itemString.indexOf("{");
-            itemReg = itemString.substring(0, idx);
-        }
-        Item item = PlatformUtils.INSTANCE.items().getFromId(new ResourceLocation(itemReg));
-        return item instanceof ArmorItem || item instanceof SwordItem || item instanceof DiggerItem;
+        float quality = defaultQualityFromWeight(inverseWeight);
+        return new float[]{Math.max(inverseWeight, 1), quality};
     }
 
     private static float defaultQualityFromWeight(int weight) {
         float multiplier;
-        if (weight <= 25) {
-            multiplier = -Math.max(0, weight) * 552 + 15000;
-            if (weight < 0) {
-                multiplier = Math.max(multiplier + weight, 0);
-            }
-        } else if (weight <= 500)
-            multiplier = (float) (2476 - 212.9 * Math.log(64.2 * weight - 1212.9));
+        if (weight <= 500) {
+            multiplier = 1;
+        } else if (weight <= 2000)
+            multiplier = (float) Math.log(100 * (weight - 500));
         else
-            multiplier = (float) (1571 - 92.1 * Math.log(3452.3 * weight + 91.3));
+            multiplier = (float) Math.log(500 * (weight - 2000)) + 5;
         multiplier *= 0.01;
         weight = Math.max(1, weight);
-        float diff = Math.abs(weight * multiplier - weight);
-        return diff / 250;
+        return weight * 0.01f * multiplier;
     }
 
     public static class WeightedItemstack implements Comparable<WeightedItemstack> {
 
-        private final ExtendedItemStackWrapper item;
-        public final String configString; //Cause else nbt value order can be different
+        public static final Codec<WeightedItemstack> CODEC = RecordCodecBuilder.create(inst -> inst.group(
+                CodecUtils.ITEM_STACK_CODEC.fieldOf("value").forGetter(d -> d.item),
+                Codec.INT.fieldOf("weight").forGetter(d -> d.weight),
+                Codec.FLOAT.fieldOf("quality").forGetter(d -> d.quality)
+        ).apply(inst, WeightedItemstack::new));
+
+        private final ItemStack item;
         private final int weight;
         private final float quality;
 
-        public WeightedItemstack(Item item, int itemWeight, float quality) {
+        public WeightedItemstack(ItemStack item, int itemWeight, float quality) {
             this.weight = itemWeight;
             this.quality = quality;
-            this.item = new ExtendedItemStackWrapper(PlatformUtils.INSTANCE.items().getIDFrom(item).toString());
-            this.configString = PlatformUtils.INSTANCE.items().getIDFrom(item).toString();
-        }
-
-        public WeightedItemstack(String item, int itemWeight, float quality, List<String> errors) {
-            this.weight = itemWeight;
-            this.quality = quality;
-            this.configString = item;
-            String itemReg = item;
-            CompoundTag nbt = null;
-            if (item.contains("{")) {
-                int idx = item.indexOf("{");
-                itemReg = item.substring(0, idx);
-                try {
-                    nbt = TagParser.parseTag(item.substring(idx));
-                } catch (CommandSyntaxException e) {
-                    ImprovedMobs.logger.error("Error reading nbt from config {}", item.substring(idx));
-                    e.printStackTrace();
-                }
-            }
-            Item it = PlatformUtils.INSTANCE.items().getFromId(new ResourceLocation(itemReg));
-            if (it == null || (it == Items.AIR && !itemReg.equals("minecraft:air"))) {
-                errors.add(itemReg);
-                this.item = null;
-            } else
-                this.item = new ExtendedItemStackWrapper(itemReg).setNBT(nbt);
+            this.item = item;
         }
 
         public ItemStack getItem() {
-            return this.item.getStack();
+            return this.item.copy();
         }
 
         @Override
@@ -321,28 +332,24 @@ public class EquipmentList {
             if (other == this)
                 return true;
             if (other instanceof WeightedItemstack oth) {
-                if (this.item.getItem() != oth.item.getItem())
-                    return false;
-                if (this.item.getTag() == null && oth.item.getTag() != null)
-                    return false;
-                return this.item.getTag() == null || this.item.getTag().equals(oth.item.getTag());
+                return ItemStack.matches(this.item, oth.item);
             }
             return false;
         }
 
         @Override
         public int hashCode() {
-            return (PlatformUtils.INSTANCE.items().getIDFrom(this.item.getItem()) + (this.item.getTag() != null ? this.item.getTag().toString() : "")).hashCode();
+            return this.item.hashCode();
         }
 
         @Override
         public int compareTo(WeightedItemstack o) {
-            return PlatformUtils.INSTANCE.items().getIDFrom(this.item.getItem()).toString().compareTo(PlatformUtils.INSTANCE.items().getIDFrom(o.item.getItem()).toString());
+            return BuiltInRegistries.ITEM.getKey(this.item.getItem()).toString().compareTo(BuiltInRegistries.ITEM.getKey(o.item.getItem()).toString());
         }
 
         @Override
         public String toString() {
-            return String.format("Item: %s; Weight: %d", PlatformUtils.INSTANCE.items().getIDFrom(this.item.getItem()), this.weight);
+            return String.format("Item: %s; Weight: %d", BuiltInRegistries.ITEM.getKey(this.item.getItem()), this.weight);
         }
 
         public int getWeight(float modifier) {
@@ -353,6 +360,7 @@ public class EquipmentList {
     public static class WeightedItemstackList {
 
         private final List<WeightedItemstack> list = new ArrayList<>();
+        private List<WeightedItemstack> filteredList = new ArrayList<>();
         private int totalWeight;
         private float lastModifier = -1;
 
@@ -370,22 +378,23 @@ public class EquipmentList {
         }
 
         private void calculateTotalWeight(float modifier) {
-            this.totalWeight = this.list.stream().mapToInt(entry -> entry.getWeight(modifier)).sum();
+            this.filteredList = this.list.stream().filter(entry -> entry.getWeight(modifier) > 0).toList();
+            this.totalWeight = this.filteredList.stream().mapToInt(entry -> entry.getWeight(modifier)).sum();
         }
 
         public void finishList() {
-            this.list.removeIf(w -> (w.weight == 0 && w.quality <= 0) || this.modBlacklist(w.item.getItem()));
+            this.list.removeIf(w -> (w.weight <= 0 && w.quality <= 0) || this.modBlacklist(w.item.getItem()));
         }
 
         private boolean modBlacklist(Item item) {
             if (Config.CommonConfig.equipmentModWhitelist) {
                 for (String s : Config.CommonConfig.equipmentModBlacklist)
-                    if (PlatformUtils.INSTANCE.items().getIDFrom(item).getNamespace().equals(s))
+                    if (BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(s))
                         return false;
                 return true;
             }
             for (String s : Config.CommonConfig.equipmentModBlacklist)
-                if (PlatformUtils.INSTANCE.items().getIDFrom(item).getNamespace().equals(s))
+                if (BuiltInRegistries.ITEM.getKey(item).getNamespace().equals(s))
                     return true;
             return false;
         }
@@ -400,17 +409,7 @@ public class EquipmentList {
 
         @Override
         public String toString() {
-            return String.format("TotalWeight: %d ; [%s]", this.totalWeight, this.list.toString());
-        }
-    }
-
-    public static class InvalidItemNameException extends Exception {
-
-        @Serial
-        private static final long serialVersionUID = -6736627280613384759L;
-
-        public InvalidItemNameException(String message) {
-            super(message);
+            return String.format("TotalWeight: %d ; [%s]", this.totalWeight, this.list);
         }
     }
 }

@@ -2,7 +2,6 @@ package io.github.flemmli97.improvedmobs.fabric.config;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.config.Config;
-import io.github.flemmli97.tenshilib.api.config.ItemWrapper;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionResult;
@@ -77,13 +76,13 @@ public class ConfigLoader {
             s = s.replace(" ", "");
             String[] sub = s.split(";");
             if (sub.length != 2) {
-                ImprovedMobs.logger.error("Faulty entry for breaking item {}", s);
+                ImprovedMobs.LOGGER.error("Faulty entry for breaking item {}", s);
                 continue;
             }
             try {
-                Config.CommonConfig.breakingItem.add(new Config.WeightedItem(new ItemWrapper(sub[0]), Integer.parseInt(sub[1])));
+                Config.CommonConfig.breakingItem.add(new Config.WeightedItem(sub[0], Integer.parseInt(sub[1])));
             } catch (NumberFormatException e) {
-                ImprovedMobs.logger.error("Faulty entry for breaking item {}", s);
+                ImprovedMobs.LOGGER.error("Faulty entry for breaking item {}", s);
             }
         }
         Config.CommonConfig.neutralAggressiv = specs.neutralAggressiv.get().floatValue();

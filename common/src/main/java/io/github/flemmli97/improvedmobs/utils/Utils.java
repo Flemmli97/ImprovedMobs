@@ -4,8 +4,8 @@ import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EnchantCalcConf;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.tenshilib.common.utils.MathUtils;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
@@ -20,7 +20,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
-import net.minecraft.world.item.Item;
+import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.item.enchantment.EnchantmentInstance;
@@ -35,9 +35,8 @@ import java.util.function.Function;
 
 public class Utils {
 
-    public static final Function<Entity, ResourceLocation> entityID = e -> PlatformUtils.INSTANCE.entities().getIDFrom(e.getType());
-    public static final Function<Item, ResourceLocation> itemID = e -> PlatformUtils.INSTANCE.items().getIDFrom(e);
-    public static final UUID attMod = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
+    public static final Function<Entity, ResourceLocation> ENTITY_ID = e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getType());
+    public static final UUID ATTRIBUTE_MOD = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
 
     public static <T> boolean isInList(T entry, List<? extends String> list, boolean reverse, Function<T, ResourceLocation> mapper) {
         if (reverse)
@@ -104,7 +103,7 @@ public class Utils {
             if (itemstack.isEnchanted())
                 continue;
             if (!itemstack.isEmpty() && living.getRandom().nextFloat() < (Config.CommonConfig.baseEnchantChance + (difficulty * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
-                List<EnchantmentInstance> enchants = EnchantmentHelper.selectEnchantment(living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min, val.max), true);
+                List<EnchantmentInstance> enchants = EnchantmentHelper.selectEnchantment(FeatureFlagSet.of(), living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min, val.max), true);
                 enchants.forEach(e -> {
                     ResourceLocation res = BuiltInRegistries.ENCHANTMENT.getKey(e.enchantment);
                     if (res != null) {
@@ -165,9 +164,9 @@ public class Utils {
         return f;
     }
 
-    public static void modifyAttr(Mob living, Attribute att, double value, double max, float difficulty, boolean multiply) {
+    public static void modifyAttr(Mob living, Holder<Attribute> att, double value, double max, float difficulty, boolean multiply) {
         AttributeInstance inst = living.getAttribute(att);
-        if (inst == null || inst.getModifier(attMod) != null)
+        if (inst == null || inst.getModifier(ATTRIBUTE_MOD) != null)
             return;
         double oldValue = inst.getBaseValue();
         value *= difficulty;
@@ -179,7 +178,7 @@ public class Utils {
         } else {
             value = max <= 0 ? value : Math.min(value, max);
         }
-        inst.addPermanentModifier(new AttributeModifier(attMod, "im_modifier", value, AttributeModifier.Operation.ADDITION));
+        inst.addPermanentModifier(new AttributeModifier(ATTRIBUTE_MOD, "im_modifier", value, AttributeModifier.Operation.ADD_VALUE));
     }
 
     public static void modifyScale(Mob living, float min, float max) {

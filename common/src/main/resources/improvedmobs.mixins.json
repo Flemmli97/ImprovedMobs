@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "io.github.flemmli97.improvedmobs.mixin",
-  "compatibilityLevel": "JAVA_16",
+  "compatibilityLevel": "JAVA_21",
   "mixins": [
     "ClipContextMixin",
     "EntityMixin",
@@ -22,9 +22,7 @@
     "pathfinding.GroundNodeMixin",
     "pathfinding.PathNavigationMixin",
     "pathfinding.NodeEvaluatorMixin",
-    "pathfinding.SwimNodeEvaluatorMixin",
-    "pathfinding.performance.FlyNodeEvaluatorMixin",
-    "pathfinding.performance.WalkNodeEvaluatorMixin"
+    "pathfinding.SwimNodeEvaluatorMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -41,9 +41,9 @@ public class FlyingSummonEntity extends RiddenSummonEntity {
     }
 
     @Override
-    protected void defineSynchedData() {
-        super.defineSynchedData();
-        this.entityData.define(DATA_ID_SIZE, -1);
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_ID_SIZE, -1);
     }
 
     @Override
@@ -64,13 +64,8 @@ public class FlyingSummonEntity extends RiddenSummonEntity {
     public EntityDimensions originDimension(Pose pose) {
         int i = this.entityData.get(DATA_ID_SIZE);
         EntityDimensions entityDimensions = super.originDimension(pose);
-        float f = (entityDimensions.width + 0.2f * (float) i) / entityDimensions.width;
+        float f = (entityDimensions.width() + 0.2f * (float) i) / entityDimensions.width();
         return entityDimensions.scale(f);
-    }
-
-    @Override
-    public double getPassengersRidingOffset() {
-        return this.getType().getDimensions().height * 0.35f; //Phantom riding offset. See Phantom#getStandingEyeHeight
     }
 
     @Override

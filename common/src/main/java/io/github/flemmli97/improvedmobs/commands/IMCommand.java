@@ -9,6 +9,7 @@ import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
@@ -38,11 +39,7 @@ public class IMCommand {
 
     private static int reloadJson(CommandContext<CommandSourceStack> src) {
         src.getSource().sendSuccess(() -> Component.literal("Reloading equipment.json"), true);
-        try {
-            EquipmentList.initEquip();
-        } catch (EquipmentList.InvalidItemNameException e) {
-            src.getSource().sendSuccess(() -> Component.literal(e.getMessage()), false);
-        }
+        EquipmentList.initEquip(src.getSource().registryAccess());
         return 1;
     }
 
@@ -65,11 +62,10 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(data -> {
-                data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
-                CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
-                src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
-            });
+            IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+            data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
+            CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
+            src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         }
         return profs.size();
     }
@@ -79,11 +75,10 @@ public class IMCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(data -> {
-                data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
-                CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
-                src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
-            });
+            IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+            data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
+            CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
+            src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         }
         return profs.size();
     }
@@ -95,7 +90,7 @@ public class IMCommand {
                     .getDifficulty();
         else {
             ServerPlayer player = src.getSource().getPlayerOrException();
-            diff = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
+            diff = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel();
         }
         src.getSource().sendSuccess(() -> Component.literal("Difficulty: " + diff).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;

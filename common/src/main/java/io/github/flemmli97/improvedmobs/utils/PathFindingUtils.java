@@ -8,11 +8,11 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.PathNavigationRegion;
+import net.minecraft.world.level.CollisionGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.border.WorldBorder;
-import net.minecraft.world.level.pathfinder.BlockPathTypes;
 import net.minecraft.world.level.pathfinder.Node;
+import net.minecraft.world.level.pathfinder.PathType;
 import net.minecraft.world.level.pathfinder.WalkNodeEvaluator;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.shapes.BooleanOp;
@@ -24,8 +24,8 @@ import java.util.function.Function;
 
 public class PathFindingUtils {
 
-    public static Node notFloatingNodeModifier(Mob mob, BlockGetter getter, int x, int y, int z, int stepModifier, Direction dir, BlockPathTypes standingType,
-                                               Function<BlockPos, BlockPathTypes> func, Function<AABB, Boolean> collision, Function<AABB, Boolean> collisionDefault,
+    public static Node notFloatingNodeModifier(Mob mob, BlockGetter getter, int x, int y, int z, int stepModifier, Direction dir, PathType standingType,
+                                               Function<BlockPos, PathType> func, Function<AABB, Boolean> collision, Function<AABB, Boolean> collisionDefault,
                                                Function<BlockPos, Node> nodeGetter, Object2BooleanMap<Long> breakableMap) {
         BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(x, y, z);
         BlockState state = getter.getBlockState(pos);
@@ -33,7 +33,7 @@ public class PathFindingUtils {
             AABB aabb = createAABBForPos(getter, x, y, z, mob.getBbWidth() / 2.0, mob.getBbHeight());
             if (stepModifier > 0 && !collisionDefault.apply(aabb.expandTowards(-dir.getStepX(), 0, -dir.getStepZ()))) {
                 Node node = nodeGetter.apply(pos.set(x, y + 1, z));
-                node.type = BlockPathTypes.WALKABLE;
+                node.type = PathType.WALKABLE;
                 node.costMalus = Math.max(0, node.costMalus);
                 return node;
             }
@@ -41,26 +41,26 @@ public class PathFindingUtils {
                 return null;
             }
             Node node = nodeGetter.apply(pos);
-            node.type = BlockPathTypes.WALKABLE;
+            node.type = PathType.WALKABLE;
             node.costMalus = Math.max(0, node.costMalus);
-            BlockPathTypes below = func.apply(pos.set(x, y - 1, z));
-            if (below == BlockPathTypes.OPEN) {
+            PathType below = func.apply(pos.set(x, y - 1, z));
+            if (below == PathType.OPEN) {
                 float mobPathingMalus;
                 int fall = 0;
                 BlockPos.MutableBlockPos lower = new BlockPos.MutableBlockPos(x, y, z);
-                while (below == BlockPathTypes.OPEN) {
+                while (below == PathType.OPEN) {
                     if (--y < mob.level().getMinBuildHeight()) {
                         return null;
                     }
                     if (fall++ >= mob.getMaxFallDistance()) {
                         Node node2 = nodeGetter.apply(lower.set(x, y, z));
-                        node2.type = BlockPathTypes.BLOCKED;
+                        node2.type = PathType.BLOCKED;
                         node2.costMalus = -1.0f;
                         return node2;
                     }
                     below = func.apply(lower.set(x, y, z));
                     mobPathingMalus = mob.getPathfindingMalus(below);
-                    if (below != BlockPathTypes.OPEN && mobPathingMalus >= 0.0f) {
+                    if (below != PathType.OPEN && mobPathingMalus >= 0.0f) {
                         node = nodeGetter.apply(lower.set(x, y, z));
                         node.type = below;
                         node.costMalus = Math.max(node.costMalus, mobPathingMalus);
@@ -82,7 +82,7 @@ public class PathFindingUtils {
             }
             Node node = nodeGetter.apply(pos.set(x, y, z));
             node.costMalus = Math.max(0, node.costMalus);
-            node.type = BlockPathTypes.WALKABLE;
+            node.type = PathType.WALKABLE;
             node.costMalus += 6;
             return node;
         }
@@ -98,14 +98,14 @@ public class PathFindingUtils {
                 return null;
             }
             Node node = nodeGetter.apply(pos);
-            node.type = BlockPathTypes.WALKABLE;
+            node.type = PathType.WALKABLE;
             node.costMalus += 2;
             return node;
         }
         return null;
     }
 
-    public static boolean noCollision(PathNavigationRegion level, Entity entity, AABB aABB) {
+    public static boolean noCollision(CollisionGetter level, Entity entity, AABB aABB) {
         Iterable<VoxelShape> shapes = () -> new CustomBlockCollision(level, entity, aABB);
         for (VoxelShape voxelShape : shapes) {
             if (!voxelShape.isEmpty())
@@ -130,7 +130,7 @@ public class PathFindingUtils {
             Node node = nodeGetter.apply(pos);
             if (node != null && !node.closed) {
                 node.costMalus = 0;
-                node.type = BlockPathTypes.WALKABLE;
+                node.type = PathType.WALKABLE;
                 if (nodeID + 1 < nodes.length)
                     nodes[nodeID++] = node;
             }
@@ -140,7 +140,7 @@ public class PathFindingUtils {
             Node node = nodeGetter.apply(pos);
             if (node != null && !node.closed) {
                 node.costMalus = 0;
-                node.type = BlockPathTypes.WALKABLE;
+                node.type = PathType.WALKABLE;
                 if (nodeID + 1 < nodes.length)
                     nodes[nodeID++] = node;
             }

@@ -3,8 +3,7 @@ package io.github.flemmli97.improvedmobs.config;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
@@ -17,7 +16,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.function.Predicate;
 
-public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
+public class MobClassMapConfig {
 
     private final Map<ResourceLocation, List<EntityType<?>>> map = Maps.newLinkedHashMap();
     public Map<ResourceLocation, Predicate<Class<? extends Mob>>> preds = new HashMap<>();
@@ -27,16 +26,15 @@ public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
         return this.map.get(res);
     }
 
-    @Override
     public MobClassMapConfig readFromString(List<String> ss) {
         this.map.clear();
         for (String s : ss) {
             String[] sub = s.replace(" ", "").split("-");
             if (sub.length < 2)
                 continue;
-            EntityType<?> type = PlatformUtils.INSTANCE.entities().getFromId(new ResourceLocation(sub[1]));
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(sub[1])).orElse(null);
             if (type == null) {
-                ImprovedMobs.logger.error("Entity {} does not exist/is not registered", sub[1]);
+                ImprovedMobs.LOGGER.error("Entity {} does not exist/is not registered", sub[1]);
                 continue;
             }
             this.map.merge(new ResourceLocation(sub[0]), Lists.newArrayList(type), (old, oth) -> {
@@ -47,12 +45,11 @@ public class MobClassMapConfig implements IConfigListValue<MobClassMapConfig> {
         return this;
     }
 
-    @Override
     public List<String> writeToString() {
         List<String> l = new ArrayList<>();
         for (Entry<ResourceLocation, List<EntityType<?>>> ent : this.map.entrySet()) {
             for (EntityType<?> type : ent.getValue()) {
-                l.add(ent.getKey().toString() + "-" + PlatformUtils.INSTANCE.entities().getIDFrom(type));
+                l.add(ent.getKey().toString() + "-" + BuiltInRegistries.ENTITY_TYPE.getKey(type));
             }
         }
         return l;

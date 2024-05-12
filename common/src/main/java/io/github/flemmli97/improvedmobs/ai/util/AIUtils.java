@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.ai.util;
 
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
@@ -18,7 +19,7 @@ import net.minecraft.world.entity.projectile.ThrownTrident;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -42,8 +43,8 @@ public class AIUtils {
     public static void attackWithArrows(Mob entity, LivingEntity target, float distanceFactor) {
         ItemStack itemstack = entity.getProjectile(entity.getItemInHand(ProjectileUtil.getWeaponHoldingHand(entity, Items.BOW)));
         AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(entity, itemstack, distanceFactor);
-        if (entity.getMainHandItem().getItem() instanceof BowItem)
-            abstractarrowentity = CrossPlatformStuff.INSTANCE.customBowArrow((BowItem) entity.getMainHandItem().getItem(), abstractarrowentity);
+        if (entity.getMainHandItem().getItem() instanceof BowItem bow)
+            abstractarrowentity = CrossPlatformStuff.INSTANCE.customBowArrow(bow, entity.getMainHandItem(), abstractarrowentity);
         double d0 = target.getX() - entity.getX();
         double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
         double d2 = target.getZ() - entity.getZ();
@@ -82,14 +83,14 @@ public class AIUtils {
     }
 
     public static boolean isBadPotion(ItemStack stack) {
-        for (MobEffectInstance effect : PotionUtils.getMobEffects(stack)) {
-            if (effect.getEffect().getCategory() == MobEffectCategory.HARMFUL)
+        for (MobEffectInstance effect : stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getAllEffects()) {
+            if (effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
                 return true;
         }
         return false;
     }
 
-    public static void applyPotion(ThrownPotion entity, List<MobEffectInstance> p_213888_1_, @Nullable Entity p_213888_2_) {
+    public static void applyPotion(ThrownPotion entity, Iterable<MobEffectInstance> effects, @Nullable Entity p_213888_2_) {
         AABB axisalignedbb = entity.getBoundingBox().inflate(4.0D, 2.0D, 4.0D);
         List<LivingEntity> list = entity.level().getEntitiesOfClass(LivingEntity.class, axisalignedbb);
         for (LivingEntity livingentity : list) {
@@ -103,14 +104,14 @@ public class AIUtils {
                         d1 = 1.0D;
                     }
 
-                    for (MobEffectInstance effectinstance : p_213888_1_) {
-                        MobEffect effect = effectinstance.getEffect();
+                    for (MobEffectInstance effectinstance : effects) {
+                        MobEffect effect = effectinstance.getEffect().value();
                         if (effect.isInstantenous()) {
                             effect.applyInstantenousEffect(entity, entity.getOwner(), livingentity, effectinstance.getAmplifier(), d1);
                         } else {
                             int i = (int) (d1 * (double) effectinstance.getDuration() + 0.5D);
                             if (i > 20) {
-                                livingentity.addEffect(new MobEffectInstance(effect, i, effectinstance.getAmplifier(), effectinstance.isAmbient(), effectinstance.isVisible()));
+                                livingentity.addEffect(new MobEffectInstance(effectinstance.getEffect(), i, effectinstance.getAmplifier(), effectinstance.isAmbient(), effectinstance.isVisible()));
                             }
                         }
                     }

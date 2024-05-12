@@ -1,9 +1,7 @@
 package io.github.flemmli97.improvedmobs.config;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.tenshilib.api.config.IConfigListValue;
 import io.github.flemmli97.tenshilib.common.utils.ArrayUtils;
-import io.github.flemmli97.tenshilib.platform.PlatformUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -22,7 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlagConfig> {
+public class EntityModifyFlagConfig {
 
     private final Map<String, EnumSet<Flags>> map = new HashMap<>();
 
@@ -32,7 +30,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
     @SuppressWarnings("deprecation")
     public void initDefault(Level world) {
         this.map.clear();
-        for (EntityType<?> entry : PlatformUtils.INSTANCE.entities().getIterator()) {
+        for (EntityType<?> entry : BuiltInRegistries.ENTITY_TYPE) {
             try {
                 Entity e = entry.create(world);
                 if (!(e instanceof Mob))
@@ -47,9 +45,9 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
                 if (set.isEmpty() && !(e instanceof Enemy))
                     set.add(Flags.ALL);
                 if (!set.isEmpty())
-                    this.map.put(PlatformUtils.INSTANCE.entities().getIDFrom(entry).toString(), set);
+                    this.map.put(BuiltInRegistries.ENTITY_TYPE.getKey(entry).toString(), set);
             } catch (Exception e) {
-                ImprovedMobs.logger.error("Error during default entity config for EntityType {}, skipping this type. Cause: {}", PlatformUtils.INSTANCE.entities().getIDFrom(entry), e.getMessage());
+                ImprovedMobs.LOGGER.error("Error during default entity config for EntityType {}, skipping this type. Cause: {}", BuiltInRegistries.ENTITY_TYPE.getKey(entry), e.getMessage());
             }
         }
     }
@@ -57,7 +55,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
     public boolean hasFlag(Mob living, Flags flag, boolean reverse) {
         if (!this.resolved)
             this.resolveTags();
-        ResourceLocation res = PlatformUtils.INSTANCE.entities().getIDFrom(living.getType());
+        ResourceLocation res = BuiltInRegistries.ENTITY_TYPE.getKey(living.getType());
         if (res == null)
             return true;
         if (Config.CommonConfig.flagBlacklist.contains(flag.toString()))
@@ -71,7 +69,6 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         return reverse;
     }
 
-    @Override
     public EntityModifyFlagConfig readFromString(List<String> s) {
         this.map.clear();
         for (String val : s) {
@@ -110,7 +107,6 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         }
     }
 
-    @Override
     public List<String> writeToString() {
         List<String> s = new ArrayList<>();
         for (String key : this.map.keySet()) {
