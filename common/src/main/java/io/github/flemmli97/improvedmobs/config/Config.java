@@ -64,8 +64,8 @@ public class Config {
         public static boolean usePlayerEXMod = true;
         public static boolean useLevelZMod = true;
         public static boolean varySizebyPehkui;
-        public static float sizeMax = 0.5f;
-        public static float sizeMin = 2;
+        public static float sizeMax = 2;
+        public static float sizeMin = 0.5f;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks("#forge:glass", "#forge:glass_panes", "#minecraft:fence_gates", "#forge:fence_gates", "#minecraft:wooden_doors");
