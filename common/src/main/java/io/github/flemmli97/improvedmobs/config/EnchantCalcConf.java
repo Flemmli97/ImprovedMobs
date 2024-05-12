@@ -10,6 +10,10 @@ public class EnchantCalcConf {
     private static final Value defaultVal = new Value(0, 0, 0);
     private final List<Value> vals = new ArrayList<>();
 
+    public EnchantCalcConf(Value... vals) {
+        this.vals.addAll(List.of(vals));
+    }
+
     public EnchantCalcConf readFromString(List<String> ss) {
         this.vals.clear();
         List<Value> list = new ArrayList<>();

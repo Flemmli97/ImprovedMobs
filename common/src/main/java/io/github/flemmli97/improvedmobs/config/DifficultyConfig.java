@@ -11,6 +11,10 @@ public class DifficultyConfig {
     private static final Pair<Float, Zone> DEFAULT_VAL = Pair.of(0f, new Zone(1, 0.01f));
     private final List<Pair<Float, Zone>> vals = new ArrayList<>();
 
+    public DifficultyConfig(List<Pair<Float, Zone>> defaultVal) {
+        this.vals.addAll(defaultVal);
+    }
+
     public DifficultyConfig readFromString(List<String> ss) {
         this.vals.clear();
         List<Pair<Float, Zone>> list = new ArrayList<>();
@@ -28,7 +32,7 @@ public class DifficultyConfig {
 
     public List<String> writeToString() {
         List<String> list = new ArrayList<>();
-        this.vals.forEach(v -> list.add(v.getLeft() + "-" + v.getRight()));
+        this.vals.forEach(v -> list.add(v.getLeft() + "-" + v.getRight().write()));
         return list;
     }
 
@@ -37,5 +41,15 @@ public class DifficultyConfig {
     }
 
     public record Zone(float start, float increasePerBlock) {
+
+        public static Zone of(float start) {
+            return new Zone(start, 0);
+        }
+
+        String write() {
+            if (this.increasePerBlock == 0)
+                return this.start + "";
+            return this.start + "-" + this.increasePerBlock;
+        }
     }
 }

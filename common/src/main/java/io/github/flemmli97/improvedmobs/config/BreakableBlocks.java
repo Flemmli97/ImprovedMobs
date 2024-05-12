@@ -24,6 +24,10 @@ public class BreakableBlocks {
     private List<String> configString = new ArrayList<>();
     private boolean initialized;
 
+    public BreakableBlocks(String... defaultVal) {
+        this.configString.addAll(List.of(defaultVal));
+    }
+
     public boolean canBreak(BlockState state, BlockPos pos, BlockGetter level, @Nullable Entity entity, CollisionContext ctx) {
         if (!this.initialized)
             this.initialize();
