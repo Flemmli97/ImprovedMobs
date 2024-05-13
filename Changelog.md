@@ -1,3 +1,7 @@
+Improved Mobs 1.12.4
+================
+- Modify target goal instead of remove and replace which should fix anconcurrent exception
+
 Improved Mobs 1.12.3
 ================
 - Add `Ignore Harvest Check` to allow breaker mobs to break blocks regardless of the tool
