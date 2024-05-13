@@ -62,6 +62,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class EventCalls {
@@ -127,7 +128,7 @@ public class EventCalls {
             ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
                 if (mob.level.random.nextFloat() < 0.7) {
                     ((TargetGoalAccessor) g).setShouldCheckSight(false);
-                    ((NearestTargetGoalMixin) g).getTargetEntitySelector().ignoreLineOfSight();
+                    ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
                 }
             });
             if (mobGriefing) {
@@ -173,8 +174,18 @@ public class EventCalls {
         } else
             aggressive = true;
         if (villager && aggressive) {
-            ((IGoalModifier) mob.targetSelector).goalRemovePredicate(g -> g instanceof NearestTargetGoalMixin target && target.targetTypeClss() == AbstractVillager.class);
-            mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
+            AtomicBoolean modified = new AtomicBoolean();
+            ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
+                if (g instanceof NearestTargetGoalMixin<?> target && target.targetTypeClss() == AbstractVillager.class) {
+                    if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5) {
+                        ((TargetGoalAccessor) g).setShouldCheckSight(false);
+                        ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
+                    }
+                    modified.set(true);
+                }
+            });
+            if (!modified.get())
+                mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.level.random.nextFloat() < 0.5, null));
         }
         List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(PlatformUtils.INSTANCE.entities().getIDFrom(mob.getType()));
         if (types != null)
@@ -193,7 +204,7 @@ public class EventCalls {
         else
             goal = new NearestAttackableTargetGoal<>(e, clss, 10, !ignoreSight, false, pred);
         if (ignoreSight)
-            ((NearestTargetGoalMixin) goal).getTargetEntitySelector().ignoreLineOfSight();
+            ((NearestTargetGoalMixin<?>) goal).getTargetEntitySelector().ignoreLineOfSight();
         return goal;
     }
 
@@ -259,8 +270,7 @@ public class EventCalls {
 
     public static boolean onAttackEvent(LivingEntity target, DamageSource damagesource) {
         if (!target.level.isClientSide) {
-            if (!Config.CommonConfig.friendlyFire && target instanceof TamableAnimal) {
-                TamableAnimal pet = (TamableAnimal) target;
+            if (!Config.CommonConfig.friendlyFire && target instanceof TamableAnimal pet) {
                 if (damagesource.getEntity() != null && damagesource.getEntity() == pet.getOwner() && !damagesource.getEntity().isShiftKeyDown()) {
                     return true;
                 }
@@ -273,8 +283,7 @@ public class EventCalls {
                     flag.isThrownEntity = false;
                     target.hurt(damagesource, 0.001f);
                 }
-            } else if (source instanceof LivingEntity) {
-                LivingEntity attacker = (LivingEntity) source;
+            } else if (source instanceof LivingEntity attacker) {
                 if (CrossPlatformStuff.INSTANCE.canDisableShield(attacker.getMainHandItem(), target.getUseItem(), target, attacker)) {
                     triggerDisableShield(attacker, target);
                 }
