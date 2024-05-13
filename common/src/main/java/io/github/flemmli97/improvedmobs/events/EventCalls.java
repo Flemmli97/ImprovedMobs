@@ -64,6 +64,7 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class EventCalls {
@@ -129,7 +130,7 @@ public class EventCalls {
             ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
                 if (mob.getRandom().nextFloat() < 0.7) {
                     ((TargetGoalAccessor) g).setShouldCheckSight(false);
-                    ((NearestTargetGoalMixin) g).getTargetEntitySelector().ignoreLineOfSight();
+                    ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
                 }
             });
             if (mobGriefing) {
@@ -175,8 +176,18 @@ public class EventCalls {
         } else
             aggressive = true;
         if (villager && aggressive) {
-            ((IGoalModifier) mob.targetSelector).goalRemovePredicate(g -> g instanceof NearestTargetGoalMixin target && target.targetTypeClss() == AbstractVillager.class);
-            mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, null));
+            AtomicBoolean modified = new AtomicBoolean();
+            ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
+                if(g instanceof NearestTargetGoalMixin<?> target && target.targetTypeClss() == AbstractVillager.class) {
+                    if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5) {
+                        ((TargetGoalAccessor) g).setShouldCheckSight(false);
+                        ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
+                    }
+                    modified.set(true);
+                }
+            });
+            if (!modified.get())
+                mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, null));
         }
         List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()));
         if (types != null)
