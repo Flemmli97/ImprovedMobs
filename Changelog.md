@@ -1,3 +1,9 @@
+Improved Mobs 1.12.4
+================
+- Update to 1.20.6
+- `equipment.json` got rewritten! If you have the old version a backup will be created.  
+~~- Modify target goal instead of remove and replace which should fix anconcurrent exception~~
+
 Improved Mobs 1.12.3
 ================
 - Add `Ignore Harvest Check` to allow breaker mobs to break blocks regardless of the tool
