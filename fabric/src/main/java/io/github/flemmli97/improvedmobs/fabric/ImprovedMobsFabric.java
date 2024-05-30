@@ -4,7 +4,6 @@ import io.github.flemmli97.improvedmobs.commands.IMCommand;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.fabric.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
-import io.github.flemmli97.improvedmobs.fabric.network.PacketRegister;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -29,6 +28,5 @@ public class ImprovedMobsFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(EventHandler::serverStart);
 
         ConfigSpecs.initCommonConfig();
-        PacketRegister.register();
     }
 }

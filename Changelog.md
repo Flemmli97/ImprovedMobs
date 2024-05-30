@@ -1,3 +1,7 @@
+Improved Mobs 1.12.4.b
+================
+- Fabric: Fix client packet registering on server
+
 Improved Mobs 1.12.4
 ================
 - Update to 1.20.6
