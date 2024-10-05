@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.forge;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
+import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.forge.capability.TileCapProvider;
 import io.github.flemmli97.improvedmobs.forge.client.ClientEventHandler;
@@ -9,11 +10,14 @@ import io.github.flemmli97.improvedmobs.forge.config.ConfigLoader;
 import io.github.flemmli97.improvedmobs.forge.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.forge.events.DifficultyHandler;
 import io.github.flemmli97.improvedmobs.forge.events.EventHandler;
+import io.github.flemmli97.improvedmobs.forge.integration.difficulty.ScalingHealthDifficulty;
 import io.github.flemmli97.improvedmobs.forge.network.PacketHandler;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.IExtensionPoint;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -43,6 +47,10 @@ public class ImprovedMobsForge {
         if (FMLEnvironment.dist == Dist.CLIENT)
             modBus.addListener(ClientEventHandler::setup);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
+
+        DifficultyFetcher.register();
+        if (ModList.get().isLoaded("scalinghealth"))
+            DifficultyFetcher.add(new ResourceLocation(ImprovedMobs.MODID, "scalinghealth_integration"), new ScalingHealthDifficulty());
     }
 
     static void setup(FMLCommonSetupEvent event) {

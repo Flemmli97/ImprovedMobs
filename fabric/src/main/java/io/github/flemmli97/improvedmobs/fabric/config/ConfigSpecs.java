@@ -89,9 +89,11 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> neutralAggroWhitelist;
 
         //Integration
-        public final CommentedJsonConfig.CommentedVal<Boolean> useScalingHealthMod;
-        public final CommentedJsonConfig.CommentedVal<Boolean> usePlayerEXMod;
-        public final CommentedJsonConfig.CommentedVal<Boolean> useLevelZMod;
+        public final CommentedJsonConfig.CommentedVal<Config.IntegrationType> useScalingHealthMod;
+        public final CommentedJsonConfig.CommentedVal<Config.IntegrationType> usePlayerEXMod;
+        public final CommentedJsonConfig.DoubleVal playerEXScale;
+        public final CommentedJsonConfig.CommentedVal<Config.IntegrationType> useLevelZMod;
+        public final CommentedJsonConfig.DoubleVal levelZScale;
         public final CommentedJsonConfig.CommentedVal<Boolean> varySizebyPehkui;
         public final CommentedJsonConfig.DoubleVal sizeMin;
         public final CommentedJsonConfig.DoubleVal sizeMax;
@@ -201,7 +203,9 @@ public final class ConfigSpecs {
             //builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", Config.CommonConfig.useScalingHealthMod);
             this.usePlayerEXMod = builder.comment("If true and playerEx is installed will use the level from playerEx as difficulty").define("Use Player EX Mod", Config.CommonConfig.usePlayerEXMod);
+            this.playerEXScale = builder.comment("Scaling for playerEX integration").defineInRange("PlayerEX Scaling", Config.CommonConfig.playerEXScale, 0, Double.MAX_VALUE);
             this.useLevelZMod = builder.comment("If true and LevelZ is installed will use the the total skill level from LevelZ as difficulty").define("Use LevelZ Mod", Config.CommonConfig.useLevelZMod);
+            this.levelZScale = builder.comment("Scaling for LevelZ integration").defineInRange("LevelZ Scaling", Config.CommonConfig.levelZScale, 0, Double.MAX_VALUE);
             this.varySizebyPehkui = builder.comment("Using pehkui to vary the size of mobs").define("Use pehkui Mod", Config.CommonConfig.varySizebyPehkui);
             this.sizeMax = builder.comment("The Max scale of mobs. Range [1.0,10], default 2.0").defineInRange("Max size Multiplier", Config.CommonConfig.sizeMax, 1.0, 10.0);
             this.sizeMin = builder.comment("The Minimum scale of mobs. Range (0,1.0), default 0.5").defineInRange("Minimum size Multiplier", Config.CommonConfig.sizeMin, 0, 1.0);

@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.forge.network;
 
+import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.config.Config;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.network.NetworkEvent;
@@ -15,8 +16,7 @@ public class PacketConfig {
     }
 
     public PacketConfig() {
-        this.showDifficulty = Config.CommonConfig.useScalingHealthMod
-                || Config.CommonConfig.usePlayerEXMod || Config.CommonConfig.useLevelZMod;
+        this.showDifficulty = DifficultyFetcher.shouldClientShowDifficulty();
     }
 
     public static PacketConfig read(FriendlyByteBuf buf) {
