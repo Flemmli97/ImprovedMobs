@@ -144,6 +144,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         PHANTOM("phantom"),
         TARGETVILLAGER("villager"),
         NEUTRALAGGRO("neutral"),
+        PEHKUI("pehkui"),
         REVERSE(null);
 
         /**

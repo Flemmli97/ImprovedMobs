@@ -249,8 +249,9 @@ public class EventCalls {
         }
 
         if (Config.CommonConfig.varySizebyPehkui) {
-            if (!flags.isVariedSize && living instanceof Monster)
+            if (!flags.isVariedSize && living.getRandom().nextFloat() < Config.CommonConfig.sizeChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PEHKUI, Config.CommonConfig.pehkuiWhitelist)) {
                 Utils.modifyScale(living, Config.CommonConfig.sizeMin, Config.CommonConfig.sizeMax);
+            }
             flags.isVariedSize = true;
         }
 
