@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.ai;
 
+import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.improvedmobs.utils.BlockRestorationData;
@@ -114,7 +115,7 @@ public class BlockBreakGoal extends Goal {
         }
         BlockState state = this.living.level().getBlockState(this.markedLoc);
         float str = Utils.getBlockStrength(this.living, state, this.living.level(), this.markedLoc);
-        str = str == Float.POSITIVE_INFINITY ? 1 : str / (1 + str * 6) * (this.digTimer + 1);
+        str = str == Float.POSITIVE_INFINITY ? 1 : str / (1 + str * 6) * (this.digTimer * this.breakSpeedMod() + 1);
         if (str >= 1F) {
             this.digTimer = 0;
             this.cooldown *= 0.5;
@@ -145,6 +146,13 @@ public class BlockBreakGoal extends Goal {
                 this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, (int) (str * 10) - 1);
             }
         }
+    }
+
+    private float breakSpeedMod() {
+        float mod = Config.CommonConfig.breakSpeedBaseMod;
+        if (Config.CommonConfig.breakSpeedAdd != 0)
+            mod += Config.CommonConfig.breakSpeedAdd * DifficultyFetcher.getDifficulty((ServerLevel) this.living.level(), this.living.position());
+        return mod;
     }
 
     public BlockPos getDiggingLocation() {
