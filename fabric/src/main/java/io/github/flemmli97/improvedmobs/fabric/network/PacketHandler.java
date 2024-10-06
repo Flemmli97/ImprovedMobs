@@ -21,6 +21,6 @@ public class PacketHandler {
     }
 
     private static void handleConfig(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender) {
-        Config.ClientConfig.showDifficultyServerSync = !buf.readBoolean();
+        Config.ClientConfig.showDifficultyServerSync = buf.readBoolean();
     }
 }

@@ -28,7 +28,7 @@ public class PacketConfig {
     }
 
     public static void handle(PacketConfig pkt, Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().enqueueWork(() -> Config.ClientConfig.showDifficultyServerSync = !pkt.showDifficulty);
+        ctx.get().enqueueWork(() -> Config.ClientConfig.showDifficultyServerSync = pkt.showDifficulty);
         ctx.get().setPacketHandled(true);
     }
 }
