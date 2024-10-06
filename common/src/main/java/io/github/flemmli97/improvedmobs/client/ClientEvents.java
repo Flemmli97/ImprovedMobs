@@ -20,7 +20,7 @@ public class ClientEvents {
     private static final ResourceLocation tex = new ResourceLocation(ImprovedMobs.MODID, "textures/gui/difficulty_bar.png");
 
     public static void showDifficulty(PoseStack stack) {
-        if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty)
+        if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty || Minecraft.getInstance().options.renderDebug)
             return;
         stack.pushPose();
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
