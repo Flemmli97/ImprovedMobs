@@ -13,7 +13,6 @@ import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixin.TargetGoalAccessor;
-import io.github.flemmli97.improvedmobs.mixinhelper.IGoalModifier;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.mixinhelper.ISpawnReason;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
@@ -63,7 +62,6 @@ import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Predicate;
 
 public class EventCalls {
@@ -125,24 +123,6 @@ public class EventCalls {
             } else
                 flags.canFly = EntityFlags.FlagType.FALSE;
         }
-        if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
-            ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
-                if (mob.getRandom().nextFloat() < 0.7) {
-                    ((TargetGoalAccessor) g).setShouldCheckSight(false);
-                    ((NearestTargetGoalMixin) g).getTargetEntitySelector().ignoreLineOfSight();
-                }
-            });
-            if (mobGriefing) {
-                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).setCanBreakBlocks(true);
-                mob.goalSelector.addGoal(1, new BlockBreakGoal(mob));
-                if (mob.getOffhandItem().isEmpty()) {
-                    ItemStack stack = Config.CommonConfig.getRandomBreakingItem(mob.getRandom());
-                    if (!Config.CommonConfig.shouldDropEquip)
-                        mob.setDropChance(EquipmentSlot.OFFHAND, -100);
-                    mob.setItemSlot(EquipmentSlot.OFFHAND, stack);
-                }
-            }
-        }
         applyAttributesAndItems(mob, difficulty);
         if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
             mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 12));
@@ -168,33 +148,43 @@ public class EventCalls {
         }
         boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
         boolean aggressive;
+        boolean ignoreSight = mob.getRandom().nextFloat() < Config.CommonConfig.genericSightIgnore;
         if ((mob instanceof NeutralMob) && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.NEUTRALAGGRO, Config.CommonConfig.neutralAggroWhitelist)) {
             aggressive = Config.CommonConfig.neutralAggressiv != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.neutralAggressiv;
             if (aggressive)
-                mob.targetSelector.addGoal(1, setNoLoS(mob, Player.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, null));
+                mob.targetSelector.addGoal(1, setNoLoS(mob, Player.class, ignoreSight, null));
         } else
             aggressive = true;
         if (villager && aggressive) {
-            AtomicBoolean modified = new AtomicBoolean();
-            ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
-                if (g instanceof NearestTargetGoalMixin<?> target && target.targetTypeClss() == AbstractVillager.class) {
-                    if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5) {
-                        ((TargetGoalAccessor) g).setShouldCheckSight(false);
-                        ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
-                    }
-                    modified.set(true);
-                }
-            });
-            if (!modified.get())
-                mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, null));
+            boolean hasVillagerTarget = mob.targetSelector.getAvailableGoals().stream().anyMatch(g -> g != null && g.getGoal() instanceof NearestTargetGoalMixin<?> target && target.targetTypeClss() == AbstractVillager.class);
+            if (!hasVillagerTarget)
+                mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, ignoreSight, null));
         }
         List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(PlatformUtils.INSTANCE.entities().getIDFrom(mob.getType()));
         if (types != null)
-            mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5, (l) -> types.contains(l.getType())));
+            mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, ignoreSight, (l) -> types.contains(l.getType())));
         if (mob instanceof PathfinderMob pathfinderMob && difficulty >= Config.CommonConfig.difficultySteal && mobGriefing
                 && Config.CommonConfig.stealerChance != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.stealerChance
                 && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
             pathfinderMob.goalSelector.addGoal(5, new StealGoal(pathfinderMob));
+        }
+        if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
+            mob.targetSelector.getAvailableGoals().forEach((g) -> {
+                if (g != null && g.getGoal() instanceof NearestAttackableTargetGoal && mob.getRandom().nextFloat() < Config.CommonConfig.breakerSightIgnore) {
+                    ((TargetGoalAccessor) g).setShouldCheckSight(false);
+                    ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
+                }
+            });
+            if (mobGriefing) {
+                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).setCanBreakBlocks(true);
+                mob.goalSelector.addGoal(1, new BlockBreakGoal(mob));
+                if (mob.getOffhandItem().isEmpty()) {
+                    ItemStack stack = Config.CommonConfig.getRandomBreakingItem(mob.getRandom());
+                    if (!Config.CommonConfig.shouldDropEquip)
+                        mob.setDropChance(EquipmentSlot.OFFHAND, -100);
+                    mob.setItemSlot(EquipmentSlot.OFFHAND, stack);
+                }
+            }
         }
     }
 
