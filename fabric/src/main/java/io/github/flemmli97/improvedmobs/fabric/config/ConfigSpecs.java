@@ -168,7 +168,8 @@ public final class ConfigSpecs {
             this.increaseHandler = builder.comment("Handles increase in difficulty regarding current difficulty.",
                     "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]",
                     "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day since a mc day has 24000 ticks) till it reaches a difficulty of 10.",
-                    "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Config.CommonConfig.increaseHandler.writeToString());
+                    "Then it increases by 1 per mc day till it reaches 30 and then stops.",
+                    "If you want to use negative values use | instead of - as the delimiter.").define("Difficulty Increase", Config.CommonConfig.increaseHandler.writeToString());
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online players or not").define("Ignore Players", Config.CommonConfig.ignorePlayers);
             this.shouldPunishTimeSkip = builder.comment("If true will increase difficulty by the amount of time skipped. Else will only increase difficulty once.").define("Punish Time Skip", Config.CommonConfig.shouldPunishTimeSkip);
             this.friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", Config.CommonConfig.friendlyFire);
