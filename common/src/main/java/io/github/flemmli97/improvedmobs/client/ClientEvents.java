@@ -17,7 +17,7 @@ public class ClientEvents {
     private static final ResourceLocation tex = new ResourceLocation(ImprovedMobs.MODID, "textures/gui/difficulty_bar.png");
 
     public static void showDifficulty(GuiGraphics graphics) {
-        if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty)
+        if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty || Minecraft.getInstance().options.renderDebug)
             return;
         graphics.pose().pushPose();
         Font font = Minecraft.getInstance().font;
