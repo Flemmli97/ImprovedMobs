@@ -145,6 +145,7 @@ public class EntityModifyFlagConfig implements IConfigListValue<EntityModifyFlag
         PARROT("parrot"),
         TARGETVILLAGER("villager"),
         NEUTRALAGGRO("neutral"),
+        PEHKUI("pehkui"),
         REVERSE(null);
 
         /**
