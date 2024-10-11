@@ -60,9 +60,11 @@ public class Config {
         public static boolean neutralAggroWhitelist;
 
         //Integration
-        public static boolean useScalingHealthMod = true;
-        public static boolean usePlayerEXMod = true;
-        public static boolean useLevelZMod = true;
+        public static IntegrationType useScalingHealthMod = IntegrationType.ON;
+        public static IntegrationType usePlayerEXMod = IntegrationType.ON;
+        public static float playerEXScale = 1;
+        public static IntegrationType useLevelZMod = IntegrationType.ON;
+        public static float levelZScale = 1;
         public static boolean varySizebyPehkui;
         public static float sizeMax = 2;
         public static float sizeMin = 0.5f;
@@ -186,5 +188,15 @@ public class Config {
         TOPLEFT,
         BOTTOMRIGHT,
         BOTTOMLEFT
+    }
+
+    public enum IntegrationType {
+        OFF,
+        ON,
+        ADD;
+
+        public boolean enabled() {
+            return this != OFF;
+        }
     }
 }

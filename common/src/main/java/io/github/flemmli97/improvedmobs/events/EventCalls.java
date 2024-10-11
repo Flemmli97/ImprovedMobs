@@ -227,11 +227,11 @@ public class EventCalls {
         }
         if (!flags.modifyAttributes) {
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
-                if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
+                if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod.enabled()) {
                     Utils.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, difficulty, true);
                     living.setHealth(living.getMaxHealth());
                 }
-                if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod)
+                if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod.enabled())
                     Utils.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, difficulty, true);
                 if (Config.CommonConfig.speedIncrease != 0)
                     Utils.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, difficulty, false);
