@@ -114,6 +114,7 @@ public class Config {
         public static float baseEquipChance = 0.1f;
         public static float baseEquipChanceAdd = 0.3f;
         public static float diffEquipAdd = 0.3f;
+        public static float randomTrimChance = 0.05f;
         public static float baseWeaponChance = 0.5f;
         public static float diffWeaponChance = 0.3f;
         public static float baseEnchantChance = 0.2f;

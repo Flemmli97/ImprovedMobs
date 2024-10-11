@@ -106,6 +106,7 @@ public class ConfigLoader {
         Config.CommonConfig.baseEquipChance = ConfigSpecs.commonConf.baseEquipChance.get().floatValue();
         Config.CommonConfig.baseEquipChanceAdd = ConfigSpecs.commonConf.baseEquipChanceAdd.get().floatValue();
         Config.CommonConfig.diffEquipAdd = ConfigSpecs.commonConf.diffEquipAdd.get().floatValue();
+        Config.CommonConfig.randomTrimChance = ConfigSpecs.commonConf.randomTrimChance.get().floatValue();
         Config.CommonConfig.baseWeaponChance = ConfigSpecs.commonConf.baseWeaponChance.get().floatValue();
         Config.CommonConfig.diffWeaponChance = ConfigSpecs.commonConf.diffWeaponChance.get().floatValue();
         Config.CommonConfig.baseEnchantChance = ConfigSpecs.commonConf.baseEnchantChance.get().floatValue();
