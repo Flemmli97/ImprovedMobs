@@ -171,8 +171,8 @@ public class EventCalls {
         if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
             mob.targetSelector.getAvailableGoals().forEach((g) -> {
                 if (g != null && g.getGoal() instanceof NearestAttackableTargetGoal && mob.getRandom().nextFloat() < Config.CommonConfig.breakerSightIgnore) {
-                    ((TargetGoalAccessor) g).setShouldCheckSight(false);
-                    ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
+                    ((TargetGoalAccessor) g.getGoal()).setShouldCheckSight(false);
+                    ((NearestTargetGoalMixin<?>) g.getGoal()).getTargetEntitySelector().ignoreLineOfSight();
                 }
             });
             if (mobGriefing) {
