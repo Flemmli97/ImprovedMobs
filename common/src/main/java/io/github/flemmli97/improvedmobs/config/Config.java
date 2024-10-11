@@ -202,8 +202,7 @@ public class Config {
         ADD;
 
         public boolean enabled() {
-            return this
-                    != OFF;
+            return this != OFF;
         }
     }
 }
