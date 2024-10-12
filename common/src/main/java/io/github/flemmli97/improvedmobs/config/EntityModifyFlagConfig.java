@@ -141,6 +141,7 @@ public class EntityModifyFlagConfig {
         PARROT("parrot"),
         TARGETVILLAGER("villager"),
         NEUTRALAGGRO("neutral"),
+        PEHKUI("pehkui"),
         REVERSE(null);
 
         /**

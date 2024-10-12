@@ -59,6 +59,7 @@ public class Config {
         public static boolean mobListFlyWhitelist;
         public static boolean targetVillagerWhitelist;
         public static boolean neutralAggroWhitelist;
+        public static boolean pehkuiWhitelist;
 
         //Integration
         public static IntegrationType useScalingHealthMod = IntegrationType.ON;
@@ -69,6 +70,7 @@ public class Config {
         public static boolean varySizebyPehkui;
         public static float sizeMax = 2;
         public static float sizeMin = 0.5f;
+        public static float sizeChance = 0.5f;
 
         //AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks("#c:glass_blocks", "#c:glass_panes", "#minecraft:fence_gates", "#c:fence_gates", "#minecraft:wooden_doors");

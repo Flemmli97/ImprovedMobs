@@ -87,6 +87,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> mobListFlyWhitelist;
         public final CommentedJsonConfig.CommentedVal<Boolean> targetVillagerWhitelist;
         public final CommentedJsonConfig.CommentedVal<Boolean> neutralAggroWhitelist;
+        public final CommentedJsonConfig.CommentedVal<Boolean> pehkuiWhitelist;
 
         //Integration
         public final CommentedJsonConfig.CommentedVal<Config.IntegrationType> useScalingHealthMod;
@@ -97,6 +98,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> varySizebyPehkui;
         public final CommentedJsonConfig.DoubleVal sizeMin;
         public final CommentedJsonConfig.DoubleVal sizeMax;
+        public final CommentedJsonConfig.DoubleVal sizeChance;
 
         //AI
         public final CommentedJsonConfig.CommentedVal<List<String>> breakableBlocks;
@@ -199,6 +201,7 @@ public final class ConfigSpecs {
             this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Phantom Whitelist", Config.CommonConfig.mobListFlyWhitelist);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", Config.CommonConfig.targetVillagerWhitelist);
             this.neutralAggroWhitelist = builder.comment("Treat NEUTRALAGGRO flags as whitelist").define("Neutral Aggro Whitelist", Config.CommonConfig.neutralAggroWhitelist);
+            this.pehkuiWhitelist = builder.comment("Treat PEHKUI flags as whitelist (Needs pehkui installed)").define("Pehkui Whitelist", Config.CommonConfig.pehkuiWhitelist);
 
             //builder.comment("Settings for mod integration").push("integration");
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", Config.CommonConfig.useScalingHealthMod);
@@ -209,6 +212,7 @@ public final class ConfigSpecs {
             this.varySizebyPehkui = builder.comment("Using pehkui to vary the size of mobs").define("Use pehkui Mod", Config.CommonConfig.varySizebyPehkui);
             this.sizeMax = builder.comment("The Max scale of mobs. Range [1.0,10], default 2.0").defineInRange("Max size Multiplier", Config.CommonConfig.sizeMax, 1.0, 10.0);
             this.sizeMin = builder.comment("The Minimum scale of mobs. Range (0,1.0), default 0.5").defineInRange("Minimum size Multiplier", Config.CommonConfig.sizeMin, 0, 1.0);
+            this.sizeChance = builder.comment("Chance that a mob will be affected by size changes").defineInRange("Size Chance", Config.CommonConfig.sizeChance, 0, 1.0);
             //builder.comment("Settings regarding custom ai for mobs").push("ai");
             this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken. ", BreakableBlocks.use(), "Note: If you include common blocks (like grass blocks) the pathfinding can have undesirable results.").define("Block Break Whitelist", Config.CommonConfig.breakableBlocks.writeToString());
             this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blocklist").define("Breaklist as Blacklist", Config.CommonConfig.breakingAsBlacklist);

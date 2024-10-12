@@ -73,6 +73,7 @@ public class ConfigSpecs {
         public final ModConfigSpec.BooleanValue mobListFlyWhitelist;
         public final ModConfigSpec.BooleanValue targetVillagerWhitelist;
         public final ModConfigSpec.BooleanValue neutralAggroWhitelist;
+        public final ModConfigSpec.BooleanValue pehkuiWhitelist;
 
         //Integration
         public final ModConfigSpec.EnumValue<Config.IntegrationType> useScalingHealthMod;
@@ -83,6 +84,7 @@ public class ConfigSpecs {
         public final ModConfigSpec.BooleanValue varySizebyPehkui;
         public final ModConfigSpec.DoubleValue sizeMin;
         public final ModConfigSpec.DoubleValue sizeMax;
+        public final ModConfigSpec.DoubleValue sizeChance;
 
         //AI
         public final ModConfigSpec.ConfigValue<List<String>> breakableBlocks;
@@ -186,6 +188,7 @@ public class ConfigSpecs {
             this.mobListFlyWhitelist = builder.comment("Treat PARROT flags as whitelist").define("Phantom Whitelist", Config.CommonConfig.mobListFlyWhitelist);
             this.targetVillagerWhitelist = builder.comment("Treat TARGETVILLAGER flags as whitelist").define("Villager Whitelist", Config.CommonConfig.targetVillagerWhitelist);
             this.neutralAggroWhitelist = builder.comment("Treat NEUTRALAGGRO flags as whitelist").define("Neutral Aggro Whitelist", Config.CommonConfig.neutralAggroWhitelist);
+            this.pehkuiWhitelist = builder.comment("Treat PEHKUI flags as whitelist (Needs pehkui installed)").define("Pehkui Whitelist", Config.CommonConfig.pehkuiWhitelist);
             builder.pop();
 
             builder.comment("Settings for mod integration").push("integration");
@@ -197,6 +200,7 @@ public class ConfigSpecs {
             this.varySizebyPehkui = builder.comment("Using pehkui to vary the size of mobs").define("Use pehkui Mod", Config.CommonConfig.varySizebyPehkui);
             this.sizeMax = builder.comment("The Max scale of mobs. Range [1.0,10], default 2.0").defineInRange("Max size Multiplier", Config.CommonConfig.sizeMax, 1.0, 10.0);
             this.sizeMin = builder.comment("The Minimum scale of mobs. Range (0,1.0), default 0.5").defineInRange("Minimum size Multiplier", Config.CommonConfig.sizeMin, 0, 1.0);
+            this.sizeChance = builder.comment("Chance that a mob will be affected by size changes").defineInRange("Size Chance", Config.CommonConfig.sizeChance, 0, 1.0);
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");

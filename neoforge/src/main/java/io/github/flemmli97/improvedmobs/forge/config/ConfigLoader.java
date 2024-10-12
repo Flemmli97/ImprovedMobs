@@ -47,6 +47,7 @@ public class ConfigLoader {
         Config.CommonConfig.mobListFlyWhitelist = ConfigSpecs.COMMON_CONF.mobListFlyWhitelist.get();
         Config.CommonConfig.targetVillagerWhitelist = ConfigSpecs.COMMON_CONF.targetVillagerWhitelist.get();
         Config.CommonConfig.neutralAggroWhitelist = ConfigSpecs.COMMON_CONF.neutralAggroWhitelist.get();
+        Config.CommonConfig.pehkuiWhitelist = ConfigSpecs.COMMON_CONF.pehkuiWhitelist.get();
 
         Config.CommonConfig.useScalingHealthMod = ModList.get().isLoaded("scalinghealth") ? ConfigSpecs.COMMON_CONF.useScalingHealthMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.usePlayerEXMod = ModList.get().isLoaded("playerex") ? ConfigSpecs.COMMON_CONF.usePlayerEXMod.get() : Config.IntegrationType.OFF;
@@ -56,6 +57,7 @@ public class ConfigLoader {
         Config.CommonConfig.varySizebyPehkui = ConfigSpecs.COMMON_CONF.varySizebyPehkui.get() && ModList.get().isLoaded("pehkui");
         Config.CommonConfig.sizeMax = ConfigSpecs.COMMON_CONF.sizeMax.get().floatValue();
         Config.CommonConfig.sizeMin = ConfigSpecs.COMMON_CONF.sizeMin.get().floatValue();
+        Config.CommonConfig.sizeChance = ConfigSpecs.COMMON_CONF.sizeChance.get().floatValue();
 
         Config.CommonConfig.breakableBlocks.readFromString(ConfigSpecs.COMMON_CONF.breakableBlocks.get());
         Config.CommonConfig.breakingAsBlacklist = ConfigSpecs.COMMON_CONF.breakingAsBlacklist.get();
