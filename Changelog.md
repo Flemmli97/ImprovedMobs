@@ -1,4 +1,4 @@
-Improved Mobs _1.13.0_
+Improved Mobs 1.13.0
 ================
 - Port to 1.21.1
 - Redo integration mod for difficulty:
