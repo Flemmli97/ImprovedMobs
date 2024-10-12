@@ -1,3 +1,17 @@
+Improved Mobs _1.13.0_
+================
+- Port to 1.21.1
+- Redo integration mod for difficulty:
+  - Config changed from true/false to OFF/ON/ADD
+  - OFF and ON behave as old true/false but ADD allows stacking on top of existing ones for even more mayham
+  - LevelZ and PlayerEX now has a multiplier config
+- Allow pehkui integration to be more configurable with size chance and flag for individual mobs
+- Disable overlay being shown with f3 debug toggled
+- Allow negative values for difficulty increase. To use that use `|` as a delimiter instead of `-`
+- Add config for line of sight requirements
+- Add breaking speed modifier config
+- Add armor trim chance
+
 Improved Mobs 1.12.4.b
 ================
 - Fabric: Fix client packet registering on server
