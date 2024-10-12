@@ -8,6 +8,7 @@ import io.github.flemmli97.tenshilib.common.utils.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -70,8 +71,7 @@ public class Utils {
                             Optional<Holder.Reference<TrimMaterial>> trim = registryAccess.registry(Registries.TRIM_MATERIAL).flatMap(r -> r.getRandom(living.getRandom()));
                             Optional<Holder.Reference<TrimPattern>> pattern = living.getServer().registryAccess().registry(Registries.TRIM_PATTERN).flatMap(r -> r.getRandom(living.getRandom()));
                             if (trim.isPresent() && pattern.isPresent()) {
-                                ArmorTrim armorTrim = new ArmorTrim(trim.get(), pattern.get());
-                                ArmorTrim.setTrim(registryAccess, equip, armorTrim);
+                                equip.set(DataComponents.TRIM, new ArmorTrim(trim.get(), pattern.get()));
                             }
                         }
                         if (!equip.isEmpty()) {
