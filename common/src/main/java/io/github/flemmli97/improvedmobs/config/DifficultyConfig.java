@@ -19,7 +19,7 @@ public class DifficultyConfig {
         this.vals.clear();
         List<Pair<Float, Zone>> list = new ArrayList<>();
         for (String s : ss) {
-            String[] parts = s.split("-");
+            String[] parts = s.contains("|") ? s.split("\\|") : s.split("-");
             if (parts.length == 3)
                 list.add(Pair.of(Float.parseFloat(parts[0]), new Zone(Float.parseFloat(parts[1]), Float.parseFloat(parts[2]))));
             else if (parts.length == 2)
