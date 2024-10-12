@@ -5,6 +5,7 @@ import io.github.flemmli97.improvedmobs.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.DebugScreenOverlay;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -17,7 +18,7 @@ public class ClientEvents {
     private static final ResourceLocation TEX = ImprovedMobs.modRes("textures/gui/difficulty_bar.png");
 
     public static void showDifficulty(GuiGraphics graphics) {
-        if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty || Minecraft.getInstance().options.renderDebug)
+        if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty || Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
             return;
         graphics.pose().pushPose();
         Font font = Minecraft.getInstance().font;
