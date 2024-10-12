@@ -110,6 +110,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> ignoreHarvestLevel;
         public final CommentedJsonConfig.IntVal restoreDelay;
         public final CommentedJsonConfig.CommentedVal<Boolean> idleBreak;
+        public final CommentedJsonConfig.DoubleVal breakerSightIgnore;
         public final CommentedJsonConfig.DoubleVal stealerChance;
         public final CommentedJsonConfig.CommentedVal<List<String>> blackListedContainerBlocks;
         public final CommentedJsonConfig.CommentedVal<Boolean> breakTileEntities;
@@ -121,6 +122,7 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.DoubleVal guardianAIChance;
         public final CommentedJsonConfig.DoubleVal flyAIChance;
         public final CommentedJsonConfig.CommentedVal<Boolean> tntBlockDestruction;
+        public final CommentedJsonConfig.DoubleVal genericSightIgnore;
 
         //Equipment
         public final CommentedJsonConfig.CommentedVal<List<String>> equipmentModBlacklist;
@@ -224,6 +226,7 @@ public final class ConfigSpecs {
             this.ignoreHarvestLevel = builder.comment("By default mobs can only break the block they can harvest with the current tool they holding. Set this to true to disable that check (The block will not drop if they cant harvest it though!).").define("Ignore Harvest Check", Config.CommonConfig.ignoreHarvestLevel);
             this.restoreDelay = builder.comment("Blocks will be restored after x ticks being broken. If set to 0 will never restore", "This will not restore block entity data!").defineInRange("Restore delay", Config.CommonConfig.restoreDelay, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", Config.CommonConfig.idleBreak);
+            this.breakerSightIgnore = builder.comment("Chance a breaker mob to ignore line of sight").defineInRange("Breaker Sight Ignore", Config.CommonConfig.breakerSightIgnore, 0, 1);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").defineInRange("Stealer Chance", Config.CommonConfig.stealerChance, 0, 1);
             this.blackListedContainerBlocks = builder.comment("List of blocks mobs shouldn't steal from. You can also add a modid to blacklist whole mods").define("Steal Block Blacklist", Config.CommonConfig.blackListedContainerBlocks);
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight", "Note: Mobs can only break blocks if the tool they are holding can break the blocks").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1", "minecraft:iron_axe;2"));
@@ -235,6 +238,7 @@ public final class ConfigSpecs {
             this.guardianAIChance = builder.comment("Chance for mobs to be able to summon an aquatic mount").defineInRange("Guardian Chance", Config.CommonConfig.guardianAIChance, 0, 1);
             this.flyAIChance = builder.comment("Chance for mobs to be able to summon a flying mount").defineInRange("Phantom Chance", Config.CommonConfig.flyAIChance, 0, 1);
             this.tntBlockDestruction = builder.comment("Set this to true to allow tnt thrown by mobs to destroy blocks").define("TNT Block Destruction", Config.CommonConfig.tntBlockDestruction);
+            this.genericSightIgnore = builder.comment("Chance for a mob to ignore line of sight", "This config ONLY affects villager target, neutral aggressive and auto targeting feature").defineInRange("Generic Sight Ignore", Config.CommonConfig.genericSightIgnore, 0, 1);
 
             //builder.comment("Configs regarding mobs spawning with equipment").push("equipment");
             this.equipmentModBlacklist = builder.comment("Blacklist items from whole mods. Add modid to prevent items from that mod being equipped. (For individual items use the equipment.json)").define("Item Blacklist", Config.CommonConfig.equipmentModBlacklist);

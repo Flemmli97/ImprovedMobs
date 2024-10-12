@@ -82,6 +82,7 @@ public class Config {
         public static boolean ignoreHarvestLevel;
         public static int restoreDelay;
         public static boolean idleBreak;
+        public static float breakerSightIgnore = 0.5f;
         public static float stealerChance = 0.3f;
         public static List<String> blackListedContainerBlocks = new ArrayList<>();
         public static boolean breakTileEntities = true;
@@ -93,6 +94,7 @@ public class Config {
         public static float guardianAIChance = 0.5f;
         public static float flyAIChance = 0.5f;
         public static boolean tntBlockDestruction;
+        public static float genericSightIgnore = 0.5f;
 
         //Equipment
         public static List<String> equipmentModBlacklist = new ArrayList<>();

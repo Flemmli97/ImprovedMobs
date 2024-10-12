@@ -68,6 +68,7 @@ public class ConfigLoader {
         Config.CommonConfig.ignoreHarvestLevel = ConfigSpecs.COMMON_CONF.ignoreHarvestLevel.get();
         Config.CommonConfig.restoreDelay = ConfigSpecs.COMMON_CONF.restoreDelay.get();
         Config.CommonConfig.idleBreak = ConfigSpecs.COMMON_CONF.idleBreak.get();
+        Config.CommonConfig.breakerSightIgnore = ConfigSpecs.COMMON_CONF.breakerSightIgnore.get().floatValue();
         Config.CommonConfig.stealerChance = ConfigSpecs.COMMON_CONF.stealerChance.get().floatValue();
         Config.CommonConfig.blackListedContainerBlocks = ConfigSpecs.COMMON_CONF.blackListedContainerBlocks.get();
         Config.CommonConfig.breakTileEntities = ConfigSpecs.COMMON_CONF.breakTileEntities.get();
@@ -92,6 +93,7 @@ public class ConfigLoader {
         Config.CommonConfig.guardianAIChance = ConfigSpecs.COMMON_CONF.guardianAIChance.get().floatValue();
         Config.CommonConfig.flyAIChance = ConfigSpecs.COMMON_CONF.flyAIChance.get().floatValue();
         Config.CommonConfig.tntBlockDestruction = ConfigSpecs.COMMON_CONF.tntBlockDestruction.get();
+        Config.CommonConfig.genericSightIgnore = ConfigSpecs.COMMON_CONF.genericSightIgnore.get().floatValue();
 
         Config.CommonConfig.equipmentModBlacklist = ConfigSpecs.COMMON_CONF.equipmentModBlacklist.get();
         Config.CommonConfig.equipmentModWhitelist = ConfigSpecs.COMMON_CONF.equipmentModWhitelist.get();
