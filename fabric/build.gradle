@@ -40,5 +40,5 @@ dependencies {
     modCompileOnly "${levelz}"
     modCompileOnly "${pehkui}"
 
-    modRuntimeOnly "io.github.flemmli97:debugutils:1.20.6-1.0.5-fabric"
+    modRuntimeOnly "io.github.flemmli97:debugutils:1.21-1.0.6-fabric"
 }

@@ -8,7 +8,6 @@
     "EntityMixin",
     "EntitySensingMixin",
     "EntityTypeMixin",
-    "GoalSelectorMixin",
     "LivingEntityMixin",
     "MobEntityMixin",
     "MobMixin",

@@ -251,7 +251,7 @@ public class EquipmentList {
                     || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8f : 1;
         } else if (item instanceof SwordItem || item instanceof DiggerItem) {
             ItemStack def = new ItemStack(item);
-            double dmg = ItemUtils.damage(def);
+            double dmg = ItemUtils.damageRaw(def);
             if (dmg <= 10)
                 inverseWeight += dmg * dmg * 2 + dmg * 3;
             else if (dmg <= 30) {
