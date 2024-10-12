@@ -24,12 +24,16 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.armortrim.ArmorTrim;
+import net.minecraft.world.item.armortrim.TrimMaterial;
+import net.minecraft.world.item.armortrim.TrimPattern;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import virtuoel.pehkui.api.ScaleTypes;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.Function;
 
@@ -61,6 +65,15 @@ public class Utils {
                     boolean shouldAdd = slot == EquipmentSlot.HEAD || (Config.CommonConfig.baseEquipChanceAdd != 0 && living.getRandom().nextFloat() < (Config.CommonConfig.baseEquipChanceAdd + time));
                     if (shouldAdd && living.getItemBySlot(slot).isEmpty()) {
                         ItemStack equip = EquipmentList.getEquip(living, slot, difficulty);
+                        if (living.getRandom().nextFloat() < Config.CommonConfig.randomTrimChance) {
+                            RegistryAccess registryAccess = living.getServer().registryAccess();
+                            Optional<Holder.Reference<TrimMaterial>> trim = registryAccess.registry(Registries.TRIM_MATERIAL).flatMap(r -> r.getRandom(living.getRandom()));
+                            Optional<Holder.Reference<TrimPattern>> pattern = living.getServer().registryAccess().registry(Registries.TRIM_PATTERN).flatMap(r -> r.getRandom(living.getRandom()));
+                            if (trim.isPresent() && pattern.isPresent()) {
+                                ArmorTrim armorTrim = new ArmorTrim(trim.get(), pattern.get());
+                                ArmorTrim.setTrim(registryAccess, equip, armorTrim);
+                            }
+                        }
                         if (!equip.isEmpty()) {
                             if (!Config.CommonConfig.shouldDropEquip)
                                 living.setDropChance(slot, -100);

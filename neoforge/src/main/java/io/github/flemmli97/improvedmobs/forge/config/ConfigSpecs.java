@@ -122,6 +122,7 @@ public class ConfigSpecs {
         public final ModConfigSpec.DoubleValue baseEquipChance;
         public final ModConfigSpec.DoubleValue baseEquipChanceAdd;
         public final ModConfigSpec.DoubleValue diffEquipAdd;
+        public final ModConfigSpec.DoubleValue randomTrimChance;
         public final ModConfigSpec.DoubleValue baseWeaponChance;
         public final ModConfigSpec.DoubleValue diffWeaponChance;
         public final ModConfigSpec.DoubleValue baseEnchantChance;
@@ -244,6 +245,7 @@ public class ConfigSpecs {
             this.baseEquipChance = builder.comment("Base chance that a mob can have one piece of armor").defineInRange("Equipment Chance", Config.CommonConfig.baseEquipChance, 0, 1);
             this.baseEquipChanceAdd = builder.comment("Base chance for each additional armor pieces").defineInRange("Additional Equipment Chance", Config.CommonConfig.baseEquipChanceAdd, 0, 1);
             this.diffEquipAdd = builder.comment("Adds additional x*difficulty% to base equip chance").defineInRange("Equipment Addition", Config.CommonConfig.diffEquipAdd, 0, Double.MAX_VALUE);
+            this.randomTrimChance = builder.comment("Chance for an equipment to have a random armor trim").defineInRange("Armor Trim Chance", Config.CommonConfig.randomTrimChance, 0, 1);
             this.baseWeaponChance = builder.comment("Chance for mobs to have a weapon").defineInRange("Weapon Chance", Config.CommonConfig.baseWeaponChance, 0, 1);
             this.diffWeaponChance = builder.comment("Adds additional x*difficulty% to base weapon chance").defineInRange("Weapon Chance Add", Config.CommonConfig.diffWeaponChance, 0, Double.MAX_VALUE);
             this.baseEnchantChance = builder.comment("Base chance for each armor pieces to get enchanted").defineInRange("Enchanting Chance", Config.CommonConfig.baseEnchantChance, 0, 1);
