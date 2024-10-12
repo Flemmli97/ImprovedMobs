@@ -21,7 +21,7 @@ public abstract class EntityTypeMixin {
     private static void injectServerEntityOnLoad(CompoundTag compound, Level level, CallbackInfoReturnable<Optional<Entity>> info) {
         CompoundTag data = compound.getCompound(EntityFlags.TAG_ID);
         if (data.contains(EntityFlags.SERVER_ENTITY_TAG_ID)) {
-            ResourceLocation id = new ResourceLocation(data.getString(EntityFlags.SERVER_ENTITY_TAG_ID));
+            ResourceLocation id = ResourceLocation.parse(data.getString(EntityFlags.SERVER_ENTITY_TAG_ID));
             Optional<Entity> opt = ServersideRegister.createOf(id, level, compound);
             if (opt.isPresent())
                 info.setReturnValue(opt);

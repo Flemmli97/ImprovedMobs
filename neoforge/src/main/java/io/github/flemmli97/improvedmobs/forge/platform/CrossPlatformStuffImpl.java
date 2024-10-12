@@ -86,8 +86,10 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public AbstractArrow customBowArrow(BowItem item, ItemStack stack, AbstractArrow def) {
-        return item.customArrow(def, stack);
+    public AbstractArrow customBowArrow(ItemStack weapon, ItemStack projectile, AbstractArrow def) {
+        if (weapon.getItem() instanceof BowItem bow)
+            return bow.customArrow(def, projectile, weapon);
+        return def;
     }
 
     @Override

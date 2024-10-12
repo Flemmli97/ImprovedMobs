@@ -23,7 +23,6 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.AxeItem;
-import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
@@ -35,8 +34,8 @@ import java.nio.file.Path;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
-    public static final TagKey<Item> fabricAxe = TagKey.create(Registries.ITEM, new ResourceLocation("fabric", "axes"));
-    public static final TagKey<Item> commonAxe = TagKey.create(Registries.ITEM, new ResourceLocation("c", "axes"));
+    public static final TagKey<Item> fabricAxe = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("fabric", "axes"));
+    public static final TagKey<Item> commonAxe = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "axes"));
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
@@ -101,7 +100,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public AbstractArrow customBowArrow(BowItem item, ItemStack stack, AbstractArrow def) {
+    public AbstractArrow customBowArrow(ItemStack weapon, ItemStack projectile, AbstractArrow def) {
         return def;
     }
 

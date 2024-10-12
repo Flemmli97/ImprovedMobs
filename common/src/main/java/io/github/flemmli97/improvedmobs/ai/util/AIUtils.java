@@ -41,10 +41,9 @@ public class AIUtils {
     }
 
     public static void attackWithArrows(Mob entity, LivingEntity target, float distanceFactor) {
-        ItemStack itemstack = entity.getProjectile(entity.getItemInHand(ProjectileUtil.getWeaponHoldingHand(entity, Items.BOW)));
-        AbstractArrow abstractarrowentity = ProjectileUtil.getMobArrow(entity, itemstack, distanceFactor);
-        if (entity.getMainHandItem().getItem() instanceof BowItem bow)
-            abstractarrowentity = CrossPlatformStuff.INSTANCE.customBowArrow(bow, entity.getMainHandItem(), abstractarrowentity);
+        ItemStack weapon = entity.getMainHandItem().getItem() instanceof BowItem ? entity.getMainHandItem() : entity.getOffhandItem();
+        ItemStack itemstack = entity.getProjectile(weapon);
+        AbstractArrow abstractarrowentity = CrossPlatformStuff.INSTANCE.customBowArrow(weapon, entity.getMainHandItem(), ProjectileUtil.getMobArrow(entity, itemstack, distanceFactor, weapon));
         double d0 = target.getX() - entity.getX();
         double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
         double d2 = target.getZ() - entity.getZ();

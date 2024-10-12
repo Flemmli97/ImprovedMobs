@@ -16,7 +16,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class WaterRidingGoal extends Goal {
 
-    public static final ResourceLocation EMPTY = new ResourceLocation(ImprovedMobs.MODID, "empty");
+    public static final ResourceLocation EMPTY = ImprovedMobs.modRes("empty");
     protected final Mob living;
     private int wait = 0;
     private int jumpingTick;

@@ -1,12 +1,15 @@
 package io.github.flemmli97.improvedmobs.utils;
 
+import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EnchantCalcConf;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
 import io.github.flemmli97.tenshilib.common.utils.MathUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
@@ -20,23 +23,20 @@ import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
-import net.minecraft.world.flag.FeatureFlagSet;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import virtuoel.pehkui.api.ScaleTypes;
 
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 import java.util.function.Function;
 
 public class Utils {
 
     public static final Function<Entity, ResourceLocation> ENTITY_ID = e -> BuiltInRegistries.ENTITY_TYPE.getKey(e.getType());
-    public static final UUID ATTRIBUTE_MOD = UUID.fromString("7c7e5c2d-1eb0-434a-858f-3ab81f52832c");
+    public static final ResourceLocation ATTRIBUTE_ID = ImprovedMobs.modRes("attribute_modifiers");
 
     public static <T> boolean isInList(T entry, List<? extends String> list, boolean reverse, Function<T, ResourceLocation> mapper) {
         if (reverse)
@@ -105,16 +105,10 @@ public class Utils {
             if (itemstack.isEnchanted())
                 continue;
             if (!itemstack.isEmpty() && living.getRandom().nextFloat() < (Config.CommonConfig.baseEnchantChance + (difficulty * Config.CommonConfig.diffEnchantAdd * 0.01F))) {
-                List<EnchantmentInstance> enchants = EnchantmentHelper.selectEnchantment(FeatureFlagSet.of(), living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min, val.max), true);
-                enchants.forEach(e -> {
-                    ResourceLocation res = BuiltInRegistries.ENCHANTMENT.getKey(e.enchantment);
-                    if (res != null) {
-                        if ((Config.CommonConfig.enchantWhitelist && Config.CommonConfig.enchantBlacklist.contains(res.toString()))
-                                || !Config.CommonConfig.enchantBlacklist.contains(res.toString())) {
-                            itemstack.enchant(e.enchantment, e.level);
-                        }
-                    }
-                });
+                RegistryAccess registryAccess = living.registryAccess();
+                EnchantmentHelper.enchantItem(living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min, val.max),
+                        registryAccess.registryOrThrow(Registries.ENCHANTMENT).holders().filter(r -> Config.CommonConfig.enchantWhitelist == Config.CommonConfig.enchantBlacklist.contains(r.key().location().toString()))
+                                .map(r -> r));
             }
         }
     }
@@ -143,11 +137,8 @@ public class Utils {
 
     public static float getBreakSpeed(Mob entity, ItemStack stack, BlockState state) {
         float f = stack.getDestroySpeed(state);
-        if (f > 1.0F) {
-            int i = EnchantmentHelper.getBlockEfficiency(entity);
-            ItemStack itemstack = entity.getMainHandItem();
-            if (i > 0 && !itemstack.isEmpty())
-                f += i * i + 1;
+        if (f > 1.0f) {
+            f += (float) entity.getAttributeValue(Attributes.MINING_EFFICIENCY);
         }
         if (MobEffectUtil.hasDigSpeed(entity))
             f *= 1.0F + (MobEffectUtil.getDigSpeedAmplification(entity) + 1) * 0.2F;
@@ -159,8 +150,9 @@ public class Utils {
                 default -> f *= 8.1E-4F;
             }
         }
-        if (entity.isEyeInFluid(FluidTags.WATER) && !EnchantmentHelper.hasAquaAffinity(entity))
-            f /= 5.0F;
+        if (entity.isEyeInFluid(FluidTags.WATER)) {
+            f *= (float) entity.getAttribute(Attributes.SUBMERGED_MINING_SPEED).getValue();
+        }
         if (!entity.onGround())
             f /= 5.0F;
         return f;
@@ -168,7 +160,7 @@ public class Utils {
 
     public static void modifyAttr(Mob living, Holder<Attribute> att, double value, double max, float difficulty, boolean multiply) {
         AttributeInstance inst = living.getAttribute(att);
-        if (inst == null || inst.getModifier(ATTRIBUTE_MOD) != null)
+        if (inst == null || inst.getModifier(ATTRIBUTE_ID) != null)
             return;
         double oldValue = inst.getBaseValue();
         value *= difficulty;
@@ -180,7 +172,7 @@ public class Utils {
         } else {
             value = max <= 0 ? value : Math.min(value, max);
         }
-        inst.addPermanentModifier(new AttributeModifier(ATTRIBUTE_MOD, "im_modifier", value, AttributeModifier.Operation.ADD_VALUE));
+        inst.addPermanentModifier(new AttributeModifier(ATTRIBUTE_ID, value, AttributeModifier.Operation.ADD_VALUE));
     }
 
     public static void modifyScale(Mob living, float min, float max) {

@@ -14,7 +14,7 @@ import java.util.Locale;
 public class ClientEvents {
 
     private static float clientDifficulty;
-    private static final ResourceLocation TEX = new ResourceLocation(ImprovedMobs.MODID, "textures/gui/difficulty_bar.png");
+    private static final ResourceLocation TEX = ImprovedMobs.modRes("textures/gui/difficulty_bar.png");
 
     public static void showDifficulty(GuiGraphics graphics) {
         if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty)

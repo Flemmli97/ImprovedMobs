@@ -13,6 +13,10 @@ public class ImprovedMobs {
     public static final String MODID = "improvedmobs";
     public static final Logger LOGGER = LogManager.getLogger(ImprovedMobs.MODID);
 
-    public static TagKey<EntityType<?>> ARMOR_EQUIPPABLE = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(MODID, "armor_equippable"));
-    public static TagKey<Block> SEE_THROUGH = TagKey.create(Registries.BLOCK, new ResourceLocation(MODID, "see_through"));
+    public static TagKey<EntityType<?>> ARMOR_EQUIPPABLE = TagKey.create(Registries.ENTITY_TYPE, modRes("armor_equippable"));
+    public static TagKey<Block> SEE_THROUGH = TagKey.create(Registries.BLOCK, modRes("see_through"));
+
+    public static ResourceLocation modRes(String path) {
+        return ResourceLocation.fromNamespaceAndPath(MODID, path);
+    }
 }

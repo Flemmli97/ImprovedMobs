@@ -4,11 +4,10 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
 
 public record S2CDiffcultyValue(float difficulty) implements CustomPacketPayload {
 
-    public static final Type<S2CDiffcultyValue> TYPE = new Type<>(new ResourceLocation(ImprovedMobs.MODID, "difficulty"));
+    public static final Type<S2CDiffcultyValue> TYPE = new Type<>(ImprovedMobs.modRes("difficulty"));
 
     public static final StreamCodec<FriendlyByteBuf, S2CDiffcultyValue> STREAM_CODEC = new StreamCodec<>() {
         @Override

@@ -7,6 +7,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffect;
@@ -93,7 +94,7 @@ public abstract class RiddenSummonEntity extends Mob {
     }
 
     @Override
-    protected void dropAllDeathLoot(DamageSource damageSource) {
+    protected void dropAllDeathLoot(ServerLevel level, DamageSource damageSource) {
     }
 
     @Override

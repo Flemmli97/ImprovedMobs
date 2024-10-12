@@ -10,7 +10,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -40,7 +39,7 @@ public interface CrossPlatformStuff {
 
     Path configDirPath();
 
-    AbstractArrow customBowArrow(BowItem item, ItemStack stack, AbstractArrow def);
+    AbstractArrow customBowArrow(ItemStack weapon, ItemStack projectile, AbstractArrow def);
 
     boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
 

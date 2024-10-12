@@ -1,15 +1,14 @@
 package io.github.flemmli97.improvedmobs.difficulty;
 
 import com.google.common.collect.Lists;
+import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.DifficultyConfig;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import io.github.flemmli97.improvedmobs.platform.integration.DifficultyValues;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.LivingEntity;
@@ -23,7 +22,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class DifficultyData extends SavedData {
 
@@ -43,34 +41,10 @@ public class DifficultyData extends SavedData {
         return server.overworld().getDataStorage().computeIfAbsent(FACTORY, IDENTIFIER);
     }
 
-    public static float getDifficulty(Level world, LivingEntity e) {
-        if (!(world instanceof ServerLevel serverLevel))
+    public static float getDifficulty(Level level, LivingEntity e) {
+        if (!(level instanceof ServerLevel serverLevel))
             return 0;
-        Vec3 pos = e.position();
-        Supplier<Float> sup = switch (Config.CommonConfig.difficultyType) {
-            case GLOBAL -> () -> DifficultyData.get(serverLevel.getServer()).getDifficulty();
-            case PLAYERMAX -> () -> {
-                float diff = 0;
-                for (Player player : playersIn(serverLevel, pos, 256)) {
-                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
-                    if (pD > diff)
-                        diff = pD;
-                }
-                return diff;
-            };
-            case PLAYERMEAN -> () -> {
-                float diff = 0;
-                List<Player> list = playersIn(serverLevel, pos, 256);
-                if (list.isEmpty())
-                    return 0f;
-                for (Player player : list) {
-                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
-                }
-                return diff / list.size();
-            };
-            case DISTANCE, DISTANCESPAWN -> () -> getDifficultyFromDist(serverLevel, e.position());
-        };
-        return DifficultyValues.INSTANCE.getDifficulty(serverLevel, e.blockPosition(), sup);
+        return DifficultyFetcher.getDifficulty(serverLevel, e.position());
     }
 
     public static List<Player> playersIn(EntityGetter getter, Vec3 pos, double radius) {

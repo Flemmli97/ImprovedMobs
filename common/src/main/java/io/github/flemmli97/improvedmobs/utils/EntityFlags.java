@@ -64,7 +64,7 @@ public class EntityFlags {
         this.projMult = nbt.contains("ProjBoost") ? nbt.getFloat("ProjBoost") : 1;
         this.explosionMult = nbt.contains("ExplosionBoost") ? nbt.getFloat("ExplosionBoost") : 1;
         if (nbt.contains(SERVER_ENTITY_TAG_ID))
-            this.serverSideEntityID = new ResourceLocation(nbt.getString(SERVER_ENTITY_TAG_ID));
+            this.serverSideEntityID = ResourceLocation.parse(nbt.getString(SERVER_ENTITY_TAG_ID));
     }
 
     public boolean isShieldDisabled() {

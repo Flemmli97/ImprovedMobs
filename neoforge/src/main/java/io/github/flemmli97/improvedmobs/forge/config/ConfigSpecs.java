@@ -9,19 +9,17 @@ import io.github.flemmli97.improvedmobs.config.MobClassMapConfig;
 import net.minecraft.ChatFormatting;
 import net.neoforged.fml.config.IConfigSpec;
 import net.neoforged.neoforge.common.ModConfigSpec;
-import net.neoforged.neoforge.common.Tags;
 import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
 public class ConfigSpecs {
 
-    public static final IConfigSpec<?> CLIENT_SPEC;
+    public static final IConfigSpec CLIENT_SPEC;
     public static final ClientConfigVals CLIENT_CONF;
 
-    public static final IConfigSpec<?> COMMON_SPEC;
+    public static final IConfigSpec COMMON_SPEC;
     public static final CommonConfigVals COMMON_CONF;
 
     static class ClientConfigVals {
@@ -77,9 +75,11 @@ public class ConfigSpecs {
         public final ModConfigSpec.BooleanValue neutralAggroWhitelist;
 
         //Integration
-        public final ModConfigSpec.BooleanValue useScalingHealthMod;
-        public final ModConfigSpec.BooleanValue usePlayerEXMod;
-        public final ModConfigSpec.BooleanValue useLevelZMod;
+        public final ModConfigSpec.EnumValue<Config.IntegrationType> useScalingHealthMod;
+        public final ModConfigSpec.EnumValue<Config.IntegrationType> usePlayerEXMod;
+        public final ModConfigSpec.DoubleValue playerEXScale;
+        public final ModConfigSpec.EnumValue<Config.IntegrationType> useLevelZMod;
+        public final ModConfigSpec.DoubleValue levelZScale;
         public final ModConfigSpec.BooleanValue varySizebyPehkui;
         public final ModConfigSpec.DoubleValue sizeMin;
         public final ModConfigSpec.DoubleValue sizeMax;
@@ -189,9 +189,11 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Settings for mod integration").push("integration");
-            this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", Config.CommonConfig.useScalingHealthMod);
-            this.usePlayerEXMod = builder.comment("If true and playerEx is installed will use the level from playerEx as difficulty").define("Use Player EX Mod", Config.CommonConfig.usePlayerEXMod);
-            this.useLevelZMod = builder.comment("If true and LevelZ is installed will use the the total skill level from LevelZ as difficulty").define("Use LevelZ Mod", Config.CommonConfig.useLevelZMod);
+            this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").defineEnum("Use Scaling Health Mod", Config.CommonConfig.useScalingHealthMod);
+            this.usePlayerEXMod = builder.comment("If true and playerEx is installed will use the level from playerEx as difficulty").defineEnum("Use Player EX Mod", Config.CommonConfig.usePlayerEXMod);
+            this.playerEXScale = builder.comment("Scaling for playerEX integration").defineInRange("PlayerEX Scaling", Config.CommonConfig.playerEXScale, 0, Double.MAX_VALUE);
+            this.useLevelZMod = builder.comment("If true and LevelZ is installed will use the the total skill level from LevelZ as difficulty").defineEnum("Use LevelZ Mod", Config.CommonConfig.useLevelZMod);
+            this.levelZScale = builder.comment("Scaling for LevelZ integration").defineInRange("LevelZ Scaling", Config.CommonConfig.levelZScale, 0, Double.MAX_VALUE);
             this.varySizebyPehkui = builder.comment("Using pehkui to vary the size of mobs").define("Use pehkui Mod", Config.CommonConfig.varySizebyPehkui);
             this.sizeMax = builder.comment("The Max scale of mobs. Range [1.0,10], default 2.0").defineInRange("Max size Multiplier", Config.CommonConfig.sizeMax, 1.0, 10.0);
             this.sizeMin = builder.comment("The Minimum scale of mobs. Range (0,1.0), default 0.5").defineInRange("Minimum size Multiplier", Config.CommonConfig.sizeMin, 0, 1.0);

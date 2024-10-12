@@ -52,9 +52,11 @@ public class ConfigLoader {
         Config.CommonConfig.targetVillagerWhitelist = specs.targetVillagerWhitelist.get();
         Config.CommonConfig.neutralAggroWhitelist = specs.neutralAggroWhitelist.get();
 
-        Config.CommonConfig.useScalingHealthMod = specs.useScalingHealthMod.get() && FabricLoader.getInstance().isModLoaded("scalinghealth");
-        Config.CommonConfig.usePlayerEXMod = specs.usePlayerEXMod.get() && FabricLoader.getInstance().isModLoaded("playerex");
-        Config.CommonConfig.useLevelZMod = specs.useLevelZMod.get() && FabricLoader.getInstance().isModLoaded("levelz");
+        Config.CommonConfig.useScalingHealthMod = FabricLoader.getInstance().isModLoaded("scalinghealth") ? specs.useScalingHealthMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.usePlayerEXMod = FabricLoader.getInstance().isModLoaded("playerex") ? specs.usePlayerEXMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.playerEXScale = specs.playerEXScale.get().floatValue();
+        Config.CommonConfig.useLevelZMod = FabricLoader.getInstance().isModLoaded("levelz") ? specs.useLevelZMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.levelZScale = specs.levelZScale.get().floatValue();
         Config.CommonConfig.varySizebyPehkui = specs.varySizebyPehkui.get() && FabricLoader.getInstance().isModLoaded("pehkui");
         Config.CommonConfig.sizeMax = specs.sizeMax.get().floatValue();
         Config.CommonConfig.sizeMin = specs.sizeMin.get().floatValue();

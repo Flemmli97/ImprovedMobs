@@ -11,8 +11,8 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
-import net.neoforged.neoforge.event.entity.living.LivingAttackEvent;
-import net.neoforged.neoforge.event.entity.living.LivingHurtEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
+import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -44,12 +44,12 @@ public class EventHandler {
     }
 
     @SubscribeEvent
-    public void hurtEvent(LivingHurtEvent e) {
-        e.setAmount(EventCalls.hurtEvent(e.getEntity(), e.getSource(), e.getAmount()));
+    public void hurtEvent(LivingDamageEvent.Pre e) {
+        e.setNewDamage(EventCalls.hurtEvent(e.getEntity(), e.getSource(), e.getNewDamage()));
     }
 
     @SubscribeEvent
-    public void attackEvent(LivingAttackEvent e) {
+    public void attackEvent(LivingIncomingDamageEvent e) {
         if (EventCalls.onAttackEvent(e.getEntity(), e.getSource()))
             e.setCanceled(true);
     }

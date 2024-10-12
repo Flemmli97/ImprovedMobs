@@ -10,17 +10,12 @@ public class NoHeightBlockPosConfig {
     public NoHeightBlockPosConfig readFromString(String s) {
         String[] split = s.split("-");
         int x;
-        try {
-            x = Integer.parseInt(split[0]);
-        } catch (Exception e) {
-            ImprovedMobs.LOGGER.error("Error parsing block pos from config " + e.getMessage());
-            return this;
-        }
         int z;
         try {
+            x = Integer.parseInt(split[0]);
             z = Integer.parseInt(split[1]);
-        } catch (NumberFormatException e) {
-            ImprovedMobs.LOGGER.error("Error parsing block pos from config " + e.getMessage());
+        } catch (Exception e) {
+            ImprovedMobs.LOGGER.error("Error parsing block pos from config {}", e.getMessage());
             return this;
         }
         this.pos = new BlockPos(x, 0, z);

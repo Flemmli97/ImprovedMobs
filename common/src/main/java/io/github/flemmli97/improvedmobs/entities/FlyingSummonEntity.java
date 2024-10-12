@@ -26,7 +26,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class FlyingSummonEntity extends RiddenSummonEntity {
 
-    public static final ResourceLocation SUMMONED_FLYING_ID = new ResourceLocation(ImprovedMobs.MODID, "flying_entity");
+    public static final ResourceLocation SUMMONED_FLYING_ID = ImprovedMobs.modRes("flying_entity");
 
     private static final EntityDataAccessor<Integer> DATA_ID_SIZE = SynchedEntityData.defineId(FlyingSummonEntity.class, EntityDataSerializers.INT);
 

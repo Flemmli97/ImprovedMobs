@@ -12,11 +12,10 @@ import net.neoforged.neoforge.common.NeoForge;
 
 public class ClientEventHandler {
 
-    public static final ResourceLocation OVERLAY_ID = new ResourceLocation(ImprovedMobs.MODID, "difficulty_overlay");
+    public static final ResourceLocation OVERLAY_ID = ImprovedMobs.modRes("difficulty_overlay");
 
     public static void setup(IEventBus modBus) {
-        modBus
-                .addListener(ClientEventHandler::showDifficulty);
+        modBus.addListener(ClientEventHandler::showDifficulty);
         NeoForge.EVENT_BUS.addListener(ClientEventHandler::leave);
     }
 

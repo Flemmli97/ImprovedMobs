@@ -67,7 +67,7 @@ public class BreakableBlocks {
 
     private static void addBlocks(String s, Set<String> blocks) {
         if (s.startsWith("#")) {
-            Iterable<Holder<Block>> tag = BuiltInRegistries.BLOCK.getTagOrEmpty(TagKey.create(BuiltInRegistries.BLOCK.key(), new ResourceLocation(s.substring(1))));
+            Iterable<Holder<Block>> tag = BuiltInRegistries.BLOCK.getTagOrEmpty(TagKey.create(BuiltInRegistries.BLOCK.key(), ResourceLocation.parse(s.substring(1))));
             tag.forEach(h -> blocks.add(BuiltInRegistries.BLOCK.getKey(h.value()).toString()));
         } else
             blocks.add(s);

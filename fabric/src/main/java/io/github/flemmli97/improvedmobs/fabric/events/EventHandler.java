@@ -25,7 +25,7 @@ import java.util.List;
 
 public class EventHandler {
 
-    public static final ResourceLocation tileCap = new ResourceLocation(ImprovedMobs.MODID, "opened_flag");
+    public static final ResourceLocation tileCap = ImprovedMobs.modRes("opened_flag");
 
     public static void worldJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
         EventCalls.worldJoin(handler.player, server);

@@ -287,7 +287,7 @@ public class ItemAIs {
 
         @Override
         public int maxUseCount(Mob entity, InteractionHand hand) {
-            return CrossbowItem.getChargeDuration(entity.getItemInHand(hand)) + 5;
+            return CrossbowItem.getChargeDuration(entity.getItemInHand(hand), entity) + 5;
         }
     };
 

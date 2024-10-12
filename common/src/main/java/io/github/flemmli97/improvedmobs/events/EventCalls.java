@@ -55,7 +55,6 @@ import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.Explosion;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
@@ -178,7 +177,7 @@ public class EventCalls {
         if (villager && aggressive) {
             AtomicBoolean modified = new AtomicBoolean();
             ((IGoalModifier) mob.targetSelector).modifyGoal(NearestAttackableTargetGoal.class, (g) -> {
-                if(g instanceof NearestTargetGoalMixin<?> target && target.targetTypeClss() == AbstractVillager.class) {
+                if (g instanceof NearestTargetGoalMixin<?> target && target.targetTypeClss() == AbstractVillager.class) {
                     if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE || mob.getRandom().nextFloat() < 0.5) {
                         ((TargetGoalAccessor) g).setShouldCheckSight(false);
                         ((NearestTargetGoalMixin<?>) g).getTargetEntitySelector().ignoreLineOfSight();
@@ -228,11 +227,11 @@ public class EventCalls {
         }
         if (!flags.modifyAttributes) {
             if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
-                if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod) {
+                if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod.enabled()) {
                     Utils.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, difficulty, true);
                     living.setHealth(living.getMaxHealth());
                 }
-                if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod)
+                if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod.enabled())
                     Utils.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, difficulty, true);
                 if (Config.CommonConfig.speedIncrease != 0)
                     Utils.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, difficulty, false);
@@ -286,26 +285,19 @@ public class EventCalls {
                     flag.isThrownEntity = false;
                     target.hurt(damagesource, 0.001f);
                 }
-            } else if (source instanceof LivingEntity) {
-                LivingEntity attacker = (LivingEntity) source;
+            } else if (source instanceof LivingEntity attacker) {
                 if (CrossPlatformStuff.INSTANCE.canDisableShield(attacker.getMainHandItem(), target.getUseItem(), target, attacker)) {
-                    triggerDisableShield(attacker, target);
+                    triggerDisableShield(target);
                 }
             }
         }
         return false;
     }
 
-    private static void triggerDisableShield(LivingEntity attacker, LivingEntity target) {
-        float f = 0.25F + EnchantmentHelper.getBlockEfficiency(attacker) * 0.05F;
-        if (attacker.isSprinting()) {
-            f += 0.75F;
-        }
-        if (attacker.getRandom().nextFloat() < f) {
-            EntityFlags.get(target).disableShield();
-            target.stopUsingItem();
-            target.level().broadcastEntityEvent(target, (byte) 30);
-        }
+    private static void triggerDisableShield(LivingEntity target) {
+        EntityFlags.get(target).disableShield();
+        target.stopUsingItem();
+        target.level().broadcastEntityEvent(target, (byte) 30);
     }
 
     public static void openTile(Player player, BlockPos pos) {

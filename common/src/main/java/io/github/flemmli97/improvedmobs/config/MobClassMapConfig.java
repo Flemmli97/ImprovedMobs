@@ -32,12 +32,12 @@ public class MobClassMapConfig {
             String[] sub = s.replace(" ", "").split("-");
             if (sub.length < 2)
                 continue;
-            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(new ResourceLocation(sub[1])).orElse(null);
+            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(sub[1])).orElse(null);
             if (type == null) {
                 ImprovedMobs.LOGGER.error("Entity {} does not exist/is not registered", sub[1]);
                 continue;
             }
-            this.map.merge(new ResourceLocation(sub[0]), Lists.newArrayList(type), (old, oth) -> {
+            this.map.merge(ResourceLocation.parse(sub[0]), Lists.newArrayList(type), (old, oth) -> {
                 old.add(type);
                 return old;
             });

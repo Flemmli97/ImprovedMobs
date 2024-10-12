@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.network;
 
+import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
@@ -8,8 +9,7 @@ import net.minecraft.server.level.ServerPlayer;
 public class PacketHandler {
 
     public static S2CShowDifficulty createConfigPacket() {
-        return new S2CShowDifficulty(!Config.CommonConfig.useScalingHealthMod
-                && !Config.CommonConfig.usePlayerEXMod && !Config.CommonConfig.useLevelZMod);
+        return new S2CShowDifficulty(DifficultyFetcher.shouldClientShowDifficulty());
     }
 
     public static S2CDiffcultyValue createDifficultyPacket(DifficultyData data, ServerPlayer player) {

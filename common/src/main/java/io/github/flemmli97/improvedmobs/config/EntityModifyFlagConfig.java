@@ -102,7 +102,7 @@ public class EntityModifyFlagConfig {
                 for (int i = 1; i < subs.length; i++)
                     set.add(Flags.valueOf(subs[i].trim()));
             }
-            Iterable<Holder<EntityType<?>>> tag = BuiltInRegistries.ENTITY_TYPE.getTagOrEmpty(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), new ResourceLocation(subs[0].trim())));
+            Iterable<Holder<EntityType<?>>> tag = BuiltInRegistries.ENTITY_TYPE.getTagOrEmpty(TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), ResourceLocation.parse(subs[0].trim())));
             tag.forEach(h -> this.map.put(BuiltInRegistries.ENTITY_TYPE.getKey(h.value()).toString(), set));
         }
     }
@@ -153,7 +153,7 @@ public class EntityModifyFlagConfig {
             if (id == null)
                 this.tag = null;
             else
-                this.tag = TagKey.create(Registries.ENTITY_TYPE, new ResourceLocation(ImprovedMobs.MODID, "default_blacklist_" + id));
+                this.tag = TagKey.create(Registries.ENTITY_TYPE, ImprovedMobs.modRes("default_blacklist_" + id));
         }
 
         public static List<Flags> toggable() {

@@ -61,9 +61,11 @@ public class Config {
         public static boolean neutralAggroWhitelist;
 
         //Integration
-        public static boolean useScalingHealthMod = true;
-        public static boolean usePlayerEXMod = true;
-        public static boolean useLevelZMod = true;
+        public static IntegrationType useScalingHealthMod = IntegrationType.ON;
+        public static IntegrationType usePlayerEXMod = IntegrationType.ON;
+        public static float playerEXScale = 1;
+        public static IntegrationType useLevelZMod = IntegrationType.ON;
+        public static float levelZScale = 1;
         public static boolean varySizebyPehkui;
         public static float sizeMax = 2;
         public static float sizeMin = 0.5f;
@@ -95,14 +97,14 @@ public class Config {
         public static boolean equipmentModWhitelist;
         public static List<String> itemuseBlacklist = new ArrayList<>(List.of("bigbrain:buckler"));
         public static EntityItemConfig entityItemConfig = new EntityItemConfig()
-                .add(new ResourceLocation("skeleton"), "BOW")
-                .add(new ResourceLocation("wither_skeleton"), "BOW")
-                .add(new ResourceLocation("stray"), "BOW")
-                .add(new ResourceLocation("illusioner"), "BOW")
-                .add(new ResourceLocation("drowned"), "TRIDENT")
-                .add(new ResourceLocation("piglin"), "CROSSBOW")
-                .add(new ResourceLocation("pillager"), "CROSSBOW")
-                .add(new ResourceLocation("snow_golem"), "minecraft:snowball");
+                .add(ResourceLocation.parse("skeleton"), "BOW")
+                .add(ResourceLocation.parse("wither_skeleton"), "BOW")
+                .add(ResourceLocation.parse("stray"), "BOW")
+                .add(ResourceLocation.parse("illusioner"), "BOW")
+                .add(ResourceLocation.parse("drowned"), "TRIDENT")
+                .add(ResourceLocation.parse("piglin"), "CROSSBOW")
+                .add(ResourceLocation.parse("pillager"), "CROSSBOW")
+                .add(ResourceLocation.parse("snow_golem"), "minecraft:snowball");
         public static boolean itemuseWhitelist;
         public static float baseEquipChance = 0.1f;
         public static float baseEquipChanceAdd = 0.3f;
@@ -179,7 +181,7 @@ public class Config {
 
         public ItemStack getStack() {
             if (this.item == null)
-                this.item = BuiltInRegistries.ITEM.get(new ResourceLocation(this.config));
+                this.item = BuiltInRegistries.ITEM.get(ResourceLocation.parse(this.config));
             return new ItemStack(this.item);
         }
     }
@@ -203,5 +205,15 @@ public class Config {
         TOPLEFT,
         BOTTOMRIGHT,
         BOTTOMLEFT
+    }
+
+    public enum IntegrationType {
+        OFF,
+        ON,
+        ADD;
+
+        public boolean enabled() {
+            return this != OFF;
+        }
     }
 }

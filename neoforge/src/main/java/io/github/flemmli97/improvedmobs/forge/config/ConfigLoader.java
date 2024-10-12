@@ -48,9 +48,11 @@ public class ConfigLoader {
         Config.CommonConfig.targetVillagerWhitelist = ConfigSpecs.COMMON_CONF.targetVillagerWhitelist.get();
         Config.CommonConfig.neutralAggroWhitelist = ConfigSpecs.COMMON_CONF.neutralAggroWhitelist.get();
 
-        Config.CommonConfig.useScalingHealthMod = ConfigSpecs.COMMON_CONF.useScalingHealthMod.get() && ModList.get().isLoaded("scalinghealth");
-        Config.CommonConfig.usePlayerEXMod = ConfigSpecs.COMMON_CONF.usePlayerEXMod.get() && ModList.get().isLoaded("playerex");
-        Config.CommonConfig.useLevelZMod = ConfigSpecs.COMMON_CONF.useLevelZMod.get() && ModList.get().isLoaded("levelz");
+        Config.CommonConfig.useScalingHealthMod = ModList.get().isLoaded("scalinghealth") ? ConfigSpecs.COMMON_CONF.useScalingHealthMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.usePlayerEXMod = ModList.get().isLoaded("playerex") ? ConfigSpecs.COMMON_CONF.usePlayerEXMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.playerEXScale = ConfigSpecs.COMMON_CONF.playerEXScale.get().floatValue();
+        Config.CommonConfig.useLevelZMod = ModList.get().isLoaded("levelz") ? ConfigSpecs.COMMON_CONF.useLevelZMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.levelZScale = ConfigSpecs.COMMON_CONF.levelZScale.get().floatValue();
         Config.CommonConfig.varySizebyPehkui = ConfigSpecs.COMMON_CONF.varySizebyPehkui.get() && ModList.get().isLoaded("pehkui");
         Config.CommonConfig.sizeMax = ConfigSpecs.COMMON_CONF.sizeMax.get().floatValue();
         Config.CommonConfig.sizeMin = ConfigSpecs.COMMON_CONF.sizeMin.get().floatValue();

@@ -22,7 +22,7 @@ import net.minecraft.world.phys.Vec3;
 
 public class AquaticSummonEntity extends RiddenSummonEntity {
 
-    public static final ResourceLocation SUMMONED_AQUATIC_ID = new ResourceLocation(ImprovedMobs.MODID, "aquatic_entity");
+    public static final ResourceLocation SUMMONED_AQUATIC_ID = ImprovedMobs.modRes("aquatic_entity");
 
     private static final EntityDataAccessor<Boolean> DATA_ID_MOVING = SynchedEntityData.defineId(AquaticSummonEntity.class, EntityDataSerializers.BOOLEAN);
 

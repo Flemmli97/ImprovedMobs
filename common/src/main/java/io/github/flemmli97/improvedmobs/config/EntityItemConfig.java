@@ -38,7 +38,7 @@ public class EntityItemConfig {
         list.forEach(s -> {
             String[] sub = s.split(";");
             if (sub.length == 2) {
-                temp.merge(new ResourceLocation(sub[0]), Lists.newArrayList(sub[1]), (o, n) -> {
+                temp.merge(ResourceLocation.parse(sub[0]), Lists.newArrayList(sub[1]), (o, n) -> {
                     o.add(sub[1]);
                     return o;
                 });
