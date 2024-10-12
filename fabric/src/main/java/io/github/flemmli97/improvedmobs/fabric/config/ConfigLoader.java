@@ -59,6 +59,8 @@ public class ConfigLoader {
         Config.CommonConfig.playerEXScale = specs.playerEXScale.get().floatValue();
         Config.CommonConfig.useLevelZMod = FabricLoader.getInstance().isModLoaded("levelz") ? specs.useLevelZMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.levelZScale = specs.levelZScale.get().floatValue();
+        Config.CommonConfig.useRunecraftoryMod = FabricLoader.getInstance().isModLoaded("runecraftory") ? specs.useRunecraftoryMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.runecraftoryScale = specs.runecraftoryScale.get().floatValue();
         Config.CommonConfig.varySizebyPehkui = specs.varySizebyPehkui.get() && FabricLoader.getInstance().isModLoaded("pehkui");
         Config.CommonConfig.sizeMax = specs.sizeMax.get().floatValue();
         Config.CommonConfig.sizeMin = specs.sizeMin.get().floatValue();

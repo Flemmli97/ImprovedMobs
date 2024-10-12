@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.api.difficulty;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.difficulty.impl.DefaultDifficulty;
+import io.github.flemmli97.improvedmobs.api.difficulty.impl.RunecraftoryDifficulty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -12,6 +13,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 public class DifficultyFetcher {
 
@@ -19,8 +21,10 @@ public class DifficultyFetcher {
     private static final List<OrderedResource> ORDERED_RESOURCES = new ArrayList<>();
     private static final Map<ResourceLocation, DifficultyGetter> DIFFICULTIES = new HashMap<>();
 
-    public static void register() {
+    public static void register(Function<String, Boolean> modChecker) {
         add(DEFAULT, -1, new DefaultDifficulty());
+        if (modChecker.apply("runecraftory"))
+            add(new ResourceLocation(ImprovedMobs.MODID, "runecraftory_integration"), new RunecraftoryDifficulty());
     }
 
     public static synchronized void add(ResourceLocation id, DifficultyGetter impl) {

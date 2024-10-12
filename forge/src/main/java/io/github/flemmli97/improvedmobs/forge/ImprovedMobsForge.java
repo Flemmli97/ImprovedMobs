@@ -48,7 +48,7 @@ public class ImprovedMobsForge {
             modBus.addListener(ClientEventHandler::setup);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
 
-        DifficultyFetcher.register();
+        DifficultyFetcher.register(ModList.get()::isLoaded);
         if (ModList.get().isLoaded("scalinghealth"))
             DifficultyFetcher.add(new ResourceLocation(ImprovedMobs.MODID, "scalinghealth_integration"), new ScalingHealthDifficulty());
     }

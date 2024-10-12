@@ -17,6 +17,7 @@ repositories {
 
 dependencies {
     modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
+    modCompileOnly "io.github.flemmli97:runecraftory:${runecraftory_version}-common"
     modCompileOnly "${pehkui}"
 }
 

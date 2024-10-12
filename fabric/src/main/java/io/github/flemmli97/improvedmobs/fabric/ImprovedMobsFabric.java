@@ -46,7 +46,7 @@ public class ImprovedMobsFabric implements ModInitializer {
         ServerLifecycleEvents.SERVER_STARTING.register(EventHandler::serverStart);
 
         ConfigSpecs.initCommonConfig();
-        DifficultyFetcher.register();
+        DifficultyFetcher.register(FabricLoader.getInstance()::isModLoaded);
         if (FabricLoader.getInstance().isModLoaded("playerex"))
             DifficultyFetcher.add(new ResourceLocation(ImprovedMobs.MODID, "player_ex_integration"), new PlayerEXDifficulty());
         if (FabricLoader.getInstance().isModLoaded("levelz"))

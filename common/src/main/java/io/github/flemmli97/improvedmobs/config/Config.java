@@ -66,6 +66,8 @@ public class Config {
         public static float playerEXScale = 1;
         public static IntegrationType useLevelZMod = IntegrationType.ON;
         public static float levelZScale = 1;
+        public static IntegrationType useRunecraftoryMod = IntegrationType.ON;
+        public static float runecraftoryScale = 1;
         public static boolean varySizebyPehkui;
         public static float sizeMax = 2;
         public static float sizeMin = 0.5f;

@@ -3,6 +3,8 @@ Improved Mobs 1.13
 - Redo integration mod for difficulty:
   - Config changed from true/false to OFF/ON/ADD
   - OFF and ON behave as old true/false but ADD allows stacking on top of existing ones for even more mayham
+  - LevelZ and PlayerEX now has a multiplier config
+  - Add runecraftory integration
 - Allow pehkui integration to be more configurable with size chance and flag for individual mobs
 - Disable overlay being shown with f3 debug toggled
 - Allow negative values for difficulty increase. To use that use `|` as a delimiter instead of `-`
