@@ -83,6 +83,8 @@ public class Config {
         public static int restoreDelay;
         public static boolean idleBreak;
         public static float breakerSightIgnore = 0.5f;
+        public static float breakSpeedBaseMod = 1;
+        public static float breakSpeedAdd = 0;
         public static float stealerChance = 0.3f;
         public static List<String> blackListedContainerBlocks = new ArrayList<>();
         public static boolean breakTileEntities = true;

@@ -97,6 +97,8 @@ public class ConfigSpecs {
         public final ModConfigSpec.IntValue restoreDelay;
         public final ModConfigSpec.BooleanValue idleBreak;
         public final ModConfigSpec.DoubleValue breakerSightIgnore;
+        public final ModConfigSpec.DoubleValue breakSpeedBaseMod;
+        public final ModConfigSpec.DoubleValue breakSpeedAdd;
         public final ModConfigSpec.DoubleValue stealerChance;
         public final ModConfigSpec.ConfigValue<List<String>> blackListedContainerBlocks;
         public final ModConfigSpec.BooleanValue breakTileEntities;
@@ -217,6 +219,8 @@ public class ConfigSpecs {
             this.restoreDelay = builder.comment("Blocks will be restored after x ticks being broken. If set to 0 will never restore", "This will not restore block entity data!").defineInRange("Restore delay", Config.CommonConfig.restoreDelay, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", Config.CommonConfig.idleBreak);
             this.breakerSightIgnore = builder.comment("Chance a breaker mob to ignore line of sight").defineInRange("Breaker Sight Ignore", Config.CommonConfig.breakerSightIgnore, 0, 1);
+            this.breakSpeedBaseMod = builder.comment("A modifier to the breaking speed").defineInRange("Breaking Speed Base", Config.CommonConfig.breakSpeedBaseMod, 0, Double.MAX_VALUE);
+            this.breakSpeedAdd = builder.comment("Addition to breaking speed modifier based on difficulty.", "Final modifier is base + addition * difficulty").defineInRange("Breaking Speed Add", Config.CommonConfig.breakSpeedAdd, 0, Double.MAX_VALUE);
             this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").defineInRange("Stealer Chance", Config.CommonConfig.stealerChance, 0, 1);
             this.blackListedContainerBlocks = builder.comment("List of blocks mobs shouldn't steal from. You can also add a modid to blacklist whole mods").define("Steal Block Blacklist", Config.CommonConfig.blackListedContainerBlocks, stringList());
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight", "Note: Mobs can only break blocks if the tool they are holding can break the blocks").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1", "minecraft:iron_axe;2"), stringList());

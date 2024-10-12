@@ -73,6 +73,8 @@ public class ConfigLoader {
         Config.CommonConfig.restoreDelay = specs.restoreDelay.get();
         Config.CommonConfig.idleBreak = specs.idleBreak.get();
         Config.CommonConfig.breakerSightIgnore = specs.breakerSightIgnore.get().floatValue();
+        Config.CommonConfig.breakSpeedBaseMod = specs.breakSpeedBaseMod.get().floatValue();
+        Config.CommonConfig.breakSpeedAdd = specs.breakSpeedAdd.get().floatValue();
         Config.CommonConfig.stealerChance = specs.stealerChance.get().floatValue();
         Config.CommonConfig.blackListedContainerBlocks = specs.blackListedContainerBlocks.get();
         Config.CommonConfig.breakTileEntities = specs.breakTileEntities.get();
