@@ -1,3 +1,7 @@
+Improved Mobs 1.13.3
+================
+- Update PlayerEX integration
+
 Improved Mobs 1.13.2
 ================
 - Fix some problems with list config on forge causing config resets
