@@ -12,6 +12,7 @@ body:
       label: Modloader
       options:
         - Forge
+        - NeoForge
         - Fabric
     validations:
       required: true
