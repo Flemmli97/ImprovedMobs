@@ -1,3 +1,6 @@
+Improved Mobs 1.13.3.b
+================
+
 Improved Mobs 1.13.3
 ================
 - Update PlayerEX integration
