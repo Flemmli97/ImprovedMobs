@@ -1,5 +1,6 @@
 Improved Mobs 1.13.3.b
 ================
+- Fix packet on fabric
 
 Improved Mobs 1.13.3
 ================
