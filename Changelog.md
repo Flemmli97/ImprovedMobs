@@ -1,6 +1,7 @@
 Improved Mobs 1.13.3.b
 ================
 - Fix packet on fabric
+- Fix playerex integration
 
 Improved Mobs 1.13.3
 ================
