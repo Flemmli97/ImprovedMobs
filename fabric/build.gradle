@@ -27,7 +27,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-fabric"
+    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}.b-fabric"
 
     modApi("${cloth_config}") {
         exclude(group: "net.fabricmc.fabric-api")
