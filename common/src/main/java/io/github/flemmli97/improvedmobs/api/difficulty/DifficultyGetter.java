@@ -36,6 +36,13 @@ public interface DifficultyGetter {
                 }
                 yield diff;
             }
+            case PLAYERSUM -> {
+                float diff = 0;
+                for (Player player : DifficultyData.playersIn(level, pos, 256)) {
+                    diff += getter.apply((ServerPlayer) player);
+                }
+                yield diff;
+            }
             case PLAYERMEAN, GLOBAL, DISTANCE, DISTANCESPAWN -> {
                 float diff = 0;
                 List<Player> list = DifficultyData.playersIn(level, pos, 256);

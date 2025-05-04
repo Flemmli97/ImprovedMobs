@@ -180,6 +180,7 @@ public class Config {
         GLOBAL(true),
         PLAYERMAX(true),
         PLAYERMEAN(true),
+        PLAYERSUM(true),
         DISTANCE(false),
         DISTANCESPAWN(false);
 
