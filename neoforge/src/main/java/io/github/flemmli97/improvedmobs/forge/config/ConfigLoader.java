@@ -139,6 +139,7 @@ public class ConfigLoader {
         if (l.size() == 1 && l.get(0).equals("UNINITIALIZED")) {
             Config.CommonConfig.entityBlacklist.initDefault(world);
             ConfigSpecs.COMMON_CONF.entityBlacklist.set(Config.CommonConfig.entityBlacklist.writeToString());
+            ConfigSpecs.COMMON_CONF.entityBlacklist.save();
         }
     }
 }
