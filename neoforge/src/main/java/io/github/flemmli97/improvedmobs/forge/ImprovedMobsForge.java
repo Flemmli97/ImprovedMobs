@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.forge;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
+import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.client.ClientEvents;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
@@ -11,10 +12,13 @@ import io.github.flemmli97.improvedmobs.forge.config.ConfigLoader;
 import io.github.flemmli97.improvedmobs.forge.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.forge.events.DifficultyHandler;
 import io.github.flemmli97.improvedmobs.forge.events.EventHandler;
+import io.github.flemmli97.improvedmobs.forge.integration.difficulty.ScalingHealthDifficulty;
 import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.network.S2CShowDifficulty;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
@@ -47,6 +51,10 @@ public class ImprovedMobsForge {
             ClientEventHandler.setup(modBus);
         NeoForge.EVENT_BUS.register(new EventHandler());
         NeoForge.EVENT_BUS.addListener(ImprovedMobsForge::serverStart);
+
+        DifficultyFetcher.register();
+        if (ModList.get().isLoaded("scalinghealth"))
+            DifficultyFetcher.add(ResourceLocation.fromNamespaceAndPath(ImprovedMobs.MODID, "scalinghealth_integration"), new ScalingHealthDifficulty());
     }
 
     static void setup(FMLCommonSetupEvent event) {
