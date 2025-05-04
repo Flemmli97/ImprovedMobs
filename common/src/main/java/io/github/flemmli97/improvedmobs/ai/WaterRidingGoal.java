@@ -5,7 +5,6 @@ import io.github.flemmli97.improvedmobs.entities.AquaticSummonEntity;
 import io.github.flemmli97.improvedmobs.entities.RiddenSummonEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
