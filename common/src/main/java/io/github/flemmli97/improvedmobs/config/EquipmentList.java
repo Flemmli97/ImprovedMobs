@@ -246,7 +246,11 @@ public class EquipmentList {
             float enchantmentValue = armor.getEnchantmentValue();
             inverseWeight += enchantmentValue * 5;
             inverseWeight *= (armor.getMaterial().value().knockbackResistance() * 0.5 + 1);
-            inverseWeight *= (armor.getMaterial().value().repairIngredient() != null && armor.getMaterial().value().repairIngredient().get() != Ingredient.EMPTY) ? 1 : 0.9f;
+            try {
+                inverseWeight *= (armor.getMaterial().value().repairIngredient() != null && armor.getMaterial().value().repairIngredient().get() != Ingredient.EMPTY) ? 1 : 0.9f;
+            } catch (Exception e) {
+                ImprovedMobs.LOGGER.error("Cannot compute repair ingredient {}", BuiltInRegistries.ITEM.getKey(item), e);
+            }
             inverseWeight *= (armor.getMaterial() == ArmorMaterials.LEATHER || armor.getMaterial() == ArmorMaterials.GOLD || armor.getMaterial() == ArmorMaterials.CHAIN || armor.getMaterial() == ArmorMaterials.IRON
                     || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8f : 1;
         } else if (item instanceof SwordItem || item instanceof DiggerItem) {
