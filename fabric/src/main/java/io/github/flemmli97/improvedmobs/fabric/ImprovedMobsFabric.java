@@ -8,8 +8,7 @@ import io.github.flemmli97.improvedmobs.fabric.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
 import io.github.flemmli97.improvedmobs.fabric.integration.difficulty.LevelZDifficulty;
 import io.github.flemmli97.improvedmobs.fabric.integration.difficulty.PlayerEXDifficulty;
-import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
-import io.github.flemmli97.improvedmobs.network.S2CShowDifficulty;
+import io.github.flemmli97.improvedmobs.fabric.network.PacketHandler;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
@@ -18,7 +17,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.loader.api.FabricLoader;
 
@@ -35,8 +33,7 @@ public class ImprovedMobsFabric implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register(EventHandler::worldJoin);
         ServerLifecycleEvents.SERVER_STARTING.register(EventHandler::serverStart);
 
-        PayloadTypeRegistry.playS2C().register(S2CDiffcultyValue.TYPE, S2CDiffcultyValue.STREAM_CODEC);
-        PayloadTypeRegistry.playS2C().register(S2CShowDifficulty.TYPE, S2CShowDifficulty.STREAM_CODEC);
+        PacketHandler.register();
         ConfigSpecs.initCommonConfig();
         DifficultyFetcher.register();
         if (FabricLoader.getInstance().isModLoaded("playerex"))
