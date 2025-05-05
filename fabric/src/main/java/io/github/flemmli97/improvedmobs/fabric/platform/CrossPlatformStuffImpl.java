@@ -2,11 +2,12 @@ package io.github.flemmli97.improvedmobs.fabric.platform;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.fabric.mixinutil.ContainerOpenAccess;
+import io.github.flemmli97.improvedmobs.fabric.mixinutil.PlayerDifficultyAccess;
 import io.github.flemmli97.improvedmobs.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import io.github.flemmli97.improvedmobs.utils.ContainerOpened;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
@@ -39,13 +40,13 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
-        ((ContainerOpened) blockEntity).setOpened(blockEntity);
+        ((ContainerOpenAccess) blockEntity).improvedMobs$getContainerState().setOpened(blockEntity);
     }
 
     @Override
     public boolean canLoot(BlockEntity blockEntity) {
         if (blockEntity instanceof Container container)
-            return ((ContainerOpened) blockEntity).playerOpened() && !container.isEmpty();
+            return ((ContainerOpenAccess) blockEntity).improvedMobs$getContainerState().playerOpened() && !container.isEmpty();
         return false;
     }
 
@@ -110,7 +111,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
-        return (IPlayerDifficulty) player;
+    public PlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
+        return ((PlayerDifficultyAccess) player).improvedMobs$getDifficulty();
     }
 }

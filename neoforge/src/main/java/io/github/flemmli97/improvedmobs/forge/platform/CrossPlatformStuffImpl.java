@@ -1,8 +1,8 @@
 package io.github.flemmli97.improvedmobs.forge.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
-import io.github.flemmli97.improvedmobs.forge.capability.Attachments;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.forge.data.Attachments;
 import io.github.flemmli97.improvedmobs.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
@@ -98,7 +98,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public IPlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
+    public PlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
         return player.getData(Attachments.PLAYER_DIFFICULTY.get());
     }
 }

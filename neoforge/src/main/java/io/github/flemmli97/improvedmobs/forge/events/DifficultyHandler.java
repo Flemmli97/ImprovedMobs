@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.forge.events;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.server.level.ServerLevel;
@@ -30,8 +30,8 @@ public class DifficultyHandler {
     @SubscribeEvent
     public void readOnDeath(PlayerEvent.Clone event) {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
-            IPlayerDifficulty old = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
+            PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
+            PlayerDifficulty old = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
             data.setDifficultyLevel(old.getDifficultyLevel());
             CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(serverPlayer.getServer()), serverPlayer.getServer());
         }

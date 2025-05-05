@@ -30,6 +30,8 @@ public class DifficultyData extends SavedData {
     private float difficultyLevel;
     private long prevTime;
 
+    private boolean paused;
+
     public DifficultyData() {
     }
 
@@ -57,12 +59,16 @@ public class DifficultyData extends SavedData {
     }
 
     public void increaseDifficultyBy(Function<Float, Float> increase, long time, MinecraftServer server) {
-        this.difficultyLevel += increase.apply(this.getDifficulty());
+        if (!this.paused) {
+            this.difficultyLevel += increase.apply(this.getDifficulty());
+        }
         this.prevTime = time;
         server.getPlayerList().getPlayers()
                 .forEach(player -> {
-                    IPlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
-                    data.setDifficultyLevel(data.getDifficultyLevel() + increase.apply(data.getDifficultyLevel()));
+                    PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+                    if (!data.paused()) {
+                        data.setDifficultyLevel(data.getDifficultyLevel() + increase.apply(data.getDifficultyLevel()));
+                    }
                 });
         this.setDirty();
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
@@ -100,15 +106,21 @@ public class DifficultyData extends SavedData {
         return conf.getRight().start() + (dist - conf.getLeft()) * conf.getRight().increasePerBlock();
     }
 
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
     public void load(CompoundTag nbt) {
         this.difficultyLevel = nbt.getFloat("Difficulty");
         this.prevTime = nbt.getLong("Time");
+        this.paused = nbt.getBoolean("Paused");
     }
 
     @Override
     public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
         compound.putFloat("Difficulty", this.difficultyLevel);
         compound.putLong("Time", this.prevTime);
+        compound.putBoolean("Paused", this.paused);
         return compound;
     }
 }

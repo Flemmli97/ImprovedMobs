@@ -3,14 +3,26 @@ package io.github.flemmli97.improvedmobs.utils;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-public interface ContainerOpened {
+public class ContainerOpened {
 
-    boolean playerOpened();
+    private boolean opened = false;
 
-    void setOpened(BlockEntity tile);
+    public boolean playerOpened() {
+        return this.opened;
+    }
 
-    void writeToNBT(CompoundTag compound);
+    public void setOpened(BlockEntity tile) {
+        this.opened = true;
+        tile.setChanged();
+    }
 
-    void readFromNBT(CompoundTag nbt);
+    public CompoundTag writeToNBT(CompoundTag compound) {
+        compound.putBoolean("HasBeenOpened", this.opened);
+        return compound;
+    }
+
+    public void readFromNBT(CompoundTag nbt) {
+        this.opened = nbt.contains("IMHasBeenOpened") ? nbt.getBoolean("IMHasBeenOpened") : nbt.getBoolean("HasBeenOpened");
+    }
 
 }
