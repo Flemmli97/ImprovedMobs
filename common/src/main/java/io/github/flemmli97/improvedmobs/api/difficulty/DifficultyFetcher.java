@@ -3,6 +3,7 @@ package io.github.flemmli97.improvedmobs.api.difficulty;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.difficulty.impl.DefaultDifficulty;
 import io.github.flemmli97.improvedmobs.api.difficulty.impl.RunecraftoryDifficulty;
+import io.github.flemmli97.improvedmobs.api.difficulty.impl.VanillaDifficulty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -23,6 +24,7 @@ public class DifficultyFetcher {
 
     public static void register(Function<String, Boolean> modChecker) {
         add(DEFAULT, -1, new DefaultDifficulty());
+        add(new ResourceLocation("minecraft", "clamped_difficulty"), new VanillaDifficulty());
         if (modChecker.apply("runecraftory"))
             add(new ResourceLocation(ImprovedMobs.MODID, "runecraftory_integration"), new RunecraftoryDifficulty());
     }

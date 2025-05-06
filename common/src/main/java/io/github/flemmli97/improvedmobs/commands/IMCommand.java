@@ -120,12 +120,12 @@ public class IMCommand {
                 ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
                 CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(data -> data.setPaused(pause));
             }
-            src.getSource().sendSuccess(() -> Component.literal("Difficulty " + (pause ? "paused" : "unpaused") + " for given players").setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+            src.getSource().sendSuccess(new TextComponent("Difficulty " + (pause ? "paused" : "unpaused") + " for given players").setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
             return profs.size();
         }
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
         data.setPaused(pause);
-        src.getSource().sendSuccess(() -> Component.literal("Difficulty " + (pause ? "paused" : "unpaused")).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+        src.getSource().sendSuccess(new TextComponent("Difficulty " + (pause ? "paused" : "unpaused")).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
 
@@ -144,7 +144,7 @@ public class IMCommand {
                 });
                 CrossPlatformStuff.INSTANCE.sendDifficultyDataTo(player, server);
             }
-            src.getSource().sendSuccess(() -> Component.literal(String.format("Simulated %s difficulty steps for given players", steps)).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+            src.getSource().sendSuccess(new TextComponent(String.format("Simulated %s difficulty steps for given players", steps)).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
             return profs.size();
         }
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
@@ -155,7 +155,7 @@ public class IMCommand {
             i--;
         }
         data.setDifficulty(current, src.getSource().getServer());
-        src.getSource().sendSuccess(() -> Component.literal(String.format("Simulated %s difficulty steps globally. Now at %s", steps, data.getDifficulty())).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
+        src.getSource().sendSuccess(new TextComponent(String.format("Simulated %s difficulty steps globally. Now at %s", steps, data.getDifficulty())).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
 }

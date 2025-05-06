@@ -90,6 +90,8 @@ public final class ConfigSpecs {
         public final CommentedJsonConfig.CommentedVal<Boolean> pehkuiWhitelist;
 
         //Integration
+        public final CommentedJsonConfig.CommentedVal<Config.IntegrationType> vanillaClamped;
+        public final CommentedJsonConfig.DoubleVal vanillaClampedMax;
         public final CommentedJsonConfig.CommentedVal<Config.IntegrationType> useScalingHealthMod;
         public final CommentedJsonConfig.CommentedVal<Config.IntegrationType> usePlayerEXMod;
         public final CommentedJsonConfig.DoubleVal playerEXScale;
@@ -212,6 +214,8 @@ public final class ConfigSpecs {
             this.pehkuiWhitelist = builder.comment("Treat PEHKUI flags as whitelist (Needs pehkui installed)").define("Pehkui Whitelist", Config.CommonConfig.pehkuiWhitelist);
 
             //builder.comment("Settings for mod integration").push("integration");
+            this.vanillaClamped = builder.comment("Whether vanillas clamped regional difficulty should be used. ", "See https://minecraft.wiki/w/Difficulty#Clamped_regional_difficulty").define("Use Vanilla Difficulty", Config.CommonConfig.vanillaClamped);
+            this.vanillaClampedMax = builder.comment("The max value for vanilla difficulty scaling. As clamped regional difficulty returns a value between 0 and 1", "Thus difficulty will be regional difficulty * max").defineInRange("Vanilla Max", Config.CommonConfig.vanillaClampedMax, 0, Double.MAX_VALUE);
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").define("Use Scaling Health Mod", Config.CommonConfig.useScalingHealthMod);
             this.usePlayerEXMod = builder.comment("If true and playerEx is installed will use the level from playerEx as difficulty").define("Use Player EX Mod", Config.CommonConfig.usePlayerEXMod);
             this.playerEXScale = builder.comment("Scaling for playerEX integration").defineInRange("PlayerEX Scaling", Config.CommonConfig.playerEXScale, 0, Double.MAX_VALUE);
