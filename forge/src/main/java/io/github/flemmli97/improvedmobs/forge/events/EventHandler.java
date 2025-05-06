@@ -3,8 +3,8 @@ package io.github.flemmli97.improvedmobs.forge.events;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.commands.IMCommand;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
+import io.github.flemmli97.improvedmobs.forge.capability.ContainerCap;
 import io.github.flemmli97.improvedmobs.forge.capability.PlayerDifficultyData;
-import io.github.flemmli97.improvedmobs.forge.capability.TileCap;
 import io.github.flemmli97.improvedmobs.forge.config.ConfigLoader;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
@@ -33,7 +33,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void attachCapability(AttachCapabilitiesEvent<BlockEntity> event) {
-        event.addCapability(tileCap, new TileCap());
+        event.addCapability(tileCap, new ContainerCap());
     }
 
     @SubscribeEvent

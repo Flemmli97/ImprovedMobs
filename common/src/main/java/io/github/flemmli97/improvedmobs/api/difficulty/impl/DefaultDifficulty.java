@@ -3,7 +3,7 @@ package io.github.flemmli97.improvedmobs.api.difficulty.impl;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyGetter;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +21,7 @@ public class DefaultDifficulty implements DifficultyGetter {
             case PLAYERMAX -> {
                 float diff = 0;
                 for (Player player : DifficultyGetter.playersIn(level, pos, 256)) {
-                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
+                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(PlayerDifficulty::getDifficultyLevel).orElse(0f);
                     if (pD > diff)
                         diff = pD;
                 }
@@ -30,7 +30,7 @@ public class DefaultDifficulty implements DifficultyGetter {
             case PLAYERSUM -> {
                 float diff = 0;
                 for (Player player : DifficultyData.playersIn(level, pos, 256)) {
-                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(PlayerDifficulty::getDifficultyLevel).orElse(0f);
                 }
                 yield diff;
             }
@@ -40,7 +40,7 @@ public class DefaultDifficulty implements DifficultyGetter {
                 if (list.isEmpty())
                     yield 0f;
                 for (Player player : list) {
-                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
+                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(PlayerDifficulty::getDifficultyLevel).orElse(0f);
                 }
                 yield diff / list.size();
             }

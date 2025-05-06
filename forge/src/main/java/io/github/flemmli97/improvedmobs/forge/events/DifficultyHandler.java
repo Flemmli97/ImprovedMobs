@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.forge.events;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.server.level.ServerLevel;
@@ -34,8 +33,8 @@ public class DifficultyHandler {
             if (!rev)
                 event.getOriginal().reviveCaps();
             CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer)
-                    .ifPresent(data -> data.setDifficultyLevel(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) event.getOriginal())
-                            .map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)));
+                    .ifPresent(data -> CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) event.getOriginal())
+                            .ifPresent(data::copyFrom));
             CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(serverPlayer.getServer()), serverPlayer.getServer());
             if (!rev)
                 event.getOriginal().invalidateCaps();

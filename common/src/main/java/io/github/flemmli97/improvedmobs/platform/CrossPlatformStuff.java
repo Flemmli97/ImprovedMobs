@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
 import io.github.flemmli97.tenshilib.platform.InitUtil;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
@@ -46,5 +46,5 @@ public interface CrossPlatformStuff {
 
     boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
 
-    Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player);
+    Optional<PlayerDifficulty> getPlayerDifficultyData(ServerPlayer player);
 }

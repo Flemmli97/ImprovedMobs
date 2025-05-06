@@ -5,7 +5,7 @@ import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.commands.IMCommand;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
 import io.github.flemmli97.improvedmobs.fabric.config.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
@@ -58,7 +58,7 @@ public class ImprovedMobsFabric implements ModInitializer {
         if (!ServerPlayNetworking.canSend(player, difficultyPacket))
             return;
         FriendlyByteBuf buf = PacketByteBufs.create();
-        buf.writeFloat(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() : CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f));
+        buf.writeFloat(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() : CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(PlayerDifficulty::getDifficultyLevel).orElse(0f));
         ServerPlayNetworking.send(player, difficultyPacket, buf);
     }
 
@@ -71,7 +71,7 @@ public class ImprovedMobsFabric implements ModInitializer {
         PlayerLookup.all(server).forEach(player -> {
             if (!global) {
                 if (Config.CommonConfig.difficultyType.increaseDifficulty)
-                    buf.writeFloat(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f));
+                    buf.writeFloat(CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(PlayerDifficulty::getDifficultyLevel).orElse(0f));
                 else
                     buf.writeFloat(DifficultyData.getDifficultyFromDist(player.serverLevel(), player.position()));
             }

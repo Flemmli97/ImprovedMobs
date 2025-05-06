@@ -2,10 +2,11 @@ package io.github.flemmli97.improvedmobs.fabric.platform;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric;
+import io.github.flemmli97.improvedmobs.fabric.mixinutil.ContainerOpenAccess;
+import io.github.flemmli97.improvedmobs.fabric.mixinutil.PlayerDifficultyAccess;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import io.github.flemmli97.improvedmobs.utils.ITileOpened;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
@@ -37,13 +38,13 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
-        ((ITileOpened) blockEntity).setOpened(blockEntity);
+        ((ContainerOpenAccess) blockEntity).improvedMobs$getContainerState().setOpened(blockEntity);
     }
 
     @Override
     public boolean canLoot(BlockEntity blockEntity) {
         if (blockEntity instanceof Container container)
-            return ((ITileOpened) blockEntity).playerOpened() && !container.isEmpty();
+            return ((ContainerOpenAccess) blockEntity).improvedMobs$getContainerState().playerOpened() && !container.isEmpty();
         return false;
     }
 
@@ -109,7 +110,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player) {
-        return Optional.of((IPlayerDifficulty) player);
+    public Optional<PlayerDifficulty> getPlayerDifficultyData(ServerPlayer player) {
+        return Optional.of(((PlayerDifficultyAccess) player).improvedMobs$getDifficulty());
     }
 }
