@@ -27,6 +27,13 @@ public class DefaultDifficulty implements DifficultyGetter {
                 }
                 yield diff;
             }
+            case PLAYERSUM -> {
+                float diff = 0;
+                for (Player player : DifficultyData.playersIn(level, pos, 256)) {
+                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f);
+                }
+                yield diff;
+            }
             case PLAYERMEAN -> {
                 float diff = 0;
                 List<Player> list = DifficultyGetter.playersIn(level, pos, 256);

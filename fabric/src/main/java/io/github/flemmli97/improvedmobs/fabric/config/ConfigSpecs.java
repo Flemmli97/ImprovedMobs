@@ -186,6 +186,7 @@ public final class ConfigSpecs {
                     "GLOBAL: Serverwide difficulty value",
                     "PLAYERMAX: Maximum difficulty of players in a 256 radius around the position",
                     "PLAYERMEAN: Average difficulty of players in a 256 radius around the position",
+                    "PLAYERSUM: Sum of difficulty of players in a 256 radius around the position. There is no upper limit for this so max difficulty can be higher than the limit! You crazy if you use this",
                     "DISTANCE: Uses the distance to the position defined in Center Position to define the difficulty",
                     "DISTANCESPAWN: Uses the distance to the world spawn to define the difficulty",
                     "If the type is any of the distance types the functionality of Difficulty Increase is changed to the following where the 1. value is the minimum distance and the 2. is the difficulty that applies. ",

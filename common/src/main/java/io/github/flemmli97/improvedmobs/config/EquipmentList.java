@@ -15,7 +15,7 @@ import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.api.config.ExtendedItemStackWrapper;
 import io.github.flemmli97.tenshilib.common.utils.ItemUtils;
 import io.github.flemmli97.tenshilib.platform.PlatformUtils;
-import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.resources.ResourceLocation;
@@ -262,7 +262,7 @@ public class EquipmentList {
             try {
                 inverseWeight *= (armor.getMaterial().getRepairIngredient() != null && armor.getMaterial().getRepairIngredient() != Ingredient.EMPTY) ? 1 : 0.9f;
             } catch (Exception e) {
-                ImprovedMobs.logger.error("Cannot compute repair ingredient {}", BuiltInRegistries.ITEM.getKey(item), e);
+                ImprovedMobs.logger.error("Cannot compute repair ingredient {}", Registry.ITEM.getKey(item), e);
             }
             inverseWeight *= (armor.getMaterial() == ArmorMaterials.LEATHER || armor.getMaterial() == ArmorMaterials.GOLD || armor.getMaterial() == ArmorMaterials.CHAIN || armor.getMaterial() == ArmorMaterials.IRON
                     || armor.getMaterial() == ArmorMaterials.DIAMOND || armor.getMaterial() == ArmorMaterials.NETHERITE || armor.getMaterial() == ArmorMaterials.TURTLE) ? 0.8f : 1;
