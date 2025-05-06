@@ -32,7 +32,7 @@ public class DifficultyHandler {
         if (event.getEntity() instanceof ServerPlayer serverPlayer) {
             PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
             PlayerDifficulty old = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
-            data.setDifficultyLevel(old.getDifficultyLevel());
+            data.copyFrom(old);
             CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(serverPlayer.getServer()), serverPlayer.getServer());
         }
     }

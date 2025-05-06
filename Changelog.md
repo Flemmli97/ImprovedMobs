@@ -2,7 +2,7 @@ Improved Mobs 1.13.4
 ================
 - Fix some packet stuff causing server to be unjoinable on fabric
 - Forge: Fix difficulty impl not registered so difficulty was always 0
-- Warp repair ingredient calc...
+- Wrap repair ingredient calc...
 - Fix flag config initialization not saved to file
 - Add PLAYERSUM difficulty:
   - Sum of all nearby players
