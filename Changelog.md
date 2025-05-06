@@ -1,3 +1,14 @@
+Improved Mobs 1.13.4
+================
+- Wrap repair ingredient calc...
+- Add PLAYERSUM difficulty:
+  - Sum of all nearby players
+  - This can overshoot the theoretical max value (e.g. default 250) as this the max not hardcoded
+- Add `simulate` and `pause/unpause` command:
+  - `simulate` Simulates the given difficulty step increases. 
+  - `pause/unpause`: (Un)Pauses difficulty increase for the given target
+- Add vanilla regional clamped difficulty. Useful for e.g. `Majrusz's Progressive Difficulty` which uses it
+
 Improved Mobs 1.13.2
 ================
 - Fix some problems with list config on forge causing config resets
