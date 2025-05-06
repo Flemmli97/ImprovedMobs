@@ -1,3 +1,17 @@
+Improved Mobs 1.13.4
+================
+- Fix some packet stuff causing server to be unjoinable on fabric
+- Forge: Fix difficulty impl not registered so difficulty was always 0
+- Warp repair ingredient calc...
+- Fix flag config initialization not saved to file
+- Add PLAYERSUM difficulty:
+  - Sum of all nearby players
+  - This can overshoot the theoretical max value (e.g. default 250) as this the max not hardcoded
+- Add `simulate` and `pause/unpause` command:
+  - `simulate` Simulates the given difficulty step increases. 
+  - `pause/unpause`: (Un)Pauses difficulty increase for the given target
+- Add vanilla regional clamped difficulty. Useful for e.g. `Majrusz's Progressive Difficulty` which uses it
+
 Improved Mobs 1.13.3.b
 ================
 - Fix packet on fabric
