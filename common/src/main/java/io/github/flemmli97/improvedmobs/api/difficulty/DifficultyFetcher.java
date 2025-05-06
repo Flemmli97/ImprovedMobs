@@ -22,7 +22,7 @@ public class DifficultyFetcher {
 
     public static void register() {
         add(DEFAULT, -1, new DefaultDifficulty());
-        add(ResourceLocation.fromNamespaceAndPath("minecraft", "clamped_difficulty"), new VanillaDifficulty());
+        add(new ResourceLocation("minecraft", "clamped_difficulty"), new VanillaDifficulty());
     }
 
     public static synchronized void add(ResourceLocation id, DifficultyGetter impl) {
