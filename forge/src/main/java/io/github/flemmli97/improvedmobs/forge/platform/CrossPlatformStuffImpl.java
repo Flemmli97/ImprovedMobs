@@ -1,11 +1,11 @@
 package io.github.flemmli97.improvedmobs.forge.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
-import io.github.flemmli97.improvedmobs.forge.capability.TileCapProvider;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.forge.capability.CapabilityProvider;
 import io.github.flemmli97.improvedmobs.forge.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import io.github.flemmli97.improvedmobs.utils.ITileOpened;
+import io.github.flemmli97.improvedmobs.utils.ContainerOpened;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -27,14 +27,14 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
-        blockEntity.getCapability(TileCapProvider.CAP)
+        blockEntity.getCapability(CapabilityProvider.CAP)
                 .ifPresent(cap -> cap.setOpened(blockEntity));
     }
 
     @Override
     public boolean canLoot(BlockEntity blockEntity) {
         if (blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).isPresent())
-            return blockEntity.getCapability(TileCapProvider.CAP).map(ITileOpened::playerOpened).orElse(false) &&
+            return blockEntity.getCapability(CapabilityProvider.CAP).map(ContainerOpened::playerOpened).orElse(false) &&
                     blockEntity.getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY).map(cap -> {
                         for (int i = 0; i < cap.getSlots(); i++)
                             if (!cap.getStackInSlot(i).isEmpty())
@@ -99,7 +99,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public Optional<IPlayerDifficulty> getPlayerDifficultyData(ServerPlayer player) {
-        return player.getCapability(TileCapProvider.PLAYER_CAP).resolve();
+    public Optional<PlayerDifficulty> getPlayerDifficultyData(ServerPlayer player) {
+        return player.getCapability(CapabilityProvider.PLAYER_CAP).resolve();
     }
 }

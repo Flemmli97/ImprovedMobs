@@ -3,7 +3,7 @@ package io.github.flemmli97.improvedmobs.forge.network;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.config.Config;
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.IPlayerDifficulty;
+import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.resources.ResourceLocation;
@@ -32,7 +32,7 @@ public class PacketHandler {
     public static <T> void sendDifficultyToClient(DifficultyData data, ServerPlayer player) {
         if (hasChannel(player))
             dispatcher.sendTo(new PacketDifficulty(Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL ? data.getDifficulty() :
-                    CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
+                    CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(PlayerDifficulty::getDifficultyLevel).orElse(0f)), player.connection.getConnection(), NetworkDirection.PLAY_TO_CLIENT);
     }
 
     public static <T> void sendDifficultyToAll(DifficultyData data, MinecraftServer server) {
@@ -45,7 +45,7 @@ public class PacketHandler {
         } else {
             server.getPlayerList().getPlayers().forEach(player -> {
                 if (hasChannel(player)) {
-                    float diff = Config.CommonConfig.difficultyType.increaseDifficulty ? CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(IPlayerDifficulty::getDifficultyLevel).orElse(0f)
+                    float diff = Config.CommonConfig.difficultyType.increaseDifficulty ? CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).map(PlayerDifficulty::getDifficultyLevel).orElse(0f)
                             : DifficultyData.getDifficultyFromDist(player.getLevel(), player.position());
                     player.connection.send(dispatcher.toVanillaPacket(
                             new PacketDifficulty(diff), NetworkDirection.PLAY_TO_CLIENT));

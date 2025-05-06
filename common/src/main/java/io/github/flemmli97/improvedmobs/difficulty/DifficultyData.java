@@ -27,6 +27,8 @@ public class DifficultyData extends SavedData {
     private float difficultyLevel;
     private long prevTime;
 
+    private boolean paused;
+
     public DifficultyData() {
     }
 
@@ -54,10 +56,16 @@ public class DifficultyData extends SavedData {
     }
 
     public void increaseDifficultyBy(Function<Float, Float> increase, long time, MinecraftServer server) {
-        this.difficultyLevel += increase.apply(this.getDifficulty());
+        if (!this.paused) {
+            this.difficultyLevel += increase.apply(this.getDifficulty());
+        }
         this.prevTime = time;
         server.getPlayerList().getPlayers()
-                .forEach(player -> CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(pd -> pd.setDifficultyLevel(pd.getDifficultyLevel() + increase.apply(pd.getDifficultyLevel()))));
+                .forEach(player -> CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).ifPresent(d -> {
+                    if (!d.paused()) {
+                        d.setDifficultyLevel(d.getDifficultyLevel() + increase.apply(d.getDifficultyLevel()));
+                    }
+                }));
         this.setDirty();
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
     }
@@ -94,15 +102,21 @@ public class DifficultyData extends SavedData {
         return conf.getRight().start() + (dist - conf.getLeft()) * conf.getRight().increasePerBlock();
     }
 
+    public void setPaused(boolean paused) {
+        this.paused = paused;
+    }
+
     public void load(CompoundTag nbt) {
         this.difficultyLevel = nbt.getFloat("Difficulty");
         this.prevTime = nbt.getLong("Time");
+        this.paused = nbt.getBoolean("Paused");
     }
 
     @Override
     public CompoundTag save(CompoundTag compound) {
         compound.putFloat("Difficulty", this.difficultyLevel);
         compound.putLong("Time", this.prevTime);
+        compound.putBoolean("Paused", this.paused);
         return compound;
     }
 }

@@ -4,7 +4,7 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
-import io.github.flemmli97.improvedmobs.forge.capability.TileCapProvider;
+import io.github.flemmli97.improvedmobs.forge.capability.CapabilityProvider;
 import io.github.flemmli97.improvedmobs.forge.client.ClientEventHandler;
 import io.github.flemmli97.improvedmobs.forge.config.ConfigLoader;
 import io.github.flemmli97.improvedmobs.forge.config.ConfigSpecs;
@@ -43,7 +43,7 @@ public class ImprovedMobsForge {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         modBus.addListener(ImprovedMobsForge::setup);
         modBus.addListener(ImprovedMobsForge::conf);
-        modBus.addListener(TileCapProvider::register);
+        modBus.addListener(CapabilityProvider::register);
         if (FMLEnvironment.dist == Dist.CLIENT)
             modBus.addListener(ClientEventHandler::setup);
         MinecraftForge.EVENT_BUS.register(new EventHandler());
