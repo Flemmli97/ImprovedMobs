@@ -76,6 +76,8 @@ public class ConfigSpecs {
         public final ModConfigSpec.BooleanValue pehkuiWhitelist;
 
         //Integration
+        public final ModConfigSpec.EnumValue<Config.IntegrationType> vanillaClamped;
+        public final ModConfigSpec.DoubleValue vanillaClampedMax;
         public final ModConfigSpec.EnumValue<Config.IntegrationType> useScalingHealthMod;
         public final ModConfigSpec.EnumValue<Config.IntegrationType> usePlayerEXMod;
         public final ModConfigSpec.DoubleValue playerEXScale;
@@ -199,6 +201,8 @@ public class ConfigSpecs {
             builder.pop();
 
             builder.comment("Settings for mod integration").push("integration");
+            this.vanillaClamped = builder.comment("Whether vanillas clamped regional difficulty should be used. ", "See https://minecraft.wiki/w/Difficulty#Clamped_regional_difficulty").defineEnum("Use Vanilla Difficulty", Config.CommonConfig.vanillaClamped);
+            this.vanillaClampedMax = builder.comment("The max value for vanilla difficulty scaling. As clamped regional difficulty returns a value between 0 and 1", "Thus difficulty will be regional difficulty * max").defineInRange("Vanilla Max", Config.CommonConfig.vanillaClampedMax, 0, Double.MAX_VALUE);
             this.useScalingHealthMod = builder.comment("Should the scaling health mods difficulty system be used instead of this ones. (Requires scaling health mod)").defineEnum("Use Scaling Health Mod", Config.CommonConfig.useScalingHealthMod);
             this.usePlayerEXMod = builder.comment("If true and playerEx is installed will use the level from playerEx as difficulty").defineEnum("Use Player EX Mod", Config.CommonConfig.usePlayerEXMod);
             this.playerEXScale = builder.comment("Scaling for playerEX integration").defineInRange("PlayerEX Scaling", Config.CommonConfig.playerEXScale, 0, Double.MAX_VALUE);

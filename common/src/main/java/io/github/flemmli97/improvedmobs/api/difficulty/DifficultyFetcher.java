@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.api.difficulty;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.difficulty.impl.DefaultDifficulty;
+import io.github.flemmli97.improvedmobs.api.difficulty.impl.VanillaDifficulty;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
@@ -21,6 +22,7 @@ public class DifficultyFetcher {
 
     public static void register() {
         add(DEFAULT, -1, new DefaultDifficulty());
+        add(ResourceLocation.fromNamespaceAndPath("minecraft", "clamped_difficulty"), new VanillaDifficulty());
     }
 
     public static synchronized void add(ResourceLocation id, DifficultyGetter impl) {

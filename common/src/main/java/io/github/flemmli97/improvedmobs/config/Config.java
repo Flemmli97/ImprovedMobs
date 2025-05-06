@@ -62,6 +62,8 @@ public class Config {
         public static boolean pehkuiWhitelist;
 
         //Integration
+        public static IntegrationType vanillaClamped = IntegrationType.OFF;
+        public static float vanillaClampedMax = 250;
         public static IntegrationType useScalingHealthMod = IntegrationType.ON;
         public static IntegrationType usePlayerEXMod = IntegrationType.ON;
         public static float playerEXScale = 1;
