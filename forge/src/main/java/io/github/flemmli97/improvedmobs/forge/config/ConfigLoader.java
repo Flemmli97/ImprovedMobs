@@ -50,6 +50,8 @@ public class ConfigLoader {
         Config.CommonConfig.neutralAggroWhitelist = ConfigSpecs.commonConf.neutralAggroWhitelist.get();
         Config.CommonConfig.pehkuiWhitelist = ConfigSpecs.commonConf.pehkuiWhitelist.get();
 
+        Config.CommonConfig.vanillaClamped = ConfigSpecs.commonConf.vanillaClamped.get();
+        Config.CommonConfig.vanillaClampedMax = ConfigSpecs.commonConf.vanillaClampedMax.get().floatValue();
         Config.CommonConfig.useScalingHealthMod = ModList.get().isLoaded("scalinghealth") ? ConfigSpecs.commonConf.useScalingHealthMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.usePlayerEXMod = ModList.get().isLoaded("playerex") ? ConfigSpecs.commonConf.usePlayerEXMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.playerEXScale = ConfigSpecs.commonConf.playerEXScale.get().floatValue();
