@@ -37,4 +37,9 @@ public abstract class ServerPlayerMixin implements PlayerDifficultyAccess {
     private void copyOld(ServerPlayer oldPlayer, boolean alive, CallbackInfo info) {
         this.improvedmobs$Difficulty.copyFrom(((PlayerDifficultyAccess) oldPlayer).improvedMobs$getDifficulty());
     }
+
+    @Override
+    public PlayerDifficulty improvedMobs$getDifficulty() {
+        return this.improvedmobs$Difficulty;
+    }
 }
