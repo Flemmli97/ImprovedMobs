@@ -34,6 +34,8 @@ repositories {
 dependencies {
     modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-forge"
 
+    modRuntimeOnly "curse.maven:mobbattle-268746:6456884"
+
     // modRuntimeOnly "${sillib_dep}"
     modCompileOnly "${scalhealth_dep}"
 
