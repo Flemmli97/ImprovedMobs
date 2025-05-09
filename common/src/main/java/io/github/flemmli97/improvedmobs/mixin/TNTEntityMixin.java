@@ -9,6 +9,7 @@ import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -20,6 +21,9 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
         super(type, world);
     }
 
+    @Shadow
+    protected abstract void explode();
+
     @Inject(method = "tick", at = @At(value = "RETURN"), cancellable = true)
     private void modifyExplosion(CallbackInfo info) {
         PrimedTnt tnt = (PrimedTnt) (Object) this;
@@ -27,7 +31,7 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
             info.cancel();
             tnt.remove(RemovalReason.KILLED);
             if (!tnt.level().isClientSide)
-                tnt.level().explode(tnt, tnt.getX(), tnt.getY(0.0625D), tnt.getZ(), 4.0F, Level.ExplosionInteraction.NONE);
+                this.explode();
         }
     }
 
