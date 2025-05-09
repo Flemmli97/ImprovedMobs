@@ -32,4 +32,9 @@ public abstract class BlockEntityMixin implements ContainerOpenAccess {
         }
         this.improvedMobs$OpenedTile.readFromNBT(data);
     }
+
+    @Override
+    public ContainerOpened improvedMobs$getContainerState() {
+        return this.improvedMobs$OpenedTile;
+    }
 }
