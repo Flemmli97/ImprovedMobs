@@ -1,3 +1,8 @@
+Improved Mobs 1.13.5
+================
+- Fix tnt destroy blocks config not working
+- Fabric: Fix mixin crash due to missing impl
+
 Improved Mobs 1.13.4
 ================
 - Fix some packet stuff causing server to be unjoinable on fabric
