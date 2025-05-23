@@ -13,7 +13,7 @@ To use this mod as a dependency add the following snippet to your build.gradle:
 repositories {
     maven {
         name = "Flemmli97"
-        url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+        url "https://maven.blazing-coop.net/releases"
     }
 }
 
