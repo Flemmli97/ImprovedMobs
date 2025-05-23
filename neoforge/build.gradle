@@ -20,7 +20,7 @@ repositories {
     mavenLocal()
     maven {
         name = "TenshiLib"
-        url "https://gitlab.com/api/v4/projects/21830712/packages/maven"
+        url "https://maven.blazing-coop.net/releases"
     }
     maven {
         name = "CurseMaven"
