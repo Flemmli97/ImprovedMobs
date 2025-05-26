@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.forge.data;
+package io.github.flemmli97.improvedmobs.neoforge.data;
 
 import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.utils.ContainerOpened;

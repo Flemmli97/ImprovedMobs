@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.forge.client;
+package io.github.flemmli97.improvedmobs.neoforge.client;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.client.ClientCalls;

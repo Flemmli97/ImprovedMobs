@@ -21,7 +21,7 @@ public interface CrossPlatformStuff {
 
     CrossPlatformStuff INSTANCE = InitUtil.getPlatformInstance(CrossPlatformStuff.class,
             "io.github.flemmli97.improvedmobs.fabric.platform.CrossPlatformStuffImpl",
-            "io.github.flemmli97.improvedmobs.forge.platform.CrossPlatformStuffImpl");
+            "io.github.flemmli97.improvedmobs.neoforge.platform.CrossPlatformStuffImpl");
 
     void onPlayerOpen(BlockEntity blockEntity);
 

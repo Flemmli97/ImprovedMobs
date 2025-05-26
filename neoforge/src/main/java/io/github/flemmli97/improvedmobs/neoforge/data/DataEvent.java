@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.forge.data;
+package io.github.flemmli97.improvedmobs.neoforge.data;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import net.minecraft.data.DataGenerator;

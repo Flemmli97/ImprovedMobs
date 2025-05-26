@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.forge.events;
+package io.github.flemmli97.improvedmobs.neoforge.events;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;

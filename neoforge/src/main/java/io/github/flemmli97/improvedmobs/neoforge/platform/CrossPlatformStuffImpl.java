@@ -1,8 +1,8 @@
-package io.github.flemmli97.improvedmobs.forge.platform;
+package io.github.flemmli97.improvedmobs.neoforge.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
-import io.github.flemmli97.improvedmobs.forge.data.Attachments;
+import io.github.flemmli97.improvedmobs.neoforge.data.Attachments;
 import io.github.flemmli97.improvedmobs.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;

@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.forge.config;
+package io.github.flemmli97.improvedmobs.neoforge.config;
 
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.config.BreakableBlocks;

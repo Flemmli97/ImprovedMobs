@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.forge.integration.difficulty;
+package io.github.flemmli97.improvedmobs.neoforge.integration.difficulty;
 
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyGetter;
 import io.github.flemmli97.improvedmobs.config.Config;

@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.forge.config;
+package io.github.flemmli97.improvedmobs.neoforge.config;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.config.Config;
