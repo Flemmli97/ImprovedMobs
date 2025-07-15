@@ -33,5 +33,5 @@ dependencies {
 
     // modRuntimeOnly "${sillib_dep}"
     modCompileOnly "${scalhealth_dep}"
-    modRuntimeOnly "io.github.flemmli97:debugutils:1.21-1.0.6-neoforge"
+    modRuntimeOnly "io.github.flemmli97:debugutils:1.21-1.0.8-neoforge"
 }
