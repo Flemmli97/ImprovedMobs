@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.config;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.tenshilib.common.utils.ArrayUtils;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
@@ -122,7 +121,7 @@ public class EntityModifyFlagConfig {
     }
 
     public static String use() {
-        String[] str = new String[]{"Entities added here will be blacklisted from their assigned flags. Usage:", "<entity registry name> or <namespace> or <#tag> followed by any of:", "[" + ArrayUtils.arrayToString(Flags.values()) + "].", "Having no flags is equal to ALL. Use REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
+        String[] str = new String[]{"Entities added here will be blacklisted from their assigned flags. Usage:", "<entity registry name> or <namespace> or <#tag> followed by any of:", "[" + Arrays.toString(Flags.values()) + "].", "Having no flags is equal to ALL. Use REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
                 "Examples (without <>):", "<minecraft:sheep> (equal to minecraft:sheep|ALL) excludes sheeps from all modifications", "<minecraft:sheep|REVERSE|ATTRIBUTES will> add sheep to attributes modification only",
                 "<#minecraft:raiders|ATTRIBUTES> will add all entities in the raiders tag to everything except attributes", "<minecraft:sheep|ATTRIBUTES> will add sheep to everything except attributes", "<minecraft> disables everything for all minecraft mobs"};
         return String.join("\n", str);

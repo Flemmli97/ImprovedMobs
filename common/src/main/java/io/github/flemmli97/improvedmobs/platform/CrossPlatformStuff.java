@@ -2,7 +2,7 @@ package io.github.flemmli97.improvedmobs.platform;
 
 import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
-import io.github.flemmli97.tenshilib.platform.InitUtil;
+import io.github.flemmli97.tenshilib.loader.LoaderInitializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
@@ -19,7 +19,7 @@ import java.nio.file.Path;
 
 public interface CrossPlatformStuff {
 
-    CrossPlatformStuff INSTANCE = InitUtil.getPlatformInstance(CrossPlatformStuff.class,
+    CrossPlatformStuff INSTANCE = LoaderInitializer.getImplInstance(CrossPlatformStuff.class,
             "io.github.flemmli97.improvedmobs.fabric.platform.CrossPlatformStuffImpl",
             "io.github.flemmli97.improvedmobs.neoforge.platform.CrossPlatformStuffImpl");
 

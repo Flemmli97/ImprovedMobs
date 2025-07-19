@@ -1,9 +1,9 @@
-package io.github.flemmli97.improvedmobs.neoforge.config;
+package io.github.flemmli97.improvedmobs.config.holder;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.tenshilib.loader.TenshiLibCrossPlat;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.fml.ModList;
 
 import java.util.List;
 
@@ -51,12 +51,12 @@ public class ConfigLoader {
 
         Config.CommonConfig.vanillaClamped = ConfigSpecs.COMMON_CONF.vanillaClamped.get();
         Config.CommonConfig.vanillaClampedMax = ConfigSpecs.COMMON_CONF.vanillaClampedMax.get().floatValue();
-        Config.CommonConfig.useScalingHealthMod = ModList.get().isLoaded("scalinghealth") ? ConfigSpecs.COMMON_CONF.useScalingHealthMod.get() : Config.IntegrationType.OFF;
-        Config.CommonConfig.usePlayerEXMod = ModList.get().isLoaded("playerex") ? ConfigSpecs.COMMON_CONF.usePlayerEXMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.useScalingHealthMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("scalinghealth") ? ConfigSpecs.COMMON_CONF.useScalingHealthMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.usePlayerEXMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("playerex") ? ConfigSpecs.COMMON_CONF.usePlayerEXMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.playerEXScale = ConfigSpecs.COMMON_CONF.playerEXScale.get().floatValue();
-        Config.CommonConfig.useLevelZMod = ModList.get().isLoaded("levelz") ? ConfigSpecs.COMMON_CONF.useLevelZMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.useLevelZMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("levelz") ? ConfigSpecs.COMMON_CONF.useLevelZMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.levelZScale = ConfigSpecs.COMMON_CONF.levelZScale.get().floatValue();
-        Config.CommonConfig.varySizebyPehkui = ConfigSpecs.COMMON_CONF.varySizebyPehkui.get() && ModList.get().isLoaded("pehkui");
+        Config.CommonConfig.varySizebyPehkui = ConfigSpecs.COMMON_CONF.varySizebyPehkui.get() && TenshiLibCrossPlat.INSTANCE.isModLoaded("pehkui");
         Config.CommonConfig.sizeMax = ConfigSpecs.COMMON_CONF.sizeMax.get().floatValue();
         Config.CommonConfig.sizeMin = ConfigSpecs.COMMON_CONF.sizeMin.get().floatValue();
         Config.CommonConfig.sizeChance = ConfigSpecs.COMMON_CONF.sizeChance.get().floatValue();

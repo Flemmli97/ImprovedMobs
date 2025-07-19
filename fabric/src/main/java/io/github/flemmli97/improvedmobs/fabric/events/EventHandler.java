@@ -3,8 +3,8 @@ package io.github.flemmli97.improvedmobs.fabric.events;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.config.EquipmentList;
+import io.github.flemmli97.improvedmobs.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.events.EventCalls;
-import io.github.flemmli97.improvedmobs.fabric.config.ConfigLoader;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -32,7 +32,6 @@ public class EventHandler {
     }
 
     public static void serverStart(MinecraftServer server) {
-        ConfigLoader.loadCommon();
         ItemAITasks.initAI();
         EquipmentList.initEquip(server.registryAccess());
     }

@@ -21,9 +21,6 @@
     ],
     "client": [
       "io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabricClient"
-    ],
-    "modmenu": [
-      "io.github.flemmli97.improvedmobs.fabric.integration.ModMenuIntegration"
     ]
   },
   "mixins": [
