@@ -23,7 +23,7 @@ public abstract class ServerPlayerMixin implements PlayerDifficultyAccess {
         if (compound.contains("IMDifficulty")) {
             data = compound;
         } else {
-            data = compound.getCompound(ImprovedMobs.MODID + ":container");
+            data = compound.getCompound(ImprovedMobs.MODID + ":difficulty_data");
         }
         this.improvedmobs$Difficulty.load(data);
     }
