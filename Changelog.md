@@ -1,3 +1,7 @@
+Improved Mobs 1.13.6
+================
+- Fix pause state not saved on players
+
 Improved Mobs 1.13.5
 ================
 - Fix tnt destroy blocks config not working
