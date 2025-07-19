@@ -31,7 +31,7 @@ public class PlayerDifficulty {
 
     public CompoundTag save(CompoundTag compound) {
         compound.putFloat("Difficulty", this.difficultyLevel);
-        compound.putBoolean("IMPaused", this.paused);
+        compound.putBoolean("Paused", this.paused);
         return compound;
     }
 
