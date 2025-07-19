@@ -15,20 +15,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityMixin implements IEntityData {
 
     @Unique
-    private final EntityFlags imFlags = new EntityFlags();
+    private final EntityFlags improvedMobs$flags = new EntityFlags();
 
     @Inject(method = "load", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;readAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
     private void readData(CompoundTag compoundTag, CallbackInfo info) {
-        this.imFlags.load(compoundTag.getCompound("IMFlags"));
+        this.improvedMobs$flags.load(compoundTag.getCompound(EntityFlags.TAG_ID));
     }
 
     @Inject(method = "saveWithoutId", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Entity;addAdditionalSaveData(Lnet/minecraft/nbt/CompoundTag;)V"))
     private void saveData(CompoundTag compoundTag, CallbackInfoReturnable<CompoundTag> info) {
-        compoundTag.put(EntityFlags.TAG_ID, this.imFlags.save());
+        compoundTag.put(EntityFlags.TAG_ID, this.improvedMobs$flags.save());
     }
 
     @Override
-    public EntityFlags getFlags() {
-        return this.imFlags;
+    public EntityFlags improvedMobs$getFlags() {
+        return this.improvedMobs$flags;
     }
 }

@@ -21,7 +21,7 @@ public class ClientEventHandler {
 
     public static void showDifficulty(RegisterGuiLayersEvent e) {
         e.registerBelow(VanillaGuiLayers.EXPERIENCE_BAR, OVERLAY_ID,
-                (graphics, partialTicks) -> ClientEvents.showDifficulty(graphics));
+                (graphics, partialTicks) -> ClientEvents.displayDifficulty(graphics));
     }
 
     public static void leave(ClientPlayerNetworkEvent.LoggingOut event) {

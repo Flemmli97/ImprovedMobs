@@ -7,14 +7,14 @@ import java.util.List;
 
 public class EnchantCalcConf {
 
-    private static final Value defaultVal = new Value(0, 0, 0);
+    private static final Value DEFAULT_VALUE = new Value(0, 0, 0);
     private final List<Value> vals = new ArrayList<>();
 
     public EnchantCalcConf(Value... vals) {
         this.vals.addAll(List.of(vals));
     }
 
-    public EnchantCalcConf readFromString(List<String> ss) {
+    public void readFromString(List<String> ss) {
         this.vals.clear();
         List<Value> list = new ArrayList<>();
         for (String s : ss) {
@@ -25,7 +25,6 @@ public class EnchantCalcConf {
         }
         list.sort(null);
         this.vals.addAll(list);
-        return this;
     }
 
     public List<String> writeToString() {
@@ -35,7 +34,7 @@ public class EnchantCalcConf {
     }
 
     public Value get(float difficulty) {
-        return SearchUtils.searchInfFunc(this.vals, v -> Float.compare(v.diff, difficulty), defaultVal);
+        return SearchUtils.searchInfFunc(this.vals, v -> Float.compare(v.diff, difficulty), DEFAULT_VALUE);
     }
 
     public static class Value implements Comparable<Value> {

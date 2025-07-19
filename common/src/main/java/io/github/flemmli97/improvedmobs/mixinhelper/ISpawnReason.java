@@ -4,5 +4,5 @@ import net.minecraft.world.entity.MobSpawnType;
 
 public interface ISpawnReason {
 
-    MobSpawnType getSpawnReason();
+    MobSpawnType improvedMobs$getSpawnReason();
 }

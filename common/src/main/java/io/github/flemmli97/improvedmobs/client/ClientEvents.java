@@ -16,7 +16,7 @@ public class ClientEvents {
     private static float clientDifficulty;
     private static final ResourceLocation BAR = ImprovedMobs.modRes("textures/gui/difficulty_bar.png");
 
-    public static void showDifficulty(GuiGraphics graphics) {
+    public static void displayDifficulty(GuiGraphics graphics) {
         if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty || Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
             return;
         graphics.pose().pushPose();

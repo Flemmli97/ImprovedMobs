@@ -26,7 +26,7 @@ public class MobClassMapConfig {
         return this.map.get(res);
     }
 
-    public MobClassMapConfig readFromString(List<String> ss) {
+    public void readFromString(List<String> ss) {
         this.map.clear();
         for (String s : ss) {
             String[] sub = s.replace(" ", "").split("-");
@@ -42,7 +42,6 @@ public class MobClassMapConfig {
                 return old;
             });
         }
-        return this;
     }
 
     public List<String> writeToString() {

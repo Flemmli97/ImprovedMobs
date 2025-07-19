@@ -10,7 +10,7 @@ public class ImprovedMobsFabricClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        HudRenderCallback.EVENT.register((matrixStack, tickDelta) -> ClientEvents.showDifficulty(matrixStack));
+        HudRenderCallback.EVENT.register((matrixStack, tickDelta) -> ClientEvents.displayDifficulty(matrixStack));
         ClientPlayConnectionEvents.DISCONNECT.register(((handler, client) -> ClientCalls.disconnect()));
     }
 }

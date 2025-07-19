@@ -2,10 +2,10 @@ package io.github.flemmli97.improvedmobs.neoforge;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
-import io.github.flemmli97.improvedmobs.common.entities.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
+import io.github.flemmli97.improvedmobs.common.entities.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.common.network.S2CShowDifficulty;
 import io.github.flemmli97.improvedmobs.neoforge.client.ClientEventHandler;

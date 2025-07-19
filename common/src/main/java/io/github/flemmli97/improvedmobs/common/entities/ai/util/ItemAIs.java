@@ -127,7 +127,7 @@ public class ItemAIs {
             double dis = entity.position().distanceTo(target.position());
             if (!entity.level().isClientSide) {
                 PrimedTnt tnt = new PrimedTnt(entity.level(), entity.getX(), entity.getY(), entity.getZ(), entity);
-                ((ITNTThrowable) tnt).shootFromEntity(entity, entity.getXRot(), entity.getYRot(), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
+                ((ITNTThrowable) tnt).improvedMobs$shootFromEntity(entity, entity.getXRot(), entity.getYRot(), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
                 EntityFlags.get(tnt).isThrownEntity = true;
                 entity.level().addFreshEntity(tnt);
             }

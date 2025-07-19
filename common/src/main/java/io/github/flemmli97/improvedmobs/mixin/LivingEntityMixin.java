@@ -13,19 +13,19 @@ import org.spongepowered.asm.mixin.injection.ModifyArg;
 public abstract class LivingEntityMixin implements LivingSensingExt {
 
     @Unique
-    private boolean improvedmobs_extended_los;
+    private boolean improvedMobs$extended_los;
 
     @ModifyArg(method = "hasLineOfSight", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/Level;clip(Lnet/minecraft/world/level/ClipContext;)Lnet/minecraft/world/phys/BlockHitResult;"))
     private ClipContext test(ClipContext old) {
-        if (this.improvedmobs_extended_los) {
-            ((IClipContxt) old).checkSeeThrough();
-            this.improvedmobs_extended_los = false;
+        if (this.improvedMobs$extended_los) {
+            ((IClipContxt) old).improvedMobs$checkSeeThrough();
+            this.improvedMobs$extended_los = false;
         }
         return old;
     }
 
     @Override
-    public void doExtendedLOSCheck() {
-        this.improvedmobs_extended_los = true;
+    public void improvedMobs$doExtendedLOSCheck() {
+        this.improvedMobs$extended_los = true;
     }
 }

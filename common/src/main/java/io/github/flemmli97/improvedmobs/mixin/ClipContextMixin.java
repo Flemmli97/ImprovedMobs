@@ -18,16 +18,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ClipContextMixin implements IClipContxt {
 
     @Unique
-    private boolean IM_checkSeeThrough;
+    private boolean improvedMobs$checkSeeThrough;
 
     @Inject(method = "getBlockShape", at = @At("HEAD"), cancellable = true)
     private void checkSeeThrough(BlockState blockState, BlockGetter level, BlockPos pos, CallbackInfoReturnable<VoxelShape> info) {
-        if (this.IM_checkSeeThrough && blockState.is(ImprovedMobs.SEE_THROUGH))
+        if (this.improvedMobs$checkSeeThrough && blockState.is(ImprovedMobs.SEE_THROUGH))
             info.setReturnValue(Shapes.empty());
     }
 
     @Override
-    public void checkSeeThrough() {
-        this.IM_checkSeeThrough = true;
+    public void improvedMobs$checkSeeThrough() {
+        this.improvedMobs$checkSeeThrough = true;
     }
 }

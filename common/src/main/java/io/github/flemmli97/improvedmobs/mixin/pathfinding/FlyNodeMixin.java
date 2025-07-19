@@ -19,19 +19,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class FlyNodeMixin extends NodeEvaluator {
 
     @Unique
-    private final Object2BooleanMap<AABB> collisionBreakableCache = new Object2BooleanOpenHashMap<>();
+    private final Object2BooleanMap<AABB> improvedMobs$collisionBreakableCache = new Object2BooleanOpenHashMap<>();
 
     @Inject(method = "done", at = @At(value = "RETURN"))
     private void clearStuff(CallbackInfo info) {
-        this.collisionBreakableCache.clear();
+        this.improvedMobs$collisionBreakableCache.clear();
     }
 
     @Inject(method = "findAcceptedNode", at = @At(value = "HEAD"), cancellable = true)
     private void breakableNodes(int x, int y, int z, CallbackInfoReturnable<Node> info) {
-        if (!((INodeBreakable) this).canBreakBlocks())
+        if (!((INodeBreakable) this).improvedMobs$canBreakBlocks())
             return;
         Node node = PathFindingUtils.floatingNodeModifier(this.mob, this.currentContext.level(), x, y, z,
-                aabb -> this.collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.currentContext.level(), this.mob, aabb)),
+                aabb -> this.improvedMobs$collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.currentContext.level(), this.mob, aabb)),
                 p -> super.getNode(p.getX(), p.getY(), p.getZ()));
         if (node != null) {
             info.setReturnValue(node);

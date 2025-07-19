@@ -15,6 +15,6 @@ public abstract class TargetingConditionMixin {
 
     @Inject(method = "test", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/Mob;getSensing()Lnet/minecraft/world/entity/ai/sensing/Sensing;"))
     private void onTest(@Nullable LivingEntity attacker, LivingEntity target, CallbackInfoReturnable<Boolean> info) {
-        ((SensingExt) ((Mob) attacker).getSensing()).doLineOfSightExt();
+        ((SensingExt) ((Mob) attacker).getSensing()).improvedMobs$doLineOfSightExt();
     }
 }

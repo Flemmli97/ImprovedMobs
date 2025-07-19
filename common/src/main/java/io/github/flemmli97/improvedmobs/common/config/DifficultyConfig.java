@@ -15,7 +15,7 @@ public class DifficultyConfig {
         this.vals.addAll(defaultVal);
     }
 
-    public DifficultyConfig readFromString(List<String> ss) {
+    public void readFromString(List<String> ss) {
         this.vals.clear();
         List<Pair<Float, Zone>> list = new ArrayList<>();
         for (String s : ss) {
@@ -27,7 +27,6 @@ public class DifficultyConfig {
         }
         list.sort((o1, o2) -> Float.compare(o1.getLeft(), o2.getLeft()));
         this.vals.addAll(list);
-        return this;
     }
 
     public List<String> writeToString() {

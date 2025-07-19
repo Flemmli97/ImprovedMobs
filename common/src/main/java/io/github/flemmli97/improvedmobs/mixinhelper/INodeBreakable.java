@@ -2,11 +2,11 @@ package io.github.flemmli97.improvedmobs.mixinhelper;
 
 public interface INodeBreakable {
 
-    void setCanBreakBlocks(boolean flag);
+    void improvedMobs$setCanBreakBlocks(boolean flag);
 
-    boolean canBreakBlocks();
+    boolean improvedMobs$canBreakBlocks();
 
-    void setCanClimbLadder(boolean flag);
+    void improvedMobs$setCanClimbLadder(boolean flag);
 
-    boolean canClimbLadder();
+    boolean improvedMobs$canClimbLadder();
 }

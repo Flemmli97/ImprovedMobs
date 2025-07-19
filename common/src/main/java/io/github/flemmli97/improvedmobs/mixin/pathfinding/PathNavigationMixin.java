@@ -7,6 +7,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 import net.minecraft.world.phys.Vec3;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,6 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(PathNavigation.class)
 public abstract class PathNavigationMixin {
 
+    @Final
     @Shadow
     protected Mob mob;
     @Shadow
@@ -23,7 +25,7 @@ public abstract class PathNavigationMixin {
 
     @Inject(method = "getGroundY", at = @At(value = "HEAD"), cancellable = true)
     private void noJumpBreakable(Vec3 pos, CallbackInfoReturnable<Double> info) {
-        if (this.nodeEvaluator != null && ((INodeBreakable) this.nodeEvaluator).canBreakBlocks() && PathFindingUtils.canBreak(BlockPos.containing(pos), this.mob)) {
+        if (this.nodeEvaluator != null && ((INodeBreakable) this.nodeEvaluator).improvedMobs$canBreakBlocks() && PathFindingUtils.canBreak(BlockPos.containing(pos), this.mob)) {
             info.setReturnValue(pos.y - 0.5);
             info.cancel();
         }

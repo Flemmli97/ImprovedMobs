@@ -13,7 +13,7 @@ public class EntityFlags {
     public boolean ladderClimber;
 
     public static EntityFlags get(Entity entity) {
-        return ((IEntityData) entity).getFlags();
+        return ((IEntityData) entity).improvedMobs$getFlags();
     }
 
     public boolean modifyArmor, modifyHeldItems, modifyAttributes, enchantGear;

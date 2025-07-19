@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.common.entities;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.common.entities.ai.WaterNavigation;
+import io.github.flemmli97.improvedmobs.common.entities.ai.pathfinding.WaterNavigation;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;

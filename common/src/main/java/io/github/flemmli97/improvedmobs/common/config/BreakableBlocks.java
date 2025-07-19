@@ -45,11 +45,10 @@ public class BreakableBlocks {
         return this.blocks.contains(id.getNamespace()) || this.blocks.contains(id.toString());
     }
 
-    public BreakableBlocks readFromString(List<String> arr) {
+    public void readFromString(List<String> arr) {
         this.blocks.clear();
         this.configString = arr;
         this.initialized = false;
-        return this;
     }
 
     public void initialize() {

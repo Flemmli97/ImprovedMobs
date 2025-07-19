@@ -1,16 +1,16 @@
 package io.github.flemmli97.improvedmobs.common.events;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.common.config.Config;
+import io.github.flemmli97.improvedmobs.common.config.EntityModifyFlagConfig;
+import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.common.entities.RiddenSummonEntity;
 import io.github.flemmli97.improvedmobs.common.entities.ai.BlockBreakGoal;
 import io.github.flemmli97.improvedmobs.common.entities.ai.FlyRidingGoal;
 import io.github.flemmli97.improvedmobs.common.entities.ai.ItemUseGoal;
 import io.github.flemmli97.improvedmobs.common.entities.ai.LadderClimbGoal;
 import io.github.flemmli97.improvedmobs.common.entities.ai.StealGoal;
 import io.github.flemmli97.improvedmobs.common.entities.ai.WaterRidingGoal;
-import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.EntityModifyFlagConfig;
-import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.common.entities.RiddenSummonEntity;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.common.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
@@ -67,7 +67,7 @@ import java.util.function.Predicate;
 
 public class EventCalls {
 
-    public static void worldJoin(ServerPlayer player, MinecraftServer server) {
+    public static void levelJoin(ServerPlayer player, MinecraftServer server) {
         CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
         CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createConfigPacket(), player);
     }
@@ -76,29 +76,29 @@ public class EventCalls {
         BlockRestorationData.get(level).tick(level);
         if (!Config.CommonConfig.enableDifficultyScaling)
             return;
+        if (level.dimension() != Level.OVERWORLD)
+            return;
         if (!Config.CommonConfig.difficultyType.increaseDifficulty) {
-            if (level.getGameTime() % 20 == 0 && level.dimension() == Level.OVERWORLD)
+            if (level.getGameTime() % 20 == 0)
                 CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(level.getServer()), level.getServer());
             return;
         }
-        if (level.dimension() == Level.OVERWORLD) {
-            boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !level.getServer().getPlayerList().getPlayers().isEmpty()) && level.getDayTime() > Config.CommonConfig.difficultyDelay;
-            DifficultyData data = DifficultyData.get(level.getServer());
-            if (Config.CommonConfig.shouldPunishTimeSkip) {
-                long timeDiff = Math.abs(level.getDayTime() - data.getPrevTime());
-                if (timeDiff > 2400) {
-                    long i = timeDiff / 2400;
-                    if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
-                        i += 1;
-                    while (i > 0) {
-                        data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0f, level.getDayTime(), level.getServer());
-                        i--;
-                    }
+        boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !level.getServer().getPlayerList().getPlayers().isEmpty()) && level.getDayTime() > Config.CommonConfig.difficultyDelay;
+        DifficultyData data = DifficultyData.get(level.getServer());
+        if (Config.CommonConfig.shouldPunishTimeSkip) {
+            long timeDiff = Math.abs(level.getDayTime() - data.getPrevTime());
+            if (timeDiff > 2400) {
+                long i = timeDiff / 2400;
+                if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
+                    i += 1;
+                while (i > 0) {
+                    data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0f, level.getDayTime(), level.getServer());
+                    i--;
                 }
-            } else {
-                if (level.getDayTime() - data.getPrevTime() > 2400) {
-                    data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0, level.getDayTime(), level.getServer());
-                }
+            }
+        } else {
+            if (level.getDayTime() - data.getPrevTime() > 2400) {
+                data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0, level.getDayTime(), level.getServer());
             }
         }
     }
@@ -106,7 +106,7 @@ public class EventCalls {
     public static void onEntityLoad(Mob mob) {
         if (mob.level().isClientSide || mob instanceof RiddenSummonEntity)
             return;
-        if (((ISpawnReason) mob).getSpawnReason() == MobSpawnType.SPAWNER && Config.CommonConfig.ignoreSpawner)
+        if (((ISpawnReason) mob).improvedMobs$getSpawnReason() == MobSpawnType.SPAWNER && Config.CommonConfig.ignoreSpawner)
             return;
         EntityFlags flags = EntityFlags.get(mob);
         boolean mobGriefing = mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
@@ -144,7 +144,7 @@ public class EventCalls {
             if (!(mob.getNavigation() instanceof WallClimberNavigation)) {
                 EntityFlags.get(mob).ladderClimber = true;
                 mob.goalSelector.addGoal(4, new LadderClimbGoal(mob));
-                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).setCanClimbLadder(true);
+                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).improvedMobs$setCanClimbLadder(true);
             }
         }
         boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
@@ -177,7 +177,7 @@ public class EventCalls {
                 }
             });
             if (mobGriefing) {
-                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).setCanBreakBlocks(true);
+                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).improvedMobs$setCanBreakBlocks(true);
                 mob.goalSelector.addGoal(1, new BlockBreakGoal(mob));
                 if (mob.getOffhandItem().isEmpty()) {
                     ItemStack stack = Config.CommonConfig.getRandomBreakingItem(mob.getRandom());

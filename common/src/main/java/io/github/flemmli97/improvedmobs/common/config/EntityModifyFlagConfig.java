@@ -68,7 +68,7 @@ public class EntityModifyFlagConfig {
         return reverse;
     }
 
-    public EntityModifyFlagConfig readFromString(List<String> s) {
+    public void readFromString(List<String> s) {
         this.map.clear();
         for (String val : s) {
             if (val.startsWith("#")) {
@@ -87,7 +87,6 @@ public class EntityModifyFlagConfig {
             this.map.put(subs[0].trim(), set);
         }
         this.resolved = false;
-        return this;
     }
 
     public void resolveTags() {

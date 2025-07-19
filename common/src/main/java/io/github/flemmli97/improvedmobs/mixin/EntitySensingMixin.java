@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.ints.IntSet;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.sensing.Sensing;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -18,19 +19,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Sensing.class)
 public abstract class EntitySensingMixin implements SensingExt {
 
+    @Final
     @Shadow
     private Mob mob;
     @Unique
-    private IntSet improvedmobs_seen = new IntOpenHashSet();
+    private final IntSet improvedMobs$seen = new IntOpenHashSet();
     @Unique
-    private final IntSet improvedmobs_unseen = new IntOpenHashSet();
+    private final IntSet improvedMobs$unseen = new IntOpenHashSet();
     @Unique
     private boolean improvedmobs_extended_los;
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void onTick(CallbackInfo info) {
-        this.improvedmobs_seen.clear();
-        this.improvedmobs_unseen.clear();
+        this.improvedMobs$seen.clear();
+        this.improvedMobs$unseen.clear();
     }
 
     @Inject(method = "hasLineOfSight", at = @At("HEAD"), cancellable = true)
@@ -46,26 +48,26 @@ public abstract class EntitySensingMixin implements SensingExt {
      */
     private boolean hasLineOfSightExt(Entity entity) {
         int i = entity.getId();
-        if (this.improvedmobs_seen.contains(i)) {
+        if (this.improvedMobs$seen.contains(i)) {
             return true;
-        } else if (this.improvedmobs_unseen.contains(i)) {
+        } else if (this.improvedMobs$unseen.contains(i)) {
             return false;
         } else {
             this.mob.level().getProfiler().push("hasLineOfSight");
-            ((LivingSensingExt) this.mob).doExtendedLOSCheck();
+            ((LivingSensingExt) this.mob).improvedMobs$doExtendedLOSCheck();
             boolean bl = this.mob.hasLineOfSight(entity);
             this.mob.level().getProfiler().pop();
             if (bl) {
-                this.improvedmobs_seen.add(i);
+                this.improvedMobs$seen.add(i);
             } else {
-                this.improvedmobs_unseen.add(i);
+                this.improvedMobs$unseen.add(i);
             }
             return bl;
         }
     }
 
     @Override
-    public void doLineOfSightExt() {
+    public void improvedMobs$doLineOfSightExt() {
         this.improvedmobs_extended_los = true;
     }
 }

@@ -36,7 +36,7 @@ public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
     }
 
     @Override
-    public void shootFromEntity(Entity shooter, float pitch, float yaw, float delta, float velocity, float accuracy) {
+    public void improvedMobs$shootFromEntity(Entity shooter, float pitch, float yaw, float delta, float velocity, float accuracy) {
         PrimedTnt tnt = (PrimedTnt) (Object) this;
         float x = -Mth.sin(yaw * (float) Math.PI / 180F) * Mth.cos(pitch * (float) Math.PI / 180F);
         float y = -Mth.sin((pitch + delta) * (float) Math.PI / 180F);

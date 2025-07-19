@@ -33,7 +33,7 @@ public class EntityItemConfig {
         return items != null && (items.contains(BuiltInRegistries.ITEM.getKey(item).toString()) || (remap != null && items.contains(remap)));
     }
 
-    public EntityItemConfig readFromString(List<String> list) {
+    public void readFromString(List<String> list) {
         Map<ResourceLocation, List<String>> temp = new HashMap<>();
         list.forEach(s -> {
             String[] sub = s.split(";");
@@ -47,7 +47,6 @@ public class EntityItemConfig {
         });
         this.itemBlacklist.clear();
         this.itemBlacklist.putAll(temp);
-        return this;
     }
 
     public List<String> writeToString() {

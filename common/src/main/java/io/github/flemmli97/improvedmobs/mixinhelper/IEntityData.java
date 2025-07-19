@@ -4,5 +4,5 @@ import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 
 public interface IEntityData {
 
-    EntityFlags getFlags();
+    EntityFlags improvedMobs$getFlags();
 }

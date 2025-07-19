@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.common.entities.ai;
 
 import io.github.flemmli97.improvedmobs.common.entities.FlyingSummonEntity;
 import io.github.flemmli97.improvedmobs.common.entities.RiddenSummonEntity;
+import io.github.flemmli97.improvedmobs.common.entities.ai.pathfinding.FlyNodeEvalRider;
 import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;

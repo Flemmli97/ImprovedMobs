@@ -9,28 +9,28 @@ import org.spongepowered.asm.mixin.Unique;
 public abstract class NodeEvaluatorMixin implements INodeBreakable {
 
     @Unique
-    private boolean canBreakBlocksIM;
+    private boolean improvedMobs$canBreakBlocksIM;
 
     @Unique
-    private boolean canClimbLadder;
+    private boolean improvedMobs$canClimbLadder;
 
     @Override
-    public void setCanBreakBlocks(boolean flag) {
-        this.canBreakBlocksIM = flag;
+    public void improvedMobs$setCanBreakBlocks(boolean flag) {
+        this.improvedMobs$canBreakBlocksIM = flag;
     }
 
     @Override
-    public boolean canBreakBlocks() {
-        return this.canBreakBlocksIM;
+    public boolean improvedMobs$canBreakBlocks() {
+        return this.improvedMobs$canBreakBlocksIM;
     }
 
     @Override
-    public void setCanClimbLadder(boolean flag) {
-        this.canClimbLadder = flag;
+    public void improvedMobs$setCanClimbLadder(boolean flag) {
+        this.improvedMobs$canClimbLadder = flag;
     }
 
     @Override
-    public boolean canClimbLadder() {
-        return this.canClimbLadder;
+    public boolean improvedMobs$canClimbLadder() {
+        return this.improvedMobs$canClimbLadder;
     }
 }

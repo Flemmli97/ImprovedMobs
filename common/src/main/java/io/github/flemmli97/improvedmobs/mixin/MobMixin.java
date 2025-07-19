@@ -19,28 +19,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MobMixin implements ISpawnReason {
 
     @Unique
-    private MobSpawnType improved_mobs_spawnreason;
+    private MobSpawnType improvedMobs$spawnreason;
 
     @Inject(method = "finalizeSpawn", at = @At("HEAD"))
     private void onFinalize(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData,
                             CallbackInfoReturnable<SpawnGroupData> info) {
-        this.improved_mobs_spawnreason = spawnType;
+        this.improvedMobs$spawnreason = spawnType;
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
     private void readData(CompoundTag compoundTag, CallbackInfo info) {
         if (compoundTag.contains("MobSpawnReason"))
-            this.improved_mobs_spawnreason = MobSpawnType.values()[compoundTag.getInt("MobSpawnReason")];
+            this.improvedMobs$spawnreason = MobSpawnType.values()[compoundTag.getInt("MobSpawnReason")];
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
     private void saveData(CompoundTag compoundTag, CallbackInfo info) {
-        if (this.improved_mobs_spawnreason != null)
-            compoundTag.putInt("MobSpawnReason", this.improved_mobs_spawnreason.ordinal());
+        if (this.improvedMobs$spawnreason != null)
+            compoundTag.putInt("MobSpawnReason", this.improvedMobs$spawnreason.ordinal());
     }
 
     @Override
-    public MobSpawnType getSpawnReason() {
-        return this.improved_mobs_spawnreason;
+    public MobSpawnType improvedMobs$getSpawnReason() {
+        return this.improvedMobs$spawnreason;
     }
 }
