@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.client;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.common.config.Config;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
@@ -14,7 +14,7 @@ import java.util.Locale;
 public class ClientEvents {
 
     private static float clientDifficulty;
-    private static final ResourceLocation TEX = ImprovedMobs.modRes("textures/gui/difficulty_bar.png");
+    private static final ResourceLocation BAR = ImprovedMobs.modRes("textures/gui/difficulty_bar.png");
 
     public static void showDifficulty(GuiGraphics graphics) {
         if (!Config.ClientConfig.showDifficultyServerSync || !Config.ClientConfig.showDifficulty || Minecraft.getInstance().gui.getDebugOverlay().showDebugScreen())
@@ -37,8 +37,8 @@ public class ClientEvents {
             case BOTTOMLEFT ->
                     y = Minecraft.getInstance().getWindow().getGuiScaledHeight() - 17 - Config.ClientConfig.guiY;
         }
-        graphics.blit(TEX, x, y, 0, 0, 4 + width, 17, 256, 256);
-        graphics.blit(TEX, x + 4 + width, y, 183, 0, 3, 17, 256, 256);
+        graphics.blit(BAR, x, y, 0, 0, 4 + width, 17, 256, 256);
+        graphics.blit(BAR, x + 4 + width, y, 183, 0, 3, 17, 256, 256);
         graphics.drawString(font, Component.translatable("improvedmobs.overlay.difficulty", String.format(java.util.Locale.US, "%.1f", clientDifficulty)).withStyle(Config.ClientConfig.color), x + 4, y + 5, 0, false);
         graphics.pose().popPose();
     }

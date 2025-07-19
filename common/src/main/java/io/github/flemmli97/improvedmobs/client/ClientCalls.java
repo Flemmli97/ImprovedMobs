@@ -1,6 +1,6 @@
 package io.github.flemmli97.improvedmobs.client;
 
-import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.common.config.Config;
 
 public class ClientCalls {
 

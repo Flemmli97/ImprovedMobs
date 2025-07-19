@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
+import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
-import io.github.flemmli97.improvedmobs.utils.PathFindingUtils;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.world.level.pathfinder.Node;

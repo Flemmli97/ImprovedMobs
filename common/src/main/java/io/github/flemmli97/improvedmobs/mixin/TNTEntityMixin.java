@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin;
 
+import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.mixinhelper.ITNTThrowable;
-import io.github.flemmli97.improvedmobs.utils.EntityFlags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;

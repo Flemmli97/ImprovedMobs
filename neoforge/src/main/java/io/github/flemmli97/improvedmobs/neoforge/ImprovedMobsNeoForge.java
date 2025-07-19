@@ -1,20 +1,18 @@
 package io.github.flemmli97.improvedmobs.neoforge;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
-import io.github.flemmli97.improvedmobs.client.ClientEvents;
-import io.github.flemmli97.improvedmobs.config.Config;
-import io.github.flemmli97.improvedmobs.config.EquipmentList;
-import io.github.flemmli97.improvedmobs.config.holder.ConfigLoader;
-import io.github.flemmli97.improvedmobs.config.holder.ConfigSpecs;
+import io.github.flemmli97.improvedmobs.common.entities.ai.util.ItemAITasks;
+import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
+import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
+import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
+import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
+import io.github.flemmli97.improvedmobs.common.network.S2CShowDifficulty;
 import io.github.flemmli97.improvedmobs.neoforge.client.ClientEventHandler;
 import io.github.flemmli97.improvedmobs.neoforge.data.Attachments;
 import io.github.flemmli97.improvedmobs.neoforge.events.DifficultyHandler;
 import io.github.flemmli97.improvedmobs.neoforge.events.EventHandler;
 import io.github.flemmli97.improvedmobs.neoforge.integration.difficulty.ScalingHealthDifficulty;
-import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
-import io.github.flemmli97.improvedmobs.network.S2CShowDifficulty;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
@@ -29,7 +27,6 @@ import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
 import java.io.File;
@@ -75,15 +72,7 @@ public class ImprovedMobsNeoForge {
 
     static void registerPackets(RegisterPayloadHandlersEvent event) {
         PayloadRegistrar registrar = event.registrar(ImprovedMobs.MODID).optional();
-        registrar.playToClient(S2CDiffcultyValue.TYPE, S2CDiffcultyValue.STREAM_CODEC, ImprovedMobsNeoForge::difficultyHandlerPacket);
-        registrar.playToClient(S2CShowDifficulty.TYPE, S2CShowDifficulty.STREAM_CODEC, ImprovedMobsNeoForge::handleConfig);
-    }
-
-    private static void difficultyHandlerPacket(S2CDiffcultyValue pkt, IPayloadContext ctx) {
-        ClientEvents.updateClientDifficulty(pkt.difficulty());
-    }
-
-    private static void handleConfig(S2CShowDifficulty pkt, IPayloadContext ctx) {
-        Config.ClientConfig.showDifficultyServerSync = pkt.showDifficulty();
+        registrar.playToClient(S2CDiffcultyValue.TYPE, S2CDiffcultyValue.STREAM_CODEC, (pkt, ctx) -> S2CDiffcultyValue.handle(pkt));
+        registrar.playToClient(S2CShowDifficulty.TYPE, S2CShowDifficulty.STREAM_CODEC, (pkt, ctx) -> S2CShowDifficulty.handle(pkt));
     }
 }

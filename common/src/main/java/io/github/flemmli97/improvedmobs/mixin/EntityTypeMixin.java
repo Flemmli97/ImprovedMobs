@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin;
 
-import io.github.flemmli97.improvedmobs.entities.ServersideRegister;
-import io.github.flemmli97.improvedmobs.utils.EntityFlags;
+import io.github.flemmli97.improvedmobs.common.entities.ServersideRegister;
+import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;

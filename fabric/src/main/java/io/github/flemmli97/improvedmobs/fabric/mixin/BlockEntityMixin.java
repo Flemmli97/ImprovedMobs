@@ -1,8 +1,8 @@
 package io.github.flemmli97.improvedmobs.fabric.mixin;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.common.utils.ContainerOpened;
 import io.github.flemmli97.improvedmobs.fabric.mixinutil.ContainerOpenAccess;
-import io.github.flemmli97.improvedmobs.utils.ContainerOpened;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;

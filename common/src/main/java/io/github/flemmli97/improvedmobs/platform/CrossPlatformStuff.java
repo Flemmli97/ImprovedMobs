@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.platform;
 
-import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.tenshilib.loader.LoaderInitializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;

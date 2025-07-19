@@ -1,12 +1,12 @@
 package io.github.flemmli97.improvedmobs.fabric.platform;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
+import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.fabric.mixinutil.ContainerOpenAccess;
 import io.github.flemmli97.improvedmobs.fabric.mixinutil.PlayerDifficultyAccess;
-import io.github.flemmli97.improvedmobs.network.PacketHandler;
-import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -35,8 +35,8 @@ import java.nio.file.Path;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
-    public static final TagKey<Item> fabricAxe = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("fabric", "axes"));
-    public static final TagKey<Item> commonAxe = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "axes"));
+    public static final TagKey<Item> FABRIC_AXE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("fabric", "axes"));
+    public static final TagKey<Item> COMMON_AXE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "axes"));
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
@@ -107,7 +107,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
-        return (attackingStack.getItem() instanceof AxeItem || attackingStack.is(fabricAxe) || attackingStack.is(commonAxe)) && held.getItem() instanceof ShieldItem;
+        return (attackingStack.getItem() instanceof AxeItem || attackingStack.is(FABRIC_AXE) || attackingStack.is(COMMON_AXE)) && held.getItem() instanceof ShieldItem;
     }
 
     @Override

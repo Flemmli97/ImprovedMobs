@@ -1,6 +1,6 @@
 package io.github.flemmli97.improvedmobs.fabric.mixin;
 
-import io.github.flemmli97.improvedmobs.events.EventCalls;
+import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;

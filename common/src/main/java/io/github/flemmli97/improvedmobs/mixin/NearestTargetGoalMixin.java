@@ -14,5 +14,4 @@ public interface NearestTargetGoalMixin<T extends LivingEntity> {
 
     @Accessor("targetType")
     Class<T> targetTypeClss();
-
 }

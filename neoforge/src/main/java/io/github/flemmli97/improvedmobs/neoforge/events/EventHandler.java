@@ -1,8 +1,8 @@
 package io.github.flemmli97.improvedmobs.neoforge.events;
 
-import io.github.flemmli97.improvedmobs.commands.IMCommand;
-import io.github.flemmli97.improvedmobs.config.holder.ConfigLoader;
-import io.github.flemmli97.improvedmobs.events.EventCalls;
+import io.github.flemmli97.improvedmobs.common.commands.IMCommand;
+import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
+import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.projectile.Projectile;

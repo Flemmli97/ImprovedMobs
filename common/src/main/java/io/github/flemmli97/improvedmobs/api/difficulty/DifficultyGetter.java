@@ -1,8 +1,8 @@
 package io.github.flemmli97.improvedmobs.api.difficulty;
 
 import com.google.common.collect.Lists;
-import io.github.flemmli97.improvedmobs.config.Config;
-import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.common.config.Config;
+import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;

@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.neoforge.data;
 
-import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
-import io.github.flemmli97.improvedmobs.utils.ContainerOpened;
+import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.common.utils.ContainerOpened;
 import io.github.flemmli97.tenshilib.TenshiLib;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -52,5 +52,4 @@ public class Attachments {
 
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<ContainerOpened>> HAS_BEEN_OPENED = ATTACHMENT_TYPES.register("has_been_opened", () -> AttachmentType.builder(ContainerOpened::new).serialize(CONTAINER_OPEN_SERIALIZER).build());
     public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerDifficulty>> PLAYER_DIFFICULTY = ATTACHMENT_TYPES.register("player_difficulty", () -> AttachmentType.builder(PlayerDifficulty::new).serialize(DIFFICULTY_SERIALIZER).build());
-
 }

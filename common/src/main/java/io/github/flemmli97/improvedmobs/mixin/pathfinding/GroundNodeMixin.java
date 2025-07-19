@@ -2,9 +2,9 @@ package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import io.github.flemmli97.improvedmobs.config.Config;
+import io.github.flemmli97.improvedmobs.common.config.Config;
+import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
-import io.github.flemmli97.improvedmobs.utils.PathFindingUtils;
 import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
 import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
 import net.minecraft.core.BlockPos;

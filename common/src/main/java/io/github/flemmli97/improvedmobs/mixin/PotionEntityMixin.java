@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin;
 
-import io.github.flemmli97.improvedmobs.ai.util.AIUtils;
-import io.github.flemmli97.improvedmobs.utils.EntityFlags;
+import io.github.flemmli97.improvedmobs.common.entities.ai.util.AIUtils;
+import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.ThrownPotion;

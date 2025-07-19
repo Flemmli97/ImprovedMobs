@@ -1,6 +1,6 @@
 package io.github.flemmli97.improvedmobs.fabric.mixin;
 
-import io.github.flemmli97.improvedmobs.events.EventCalls;
+import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import net.minecraft.world.entity.projectile.DragonFireball;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownEgg;

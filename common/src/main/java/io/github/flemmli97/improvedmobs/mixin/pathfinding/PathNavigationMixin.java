@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
+import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
-import io.github.flemmli97.improvedmobs.utils.PathFindingUtils;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
@@ -20,7 +20,6 @@ public abstract class PathNavigationMixin {
     protected Mob mob;
     @Shadow
     protected NodeEvaluator nodeEvaluator;
-
 
     @Inject(method = "getGroundY", at = @At(value = "HEAD"), cancellable = true)
     private void noJumpBreakable(Vec3 pos, CallbackInfoReturnable<Double> info) {

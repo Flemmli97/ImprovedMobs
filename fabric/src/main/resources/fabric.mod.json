@@ -20,7 +20,7 @@
       "io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabric"
     ],
     "client": [
-      "io.github.flemmli97.improvedmobs.fabric.ImprovedMobsFabricClient"
+      "io.github.flemmli97.improvedmobs.fabric.client.ImprovedMobsFabricClient"
     ]
   },
   "mixins": [

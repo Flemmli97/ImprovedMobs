@@ -1,10 +1,10 @@
 package io.github.flemmli97.improvedmobs.neoforge.platform;
 
-import io.github.flemmli97.improvedmobs.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
+import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
+import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
+import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.neoforge.data.Attachments;
-import io.github.flemmli97.improvedmobs.network.PacketHandler;
-import io.github.flemmli97.improvedmobs.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
