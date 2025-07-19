@@ -4,20 +4,10 @@ loom {
     accessWidenerPath.set project(":fabric").file("src/main/resources/improvedmobs.accesswidener")
 }
 
-repositories {
-    mavenLocal()
-    maven {
-        name = "TenshiLib"
-        url "https://maven.blazing-coop.net/releases"
-    }
-    maven {
-        url "https://cursemaven.com"
-    }
-}
-
 dependencies {
     modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
     modCompileOnly "${pehkui}"
+    modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api}"
 }
 
 sourceSets.main.resources {

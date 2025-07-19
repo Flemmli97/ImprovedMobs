@@ -16,22 +16,10 @@ ext {
     mod_meta.tenshilib_version = tenshilib_version
 }
 
-repositories {
-    mavenLocal()
-    maven {
-        name = "TenshiLib"
-        url "https://maven.blazing-coop.net/releases"
-    }
-    maven {
-        name = "CurseMaven"
-        url "https://www.cursemaven.com"
-    }
-}
-
 dependencies {
     modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-neoforge"
 
     // modRuntimeOnly "${sillib_dep}"
     modCompileOnly "${scalhealth_dep}"
-    modRuntimeOnly "io.github.flemmli97:debugutils:1.21-1.0.8-neoforge"
+    modRuntimeOnly "io.github.flemmli97:debugutils:1.21.1-1.0.8-neoforge"
 }

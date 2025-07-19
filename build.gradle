@@ -4,3 +4,21 @@ plugins {
 }
 
 apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/main.gradle"
+
+subprojects {
+    repositories {
+        mavenLocal()
+        maven {
+            name = "TenshiLib"
+            url "https://maven.blazing-coop.net/releases"
+        }
+        maven {
+            name = "Fuzs Mod Resources"
+            url = "https://raw.githubusercontent.com/Fuzss/modresources/main/maven/"
+        }
+        maven {
+            name = "CurseMaven"
+            url "https://www.cursemaven.com"
+        }
+    }
+}
