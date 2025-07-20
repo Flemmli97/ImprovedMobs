@@ -19,6 +19,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -64,10 +65,13 @@ public class EntityOverridesManager extends SimpleJsonResourceReloadListener {
         }
     }
 
-    public boolean isEnabled(LivingEntity entity, DifficultyFeatures feature) {
+    public OverrideState isEnabled(LivingEntity entity, DifficultyFeatures feature) {
         this.resolve();
         EntityConfigProperties properties = this.properties.get(entity.getType());
-        return properties != null && properties.enabledFeatures().map(set -> set.contains(DifficultyFeatures.REVERSE) ^ (set.contains(DifficultyFeatures.ALL) || set.contains(feature))).orElse(false);
+        if (properties == null || properties.enabledFeatures().isEmpty())
+            return OverrideState.DEFAULT;
+        EnumSet<DifficultyFeatures> set = properties.enabledFeatures().get();
+        return set.contains(DifficultyFeatures.REVERSE) ^ (set.contains(DifficultyFeatures.ALL) || set.contains(feature)) ? OverrideState.ON : OverrideState.OFF;
     }
 
     public void resolve() {
@@ -116,5 +120,11 @@ public class EntityOverridesManager extends SimpleJsonResourceReloadListener {
         if (!overrides.isEmpty())
             ImprovedMobs.LOGGER.info("Following entity overrides are loaded: {}", overrides);
         this.unresolved = builder.build();
+    }
+
+    public enum OverrideState {
+        DEFAULT,
+        ON,
+        OFF
     }
 }

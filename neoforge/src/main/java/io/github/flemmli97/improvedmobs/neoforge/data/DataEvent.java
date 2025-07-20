@@ -14,5 +14,6 @@ public class DataEvent {
         DataGenerator data = event.getGenerator();
         data.addProvider(true, new BlockTagGen(data.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
         data.addProvider(true, new DefaultAttributeProvider(data.getPackOutput(), event.getLookupProvider()));
+//        data.addProvider(true, new EntityOverrideTest(data.getPackOutput(), event.getLookupProvider()));
     }
 }

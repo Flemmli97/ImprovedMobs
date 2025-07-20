@@ -2,7 +2,8 @@ Improved Mobs 1.14.0
 ================
 - Big config overhaul. Do note that old config will need to be updated!
   - Comments should be clearer now too
-  - Various configs now are able to use math expression to allow more customization
+  - Various configs now are able to use **math expression** to allow more customization
+    - While the config will tell you if expressions are supported an indicator also is that values are strings instead of numbers
     - Usable variables for expression contains
       - `difficulty`: The current difficulty
       - `distance_spawn` : The distance to spawn
@@ -16,8 +17,16 @@ Improved Mobs 1.14.0
     - Overriding enabled features defined in the config
     - Entity based difficulty attribute modifications
     - Check out the wiki how to use
+  - Changes:
+    - `Punish Time Skip` -> `Consider Time Skip`
+    - Flags are now called Features. Should be more clear what they mean
+    - Following above `Flag Blacklist` -> `Feature Blacklist`
+    - All individual flag whitelist are now grouped into one config: `Feature Whitelist`
+    - Auto target config can now accept tags
+  - Added equipment drop chance config. `Should drop equipment` removed
 - Add `improvedmobs:no_steal` block tag in addition to config
 - Fix pause state not saved on players
+- Fix LevelZ conflict
 
 Improved Mobs 1.13.5
 ================

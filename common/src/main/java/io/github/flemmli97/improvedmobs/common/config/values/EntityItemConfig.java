@@ -1,10 +1,11 @@
 package io.github.flemmli97.improvedmobs.common.config.values;
 
-import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
 import net.minecraft.world.item.Item;
@@ -20,47 +21,54 @@ public class EntityItemConfig {
     private final List<String> config = new ArrayList<>();
     private boolean initialized;
 
-    private final Map<ResourceLocation, List<String>> itemBlacklist = new HashMap<>();
+    private final Map<EntityType<?>, List<String>> itemBlacklist = new HashMap<>();
 
-    public EntityItemConfig add(ResourceLocation res, String item) {
-        this.itemBlacklist.merge(res, Lists.newArrayList(item), (o, n) -> {
-            o.add(item);
-            return o;
-        });
-        return this;
+    @SafeVarargs
+    public EntityItemConfig(Pair<String, String>... values) {
+        for (Pair<String, String> pair : values) {
+            this.config.add(pair.getFirst() + ";" + pair.getSecond());
+        }
     }
 
     public boolean preventUse(Entity entity, Item item) {
-        List<String> items = this.itemBlacklist.get(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()));
+        this.initialize();
+        List<String> items = this.itemBlacklist.get(entity.getType());
         String remap = this.vanillaRemapping(item);
         return items != null && (items.contains(BuiltInRegistries.ITEM.getKey(item).toString()) || (remap != null && items.contains(remap)));
     }
 
-    public void read(List<String> list) {
-        Map<ResourceLocation, List<String>> temp = new HashMap<>();
-        list.forEach(s -> {
-            String[] sub = s.split(";");
-            if (sub.length == 2) {
-                temp.merge(ResourceLocation.parse(sub[0]), Lists.newArrayList(sub[1]), (o, n) -> {
-                    o.add(sub[1]);
-                    return o;
-                });
-            } else
-                ImprovedMobs.LOGGER.error("Invalid entity item config value for {}", s);
-        });
+    private void initialize() {
+        if (this.initialized)
+            return;
+        this.initialized = true;
+        Map<EntityType<?>, List<String>> map = new HashMap<>();
+        for (String value : this.config) {
+            String[] sub = value.split(";");
+            if (sub.length != 2) {
+                ImprovedMobs.LOGGER.error("Invalid entity item config value for {}", value);
+                continue;
+            }
+            BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(sub[0]))
+                    .ifPresent(type -> map.computeIfAbsent(type, key -> new ArrayList<>()).add(sub[1]));
+        }
         this.itemBlacklist.clear();
-        this.itemBlacklist.putAll(temp);
+        this.itemBlacklist.putAll(map);
+    }
+
+    public void read(List<String> config) {
+        this.config.clear();
+        this.config.addAll(config);
+        this.itemBlacklist.clear();
+        this.initialized = false;
     }
 
     public List<String> writeToString() {
-        List<String> list = new ArrayList<>();
-        this.itemBlacklist.forEach((res, il) -> il.forEach(s -> list.add(res.toString() + ";" + s)));
-        list.sort(null);
-        return list;
+        return List.copyOf(this.config);
     }
 
     public static String use() {
-        String[] str = new String[]{"<entity registry name-item>", "For different items but same entity use multiple lines",
+        String[] str = new String[]{"<entity registry name;item>",
+                "For different items but same entity use multiple lines",
                 "Some special names are BOW, TRIDEN, CROSSBOW refering to every bow/trident/crossbow item (So you dont need to type e.g. every bow item)"};
         return String.join("\n", str);
     }

@@ -11,6 +11,7 @@ public class ExpressionConfig {
 
     public ExpressionConfig(String config) {
         this.config = config;
+        this.value = Expression.of(config);
     }
 
     public double get(VariableMap variables) {

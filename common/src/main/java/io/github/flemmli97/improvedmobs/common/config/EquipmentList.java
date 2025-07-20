@@ -58,12 +58,11 @@ import java.util.stream.Collectors;
 public class EquipmentList {
 
     private static final int CONFIG_VERSION = 2;
+    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
     private static final Map<EquipmentSlot, WeightedItemstackList> EQUIPMENTS = new HashMap<>();
 
-    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
-
-    public static ItemStack getEquip(Mob e, EquipmentSlot slot, float difficulty) {
+    public static ItemStack getEquipment(Mob e, EquipmentSlot slot, float difficulty) {
         WeightedItemstackList eq = EQUIPMENTS.get(slot);
         if (eq == null || eq.list.isEmpty() || eq.getTotalWeight(difficulty) <= 0)
             return ItemStack.EMPTY;
@@ -110,13 +109,8 @@ public class EquipmentList {
                     }
                 }
             }
-            JsonArray comment = new JsonArray();
-            comment.add("Mobs will be able to equip items declared here");
-            comment.add("Value is the item. It also accepts item components. The default config has an example with a harming potion");
-            comment.add("Weight is the weight of an item. Higher weight means that the item is more likely to get choosen");
-            comment.add("Quality is a modifier applied to the weight. The final weight used is weight + quality * current difficulty");
             confObj.addProperty("version", CONFIG_VERSION);
-            confObj.add("__comment", comment);
+            confObj.add("__comment", commentObj());
             for (EquipmentSlot key : EquipmentSlot.values()) {
                 WeightedItemstackList stackList = EQUIPMENTS.get(key);
                 if (stackList != null) {
@@ -135,9 +129,17 @@ public class EquipmentList {
             GSON.toJson(confObj, JsonObject.class, wr);
             wr.close();
         } catch (IOException | IllegalStateException e) {
-            ImprovedMobs.LOGGER.error("Error initializing equipment");
-            e.printStackTrace();
+            ImprovedMobs.LOGGER.error("Error initializing equipment file", e);
         }
+    }
+
+    private static JsonArray commentObj() {
+        JsonArray comment = new JsonArray();
+        comment.add("Mobs will be able to equip items declared here");
+        comment.add("Value is the item. It also accepts item components. The default config has an example with a harming potion");
+        comment.add("Weight is the weight of an item. Higher weight means that the item is more likely to get choosen");
+        comment.add("Quality is a modifier applied to the weight. The final weight used is weight + quality * current difficulty");
+        return comment;
     }
 
     private static void createBackup() {

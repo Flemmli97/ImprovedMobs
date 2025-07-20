@@ -13,7 +13,6 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.FluidTags;
-import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
@@ -58,7 +57,7 @@ public class Utils {
                     continue;
                 boolean shouldAdd = slot == EquipmentSlot.HEAD || living.getRandom().nextFloat() < Config.CommonConfig.additionalEquipmentChance.get(map);
                 if (shouldAdd && living.getItemBySlot(slot).isEmpty()) {
-                    ItemStack equip = EquipmentList.getEquip(living, slot, difficulty);
+                    ItemStack equip = EquipmentList.getEquipment(living, slot, difficulty);
                     if (living.getRandom().nextFloat() < Config.CommonConfig.randomTrimChance.get(map)) {
                         RegistryAccess registryAccess = living.getServer().registryAccess();
                         Optional<Holder.Reference<TrimMaterial>> trim = registryAccess.registry(Registries.TRIM_MATERIAL).flatMap(r -> r.getRandom(living.getRandom()));
@@ -79,7 +78,7 @@ public class Utils {
     public static void equipHeld(Mob living, float difficulty, VariableMap map) {
         if (living.getRandom().nextFloat() < Config.CommonConfig.mainHandChance.get(map)) {
             if (living.getMainHandItem().isEmpty()) {
-                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlot.MAINHAND, difficulty);
+                ItemStack stack = EquipmentList.getEquipment(living, EquipmentSlot.MAINHAND, difficulty);
                 living.setDropChance(EquipmentSlot.MAINHAND, (float) Config.CommonConfig.dropChance.get(map));
                 living.setItemSlot(EquipmentSlot.MAINHAND, stack);
             }
@@ -89,7 +88,7 @@ public class Utils {
             return;
         if (living.getRandom().nextFloat() < Config.CommonConfig.offHandChance.get(map)) {
             if (living.getOffhandItem().isEmpty()) {
-                ItemStack stack = EquipmentList.getEquip(living, EquipmentSlot.OFFHAND, difficulty);
+                ItemStack stack = EquipmentList.getEquipment(living, EquipmentSlot.OFFHAND, difficulty);
                 living.setDropChance(EquipmentSlot.OFFHAND, (float) Config.CommonConfig.dropChance.get(map));
                 living.setItemSlot(EquipmentSlot.OFFHAND, stack);
             }
@@ -98,7 +97,8 @@ public class Utils {
 
     public static void enchantGear(Mob living, float difficulty, VariableMap map) {
         EnchantCalcConf.Value val = Config.CommonConfig.enchantCalc.get(difficulty);
-        if (val.max() == 0)
+        int level = (int) val.expression().get(map);
+        if (level == 0)
             return;
         for (EquipmentSlot entityequipmentslot : EquipmentSlot.values()) {
             ItemStack itemstack = living.getItemBySlot(entityequipmentslot);
@@ -106,7 +106,7 @@ public class Utils {
                 continue;
             if (!itemstack.isEmpty() && living.getRandom().nextFloat() < Config.CommonConfig.enchantChance.get(map)) {
                 RegistryAccess registryAccess = living.registryAccess();
-                EnchantmentHelper.enchantItem(living.getRandom(), itemstack, Mth.nextInt(living.getRandom(), val.min(), val.max()),
+                EnchantmentHelper.enchantItem(living.getRandom(), itemstack, level,
                         registryAccess.registryOrThrow(Registries.ENCHANTMENT).holders().filter(r ->
                                         Config.CommonConfig.enchantWhitelist == Config.CommonConfig.enchantBlacklist.contains(r.key().location().toString()))
                                 .map(r -> r));

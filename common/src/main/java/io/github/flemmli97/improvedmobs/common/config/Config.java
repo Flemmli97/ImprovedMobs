@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.common.config;
 
+import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
 import io.github.flemmli97.improvedmobs.common.config.values.BreakableBlocks;
 import io.github.flemmli97.improvedmobs.common.config.values.DifficultyConfig;
@@ -100,15 +101,16 @@ public class Config {
         public static boolean equipmentModWhitelist;
         public static List<String> itemuseBlacklist = new ArrayList<>(List.of("bigbrain:buckler"));
         public static boolean itemuseWhitelist;
-        public static EntityItemConfig entityItemConfig = new EntityItemConfig()
-                .add(ResourceLocation.parse("skeleton"), "BOW")
-                .add(ResourceLocation.parse("wither_skeleton"), "BOW")
-                .add(ResourceLocation.parse("stray"), "BOW")
-                .add(ResourceLocation.parse("illusioner"), "BOW")
-                .add(ResourceLocation.parse("drowned"), "TRIDENT")
-                .add(ResourceLocation.parse("piglin"), "CROSSBOW")
-                .add(ResourceLocation.parse("pillager"), "CROSSBOW")
-                .add(ResourceLocation.parse("snow_golem"), "minecraft:snowball");
+        public static EntityItemConfig entityItemConfig = new EntityItemConfig(
+                Pair.of("minecraft:skeleton", "BOW"),
+                Pair.of("minecraft:wither_skeleton", "BOW"),
+                Pair.of("minecraft:stray", "BOW"),
+                Pair.of("minecraft:illusioner", "BOW"),
+                Pair.of("minecraft:drowned", "TRIDENT"),
+                Pair.of("minecraft:piglin", "CROSSBOW"),
+                Pair.of("minecraft:pillager", "CROSSBOW"),
+                Pair.of("minecraft:snow_golem", "minecraft:snowball")
+        );
 
         public static ExpressionConfig equipmentChance = new ExpressionConfig("0.1 + min(difficulty * 0.8 / 250, 0.8)");
         public static ExpressionConfig additionalEquipmentChance = new ExpressionConfig("0.3 + min(difficulty * 0.6 / 250, 0.6)");
@@ -117,12 +119,12 @@ public class Config {
         public static ExpressionConfig offHandChance = new ExpressionConfig("0.1 + min(difficulty * 0.3 / 250, 0.3)");
         public static ExpressionConfig dropChance = new ExpressionConfig("0");
         public static ExpressionConfig enchantChance = new ExpressionConfig("0.2 + min(difficulty * 0.6 / 250, 0.6)");
-        public static EnchantCalcConf enchantCalc = new EnchantCalcConf(new EnchantCalcConf.Value(0, 5, 10),
-                new EnchantCalcConf.Value(25, 5, 15),
-                new EnchantCalcConf.Value(50, 10, 17),
-                new EnchantCalcConf.Value(100, 15, 25),
-                new EnchantCalcConf.Value(200, 20, 30),
-                new EnchantCalcConf.Value(250, 30, 35));
+        public static EnchantCalcConf enchantCalc = new EnchantCalcConf(new EnchantCalcConf.Value(0, "randInt(1, 10)"),
+                new EnchantCalcConf.Value(25, "randInt(5, 15)"),
+                new EnchantCalcConf.Value(50, "randInt(10, 17)"),
+                new EnchantCalcConf.Value(100, "randInt(15, 25)"),
+                new EnchantCalcConf.Value(200, "randInt(20, 30)"),
+                new EnchantCalcConf.Value(250, "randInt(30, 35)"));
         public static List<String> enchantBlacklist = new ArrayList<>();
         public static boolean enchantWhitelist;
 

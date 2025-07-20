@@ -23,4 +23,7 @@ dependencies {
     modCompileOnly "${scalhealth_dep}"
     modRuntimeOnly "io.github.flemmli97:debugutils:1.21.1-1.0.8-neoforge"
     modRuntimeOnly "maven.modrinth:jade:2P7THd8J"
+    modRuntimeOnly "curse.maven:moonlight-499980:6682378"
+    modRuntimeOnly "curse.maven:dummy-225738:6608246"
+    modRuntimeOnly "io.github.flemmli97:mobbattle:1.21.1-2.5.4-neoforge"
 }

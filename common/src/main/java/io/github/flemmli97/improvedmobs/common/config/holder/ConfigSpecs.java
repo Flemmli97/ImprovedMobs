@@ -170,7 +170,7 @@ public class ConfigSpecs {
             this.breakableBlocks = builder.comment("Whitelist for blocks, which can be actively broken.", BreakableBlocks.use()).define("Block Break Whitelist", Config.CommonConfig.breakableBlocks.write(), stringList());
             this.breakingAsBlacklist = builder.comment("Treat Block Whitelist as Blacklist").define("Breaklist as Blacklist", Config.CommonConfig.breakingAsBlacklist);
             this.useBlockBreakSound = builder.comment("Use the block breaking sound instead of a knocking sound").define("Sound", Config.CommonConfig.useBlockBreakSound);
-            this.breakerChance = builder.comment("Chance for a mob to be able to break blocks").define("Breaker Chance", Config.CommonConfig.breakerChance.write());
+            this.breakerChance = builder.comment("(Expression): Chance for a mob to be able to break blocks").define("Breaker Chance", Config.CommonConfig.breakerChance.write());
             this.difficultyBreak = builder.comment("Difficulty at which mobs are able to break blocks").defineInRange("Difficulty Break AI", Config.CommonConfig.difficultyBreak, 0, Double.MAX_VALUE);
             this.breakerInitCooldown = builder.comment("Initial cooldown for block breaking mobs").defineInRange("Breaker Initial Cooldown", Config.CommonConfig.breakerInitCooldown, 0, Integer.MAX_VALUE);
             this.breakerCooldown = builder.comment("Cooldown for breaking blocks").defineInRange("Breaker Cooldown", Config.CommonConfig.breakerCooldown, 0, Integer.MAX_VALUE);
@@ -178,17 +178,17 @@ public class ConfigSpecs {
             this.restoreDelay = builder.comment("Blocks will be restored after x ticks being broken. If set to 0 will never restore", "This will not restore block entity data!").defineInRange("Restore delay", Config.CommonConfig.restoreDelay, 0, Integer.MAX_VALUE);
             this.idleBreak = builder.comment("If mobs should break blocks when not chasing a target").define("Idle Break", Config.CommonConfig.idleBreak);
             this.breakerSightIgnore = builder.comment("Chance a breaker mob to ignore line of sight").defineInRange("Breaker Sight Ignore", Config.CommonConfig.breakerSightIgnore, 0, 1);
-            this.breakSpeed = builder.comment("The speed modifier for breaking blocks").define("Breaking Speed Modifier", Config.CommonConfig.breakSpeed.write());
-            this.stealerChance = builder.comment("Chance for a mob to be able to steal items from inventory blocks").define("Stealer Chance", Config.CommonConfig.stealerChance.write());
+            this.breakSpeed = builder.comment("(Expression): The speed modifier for breaking blocks").define("Breaking Speed Modifier", Config.CommonConfig.breakSpeed.write());
+            this.stealerChance = builder.comment("(Expression): Chance for a mob to be able to steal items from inventory blocks").define("Stealer Chance", Config.CommonConfig.stealerChance.write());
             this.difficultySteal = builder.comment("Difficulty at which mobs are able to steal items").defineInRange("Difficulty Steal AI", Config.CommonConfig.difficultySteal, 0, Double.MAX_VALUE);
             this.blackListedContainerBlocks = builder.comment("List of blocks mobs shouldn't steal from. You can also add a modid to blacklist whole mods").define("Steal Block Blacklist", Config.CommonConfig.blackListedContainerBlocks, stringList());
             this.breakingItems = builder.comment("Items which will be given to mobs who can break blocks. Empty list = no items. Syntax: id;weight", "Note: Mobs can only break blocks if the tool they are holding can break the blocks").define("Breaking items", Lists.newArrayList("minecraft:diamond_pickaxe;1", "minecraft:iron_axe;2"), stringList());
             this.breakBlockEntities = builder.comment("Should mobs be able to break block entities? Evaluated before the break list").define("Break BlockEntities", Config.CommonConfig.breakBlockEntities);
-            this.neutralAggressiv = builder.comment("Chance for neutral mobs to be aggressive").define("Neutral Aggressive Chance", Config.CommonConfig.neutralAggressiv.write());
-            this.guardianAIChance = builder.comment("Chance for mobs to be able to summon an aquatic mount").define("Guardian Chance", Config.CommonConfig.guardianAIChance.write());
-            this.flyAIChance = builder.comment("Chance for mobs to be able to summon a flying mount").define("Flying Chance", Config.CommonConfig.flyAIChance.write());
+            this.neutralAggressiv = builder.comment("(Expression): Chance for neutral mobs to be aggressive").define("Neutral Aggressive Chance", Config.CommonConfig.neutralAggressiv.write());
+            this.guardianAIChance = builder.comment("(Expression): Chance for mobs to be able to summon an aquatic mount").define("Guardian Chance", Config.CommonConfig.guardianAIChance.write());
+            this.flyAIChance = builder.comment("(Expression): Chance for mobs to be able to summon a flying mount").define("Flying Chance", Config.CommonConfig.flyAIChance.write());
             this.tntBlockDestruction = builder.comment("Set this to true to allow tnt thrown by mobs to destroy blocks").define("TNT Block Destruction", Config.CommonConfig.tntBlockDestruction);
-            this.ignoreSightChance = builder.comment("Chance for a mob to ignore line of sight", "This config ONLY affects villager target, neutral aggressive and auto targeting feature").define("Ignore Sight", Config.CommonConfig.ignoreSightChance.write());
+            this.ignoreSightChance = builder.comment("(Expression): Chance for a mob to ignore line of sight", "This config ONLY affects villager target, neutral aggressive and auto targeting feature").define("Ignore Sight", Config.CommonConfig.ignoreSightChance.write());
             this.autoTargets = builder.comment(TargetMapConfig.use()).define("Auto Target List", Config.CommonConfig.autoTargets.write(), stringList());
             builder.pop();
 
@@ -204,14 +204,14 @@ public class ConfigSpecs {
                     "This defines a mapping to prevent those mobs using the added AI",
                     "For example Skeletons already use bows and if not blacklisted will make super fast shooting skeletons",
                     EntityItemConfig.use()).define("Entity Item Use Blacklist", Config.CommonConfig.entityItemConfig.writeToString(), stringList());
-            this.equipmentChance = builder.comment("Chance for a mob to have a piece of armor").define("Equipment Chance", Config.CommonConfig.equipmentChance.write());
-            this.additionalEquipmentChance = builder.comment("Chance for a mob to have additional pieces of armor").define("Additional Equipment Chance", Config.CommonConfig.additionalEquipmentChance.write());
-            this.randomTrimChance = builder.comment("Chance for an equipment to have a random armor trim").define("Armor Trim Chance", Config.CommonConfig.randomTrimChance.write());
-            this.mainHandChance = builder.comment("Chance for a mob to have an item in its main hand").define("Main Hand Item Chance", Config.CommonConfig.mainHandChance.write());
-            this.offHandChance = builder.comment("Chance for a mob to have an item in its offhand").define("Offhand Item Chance", Config.CommonConfig.offHandChance.write());
-            this.dropChance = builder.comment("Chance for a mob to drop its items", "This ONLY applies to equipment added through this mod!").define("Drop Chance", Config.CommonConfig.dropChance.write());
-            this.enchantChance = builder.comment("Chance for an equipment piece to be enchanted").define("Enchanting Chance", Config.CommonConfig.enchantChance.write());
-            this.enchantCalc = builder.comment("Specify min and max enchanting levels according to difficulty. difficulty-minLevel-maxLevel").define("Enchanting Calc", Config.CommonConfig.enchantCalc.write(), stringList());
+            this.equipmentChance = builder.comment("(Expression): Chance for a mob to have a piece of armor").define("Equipment Chance", Config.CommonConfig.equipmentChance.write());
+            this.additionalEquipmentChance = builder.comment("(Expression): Chance for a mob to have additional pieces of armor").define("Additional Equipment Chance", Config.CommonConfig.additionalEquipmentChance.write());
+            this.randomTrimChance = builder.comment("(Expression): Chance for an equipment to have a random armor trim").define("Armor Trim Chance", Config.CommonConfig.randomTrimChance.write());
+            this.mainHandChance = builder.comment("(Expression): Chance for a mob to have an item in its main hand").define("Main Hand Item Chance", Config.CommonConfig.mainHandChance.write());
+            this.offHandChance = builder.comment("(Expression): Chance for a mob to have an item in its offhand").define("Offhand Item Chance", Config.CommonConfig.offHandChance.write());
+            this.dropChance = builder.comment("(Expression): Chance for a mob to drop its items", "This ONLY applies to equipment added through this mod!").define("Drop Chance", Config.CommonConfig.dropChance.write());
+            this.enchantChance = builder.comment("(Expression): Chance for an equipment piece to be enchanted").define("Enchanting Chance", Config.CommonConfig.enchantChance.write());
+            this.enchantCalc = builder.comment("Specify enchanting levels according to difficulty. <difficulty;expression>").define("Enchanting Calc", Config.CommonConfig.enchantCalc.write(), stringList());
             this.enchantBlacklist = builder.comment("Blacklist enchantments from being applied to equipments").define("Enchanting Blacklist", Config.CommonConfig.enchantBlacklist, stringList());
             this.enchantWhitelist = builder.comment("Turn the enchant blacklist to a whitelist").define("Enchanting Whitelist", Config.CommonConfig.enchantWhitelist);
             builder.pop();

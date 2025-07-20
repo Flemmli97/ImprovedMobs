@@ -7,7 +7,7 @@ import java.util.List;
 
 public class EnchantCalcConf {
 
-    private static final Value DEFAULT_VALUE = new Value(0, 0, 0);
+    private static final Value DEFAULT_VALUE = new Value(0, new ExpressionConfig("0"));
 
     private final List<Value> values = new ArrayList<>();
 
@@ -23,10 +23,10 @@ public class EnchantCalcConf {
         this.values.clear();
         List<Value> list = new ArrayList<>();
         for (String s : ss) {
-            String[] parts = s.split("-");
-            if (parts.length != 3)
+            String[] parts = s.split(";");
+            if (parts.length != 2)
                 continue;
-            list.add(new Value(Float.parseFloat(parts[0]), Integer.parseInt(parts[1]), Integer.parseInt(parts[2])));
+            list.add(new Value(Float.parseFloat(parts[0]), new ExpressionConfig(parts[1])));
         }
         list.sort(null);
         this.values.addAll(list);
@@ -38,10 +38,14 @@ public class EnchantCalcConf {
         return list;
     }
 
-    public record Value(float requiredDifficulty, int min, int max) implements Comparable<Value> {
+    public record Value(float requiredDifficulty, ExpressionConfig expression) implements Comparable<Value> {
+
+        public Value(float requiredDifficulty, String expression) {
+            this(requiredDifficulty, new ExpressionConfig(expression));
+        }
 
         public String write() {
-            return String.format("%s-%s-%s", this.requiredDifficulty, this.min, this.max);
+            return String.format("%s;%s", this.requiredDifficulty, this.expression.write());
         }
 
         @Override
