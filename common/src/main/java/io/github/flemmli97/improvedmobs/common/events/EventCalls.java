@@ -1,8 +1,9 @@
 package io.github.flemmli97.improvedmobs.common.events;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
+import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.EntityModifyFlagConfig;
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.common.entities.RiddenSummonEntity;
 import io.github.flemmli97.improvedmobs.common.entities.ai.BlockBreakGoal;
@@ -21,8 +22,8 @@ import io.github.flemmli97.improvedmobs.mixin.TargetGoalAccessor;
 import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
 import io.github.flemmli97.improvedmobs.mixinhelper.ISpawnReason;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -39,7 +40,6 @@ import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.TamableAnimal;
-import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
@@ -74,31 +74,35 @@ public class EventCalls {
 
     public static void tick(ServerLevel level) {
         BlockRestorationData.get(level).tick(level);
-        if (!Config.CommonConfig.enableDifficultyScaling)
-            return;
         if (level.dimension() != Level.OVERWORLD)
             return;
+        if (!Config.CommonConfig.enableDifficultyScaling) {
+            DifficultyData.get(level.getServer()).updateTime(level.getServer());
+            return;
+        }
         if (!Config.CommonConfig.difficultyType.increaseDifficulty) {
-            if (level.getGameTime() % 20 == 0)
+            if (level.getGameTime() % 20 == 0) {
                 CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(level.getServer()), level.getServer());
+                DifficultyData.get(level.getServer()).updateTime(level.getServer());
+            }
             return;
         }
         boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !level.getServer().getPlayerList().getPlayers().isEmpty()) && level.getDayTime() > Config.CommonConfig.difficultyDelay;
         DifficultyData data = DifficultyData.get(level.getServer());
-        if (Config.CommonConfig.shouldPunishTimeSkip) {
-            long timeDiff = Math.abs(level.getDayTime() - data.getPrevTime());
+        long timeDiff = Math.abs(level.getDayTime() - data.getPrevTime());
+        if (Config.CommonConfig.considerTimeskip) {
             if (timeDiff > 2400) {
                 long i = timeDiff / 2400;
                 if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
                     i += 1;
                 while (i > 0) {
-                    data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0f, level.getDayTime(), level.getServer());
+                    data.increaseDifficultyBy(current -> shouldIncrease ? Config.CommonConfig.difficultyIncrease.get(current).start() : 0f, level.getDayTime(), level.getServer());
                     i--;
                 }
             }
         } else {
-            if (level.getDayTime() - data.getPrevTime() > 2400) {
-                data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0, level.getDayTime(), level.getServer());
+            if (timeDiff > 2400) {
+                data.increaseDifficultyBy(current -> shouldIncrease ? Config.CommonConfig.difficultyIncrease.get(current).start() : 0, level.getDayTime(), level.getServer());
             }
         }
     }
@@ -111,24 +115,25 @@ public class EventCalls {
         EntityFlags flags = EntityFlags.get(mob);
         boolean mobGriefing = mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
         float difficulty = DifficultyData.getDifficulty(mob.level(), mob);
-        if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEF) {
-            if (difficulty >= Config.CommonConfig.difficultyBreak && Config.CommonConfig.breakerChance != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.breakerChance
-                    && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.BLOCKBREAK, Config.CommonConfig.mobListBreakWhitelist)) {
+        VariableMap map = Config.create(mob, difficulty);
+        if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEFINED) {
+            if (difficulty >= Config.CommonConfig.difficultyBreak && mob.getRandom().nextFloat() < Config.CommonConfig.breakerChance.get(map)
+                    && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.BLOCKBREAK)) {
                 flags.canBreakBlocks = EntityFlags.FlagType.TRUE;
             } else
                 flags.canBreakBlocks = EntityFlags.FlagType.FALSE;
         }
-        if (flags.canFly == EntityFlags.FlagType.UNDEF) {
-            if (mob.getRandom().nextFloat() < Config.CommonConfig.flyAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.PARROT, Config.CommonConfig.mobListFlyWhitelist)) {
+        if (flags.canFly == EntityFlags.FlagType.UNDEFINED) {
+            if (mob.getRandom().nextFloat() < Config.CommonConfig.flyAIChance.get(map) && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.PARROT)) {
                 flags.canFly = EntityFlags.FlagType.TRUE;
             } else
                 flags.canFly = EntityFlags.FlagType.FALSE;
         }
-        applyAttributesAndItems(mob, difficulty);
-        if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.USEITEM, Config.CommonConfig.mobListUseWhitelist)) {
+        applyAttributesAndItems(mob, difficulty, map);
+        if (!Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.USEITEM)) {
             mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 12));
         }
-        if (mob.getRandom().nextFloat() < Config.CommonConfig.guardianAIChance && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.GUARDIAN, Config.CommonConfig.mobListBoatWhitelist)) {
+        if (mob.getRandom().nextFloat() < Config.CommonConfig.guardianAIChance.get(map) && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.GUARDIAN)) {
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
             if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof WaterBoundPathNavigation) && !(mob instanceof Slime)) {
                 mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
@@ -140,18 +145,18 @@ public class EventCalls {
                 mob.goalSelector.addGoal(6, new FlyRidingGoal(mob));
             }
         }
-        if (!Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.LADDER, Config.CommonConfig.mobListLadderWhitelist)) {
+        if (!Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.LADDER)) {
             if (!(mob.getNavigation() instanceof WallClimberNavigation)) {
                 EntityFlags.get(mob).ladderClimber = true;
                 mob.goalSelector.addGoal(4, new LadderClimbGoal(mob));
                 ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).improvedMobs$setCanClimbLadder(true);
             }
         }
-        boolean villager = !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.TARGETVILLAGER, Config.CommonConfig.targetVillagerWhitelist);
+        boolean villager = !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.TARGETVILLAGER);
         boolean aggressive;
-        boolean ignoreSight = mob.getRandom().nextFloat() < Config.CommonConfig.genericSightIgnore;
-        if ((mob instanceof NeutralMob) && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.NEUTRALAGGRO, Config.CommonConfig.neutralAggroWhitelist)) {
-            aggressive = Config.CommonConfig.neutralAggressiv != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.neutralAggressiv;
+        boolean ignoreSight = mob.getRandom().nextFloat() < Config.CommonConfig.ignoreSightChance.get(map);
+        if ((mob instanceof NeutralMob) && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.NEUTRALAGGRO)) {
+            aggressive = mob.getRandom().nextFloat() < Config.CommonConfig.neutralAggressiv.get(map);
             if (aggressive)
                 mob.targetSelector.addGoal(1, setNoLoS(mob, Player.class, ignoreSight, null));
         } else
@@ -161,12 +166,12 @@ public class EventCalls {
             if (!hasVillagerTarget)
                 mob.targetSelector.addGoal(3, setNoLoS(mob, AbstractVillager.class, ignoreSight, null));
         }
-        List<EntityType<?>> types = Config.CommonConfig.autoTargets.get(BuiltInRegistries.ENTITY_TYPE.getKey(mob.getType()));
-        if (types != null)
-            mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, ignoreSight, (l) -> types.contains(l.getType())));
+        Predicate<EntityType<?>> targets = Config.CommonConfig.autoTargets.get(mob.getType());
+        if (targets != null)
+            mob.targetSelector.addGoal(3, setNoLoS(mob, LivingEntity.class, ignoreSight, (l) -> targets.test(l.getType())));
         if (mob instanceof PathfinderMob pathfinderMob && difficulty >= Config.CommonConfig.difficultySteal && mobGriefing
-                && Config.CommonConfig.stealerChance != 0 && mob.getRandom().nextFloat() < Config.CommonConfig.stealerChance
-                && !Config.CommonConfig.entityBlacklist.hasFlag(mob, EntityModifyFlagConfig.Flags.STEAL, Config.CommonConfig.mobListStealWhitelist)) {
+                && mob.getRandom().nextFloat() < Config.CommonConfig.stealerChance.get(map)
+                && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.STEAL)) {
             pathfinderMob.goalSelector.addGoal(5, new StealGoal(pathfinderMob));
         }
         if (flags.canBreakBlocks == EntityFlags.FlagType.TRUE) {
@@ -181,8 +186,7 @@ public class EventCalls {
                 mob.goalSelector.addGoal(1, new BlockBreakGoal(mob));
                 if (mob.getOffhandItem().isEmpty()) {
                     ItemStack stack = Config.CommonConfig.getRandomBreakingItem(mob.getRandom());
-                    if (!Config.CommonConfig.shouldDropEquip)
-                        mob.setDropChance(EquipmentSlot.OFFHAND, -100);
+                    mob.setDropChance(EquipmentSlot.OFFHAND, (float) Config.CommonConfig.dropChance.get(map));
                     mob.setItemSlot(EquipmentSlot.OFFHAND, stack);
                 }
             }
@@ -200,62 +204,38 @@ public class EventCalls {
         return goal;
     }
 
-    private static void applyAttributesAndItems(Mob living, float difficulty) {
+    private static void applyAttributesAndItems(Mob living, float difficulty, VariableMap map) {
         EntityFlags flags = EntityFlags.get(living);
         if (!flags.modifyArmor) {
-            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ARMOR, Config.CommonConfig.armorMobWhitelist))
-                Utils.equipArmor(living, difficulty);
+            if (!Config.CommonConfig.entityBlacklist.isDisabledFor(living, DifficultyFeatures.ARMOR))
+                Utils.equipArmor(living, difficulty, map);
             flags.modifyArmor = true;
         }
         if (!flags.modifyHeldItems) {
-            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.HELDITEMS, Config.CommonConfig.heldMobWhitelist))
-                Utils.equipHeld(living, difficulty);
+            if (!Config.CommonConfig.entityBlacklist.isDisabledFor(living, DifficultyFeatures.HELDITEMS))
+                Utils.equipHeld(living, difficulty, map);
             flags.modifyHeldItems = true;
         }
         if (!flags.enchantGear) {
-            Utils.enchantGear(living, difficulty);
+            Utils.enchantGear(living, difficulty, map);
             flags.enchantGear = true;
         }
         if (!flags.modifyAttributes) {
-            if (!Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.ATTRIBUTES, Config.CommonConfig.mobAttributeWhitelist)) {
-                if (Config.CommonConfig.healthIncrease != 0 && !Config.CommonConfig.useScalingHealthMod.enabled()) {
-                    Utils.modifyAttr(living, Attributes.MAX_HEALTH, Config.CommonConfig.healthIncrease * 0.016, Config.CommonConfig.healthMax, difficulty, true);
-                    living.setHealth(living.getMaxHealth());
-                }
-                if (Config.CommonConfig.damageIncrease != 0 && !Config.CommonConfig.useScalingHealthMod.enabled())
-                    Utils.modifyAttr(living, Attributes.ATTACK_DAMAGE, Config.CommonConfig.damageIncrease * 0.008, Config.CommonConfig.damageMax, difficulty, true);
-                if (Config.CommonConfig.speedIncrease != 0)
-                    Utils.modifyAttr(living, Attributes.MOVEMENT_SPEED, Config.CommonConfig.speedIncrease * 0.0008, Config.CommonConfig.speedMax, difficulty, false);
-                if (Config.CommonConfig.knockbackIncrease != 0)
-                    Utils.modifyAttr(living, Attributes.KNOCKBACK_RESISTANCE, Config.CommonConfig.knockbackIncrease * 0.002, Config.CommonConfig.knockbackMax, difficulty, false);
-                if (Config.CommonConfig.magicResIncrease != 0)
-                    EntityFlags.get(living).magicRes = Math.min(Config.CommonConfig.magicResIncrease * 0.0016f * difficulty, Config.CommonConfig.magicResMax);
-                if (Config.CommonConfig.projectileIncrease != 0)
-                    EntityFlags.get(living).projMult = 1 +
-                            (Config.CommonConfig.projectileMax <= 0 ? Config.CommonConfig.projectileIncrease * 0.008f * difficulty : Math.min(Config.CommonConfig.projectileIncrease * 0.008f * difficulty, Config.CommonConfig.projectileMax - 1));
-                if (Config.CommonConfig.explosionIncrease != 0)
-                    EntityFlags.get(living).explosionMult = 1 +
-                            (Config.CommonConfig.explosionMax <= 0 ? Config.CommonConfig.explosionIncrease * 0.003f * difficulty : Math.min(Config.CommonConfig.explosionIncrease * 0.003f * difficulty, Config.CommonConfig.explosionMax - 1));
+            if (!Config.CommonConfig.entityBlacklist.isDisabledFor(living, DifficultyFeatures.ATTRIBUTES)) {
+                EntityOverridesManager.getInstance().applyAttributesTo(living, map);
             }
             flags.modifyAttributes = true;
-        }
-
-        if (Config.CommonConfig.varySizebyPehkui) {
-            if (!flags.isVariedSize && living.getRandom().nextFloat() < Config.CommonConfig.sizeChance && !Config.CommonConfig.entityBlacklist.hasFlag(living, EntityModifyFlagConfig.Flags.PEHKUI, Config.CommonConfig.pehkuiWhitelist)) {
-                Utils.modifyScale(living, Config.CommonConfig.sizeMin, Config.CommonConfig.sizeMax);
-            }
-            flags.isVariedSize = true;
         }
     }
 
     public static float hurtEvent(LivingEntity entity, DamageSource source, float dmg) {
         if (source.is(DamageTypeTags.IS_PROJECTILE) && source.getEntity() instanceof Monster)
-            return dmg * (EntityFlags.get(source.getEntity()).projMult);
+            return (float) (dmg * (EntityFlags.get(source.getEntity()).getAttribute(EntityFlags.ServerSideAttributes.PROJECTILE_DAMAGE_MULTIPLIER)));
         if (source.is(DamageTypeTags.IS_EXPLOSION) && source.getEntity() instanceof Monster)
-            return dmg * (EntityFlags.get(source.getEntity()).explosionMult);
+            return (float) (dmg * (EntityFlags.get(source.getEntity()).getAttribute(EntityFlags.ServerSideAttributes.EXPLOSION_DAMAGE_MULTIPLIER)));
         if (entity instanceof Monster) {
             if (source.is(DamageTypeTags.WITCH_RESISTANT_TO))
-                return dmg * (1 - EntityFlags.get(entity).magicRes);
+                return (float) (dmg * (1 - EntityFlags.get(entity).getAttribute(EntityFlags.ServerSideAttributes.MAGIC_RESISTANCE)));
         }
         return dmg;
     }

@@ -6,7 +6,6 @@ loom {
 
 dependencies {
     modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
-    modCompileOnly "${pehkui}"
     modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api}"
 }
 

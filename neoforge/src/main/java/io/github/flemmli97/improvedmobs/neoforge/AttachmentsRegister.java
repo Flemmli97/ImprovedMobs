@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.neoforge.data;
+package io.github.flemmli97.improvedmobs.neoforge;
 
 import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.utils.ContainerOpened;
@@ -12,7 +12,7 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
-public class Attachments {
+public class AttachmentsRegister {
 
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, TenshiLib.MODID);
 

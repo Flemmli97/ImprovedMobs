@@ -3,10 +3,12 @@ package io.github.flemmli97.improvedmobs.fabric;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
-import io.github.flemmli97.improvedmobs.common.commands.IMCommand;
+import io.github.flemmli97.improvedmobs.common.commands.ImprovedMobsCommand;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
+import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfig;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.common.network.S2CShowDifficulty;
@@ -25,8 +27,17 @@ import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+import net.fabricmc.fabric.api.resource.IdentifiableResourceReloadListener;
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper;
 import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.fml.config.ModConfig;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 
 public class ImprovedMobsFabric implements ModInitializer {
 
@@ -34,7 +45,7 @@ public class ImprovedMobsFabric implements ModInitializer {
     public void onInitialize() {
         ServerTickEvents.END_WORLD_TICK.register(EventCalls::tick);
         ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
-        CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> IMCommand.register(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> ImprovedMobsCommand.register(dispatcher));
         ServerEntityEvents.ENTITY_LOAD.register(EventHandler::onEntityLoad);
         UseBlockCallback.EVENT.register(EventHandler::openTile);
         UseEntityCallback.EVENT.register(EventHandler::equipPet);
@@ -57,6 +68,31 @@ public class ImprovedMobsFabric implements ModInitializer {
         NeoForgeConfigRegistry.INSTANCE.register(ImprovedMobs.MODID, ModConfig.Type.CLIENT, ConfigSpecs.CLIENT_SPEC);
         NeoForgeConfigRegistry.INSTANCE.register(ImprovedMobs.MODID, ModConfig.Type.COMMON, ConfigSpecs.COMMON_SPEC);
         DifficultyFetcher.register();
+
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(DifficultyAttributeConfig.ID, reg -> new IdentifiableResourceReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+                return DifficultyAttributeConfig.create(reg)
+                        .reload(preparationBarrier, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+            }
+
+            @Override
+            public ResourceLocation getFabricId() {
+                return DifficultyAttributeConfig.ID;
+            }
+        });
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(EntityOverridesManager.ID, reg -> new IdentifiableResourceReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+                return EntityOverridesManager.create(reg)
+                        .reload(preparationBarrier, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+            }
+
+            @Override
+            public ResourceLocation getFabricId() {
+                return EntityOverridesManager.ID;
+            }
+        });
         if (FabricLoader.getInstance().isModLoaded("playerex"))
             DifficultyFetcher.add(ImprovedMobs.modRes("player_ex_integration"), new PlayerEXDifficulty());
         if (FabricLoader.getInstance().isModLoaded("levelz"))

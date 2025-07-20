@@ -1,0 +1,25 @@
+{
+  "additional": {
+    "EXPLOSION_DAMAGE_MULTIPLIER": "min(difficulty * 2 / 250, 2)",
+    "MAGIC_RESISTANCE": "min(difficulty * 0.4 / 250, 0.4)",
+    "PROJECTILE_DAMAGE_MULTIPLIER": "min(difficulty * 2 / 250, 2)"
+  },
+  "attributes": {
+    "minecraft:generic.attack_damage": {
+      "operation": "add_multiplied_base",
+      "value": "min(difficulty * 3 / 250, 3)"
+    },
+    "minecraft:generic.max_health": {
+      "operation": "add_multiplied_base",
+      "value": "min(difficulty * 5 / 250, 5)"
+    },
+    "minecraft:generic.movement_speed": {
+      "operation": "add_value",
+      "value": "min(difficulty * 0.1 / 250, 0.1)"
+    },
+    "minecraft:generic.scale": {
+      "operation": "add_multiplied_base",
+      "value": "rand(-0.2, 0.2)"
+    }
+  }
+}

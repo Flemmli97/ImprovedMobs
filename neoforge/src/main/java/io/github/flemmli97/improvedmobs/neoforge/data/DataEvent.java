@@ -12,8 +12,7 @@ public class DataEvent {
     @SubscribeEvent
     public static void data(GatherDataEvent event) {
         DataGenerator data = event.getGenerator();
-        if (event.includeServer()) {
-            data.addProvider(true, new BlockTagGen(data.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
-        }
+        data.addProvider(true, new BlockTagGen(data.getPackOutput(), event.getLookupProvider(), event.getExistingFileHelper()));
+        data.addProvider(true, new DefaultAttributeProvider(data.getPackOutput(), event.getLookupProvider()));
     }
 }

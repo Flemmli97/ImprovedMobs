@@ -1,4 +1,4 @@
-package io.github.flemmli97.improvedmobs.common.config;
+package io.github.flemmli97.improvedmobs.common.config.values;
 
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
@@ -17,6 +17,9 @@ import java.util.Map;
 
 public class EntityItemConfig {
 
+    private final List<String> config = new ArrayList<>();
+    private boolean initialized;
+
     private final Map<ResourceLocation, List<String>> itemBlacklist = new HashMap<>();
 
     public EntityItemConfig add(ResourceLocation res, String item) {
@@ -33,7 +36,7 @@ public class EntityItemConfig {
         return items != null && (items.contains(BuiltInRegistries.ITEM.getKey(item).toString()) || (remap != null && items.contains(remap)));
     }
 
-    public void readFromString(List<String> list) {
+    public void read(List<String> list) {
         Map<ResourceLocation, List<String>> temp = new HashMap<>();
         list.forEach(s -> {
             String[] sub = s.split(";");

@@ -24,28 +24,28 @@ import net.minecraft.server.level.ServerPlayer;
 import java.util.Collection;
 
 // TODO: make command feedback translatable (test translation lib a bit more before)
-public class IMCommand {
+public class ImprovedMobsCommand {
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("improvedmobs")
-                .executes(IMCommand::getDifficulty)
-                .then(Commands.literal("reloadJson").requires(src -> src.hasPermission(2)).executes(IMCommand::reloadJson))
+                .executes(ImprovedMobsCommand::getDifficulty)
+                .then(Commands.literal("reloadJson").requires(src -> src.hasPermission(2)).executes(ImprovedMobsCommand::reloadJson))
                 .then(Commands.literal("difficulty").requires(src -> src.hasPermission(2))
                         .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile())
-                                .then(Commands.literal("set").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(IMCommand::setDifficultyPlayer)))
-                                .then(Commands.literal("add").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(IMCommand::addDifficultyPlayer)))))
-                        .then(Commands.literal("set").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(IMCommand::setDifficulty)))
-                        .then(Commands.literal("add").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(IMCommand::addDifficulty)))
+                                .then(Commands.literal("set").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::setDifficultyPlayer)))
+                                .then(Commands.literal("add").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::addDifficultyPlayer)))))
+                        .then(Commands.literal("set").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::setDifficulty)))
+                        .then(Commands.literal("add").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::addDifficulty)))
                         .then(Commands.literal("pause")
-                                .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> IMCommand.pauseDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), true))))
-                                .executes(src -> IMCommand.pauseDifficulty(src, null, true)))
+                                .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> ImprovedMobsCommand.pauseDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), true))))
+                                .executes(src -> ImprovedMobsCommand.pauseDifficulty(src, null, true)))
                         .then(Commands.literal("unpause")
-                                .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> IMCommand.pauseDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), false))))
-                                .executes(src -> IMCommand.pauseDifficulty(src, null, false)))
+                                .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> ImprovedMobsCommand.pauseDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), false))))
+                                .executes(src -> ImprovedMobsCommand.pauseDifficulty(src, null, false)))
                         .then(Commands.literal("simulate")
                                 .then(Commands.argument("steps", IntegerArgumentType.integer(1))
-                                        .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> IMCommand.simulateDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), IntegerArgumentType.getInteger(src, "steps")))))
-                                        .executes(src -> IMCommand.simulateDifficulty(src, null, IntegerArgumentType.getInteger(src, "steps")))))
+                                        .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> ImprovedMobsCommand.simulateDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), IntegerArgumentType.getInteger(src, "steps")))))
+                                        .executes(src -> ImprovedMobsCommand.simulateDifficulty(src, null, IntegerArgumentType.getInteger(src, "steps")))))
                 ));
     }
 
@@ -134,7 +134,7 @@ public class IMCommand {
                 int i = steps;
                 while (i > 0) {
                     float current = data.getDifficultyLevel();
-                    data.setDifficultyLevel(current + Config.CommonConfig.increaseHandler.get(current).getRight().start());
+                    data.setDifficultyLevel(current + Config.CommonConfig.difficultyIncrease.get(current).start());
                     i--;
                 }
                 CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
@@ -146,7 +146,7 @@ public class IMCommand {
         int i = steps;
         float current = data.getDifficulty();
         while (i > 0) {
-            current += Config.CommonConfig.increaseHandler.get(current).getRight().start();
+            current += Config.CommonConfig.difficultyIncrease.get(current).start();
             i--;
         }
         data.setDifficulty(current, src.getSource().getServer());

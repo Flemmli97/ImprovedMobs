@@ -4,7 +4,7 @@ import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
-import io.github.flemmli97.improvedmobs.neoforge.data.Attachments;
+import io.github.flemmli97.improvedmobs.neoforge.AttachmentsRegister;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -29,14 +29,14 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public void onPlayerOpen(BlockEntity blockEntity) {
-        blockEntity.getData(Attachments.HAS_BEEN_OPENED.get())
+        blockEntity.getData(AttachmentsRegister.HAS_BEEN_OPENED.get())
                 .setOpened(blockEntity);
     }
 
     @Override
     public boolean canLoot(BlockEntity blockEntity) {
-        if (blockEntity.hasData(Attachments.HAS_BEEN_OPENED.get()))
-            return blockEntity.getData(Attachments.HAS_BEEN_OPENED.get()).playerOpened();
+        if (blockEntity.hasData(AttachmentsRegister.HAS_BEEN_OPENED.get()))
+            return blockEntity.getData(AttachmentsRegister.HAS_BEEN_OPENED.get()).playerOpened();
         return false;
     }
 
@@ -99,6 +99,6 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
     public PlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
-        return player.getData(Attachments.PLAYER_DIFFICULTY.get());
+        return player.getData(AttachmentsRegister.PLAYER_DIFFICULTY.get());
     }
 }

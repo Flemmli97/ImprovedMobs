@@ -3,7 +3,7 @@ package io.github.flemmli97.improvedmobs.common.difficulty;
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.DifficultyConfig;
+import io.github.flemmli97.improvedmobs.common.config.values.DifficultyConfig;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -17,7 +17,6 @@ import net.minecraft.world.level.EntityGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import net.minecraft.world.phys.Vec3;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -75,6 +74,11 @@ public class DifficultyData extends SavedData {
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
     }
 
+    public void updateTime(MinecraftServer server) {
+        this.prevTime = server.overworld().getDayTime();
+        this.setDirty();
+    }
+
     public void setDifficulty(float level, MinecraftServer server) {
         this.difficultyLevel = level;
         this.prevTime = server.overworld().getDayTime();
@@ -101,10 +105,10 @@ public class DifficultyData extends SavedData {
         if (Config.CommonConfig.difficultyType == Config.DifficultyType.DISTANCESPAWN) {
             dist = Mth.sqrt((float) pos.distanceToSqr(level.getSharedSpawnPos().getX() + 0.5, pos.y(), level.getSharedSpawnPos().getZ() + 0.5));
         } else {
-            dist = Mth.sqrt((float) pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().getX() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().getZ() + 0.5));
+            dist = Mth.sqrt((float) pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().x() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().z() + 0.5));
         }
-        Pair<Float, DifficultyConfig.Zone> conf = Config.CommonConfig.increaseHandler.get(dist);
-        return conf.getRight().start() + (dist - conf.getLeft()) * conf.getRight().increasePerBlock();
+        DifficultyConfig.Value value = Config.CommonConfig.difficultyIncrease.get(dist);
+        return value.start() + (dist - value.requiredDifficulty()) * value.increasePerBlock();
     }
 
     public void setPaused(boolean paused) {

@@ -1,15 +1,16 @@
 package io.github.flemmli97.improvedmobs.neoforge;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
+import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfig;
 import io.github.flemmli97.improvedmobs.common.entities.ai.util.ItemAITasks;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.common.network.S2CShowDifficulty;
 import io.github.flemmli97.improvedmobs.neoforge.client.ClientEventHandler;
-import io.github.flemmli97.improvedmobs.neoforge.data.Attachments;
 import io.github.flemmli97.improvedmobs.neoforge.events.DifficultyHandler;
 import io.github.flemmli97.improvedmobs.neoforge.events.EventHandler;
 import io.github.flemmli97.improvedmobs.neoforge.integration.difficulty.ScalingHealthDifficulty;
@@ -25,6 +26,7 @@ import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
@@ -43,11 +45,12 @@ public class ImprovedMobsNeoForge {
         modBus.addListener(ImprovedMobsNeoForge::setup);
         modBus.addListener(ImprovedMobsNeoForge::conf);
         modBus.addListener(ImprovedMobsNeoForge::registerPackets);
-        Attachments.ATTACHMENT_TYPES.register(modBus);
+        AttachmentsRegister.ATTACHMENT_TYPES.register(modBus);
         if (FMLEnvironment.dist == Dist.CLIENT)
             ClientEventHandler.setup(modBus);
         NeoForge.EVENT_BUS.register(new EventHandler());
         NeoForge.EVENT_BUS.addListener(ImprovedMobsNeoForge::serverStart);
+        NeoForge.EVENT_BUS.addListener(ImprovedMobsNeoForge::addReloadListener);
 
         DifficultyFetcher.register();
         if (ModList.get().isLoaded("scalinghealth"))
@@ -74,5 +77,10 @@ public class ImprovedMobsNeoForge {
         PayloadRegistrar registrar = event.registrar(ImprovedMobs.MODID).optional();
         registrar.playToClient(S2CDiffcultyValue.TYPE, S2CDiffcultyValue.STREAM_CODEC, (pkt, ctx) -> S2CDiffcultyValue.handle(pkt));
         registrar.playToClient(S2CShowDifficulty.TYPE, S2CShowDifficulty.STREAM_CODEC, (pkt, ctx) -> S2CShowDifficulty.handle(pkt));
+    }
+
+    static void addReloadListener(AddReloadListenerEvent event) {
+        event.addListener(DifficultyAttributeConfig.create(event.getRegistryAccess()));
+        event.addListener(EntityOverridesManager.create(event.getRegistryAccess()));
     }
 }

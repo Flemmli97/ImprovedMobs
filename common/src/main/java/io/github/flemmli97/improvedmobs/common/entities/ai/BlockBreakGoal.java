@@ -5,6 +5,7 @@ import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.common.utils.Utils;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
@@ -40,6 +41,8 @@ public class BlockBreakGoal extends Goal {
     private int breakIndex;
 
     private final int digHeight;
+
+    private final VariableMap variables = new VariableMap();
 
     public BlockBreakGoal(Mob living) {
         this.living = living;
@@ -149,10 +152,8 @@ public class BlockBreakGoal extends Goal {
     }
 
     private float breakSpeedMod() {
-        float mod = Config.CommonConfig.breakSpeedBaseMod;
-        if (Config.CommonConfig.breakSpeedAdd != 0)
-            mod += Config.CommonConfig.breakSpeedAdd * DifficultyFetcher.getDifficulty((ServerLevel) this.living.level(), this.living.position());
-        return mod;
+        return (float) Config.CommonConfig.breakSpeed.get(Config.apply(this.variables, this.living,
+                DifficultyFetcher.getDifficulty((ServerLevel) this.living.level(), this.living.position())));
     }
 
     public BlockPos getDiggingLocation() {

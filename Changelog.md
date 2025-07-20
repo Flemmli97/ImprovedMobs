@@ -1,3 +1,24 @@
+Improved Mobs 1.14.0
+================
+- Big config overhaul. Do note that old config will need to be updated!
+  - Comments should be clearer now too
+  - Various configs now are able to use math expression to allow more customization
+    - Usable variables for expression contains
+      - `difficulty`: The current difficulty
+      - `distance_spawn` : The distance to spawn
+      - `distance_origin`: The distance to [0,0,0]
+    - For usable functions see https://github.com/Flemmli97/TenshiLib/wiki/Math-Expressions
+  - Attributes config part is now moved to datapack.
+    - Found under `data/improvedmobs/config/attributes.json`
+    - Allows modification of arbitrary attributes now
+  - Fabric now requires forge config api port
+  - Add a way to override various properties for entities via datapack for example
+    - Overriding enabled features defined in the config
+    - Entity based difficulty attribute modifications
+    - Check out the wiki how to use
+- Add `improvedmobs:no_steal` block tag in addition to config
+- Fix pause state not saved on players
+
 Improved Mobs 1.13.5
 ================
 - Fix tnt destroy blocks config not working

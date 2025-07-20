@@ -22,4 +22,5 @@ dependencies {
     // modRuntimeOnly "${sillib_dep}"
     modCompileOnly "${scalhealth_dep}"
     modRuntimeOnly "io.github.flemmli97:debugutils:1.21.1-1.0.8-neoforge"
+    modRuntimeOnly "maven.modrinth:jade:2P7THd8J"
 }

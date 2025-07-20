@@ -1,6 +1,6 @@
 package io.github.flemmli97.improvedmobs.neoforge.events;
 
-import io.github.flemmli97.improvedmobs.common.commands.IMCommand;
+import io.github.flemmli97.improvedmobs.common.commands.ImprovedMobsCommand;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import net.minecraft.server.level.ServerLevel;
@@ -33,7 +33,7 @@ public class EventHandler {
 
     @SubscribeEvent
     public void commands(RegisterCommandsEvent event) {
-        IMCommand.register(event.getDispatcher());
+        ImprovedMobsCommand.register(event.getDispatcher());
     }
 
     @SubscribeEvent

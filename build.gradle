@@ -20,5 +20,8 @@ subprojects {
             name = "CurseMaven"
             url "https://www.cursemaven.com"
         }
+        maven {
+            url = "https://api.modrinth.com/maven"
+        }
     }
 }
