@@ -9,6 +9,7 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.ArrowItem;
 import net.minecraft.world.item.BowItem;
 import net.minecraft.world.item.CrossbowItem;
+import net.minecraft.world.item.FishingRodItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -83,6 +84,8 @@ public class ItemAITasks {
                 registerAI(item, ItemAIs.BOWS);
             if (item instanceof ShieldItem)
                 registerAI(item, ItemAIs.SHIELDS);
+            if (item instanceof FishingRodItem)
+                registerAI(item, ItemAIs.FISHING_ROD);
         }
 
         registerAI(Items.SNOWBALL, ItemAIs.SNOWBALL);

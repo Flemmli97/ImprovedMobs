@@ -33,8 +33,6 @@ import java.util.List;
 public class AIUtils {
 
     //TODO building, stone, block;
-    //TODO fishing rod
-
     public static void setHeadingToPosition(ThrowableProjectile e, double x, double y, double z, float velocity, float inaccuracy) {
         Vec3 dir = new Vec3(x - e.getX(), y - e.getY(), z - e.getZ()).scale(1 / velocity);
         e.shoot(dir.x, dir.y, dir.z, velocity, inaccuracy);
@@ -117,5 +115,12 @@ public class AIUtils {
                 }
             }
         }
+    }
+
+    public static void ropeInTarget(Mob entity, LivingEntity target) {
+        Vec3 vec3 = entity.position().subtract(target.position()).normalize().scale(1.5);
+        target.setDeltaMovement(target.getDeltaMovement().add(vec3.add(0, 0.3, 0)));
+        target.hurtMarked = true;
+        entity.playSound(SoundEvents.FISHING_BOBBER_RETRIEVE, 1.0F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 }

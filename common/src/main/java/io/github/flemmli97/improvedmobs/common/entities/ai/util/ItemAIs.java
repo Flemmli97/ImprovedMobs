@@ -167,7 +167,7 @@ public class ItemAIs {
 
         @Override
         public ItemType type() {
-            return ItemType.NONSTRAFINGITEM;
+            return ItemType.NON_STRAFINGITEM;
         }
 
         @Override
@@ -333,7 +333,7 @@ public class ItemAIs {
 
         @Override
         public ItemType type() {
-            return ItemType.NONSTRAFINGITEM;
+            return ItemType.NON_STRAFINGITEM;
         }
 
         @Override
@@ -417,7 +417,7 @@ public class ItemAIs {
 
         @Override
         public ItemType type() {
-            return ItemType.NONSTRAFINGITEM;
+            return ItemType.NON_STRAFINGITEM;
         }
 
         @Override
@@ -430,8 +430,8 @@ public class ItemAIs {
 
         @Override
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
-            double dis = entity.position().distanceTo(target.position());
-            if (dis < 8 && AIUtils.tryPlaceLava(entity.level(), BlockPos.containing(target.getX() - 2 + entity.level().random.nextInt(4), target.getY() - 1 + entity.level().random.nextInt(2), target.getZ() - 2 + entity.level().random.nextInt(4)))) {
+            double dis = entity.position().distanceToSqr(target.position());
+            if (dis < 8 * 8 && AIUtils.tryPlaceLava(entity.level(), BlockPos.containing(target.getX() - 2 + entity.level().random.nextInt(4), target.getY() - 1 + entity.level().random.nextInt(2), target.getZ() - 2 + entity.level().random.nextInt(4)))) {
                 entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 240, 1, true, false));
             }
         }
@@ -443,7 +443,33 @@ public class ItemAIs {
 
         @Override
         public ItemType type() {
-            return ItemType.NONSTRAFINGITEM;
+            return ItemType.NON_STRAFINGITEM;
+        }
+
+        @Override
+        public UsableHand prefHand() {
+            return UsableHand.BOTH;
+        }
+    };
+
+    public static final ItemAI FISHING_ROD = new ItemAI() {
+
+        @Override
+        public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
+            double dis = entity.position().distanceToSqr(target.position());
+            if (dis < 100) {
+                AIUtils.ropeInTarget(entity, target);
+            }
+        }
+
+        @Override
+        public int cooldown() {
+            return 60;
+        }
+
+        @Override
+        public ItemType type() {
+            return ItemType.NON_STRAFINGITEM;
         }
 
         @Override

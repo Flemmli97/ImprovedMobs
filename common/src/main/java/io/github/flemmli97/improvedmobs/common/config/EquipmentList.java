@@ -166,7 +166,7 @@ public class EquipmentList {
             if (ai != null) {
                 switch (ai.prefHand()) {
                     case BOTH:
-                        if (ai.type() == ItemAI.ItemType.NONSTRAFINGITEM) {
+                        if (ai.type() == ItemAI.ItemType.NON_STRAFINGITEM) {
                             float[] weights = getDefaultWeight(item);
                             WeightedItemstack val = new WeightedItemstack(new ItemStack(item), (int) weights[0], weights[1]);
                             if (!mapBuilder.get(EquipmentSlot.MAINHAND).contains(val))

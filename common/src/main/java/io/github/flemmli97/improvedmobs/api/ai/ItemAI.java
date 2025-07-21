@@ -41,7 +41,7 @@ public interface ItemAI {
     }
 
     enum ItemType {
-        NONSTRAFINGITEM,
+        NON_STRAFINGITEM,
         STRAFINGITEM,
         STANDING
     }

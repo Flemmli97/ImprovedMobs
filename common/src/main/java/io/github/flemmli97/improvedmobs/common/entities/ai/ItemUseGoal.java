@@ -48,7 +48,7 @@ public class ItemUseGoal extends Goal {
 
     @Override
     public void start() {
-        this.setFlags(this.ai.type() != ItemAI.ItemType.NONSTRAFINGITEM ? EnumSet.of(Flag.MOVE, Flag.LOOK) : EnumSet.noneOf(Flag.class));
+        this.setFlags(this.ai.type() != ItemAI.ItemType.NON_STRAFINGITEM ? EnumSet.of(Flag.MOVE, Flag.LOOK) : EnumSet.noneOf(Flag.class));
         this.stackMain = this.living.getMainHandItem();
         this.stackOff = this.living.getOffhandItem();
     }
