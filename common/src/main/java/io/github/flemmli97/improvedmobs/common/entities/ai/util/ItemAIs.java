@@ -73,8 +73,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 80;
+        public int cooldown(Mob entity) {
+            return 80 + entity.getRandom().nextInt(30);
         }
 
         @Override
@@ -96,8 +96,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 65;
+        public int cooldown(Mob entity) {
+            return 60 + entity.getRandom().nextInt(15);
         }
 
         @Override
@@ -135,8 +135,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 65;
+        public int cooldown(Mob entity) {
+            return 60 + entity.getRandom().nextInt(20);
         }
 
         @Override
@@ -156,13 +156,14 @@ public class ItemAIs {
         public void attack(Mob entity, LivingEntity target, InteractionHand hand) {
             double dis = entity.position().distanceTo(target.position());
             if (dis < entity.getBbWidth() + target.getBbWidth() + 0.5 && !target.isOnFire()) {
+                entity.playSound(SoundEvents.FLINTANDSTEEL_USE, 1, 1);
                 target.setRemainingFireTicks(4);
             }
         }
 
         @Override
-        public int cooldown() {
-            return 25;
+        public int cooldown(Mob entity) {
+            return 20;
         }
 
         @Override
@@ -195,8 +196,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 85;
+        public int cooldown(Mob entity) {
+            return 80 + entity.getRandom().nextInt(10);
         }
 
         @Override
@@ -234,8 +235,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 85;
+        public int cooldown(Mob entity) {
+            return 80 + entity.getRandom().nextInt(10);
         }
 
         @Override
@@ -267,7 +268,7 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
+        public int cooldown(Mob entity) {
             return 20;
         }
 
@@ -300,7 +301,7 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
+        public int cooldown(Mob entity) {
             return 30;
         }
 
@@ -327,8 +328,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 60;
+        public int cooldown(Mob entity) {
+            return 60 + entity.getRandom().nextInt(20);
         }
 
         @Override
@@ -371,7 +372,7 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
+        public int cooldown(Mob entity) {
             return 25;
         }
 
@@ -411,8 +412,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 35;
+        public int cooldown(Mob entity) {
+            return 30 + entity.getRandom().nextInt(20);
         }
 
         @Override
@@ -437,8 +438,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 80;
+        public int cooldown(Mob entity) {
+            return 80 + entity.getRandom().nextInt(20);
         }
 
         @Override
@@ -463,8 +464,8 @@ public class ItemAIs {
         }
 
         @Override
-        public int cooldown() {
-            return 60;
+        public int cooldown(Mob entity) {
+            return 40 + entity.getRandom().nextInt(30);
         }
 
         @Override

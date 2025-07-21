@@ -12,7 +12,7 @@ public interface ItemAI {
      */
     void attack(Mob entity, LivingEntity target, InteractionHand hand);
 
-    int cooldown();
+    int cooldown(Mob entity);
 
     /**
      * The movement to run when using this item

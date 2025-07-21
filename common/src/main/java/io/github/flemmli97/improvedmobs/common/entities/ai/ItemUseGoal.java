@@ -100,12 +100,12 @@ public class ItemUseGoal extends Goal {
                         if (i >= this.ai.maxUseCount(this.living, this.hand)) {
                             this.living.releaseUsingItem();
                             this.ai.attack(this.living, target, this.hand);
-                            this.attackTime = this.ai.cooldown();
+                            this.attackTime = this.ai.cooldown(this.living);
                         }
                     } else if (--this.attackTime <= 0) {
                         this.ai.attack(this.living, target, this.hand);
                         this.living.releaseUsingItem();
-                        this.attackTime = this.ai.cooldown();
+                        this.attackTime = this.ai.cooldown(this.living);
                     }
                 }
             } else if (--this.attackTime < 0 && this.seeTime >= -60) {
