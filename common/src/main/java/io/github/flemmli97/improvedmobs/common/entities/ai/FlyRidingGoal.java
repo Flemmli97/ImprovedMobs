@@ -23,7 +23,7 @@ import java.util.Set;
 public class FlyRidingGoal extends Goal {
 
     protected final Mob living;
-    private int iddle, pathCheckWait, flyDelay, targetDelay;
+    private int idle, pathCheckWait, flyDelay, targetDelay;
     private boolean start;
 
     private final PathNavigation flyer;
@@ -62,12 +62,12 @@ public class FlyRidingGoal extends Goal {
         LivingEntity target = this.living.getTarget();
         if (target == null || !target.isAlive() || !this.living.isWithinRestriction(target.blockPosition())) {
             this.targetDelay = 0;
-        } else if (!this.living.isPassenger() && ++this.targetDelay > 40) {
+        } else if (!this.living.isPassenger() && ++this.targetDelay > 100) {
             if (--this.pathCheckWait <= 0) {
-                this.pathCheckWait = 25;
+                this.pathCheckWait = 30;
                 if (this.checkFlying()) {
                     this.targetDelay = 0;
-                    this.iddle = 0;
+                    this.idle = 0;
                     return true;
                 }
             }
@@ -83,10 +83,10 @@ public class FlyRidingGoal extends Goal {
     public boolean canContinueToUse() {
         if (this.living.getVehicle() instanceof FlyingSummonEntity) {
             if (this.living.getTarget() == null)
-                this.iddle++;
+                this.idle++;
             else
-                this.iddle = 0;
-            return this.iddle < 100;
+                this.idle = 0;
+            return this.idle < 100;
         }
         return false;
     }
@@ -96,7 +96,7 @@ public class FlyRidingGoal extends Goal {
         if (this.living.getVehicle() instanceof RiddenSummonEntity mount)
             mount.scheduledDismount();
         this.living.addEffect(new MobEffectInstance(MobEffects.SLOW_FALLING, 200, 1));
-        this.iddle = 0;
+        this.idle = 0;
         this.targetDelay = 0;
     }
 

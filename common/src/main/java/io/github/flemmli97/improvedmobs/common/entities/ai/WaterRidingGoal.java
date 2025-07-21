@@ -1,11 +1,9 @@
 package io.github.flemmli97.improvedmobs.common.entities.ai;
 
-import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.common.entities.AquaticSummonEntity;
 import io.github.flemmli97.improvedmobs.common.entities.RiddenSummonEntity;
 import io.github.flemmli97.improvedmobs.common.entities.ai.pathfinding.WaterNavigation;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -20,7 +18,6 @@ import net.minecraft.world.phys.Vec3;
 
 public class WaterRidingGoal extends Goal {
 
-    public static final ResourceLocation EMPTY = ImprovedMobs.modRes("empty");
     protected final Mob living;
     private int wait = 0;
     private int jumpingTick;
