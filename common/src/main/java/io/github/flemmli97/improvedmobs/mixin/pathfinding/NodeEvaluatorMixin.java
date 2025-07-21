@@ -1,36 +1,29 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
-import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
+import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
+import io.github.flemmli97.improvedmobs.mixinhelper.NodeExtension;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(NodeEvaluator.class)
-public abstract class NodeEvaluatorMixin implements INodeBreakable {
+public abstract class NodeEvaluatorMixin implements NodeExtension {
 
-    @Unique
-    private boolean improvedMobs$canBreakBlocksIM;
-
-    @Unique
-    private boolean improvedMobs$canClimbLadder;
-
-    @Override
-    public void improvedMobs$setCanBreakBlocks(boolean flag) {
-        this.improvedMobs$canBreakBlocksIM = flag;
-    }
+    @Shadow
+    protected Mob mob;
 
     @Override
     public boolean improvedMobs$canBreakBlocks() {
-        return this.improvedMobs$canBreakBlocksIM;
+        if (this.mob == null || this.mob.getTarget() == null)
+            return false;
+        return EntityFlags.get(this.mob).canBreakBlocks == EntityFlags.FlagType.TRUE
+                && this.mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
     }
 
     @Override
-    public void improvedMobs$setCanClimbLadder(boolean flag) {
-        this.improvedMobs$canClimbLadder = flag;
-    }
-
-    @Override
-    public boolean improvedMobs$canClimbLadder() {
-        return this.improvedMobs$canClimbLadder;
+    public boolean improvedMobs$canClimb() {
+        return EntityFlags.get(this.mob).ladderClimber;
     }
 }

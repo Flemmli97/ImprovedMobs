@@ -138,6 +138,8 @@ public class BlockBreakGoal extends Goal {
                 this.living.setSpeed(0);
                 this.living.getNavigation().stop();
                 this.living.getNavigation().moveTo(this.living.getNavigation().createPath(this.target, 0), 1D);
+            } else {
+                this.living.getNavigation().stop();
             }
         } else {
             this.digTimer++;
@@ -174,7 +176,7 @@ public class BlockBreakGoal extends Goal {
         }
         Rotation rot = getDigDirection(this.living);
         BlockPos offset = this.breakAOE.get(this.breakIndex);
-        offset = new BlockPos(offset.getX(), this.aboveTarget() ? (-(offset.getY() - this.digHeight)) : offset.getY(), offset.getZ());
+        offset = new BlockPos(offset.getX(), this.aboveTarget() ? (-(this.digHeight - offset.getY())) : offset.getY(), offset.getZ());
         pos = pos.offset(offset.rotate(rot));
         state = this.living.level().getBlockState(pos);
         if (this.canBreak(this.living, state, pos, item, itemOff)) {

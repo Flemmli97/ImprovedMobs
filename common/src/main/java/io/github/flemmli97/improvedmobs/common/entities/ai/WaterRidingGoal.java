@@ -3,14 +3,18 @@ package io.github.flemmli97.improvedmobs.common.entities.ai;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.common.entities.AquaticSummonEntity;
 import io.github.flemmli97.improvedmobs.common.entities.RiddenSummonEntity;
+import io.github.flemmli97.improvedmobs.common.entities.ai.pathfinding.WaterNavigation;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.EntityTypeTags;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.navigation.AmphibiousPathNavigation;
+import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 
@@ -32,7 +36,7 @@ public class WaterRidingGoal extends Goal {
             return true;
         }
         LivingEntity target = this.living.getTarget();
-        if (target == null || !target.isAlive() || !this.living.isWithinRestriction(target.blockPosition()))
+        if (target == null || !target.isAlive() || !this.living.isWithinRestriction(target.blockPosition()) || this.isAquatic())
             return false;
         if (this.living.isInWater() && !this.living.isPassenger()) {
             if (this.wait == 80) {
@@ -42,6 +46,12 @@ public class WaterRidingGoal extends Goal {
             this.wait++;
         }
         return false;
+    }
+
+    private boolean isAquatic() {
+        return this.living.getType().is(EntityTypeTags.AQUATIC) || this.living.getType().is(EntityTypeTags.CAN_BREATHE_UNDER_WATER)
+                || this.living.getNavigation() instanceof WaterBoundPathNavigation || this.living.getNavigation() instanceof WaterNavigation
+                || this.living.getNavigation() instanceof AmphibiousPathNavigation;
     }
 
     @Override

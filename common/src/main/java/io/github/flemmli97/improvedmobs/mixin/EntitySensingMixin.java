@@ -23,23 +23,23 @@ public abstract class EntitySensingMixin implements SensingExt {
     @Shadow
     private Mob mob;
     @Unique
-    private final IntSet improvedMobs$seen = new IntOpenHashSet();
+    private final IntSet improvedmobs$seen = new IntOpenHashSet();
     @Unique
-    private final IntSet improvedMobs$unseen = new IntOpenHashSet();
+    private final IntSet improvedmobs$unseen = new IntOpenHashSet();
     @Unique
-    private boolean improvedmobs_extended_los;
+    private boolean improvedmobs$extended_los;
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void onTick(CallbackInfo info) {
-        this.improvedMobs$seen.clear();
-        this.improvedMobs$unseen.clear();
+        this.improvedmobs$seen.clear();
+        this.improvedmobs$unseen.clear();
     }
 
     @Inject(method = "hasLineOfSight", at = @At("HEAD"), cancellable = true)
     private void onHasLoS(Entity entity, CallbackInfoReturnable<Boolean> info) {
-        if (this.improvedmobs_extended_los) {
+        if (this.improvedmobs$extended_los) {
             info.setReturnValue(this.hasLineOfSightExt(entity));
-            this.improvedmobs_extended_los = false;
+            this.improvedmobs$extended_los = false;
         }
     }
 
@@ -48,9 +48,9 @@ public abstract class EntitySensingMixin implements SensingExt {
      */
     private boolean hasLineOfSightExt(Entity entity) {
         int i = entity.getId();
-        if (this.improvedMobs$seen.contains(i)) {
+        if (this.improvedmobs$seen.contains(i)) {
             return true;
-        } else if (this.improvedMobs$unseen.contains(i)) {
+        } else if (this.improvedmobs$unseen.contains(i)) {
             return false;
         } else {
             this.mob.level().getProfiler().push("hasLineOfSight");
@@ -58,9 +58,9 @@ public abstract class EntitySensingMixin implements SensingExt {
             boolean bl = this.mob.hasLineOfSight(entity);
             this.mob.level().getProfiler().pop();
             if (bl) {
-                this.improvedMobs$seen.add(i);
+                this.improvedmobs$seen.add(i);
             } else {
-                this.improvedMobs$unseen.add(i);
+                this.improvedmobs$unseen.add(i);
             }
             return bl;
         }
@@ -68,6 +68,6 @@ public abstract class EntitySensingMixin implements SensingExt {
 
     @Override
     public void improvedMobs$doLineOfSightExt() {
-        this.improvedmobs_extended_los = true;
+        this.improvedmobs$extended_los = true;
     }
 }

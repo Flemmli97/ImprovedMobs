@@ -1,6 +1,6 @@
 package io.github.flemmli97.improvedmobs.mixin;
 
-import io.github.flemmli97.improvedmobs.mixinhelper.ISpawnReason;
+import io.github.flemmli97.improvedmobs.mixinhelper.EntitySpawnReason;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.DifficultyInstance;
 import net.minecraft.world.entity.Mob;
@@ -16,31 +16,31 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(Mob.class)
-public abstract class MobMixin implements ISpawnReason {
+public abstract class MobMixin implements EntitySpawnReason {
 
     @Unique
-    private MobSpawnType improvedMobs$spawnreason;
+    private MobSpawnType improvedmobs$spawnreason;
 
     @Inject(method = "finalizeSpawn", at = @At("HEAD"))
     private void onFinalize(ServerLevelAccessor level, DifficultyInstance difficulty, MobSpawnType spawnType, @Nullable SpawnGroupData spawnGroupData,
                             CallbackInfoReturnable<SpawnGroupData> info) {
-        this.improvedMobs$spawnreason = spawnType;
+        this.improvedmobs$spawnreason = spawnType;
     }
 
     @Inject(method = "readAdditionalSaveData", at = @At("HEAD"))
     private void readData(CompoundTag compoundTag, CallbackInfo info) {
         if (compoundTag.contains("MobSpawnReason"))
-            this.improvedMobs$spawnreason = MobSpawnType.values()[compoundTag.getInt("MobSpawnReason")];
+            this.improvedmobs$spawnreason = MobSpawnType.values()[compoundTag.getInt("MobSpawnReason")];
     }
 
     @Inject(method = "addAdditionalSaveData", at = @At("HEAD"))
     private void saveData(CompoundTag compoundTag, CallbackInfo info) {
-        if (this.improvedMobs$spawnreason != null)
-            compoundTag.putInt("MobSpawnReason", this.improvedMobs$spawnreason.ordinal());
+        if (this.improvedmobs$spawnreason != null)
+            compoundTag.putInt("MobSpawnReason", this.improvedmobs$spawnreason.ordinal());
     }
 
     @Override
     public MobSpawnType improvedMobs$getSpawnReason() {
-        return this.improvedMobs$spawnreason;
+        return this.improvedmobs$spawnreason;
     }
 }

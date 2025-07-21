@@ -19,8 +19,7 @@ import io.github.flemmli97.improvedmobs.common.utils.Utils;
 import io.github.flemmli97.improvedmobs.mixin.MobEntityMixin;
 import io.github.flemmli97.improvedmobs.mixin.NearestTargetGoalMixin;
 import io.github.flemmli97.improvedmobs.mixin.TargetGoalAccessor;
-import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
-import io.github.flemmli97.improvedmobs.mixinhelper.ISpawnReason;
+import io.github.flemmli97.improvedmobs.mixinhelper.EntitySpawnReason;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.core.BlockPos;
@@ -43,7 +42,6 @@ import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
-import net.minecraft.world.entity.ai.navigation.WaterBoundPathNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.Monster;
@@ -110,7 +108,7 @@ public class EventCalls {
     public static void onEntityLoad(Mob mob) {
         if (mob.level().isClientSide || mob instanceof RiddenSummonEntity)
             return;
-        if (((ISpawnReason) mob).improvedMobs$getSpawnReason() == MobSpawnType.SPAWNER && Config.CommonConfig.ignoreSpawner)
+        if (((EntitySpawnReason) mob).improvedMobs$getSpawnReason() == MobSpawnType.SPAWNER && Config.CommonConfig.ignoreSpawner)
             return;
         EntityFlags flags = EntityFlags.get(mob);
         boolean mobGriefing = mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
@@ -124,7 +122,7 @@ public class EventCalls {
                 flags.canBreakBlocks = EntityFlags.FlagType.FALSE;
         }
         if (flags.canFly == EntityFlags.FlagType.UNDEFINED) {
-            if (mob.getRandom().nextFloat() < Config.CommonConfig.flyAIChance.get(map) && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.PARROT)) {
+            if (mob.getRandom().nextFloat() < Config.CommonConfig.flyAIChance.get(map) && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.FLYING)) {
                 flags.canFly = EntityFlags.FlagType.TRUE;
             } else
                 flags.canFly = EntityFlags.FlagType.FALSE;
@@ -134,12 +132,11 @@ public class EventCalls {
             mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 12));
         }
         if (mob.getRandom().nextFloat() < Config.CommonConfig.guardianAIChance.get(map) && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.GUARDIAN)) {
-            //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
-            if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof WaterBoundPathNavigation) && !(mob instanceof Slime)) {
-                mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
-            }
+            mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
         }
         if (flags.canFly == EntityFlags.FlagType.TRUE) {
+            mob.goalSelector.addGoal(6, new FlyRidingGoal(mob));
+
             //Exclude slime. They cant attack while riding anyway. Too much hardcoded things
             if (!(((MobEntityMixin) mob).getTrueNavigator() instanceof FlyingPathNavigation) && !(mob instanceof Slime)) {
                 mob.goalSelector.addGoal(6, new FlyRidingGoal(mob));
@@ -149,7 +146,6 @@ public class EventCalls {
             if (!(mob.getNavigation() instanceof WallClimberNavigation)) {
                 EntityFlags.get(mob).ladderClimber = true;
                 mob.goalSelector.addGoal(4, new LadderClimbGoal(mob));
-                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).improvedMobs$setCanClimbLadder(true);
             }
         }
         boolean villager = !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.TARGETVILLAGER);
@@ -182,7 +178,6 @@ public class EventCalls {
                 }
             });
             if (mobGriefing) {
-                ((INodeBreakable) mob.getNavigation().getNodeEvaluator()).improvedMobs$setCanBreakBlocks(true);
                 mob.goalSelector.addGoal(1, new BlockBreakGoal(mob));
                 if (mob.getOffhandItem().isEmpty()) {
                     ItemStack stack = Config.CommonConfig.getRandomBreakingItem(mob.getRandom());

@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin;
 
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
-import io.github.flemmli97.improvedmobs.mixinhelper.ITNTThrowable;
+import io.github.flemmli97.improvedmobs.mixinhelper.TNTExtension;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PrimedTnt.class)
-public abstract class TNTEntityMixin extends Entity implements ITNTThrowable {
+public abstract class TNTEntityMixin extends Entity implements TNTExtension {
 
     private TNTEntityMixin(EntityType<?> type, Level world) {
         super(type, world);

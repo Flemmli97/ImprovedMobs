@@ -1,6 +1,7 @@
 package io.github.flemmli97.improvedmobs.common.utils;
 
-import io.github.flemmli97.improvedmobs.mixinhelper.IEntityData;
+import io.github.flemmli97.improvedmobs.common.entities.RiddenSummonEntity;
+import io.github.flemmli97.improvedmobs.mixinhelper.EntityData;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -16,7 +17,12 @@ public class EntityFlags {
     public boolean ladderClimber;
 
     public static EntityFlags get(Entity entity) {
-        return ((IEntityData) entity).improvedMobs$getFlags();
+        if (entity instanceof RiddenSummonEntity) {
+            Entity passenger = entity.getFirstPassenger();
+            if (passenger != null)
+                return get(passenger);
+        }
+        return ((EntityData) entity).improvedMobs$getFlags();
     }
 
     public boolean modifyArmor, modifyHeldItems, modifyAttributes, enchantGear;

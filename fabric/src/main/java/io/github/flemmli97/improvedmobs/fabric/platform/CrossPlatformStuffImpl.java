@@ -72,7 +72,7 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     }
 
     @Override
-    public boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos) {
+    public boolean isClimbable(BlockState state, LivingEntity entity, BlockPos pos) {
         return state.is(BlockTags.CLIMBABLE);
     }
 

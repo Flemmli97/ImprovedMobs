@@ -29,7 +29,7 @@ public interface CrossPlatformStuff {
 
     ItemStack lootRandomItem(BlockEntity blockEntity, RandomSource rand);
 
-    boolean isLadder(BlockState state, LivingEntity entity, BlockPos pos);
+    boolean isClimbable(BlockState state, LivingEntity entity, BlockPos pos);
 
     SoundType blockSound(BlockState state, LivingEntity entity, BlockPos pos);
 

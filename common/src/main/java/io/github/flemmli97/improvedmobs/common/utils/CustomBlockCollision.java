@@ -2,11 +2,12 @@ package io.github.flemmli97.improvedmobs.common.utils;
 
 import com.google.common.collect.AbstractIterator;
 import io.github.flemmli97.improvedmobs.common.config.Config;
+import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Cursor3D;
 import net.minecraft.core.SectionPos;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.CollisionGetter;
@@ -27,14 +28,17 @@ public class CustomBlockCollision extends AbstractIterator<VoxelShape> {
     private final BlockPos.MutableBlockPos pos;
     private final VoxelShape entityShape;
     private final CollisionGetter collisionGetter;
+    private final boolean breakable, ladder;
     @Nullable
     private BlockGetter cachedBlockGetter;
     private long cachedBlockGetterPos;
-    private final Entity entity;
+    private final LivingEntity entity;
 
-    public CustomBlockCollision(CollisionGetter collisionGetter, @Nullable Entity entity, AABB aABB) {
+    public CustomBlockCollision(CollisionGetter collisionGetter, @Nullable LivingEntity entity, AABB aABB, boolean breakable, boolean ladder) {
         this.entity = entity;
         this.context = entity == null ? CollisionContext.empty() : CollisionContext.of(entity);
+        this.breakable = breakable;
+        this.ladder = ladder;
         this.pos = new BlockPos.MutableBlockPos();
         this.entityShape = Shapes.create(aABB);
         this.collisionGetter = collisionGetter;
@@ -73,7 +77,9 @@ public class CustomBlockCollision extends AbstractIterator<VoxelShape> {
             if (l == 3 || (blockGetter = this.getChunk(i, k)) == null) continue;
             this.pos.set(i, j, k);
             BlockState blockState = blockGetter.getBlockState(this.pos);
-            if (Config.CommonConfig.breakableBlocks.canBreak(blockState, this.pos, blockGetter, this.entity, this.context) || l == 1 && !blockState.hasLargeCollisionShape() || l == 2 && !blockState.is(Blocks.MOVING_PISTON))
+            if ((this.breakable && Config.CommonConfig.breakableBlocks.canBreak(blockState, this.pos, blockGetter, this.entity, this.context))
+                    || (this.ladder && CrossPlatformStuff.INSTANCE.isClimbable(blockState, this.entity, this.pos))
+                    || l == 1 && !blockState.hasLargeCollisionShape() || l == 2 && !blockState.is(Blocks.MOVING_PISTON))
                 continue;
             VoxelShape voxelShape = blockState.getCollisionShape(this.collisionGetter, this.pos, this.context);
             if (voxelShape == Shapes.block()) {

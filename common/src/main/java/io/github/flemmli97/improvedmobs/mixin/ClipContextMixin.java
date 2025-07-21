@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.mixin;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.mixinhelper.IClipContxt;
+import io.github.flemmli97.improvedmobs.mixinhelper.SeeThroughContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.ClipContext;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(ClipContext.class)
-public abstract class ClipContextMixin implements IClipContxt {
+public abstract class ClipContextMixin implements SeeThroughContext {
 
     @Unique
     private boolean improvedMobs$checkSeeThrough;

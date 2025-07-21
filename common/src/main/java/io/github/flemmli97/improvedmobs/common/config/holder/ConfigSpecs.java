@@ -123,7 +123,7 @@ public class ConfigSpecs {
             this.ignoreSpawner = builder.comment("Whether mobs from spawners should be ignored").define("Ignore Spawner", Config.CommonConfig.ignoreSpawner);
             this.difficultyIncrease = builder.comment("Handles increase in difficulty regarding current difficulty.",
                     "Difficulty increase runs every 2400 ticks. One minecraft day has 24000 ticks.",
-                    "Format is <minimum current difficulty>;<expression>",
+                    "Format is <minimum current difficulty>;<expression> with expression being the new difficulty",
                     "Example [\"0;difficulty + 0.01\",\"10;difficulty + 0.1\",\"30;difficulty + 0\"]",
                     "The difficulty will increases by 0.01 every 2400 ticks (or 0.1 per mc day) till it reaches a difficulty of 10.",
                     "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Config.CommonConfig.difficultyIncrease.write(), stringList());

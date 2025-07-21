@@ -16,7 +16,7 @@ public enum DifficultyFeatures {
     LADDER,
     STEAL,
     GUARDIAN,
-    PARROT,
+    FLYING,
     TARGETVILLAGER,
     NEUTRALAGGRO;
 

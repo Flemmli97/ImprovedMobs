@@ -57,6 +57,8 @@ public class FlyRidingGoal extends Goal {
         if (this.living.getVehicle() instanceof FlyingSummonEntity) {
             return true;
         }
+        if (this.isFlying())
+            return false;
         LivingEntity target = this.living.getTarget();
         if (target == null || !target.isAlive() || !this.living.isWithinRestriction(target.blockPosition())) {
             this.targetDelay = 0;
@@ -71,6 +73,10 @@ public class FlyRidingGoal extends Goal {
             }
         }
         return false;
+    }
+
+    private boolean isFlying() {
+        return this.living.getNavigation() instanceof FlyingPathNavigation;
     }
 
     @Override

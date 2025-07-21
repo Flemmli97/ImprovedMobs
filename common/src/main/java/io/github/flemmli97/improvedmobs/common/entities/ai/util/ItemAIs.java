@@ -3,7 +3,7 @@ package io.github.flemmli97.improvedmobs.common.entities.ai.util;
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.api.ai.ItemAI;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
-import io.github.flemmli97.improvedmobs.mixinhelper.ITNTThrowable;
+import io.github.flemmli97.improvedmobs.mixinhelper.TNTExtension;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -128,7 +128,7 @@ public class ItemAIs {
             double dis = entity.position().distanceTo(target.position());
             if (!entity.level().isClientSide) {
                 PrimedTnt tnt = new PrimedTnt(entity.level(), entity.getX(), entity.getY(), entity.getZ(), entity);
-                ((ITNTThrowable) tnt).improvedMobs$shootFromEntity(entity, entity.getXRot(), entity.getYRot(), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
+                ((TNTExtension) tnt).improvedMobs$shootFromEntity(entity, entity.getXRot(), entity.getYRot(), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
                 EntityFlags.get(tnt).isThrownEntity = true;
                 entity.level().addFreshEntity(tnt);
             }

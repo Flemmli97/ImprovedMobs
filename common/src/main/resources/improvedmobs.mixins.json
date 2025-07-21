@@ -4,6 +4,10 @@
   "package": "io.github.flemmli97.improvedmobs.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "pathfinding.NodeEvaluatorMixin",
+    "pathfinding.FlyNodeMixin",
+    "pathfinding.SwimNodeEvaluatorMixin",
+    "pathfinding.WalkNodeMixin",
     "ClipContextMixin",
     "EntityMixin",
     "EntitySensingMixin",
@@ -16,12 +20,7 @@
     "TNTEntityMixin",
     "TargetGoalAccessor",
     "TargetGoalMixin",
-    "TargetingConditionMixin",
-    "pathfinding.FlyNodeMixin",
-    "pathfinding.GroundNodeMixin",
-    "pathfinding.PathNavigationMixin",
-    "pathfinding.NodeEvaluatorMixin",
-    "pathfinding.SwimNodeEvaluatorMixin"
+    "TargetingConditionMixin"
   ],
   "injectors": {
     "defaultRequire": 1

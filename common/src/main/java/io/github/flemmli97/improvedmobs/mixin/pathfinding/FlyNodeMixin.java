@@ -1,41 +1,30 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
 import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
-import io.github.flemmli97.improvedmobs.mixinhelper.INodeBreakable;
-import it.unimi.dsi.fastutil.objects.Object2BooleanMap;
-import it.unimi.dsi.fastutil.objects.Object2BooleanOpenHashMap;
+import io.github.flemmli97.improvedmobs.mixinhelper.NodeExtension;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
-import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
-import net.minecraft.world.phys.AABB;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.PathfindingContext;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(value = FlyNodeEvaluator.class)
 public abstract class FlyNodeMixin extends NodeEvaluator {
 
     @Unique
-    private final Object2BooleanMap<AABB> improvedMobs$collisionBreakableCache = new Object2BooleanOpenHashMap<>();
+    private final BlockPos.MutableBlockPos improvedMobs$pos = new BlockPos.MutableBlockPos();
 
-    @Inject(method = "done", at = @At(value = "RETURN"))
-    private void clearStuff(CallbackInfo info) {
-        this.improvedMobs$collisionBreakableCache.clear();
-    }
-
-    @Inject(method = "findAcceptedNode", at = @At(value = "HEAD"), cancellable = true)
-    private void breakableNodes(int x, int y, int z, CallbackInfoReturnable<Node> info) {
-        if (!((INodeBreakable) this).improvedMobs$canBreakBlocks())
+    @Inject(method = "getPathType", at = @At(value = "HEAD"), cancellable = true)
+    private void breakableNodes(PathfindingContext context, int x, int y, int z, CallbackInfoReturnable<PathType> info) {
+        if (!((NodeExtension) this).improvedMobs$canBreakBlocks())
             return;
-        Node node = PathFindingUtils.floatingNodeModifier(this.mob, this.currentContext.level(), x, y, z,
-                aabb -> this.improvedMobs$collisionBreakableCache.computeIfAbsent(aabb, object -> !PathFindingUtils.noCollision(this.currentContext.level(), this.mob, aabb)),
-                p -> super.getNode(p.getX(), p.getY(), p.getZ()));
-        if (node != null) {
-            info.setReturnValue(node);
-            info.cancel();
+        if (PathFindingUtils.canBreak(context.getBlockState(this.improvedMobs$pos.set(x, y, z)), this.improvedMobs$pos, this.mob)) {
+            info.setReturnValue(PathType.WALKABLE);
         }
     }
 }
