@@ -1,6 +1,7 @@
 package io.github.flemmli97.improvedmobs.common.entities.ai.util;
 
 import com.google.common.collect.Lists;
+import io.github.flemmli97.improvedmobs.api.ai.ItemAI;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.mixinhelper.ITNTThrowable;
 import net.minecraft.core.BlockPos;

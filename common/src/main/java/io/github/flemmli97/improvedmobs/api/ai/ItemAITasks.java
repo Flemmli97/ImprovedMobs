@@ -1,6 +1,7 @@
-package io.github.flemmli97.improvedmobs.common.entities.ai.util;
+package io.github.flemmli97.improvedmobs.api.ai;
 
 import io.github.flemmli97.improvedmobs.common.config.Config;
+import io.github.flemmli97.improvedmobs.common.entities.ai.util.ItemAIs;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -30,9 +31,9 @@ public class ItemAITasks {
     }
 
     /**
-     * Register during FMLCommonSetupEvent. Not Thread safe.
+     * Register an ai mapping for the given item
      */
-    public static void registerAI(Item item, ItemAI ai) {
+    public static synchronized void registerAI(Item item, ItemAI ai) {
         ITEM_MAP.put(item, ai);
     }
 

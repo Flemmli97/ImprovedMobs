@@ -110,15 +110,15 @@ public class EntityFeatureConfig {
     public static String use() {
         String[] str = new String[]{
                 "Mods can override this now with a datapack! Check for the message 'Following entity overrides are loaded' in your logs to see any overrides",
-                "Entities added here will be blacklisted from their assigned flags. Usage:",
-                "<entity registry name> or <namespace> or <#tag> followed by any of:", "[" + Arrays.toString(DifficultyFeatures.values()) + "].",
-                "Having no flags is equal to ALL. Use REVERSE to reverse all flags. Some flags do nothing for certain mobs!",
+                "Entities added here will be blacklisted from that feature. Usage:",
+                "<entity registry name | namespace | #tag> followed by any of:", "[" + Arrays.toString(DifficultyFeatures.values()) + "].",
+                "Having nothing is equal to ALL. Use REVERSE to reverse all features. Some features do nothing for certain mobs!",
                 "Examples (without <>):",
                 "<minecraft:sheep> (equal to minecraft:sheep|ALL) excludes sheeps from all modifications",
                 "<minecraft:sheep|REVERSE|ATTRIBUTES> add sheep to attributes modification only",
-                "<#minecraft:raiders|ATTRIBUTES> will add all entities in the raiders tag to everything except attributes",
-                "<minecraft:sheep|ATTRIBUTES> will add sheep to everything except attributes",
-                "<minecraft> disables everything for all minecraft mobs"};
+                "<#minecraft:raiders|ATTRIBUTES> will make all raiders be excluded from attribute modifications",
+                "<minecraft:sheep|ATTRIBUTES> will make sheeps be excluded from attribute modifications",
+                "<minecraft> disables everything for all vanilla entities"};
         return String.join("\n", str);
     }
 }

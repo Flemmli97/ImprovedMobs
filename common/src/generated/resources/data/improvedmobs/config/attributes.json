@@ -19,7 +19,7 @@
     },
     "minecraft:generic.scale": {
       "operation": "add_multiplied_base",
-      "value": "rand(-0.2, 0.2)"
+      "value": "random(-0.2, 0.2)"
     }
   }
 }

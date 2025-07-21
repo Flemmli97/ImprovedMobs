@@ -122,10 +122,11 @@ public class ConfigSpecs {
             this.difficultyDelay = builder.comment("Time in ticks for which the difficulty shouldn't increase at the beginning. One full minecraft day is 24000 ticks").defineInRange("Difficulty Delay", Config.CommonConfig.difficultyDelay, 0, Integer.MAX_VALUE);
             this.ignoreSpawner = builder.comment("Whether mobs from spawners should be ignored").define("Ignore Spawner", Config.CommonConfig.ignoreSpawner);
             this.difficultyIncrease = builder.comment("Handles increase in difficulty regarding current difficulty.",
-                    "Format is <minimum current difficulty>-<increase every 2400 ticks>", "Example [\"0-0.01\",\"10-0.1\",\"30-0\"]",
-                    "So the difficulty increases by 0.01 every 2400 ticks (->0.1 per mc day since a mc day has 24000 ticks) till it reaches a difficulty of 10.",
-                    "Then it increases by 1 per mc day till it reaches 30 and then stops.",
-                    "If you want to use negative values use | instead of - as the delimiter.").define("Difficulty Increase", Config.CommonConfig.difficultyIncrease.write(), stringList());
+                    "Difficulty increase runs every 2400 ticks. One minecraft day has 24000 ticks.",
+                    "Format is <minimum current difficulty>;<expression>",
+                    "Example [\"0;difficulty + 0.01\",\"10;difficulty + 0.1\",\"30;difficulty + 0\"]",
+                    "The difficulty will increases by 0.01 every 2400 ticks (or 0.1 per mc day) till it reaches a difficulty of 10.",
+                    "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Config.CommonConfig.difficultyIncrease.write(), stringList());
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online player or not").define("Ignore Players", Config.CommonConfig.ignorePlayers);
             this.considerTimeskip = builder.comment("If true will increase difficulty by the amount of time skipped. Else will only increase difficulty once.").define("Consider Time Skip", Config.CommonConfig.considerTimeskip);
             this.difficultyType = builder.comment("How the difficulty at a position is calculated. Supported values are: ",
@@ -135,10 +136,11 @@ public class ConfigSpecs {
                     "PLAYERSUM: Sum of difficulty of players in a 256 radius around the position. There is no upper limit for this so max difficulty can be higher than the limit! You crazy if you use this",
                     "DISTANCE: Uses the distance to the position defined in Center Position to define the difficulty",
                     "DISTANCESPAWN: Uses the distance to the world spawn to define the difficulty",
-                    "If the type is any of the distance types the functionality of Difficulty Increase is changed to the following where the 1. value is the minimum distance and the 2. is the difficulty that applies. ",
-                    "E.g. [\"0-0\",\"1000-5\"] translates to 0 difficulty between 0-1000 distance and 5 difficulty for distance >= 1000",
-                    "You can also define it as a triple x-z-z instead where z is the increase per block in for that area.",
-                    "E.g. [\"0-0-0.1\",\"1000-5-1\"] the difficulty increases between 0-1000 by 0.1 per block and >= 1000 by 1 per block with a starting value of 5").defineEnum("Difficulty type", Config.CommonConfig.difficultyType);
+                    "If the type is any of the distance types the first value in the Difficulty Increase will be the distance to whatever type is used while the second expression is the direct difficulty",
+                    "E.g. if using DISTANCESPAWN the first value will be the distance to world spawn",
+                    "Example: [\"0;0\",\"500;(distance_spawn - 500) * 0.01\"]",
+                    "Here the difficulty between 0-500 blocks to spawn will stay at 0. From then on the difficulty increases by 1 every 100 blocks further",
+                    "Note: the `difficulty` variable in distance based expression is always 0!").defineEnum("Difficulty type", Config.CommonConfig.difficultyType);
             this.centerPos = builder.comment("Position used for DISTANCE difficulty type").define("Center Position", Config.CommonConfig.centerPos.write());
             this.friendlyFire = builder.comment("Disable/Enable friendly fire for owned pets.").define("FriendlyFire", Config.CommonConfig.friendlyFire);
             this.petArmorBlackList = builder.comment("Blacklist for pet you should't be able to give armor to. Pets from mods, which have custom armor already should be included here (for balancing reasons).").define("Pet Blacklist", Config.CommonConfig.petArmorBlackList, stringList());

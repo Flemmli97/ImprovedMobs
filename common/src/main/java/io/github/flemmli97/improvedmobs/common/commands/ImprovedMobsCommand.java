@@ -12,6 +12,7 @@ import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -126,15 +127,18 @@ public class ImprovedMobsCommand {
     }
 
     private static int simulateDifficulty(CommandContext<CommandSourceStack> src, Collection<GameProfile> profs, int steps) {
+        VariableMap vars = new VariableMap();
         if (profs != null) {
             MinecraftServer server = src.getSource().getServer();
             for (GameProfile prof : profs) {
                 ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
                 PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+                Config.apply(vars, player, 0);
                 int i = steps;
                 while (i > 0) {
                     float current = data.getDifficultyLevel();
-                    data.setDifficultyLevel(current + Config.CommonConfig.difficultyIncrease.get(current).start());
+                    data.setDifficultyLevel((float) Config.CommonConfig.difficultyIncrease.get(current)
+                            .expression().get(vars.setVariable("difficulty", current)));
                     i--;
                 }
                 CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
@@ -145,8 +149,10 @@ public class ImprovedMobsCommand {
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
         int i = steps;
         float current = data.getDifficulty();
+        vars.clear();
         while (i > 0) {
-            current += Config.CommonConfig.difficultyIncrease.get(current).start();
+            current = (float) Config.CommonConfig.difficultyIncrease.get(current)
+                    .expression().get(vars.setVariable("difficulty", current));
             i--;
         }
         data.setDifficulty(current, src.getSource().getServer());

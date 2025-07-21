@@ -96,13 +96,13 @@ public class EventCalls {
                 if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
                     i += 1;
                 while (i > 0) {
-                    data.increaseDifficultyBy(current -> shouldIncrease ? Config.CommonConfig.difficultyIncrease.get(current).start() : 0f, level.getDayTime(), level.getServer());
+                    data.increaseDifficulty(shouldIncrease, level.getDayTime(), level.getServer());
                     i--;
                 }
             }
         } else {
             if (timeDiff > 2400) {
-                data.increaseDifficultyBy(current -> shouldIncrease ? Config.CommonConfig.difficultyIncrease.get(current).start() : 0, level.getDayTime(), level.getServer());
+                data.increaseDifficulty(shouldIncrease, level.getDayTime(), level.getServer());
             }
         }
     }

@@ -3,12 +3,11 @@ package io.github.flemmli97.improvedmobs.common.config;
 import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
 import io.github.flemmli97.improvedmobs.common.config.values.BreakableBlocks;
-import io.github.flemmli97.improvedmobs.common.config.values.DifficultyConfig;
-import io.github.flemmli97.improvedmobs.common.config.values.EnchantCalcConf;
 import io.github.flemmli97.improvedmobs.common.config.values.EntityFeatureConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.EntityItemConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.ExpressionConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.Pos2iConfig;
+import io.github.flemmli97.improvedmobs.common.config.values.StepExpressionConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.TargetMapConfig;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.ChatFormatting;
@@ -22,6 +21,7 @@ import net.minecraft.util.random.WeightedRandom;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
@@ -48,7 +48,9 @@ public class Config {
         public static boolean enableDifficultyScaling = true;
         public static int difficultyDelay;
         public static boolean ignoreSpawner;
-        public static DifficultyConfig difficultyIncrease = new DifficultyConfig(DifficultyConfig.Value.of(0, 0.1f), DifficultyConfig.Value.of(250, 0));
+        public static StepExpressionConfig difficultyIncrease = new StepExpressionConfig(StepExpressionConfig.DIFFICULTY_DEFAULT,
+                new StepExpressionConfig.Value(0, "difficulty + 0.1"),
+                new StepExpressionConfig.Value(250, "difficulty"));
         public static boolean ignorePlayers;
         public static boolean considerTimeskip = true;
         public static boolean friendlyFire;
@@ -119,12 +121,13 @@ public class Config {
         public static ExpressionConfig offHandChance = new ExpressionConfig("0.1 + min(difficulty * 0.3 / 250, 0.3)");
         public static ExpressionConfig dropChance = new ExpressionConfig("0");
         public static ExpressionConfig enchantChance = new ExpressionConfig("0.2 + min(difficulty * 0.6 / 250, 0.6)");
-        public static EnchantCalcConf enchantCalc = new EnchantCalcConf(new EnchantCalcConf.Value(0, "randInt(1, 10)"),
-                new EnchantCalcConf.Value(25, "randInt(5, 15)"),
-                new EnchantCalcConf.Value(50, "randInt(10, 17)"),
-                new EnchantCalcConf.Value(100, "randInt(15, 25)"),
-                new EnchantCalcConf.Value(200, "randInt(20, 30)"),
-                new EnchantCalcConf.Value(250, "randInt(30, 35)"));
+        public static StepExpressionConfig enchantCalc = new StepExpressionConfig(StepExpressionConfig.ENCHANT_DEFAULT,
+                new StepExpressionConfig.Value(0, "random_integer(1, 10)"),
+                new StepExpressionConfig.Value(25, "random_integer(5, 15)"),
+                new StepExpressionConfig.Value(50, "random_integer(10, 17)"),
+                new StepExpressionConfig.Value(100, "random_integer(15, 25)"),
+                new StepExpressionConfig.Value(200, "random_integer(20, 30)"),
+                new StepExpressionConfig.Value(250, "random_integer(30, 35)"));
         public static List<String> enchantBlacklist = new ArrayList<>();
         public static boolean enchantWhitelist;
 
@@ -141,12 +144,18 @@ public class Config {
     }
 
     public static VariableMap apply(VariableMap variables, LivingEntity entity, float difficulty) {
-        double distSpawn = entity.blockPosition().distSqr(entity.level().getSharedSpawnPos());
-        double distOrigin = entity.blockPosition().distSqr(BlockPos.ZERO);
-        return variables.withRandom(entity.getRandom())
+        return apply(variables, entity.getRandom(), entity.level().getSharedSpawnPos(), entity.position(), difficulty);
+    }
+
+    public static VariableMap apply(VariableMap variables, RandomSource random, BlockPos spawn, Vec3 pos, float difficulty) {
+        double distSpawn = Math.sqrt(pos.distanceToSqr(spawn.getX() + 0.5, pos.y(), spawn.getZ() + 0.5));
+        double distOrigin = Math.sqrt(pos.distanceToSqr(0.5, pos.y(), 0.5));
+        double distCenter = Math.sqrt(pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().x() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().z() + 0.5));
+        return variables.withRandom(random)
                 .setVariable("difficulty", difficulty)
                 .setVariable("distance_spawn", distSpawn)
-                .setVariable("distance_origin", distOrigin);
+                .setVariable("distance_origin", distOrigin)
+                .setVariable("distance_center", distCenter);
     }
 
     public static class WeightedItem implements WeightedEntry {

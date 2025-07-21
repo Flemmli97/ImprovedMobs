@@ -3,7 +3,7 @@ package io.github.flemmli97.improvedmobs.common.utils;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
-import io.github.flemmli97.improvedmobs.common.config.values.EnchantCalcConf;
+import io.github.flemmli97.improvedmobs.common.config.values.StepExpressionConfig;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
@@ -96,7 +96,7 @@ public class Utils {
     }
 
     public static void enchantGear(Mob living, float difficulty, VariableMap map) {
-        EnchantCalcConf.Value val = Config.CommonConfig.enchantCalc.get(difficulty);
+        StepExpressionConfig.Value val = Config.CommonConfig.enchantCalc.get(difficulty);
         int level = (int) val.expression().get(map);
         if (level == 0)
             return;

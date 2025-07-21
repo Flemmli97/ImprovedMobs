@@ -1,7 +1,7 @@
 package io.github.flemmli97.improvedmobs.common.entities.ai;
 
-import io.github.flemmli97.improvedmobs.common.entities.ai.util.ItemAI;
-import io.github.flemmli97.improvedmobs.common.entities.ai.util.ItemAITasks;
+import io.github.flemmli97.improvedmobs.api.ai.ItemAI;
+import io.github.flemmli97.improvedmobs.api.ai.ItemAITasks;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;

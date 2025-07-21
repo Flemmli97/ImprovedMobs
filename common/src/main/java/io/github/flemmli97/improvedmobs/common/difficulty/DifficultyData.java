@@ -3,8 +3,9 @@ package io.github.flemmli97.improvedmobs.common.difficulty;
 import com.google.common.collect.Lists;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.values.DifficultyConfig;
+import io.github.flemmli97.improvedmobs.common.config.values.StepExpressionConfig;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -20,7 +21,6 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class DifficultyData extends SavedData {
 
@@ -43,10 +43,10 @@ public class DifficultyData extends SavedData {
         return server.overworld().getDataStorage().computeIfAbsent(FACTORY, IDENTIFIER);
     }
 
-    public static float getDifficulty(Level level, LivingEntity e) {
+    public static float getDifficulty(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel))
             return 0;
-        return DifficultyFetcher.getDifficulty(serverLevel, e.position());
+        return DifficultyFetcher.getDifficulty(serverLevel, entity.position());
     }
 
     public static List<Player> playersIn(EntityGetter getter, Vec3 pos, double radius) {
@@ -58,18 +58,25 @@ public class DifficultyData extends SavedData {
         return list;
     }
 
-    public void increaseDifficultyBy(Function<Float, Float> increase, long time, MinecraftServer server) {
-        if (!this.paused) {
-            this.difficultyLevel += increase.apply(this.getDifficulty());
+    public void increaseDifficulty(boolean shouldIncrease, long time, MinecraftServer server) {
+        if (shouldIncrease) {
+            VariableMap vars = new VariableMap();
+            if (!this.paused) {
+                float current = this.getDifficulty();
+                this.difficultyLevel = (float) Config.CommonConfig.difficultyIncrease.get(current)
+                        .expression().get(vars.setVariable("difficulty", current));
+            }
+            server.getPlayerList().getPlayers()
+                    .forEach(player -> {
+                        PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+                        if (!data.paused()) {
+                            float current = data.getDifficultyLevel();
+                            Config.apply(vars, player, current);
+                            data.setDifficultyLevel((float) Config.CommonConfig.difficultyIncrease.get(current).expression().get(vars));
+                        }
+                    });
         }
         this.prevTime = time;
-        server.getPlayerList().getPlayers()
-                .forEach(player -> {
-                    PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
-                    if (!data.paused()) {
-                        data.setDifficultyLevel(data.getDifficultyLevel() + increase.apply(data.getDifficultyLevel()));
-                    }
-                });
         this.setDirty();
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
     }
@@ -107,8 +114,10 @@ public class DifficultyData extends SavedData {
         } else {
             dist = Mth.sqrt((float) pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().x() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().z() + 0.5));
         }
-        DifficultyConfig.Value value = Config.CommonConfig.difficultyIncrease.get(dist);
-        return value.start() + (dist - value.requiredDifficulty()) * value.increasePerBlock();
+        StepExpressionConfig.Value value = Config.CommonConfig.difficultyIncrease.get(dist);
+        VariableMap map = new VariableMap();
+        Config.apply(map, level.getRandom(), level.getSharedSpawnPos(), pos, 0);
+        return (float) value.expression().get(map);
     }
 
     public void setPaused(boolean paused) {
