@@ -18,6 +18,7 @@ import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.level.block.state.BlockState;
 
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -71,7 +72,17 @@ public class EntityOverridesManager extends SimpleJsonResourceReloadListener {
         if (properties == null || properties.enabledFeatures().isEmpty())
             return OverrideState.DEFAULT;
         EnumSet<DifficultyFeatures> set = properties.enabledFeatures().get();
-        return set.contains(DifficultyFeatures.REVERSE) ^ (set.contains(DifficultyFeatures.ALL) || set.contains(feature)) ? OverrideState.ON : OverrideState.OFF;
+        return set.contains(DifficultyFeatures.REVERSE) ^ (set.contains(DifficultyFeatures.ALL) || set.contains(feature)) ? OverrideState.ALLOW : OverrideState.DENY;
+    }
+
+    public OverrideState canBreak(LivingEntity entity, BlockState state) {
+        this.resolve();
+        EntityConfigProperties properties = this.properties.get(entity.getType());
+        if (properties == null)
+            return OverrideState.DEFAULT;
+        if (properties.breakableBlocks().val().contains(state.getBlockHolder()))
+            return OverrideState.ALLOW;
+        return properties.breakableBlocks().replace() ? OverrideState.DENY : OverrideState.DEFAULT;
     }
 
     public void resolve() {
@@ -124,7 +135,7 @@ public class EntityOverridesManager extends SimpleJsonResourceReloadListener {
 
     public enum OverrideState {
         DEFAULT,
-        ON,
-        OFF
+        ALLOW,
+        DENY
     }
 }

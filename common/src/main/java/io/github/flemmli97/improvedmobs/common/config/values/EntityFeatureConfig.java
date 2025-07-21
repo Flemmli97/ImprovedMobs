@@ -45,9 +45,9 @@ public class EntityFeatureConfig {
             return true;
         this.initialize();
         EntityOverridesManager.OverrideState override = EntityOverridesManager.getInstance().isEnabled(living, flag);
-        if (override == EntityOverridesManager.OverrideState.ON)
+        if (override == EntityOverridesManager.OverrideState.ALLOW)
             return false;
-        if (override == EntityOverridesManager.OverrideState.OFF)
+        if (override == EntityOverridesManager.OverrideState.DENY)
             return true;
         boolean reverse = Config.CommonConfig.featureWhitelist.contains(flag);
         EnumSet<DifficultyFeatures> set = this.features.get(living.getType());

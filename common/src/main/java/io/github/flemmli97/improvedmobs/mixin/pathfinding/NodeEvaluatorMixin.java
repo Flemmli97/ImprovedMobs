@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
+import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.mixinhelper.NodeExtension;
 import net.minecraft.world.entity.Mob;
@@ -16,7 +17,7 @@ public abstract class NodeEvaluatorMixin implements NodeExtension {
 
     @Override
     public boolean improvedMobs$canBreakBlocks() {
-        if (this.mob == null || this.mob.getTarget() == null)
+        if (this.mob == null || (this.mob.getTarget() == null && !Config.CommonConfig.idleBreak))
             return false;
         return EntityFlags.get(this.mob).canBreakBlocks == EntityFlags.FlagType.TRUE
                 && this.mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);

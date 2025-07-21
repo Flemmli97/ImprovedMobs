@@ -1,5 +1,6 @@
 package io.github.flemmli97.improvedmobs.common.config.values;
 
+import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,6 +37,13 @@ public class BreakableBlocks {
             return false;
         if (!Config.CommonConfig.breakBlockEntities && state.hasBlockEntity())
             return false;
+        if (entity instanceof Mob mob) {
+            EntityOverridesManager.OverrideState override = EntityOverridesManager.getInstance().canBreak(mob, state);
+            if (override == EntityOverridesManager.OverrideState.ALLOW)
+                return true;
+            if (override == EntityOverridesManager.OverrideState.DENY)
+                return false;
+        }
         if (Config.CommonConfig.breakingAsBlacklist) {
             return !this.blocks.contains(state.getBlock());
         }

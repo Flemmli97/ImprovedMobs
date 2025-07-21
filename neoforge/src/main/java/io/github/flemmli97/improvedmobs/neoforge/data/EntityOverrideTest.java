@@ -7,6 +7,7 @@ import io.github.flemmli97.improvedmobs.api.datapack.EntityConfigProperties;
 import io.github.flemmli97.improvedmobs.api.datapack.EntityTypeValue;
 import io.github.flemmli97.improvedmobs.api.datapack.provider.EntityOverridesProvider;
 import net.minecraft.core.HolderLookup;
+import net.minecraft.core.HolderSet;
 import net.minecraft.data.PackOutput;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -29,6 +30,7 @@ public class EntityOverrideTest extends EntityOverridesProvider {
     protected void add(HolderLookup.Provider provider) {
         this.add(ImprovedMobs.modRes("zombie_test"), new EntityConfigProperties(
                 EntityTypeValue.ofType(EntityType.ZOMBIE), Optional.of(EnumSet.of(DifficultyFeatures.ATTRIBUTES)),
+                new EntityConfigProperties.ConfigurableProperty<>(HolderSet.empty(), false),
                 new EntityConfigProperties.ConfigurableProperty<>(DifficultyAttributeProperty.builder()
                         .with(Attributes.MAX_HEALTH, AttributeModifier.Operation.ADD_VALUE, "100")
                         .build(), true)

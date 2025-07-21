@@ -4,20 +4,26 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
 import io.github.flemmli97.tenshilib.common.utils.CodecUtils;
+import net.minecraft.core.HolderSet;
+import net.minecraft.core.RegistryCodecs;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.world.level.block.Block;
 
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
 public record EntityConfigProperties(EntityTypeValue type, Optional<EnumSet<DifficultyFeatures>> enabledFeatures,
+                                     ConfigurableProperty<HolderSet<Block>> breakableBlocks,
                                      ConfigurableProperty<DifficultyAttributeProperty> attributes) {
 
     public static final Codec<EntityConfigProperties> CODEC = RecordCodecBuilder.create(instance ->
             instance.group(EntityTypeValue.CODEC.fieldOf("type").forGetter(EntityConfigProperties::type),
                     CodecUtils.stringEnumCodec(DifficultyFeatures.class, null).listOf().optionalFieldOf("features").forGetter(d -> d.enabledFeatures().map(List::copyOf)),
+                    ConfigurableProperty.codecFor(RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("breakable_blocks").forGetter(EntityConfigProperties::breakableBlocks),
                     ConfigurableProperty.codecFor(DifficultyAttributeProperty.CODEC).fieldOf("attributes").forGetter(EntityConfigProperties::attributes)
-            ).apply(instance, (type, features, attributes) ->
-                    new EntityConfigProperties(type, features.map(EnumSet::copyOf), attributes)));
+            ).apply(instance, (type, features, blocks, attributes) ->
+                    new EntityConfigProperties(type, features.map(EnumSet::copyOf), blocks, attributes)));
 
     public record ConfigurableProperty<T>(T val, boolean replace) {
 
