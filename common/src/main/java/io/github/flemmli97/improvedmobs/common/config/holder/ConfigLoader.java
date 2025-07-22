@@ -50,6 +50,8 @@ public class ConfigLoader {
         Config.CommonConfig.playerEXScale = ConfigSpecs.COMMON_CONF.playerEXScale.get().floatValue();
         Config.CommonConfig.useLevelZMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("levelz") ? ConfigSpecs.COMMON_CONF.useLevelZMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.levelZScale = ConfigSpecs.COMMON_CONF.levelZScale.get().floatValue();
+        Config.CommonConfig.useRunecraftoryMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("runecraftory") ? ConfigSpecs.COMMON_CONF.useRunecraftoryMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.runecraftoryScale = ConfigSpecs.COMMON_CONF.runecraftoryScale.get().floatValue();
 
         Config.CommonConfig.breakableBlocks.read(ConfigSpecs.COMMON_CONF.breakableBlocks.get());
         Config.CommonConfig.breakingAsBlacklist = ConfigSpecs.COMMON_CONF.breakingAsBlacklist.get();

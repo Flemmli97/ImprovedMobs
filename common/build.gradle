@@ -7,6 +7,8 @@ loom {
 dependencies {
     modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
     modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api}"
+
+    modCompileOnly "io.github.flemmli97:runecraftory:${runecraftory_version}-common"
 }
 
 sourceSets.main.resources {

@@ -72,6 +72,8 @@ public class ConfigSpecs {
         public final ModConfigSpec.DoubleValue playerEXScale;
         public final ModConfigSpec.EnumValue<Config.IntegrationType> useLevelZMod;
         public final ModConfigSpec.DoubleValue levelZScale;
+        public final ModConfigSpec.EnumValue<Config.IntegrationType> useRunecraftoryMod;
+        public final ModConfigSpec.DoubleValue runecraftoryScale;
 
         //AI
         public final ModConfigSpec.ConfigValue<List<String>> breakableBlocks;
@@ -166,6 +168,8 @@ public class ConfigSpecs {
             this.playerEXScale = builder.comment("Scaling for playerEX integration").defineInRange("PlayerEX Scaling", Config.CommonConfig.playerEXScale, 0, Double.MAX_VALUE);
             this.useLevelZMod = builder.comment("If true and LevelZ is installed will use the the total skill level from LevelZ as difficulty").defineEnum("Use LevelZ Mod", Config.CommonConfig.useLevelZMod);
             this.levelZScale = builder.comment("Scaling for LevelZ integration").defineInRange("LevelZ Scaling", Config.CommonConfig.levelZScale, 0, Double.MAX_VALUE);
+            this.useRunecraftoryMod = builder.comment("If true and RuneCraftory is installed will use the level from RuneCraftory as difficulty").defineEnum("Use RuneCraftory Mod", Config.CommonConfig.useRunecraftoryMod);
+            this.runecraftoryScale = builder.comment("Scaling for RuneCraftory integration").defineInRange("RuneCraftory Scaling", Config.CommonConfig.runecraftoryScale, 0, Double.MAX_VALUE);
             builder.pop();
 
             builder.comment("Settings regarding custom ai for mobs").push("ai");

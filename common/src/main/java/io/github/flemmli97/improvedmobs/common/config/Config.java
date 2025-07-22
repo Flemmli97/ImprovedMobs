@@ -72,6 +72,8 @@ public class Config {
         public static float playerEXScale = 1;
         public static IntegrationType useLevelZMod = IntegrationType.ON;
         public static float levelZScale = 1;
+        public static IntegrationType useRunecraftoryMod;
+        public static float runecraftoryScale = 1;
 
         // AI
         public static BreakableBlocks breakableBlocks = new BreakableBlocks("#c:glass_blocks", "#c:glass_panes", "#minecraft:fence_gates", "#c:fence_gates", "#minecraft:wooden_doors");
