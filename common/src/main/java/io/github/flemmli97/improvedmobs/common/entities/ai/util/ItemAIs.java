@@ -157,13 +157,13 @@ public class ItemAIs {
             double dis = entity.position().distanceTo(target.position());
             if (dis < entity.getBbWidth() + target.getBbWidth() + 0.5 && !target.isOnFire()) {
                 entity.playSound(SoundEvents.FLINTANDSTEEL_USE, 1, 1);
-                target.setRemainingFireTicks(4);
+                target.igniteForSeconds(4);
             }
         }
 
         @Override
         public int cooldown(Mob entity) {
-            return 20;
+            return 30 + entity.getRandom().nextInt(30);
         }
 
         @Override

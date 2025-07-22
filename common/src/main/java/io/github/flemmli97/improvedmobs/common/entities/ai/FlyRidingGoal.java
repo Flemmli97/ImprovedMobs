@@ -130,13 +130,10 @@ public class FlyRidingGoal extends Goal {
     private boolean checkFlying() {
         if (this.living.isUnderWater())
             return false;
-        //Check if entity tries to move somewhere already
-        if (Math.abs(this.living.xxa) > 0.005 || Math.abs(this.living.zza) > 0.005)
-            return false;
         if (this.living.isNoGravity() || !this.living.onGround())
             return false;
         Path path = this.living.getNavigation().getPath();
-        if (path == null || (path.isDone() && !path.canReach())) {
+        if (path == null || this.living.getNavigation().isStuck() || path.isDone() || !path.canReach()) {
             Path ground = this.living.getNavigation().createPath(this.living.getTarget(), 1);
             if (ground != null && ground.canReach())
                 return false;
