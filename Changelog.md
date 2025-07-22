@@ -8,6 +8,7 @@ Improved Mobs 1.14.0
       - `difficulty`: The current difficulty
       - `distance_spawn` : The distance to spawn
       - `distance_origin`: The distance to [0,0,0]
+      - `distance_center`: The distance to the position defined in the config
     - For usable functions see https://github.com/Flemmli97/TenshiLib/wiki/Math-Expressions
   - Attributes config part is now moved to datapack.
     - Found under `data/improvedmobs/config/attributes.json`
@@ -16,6 +17,7 @@ Improved Mobs 1.14.0
   - Add a way to override various properties for entities via datapack for example
     - Overriding enabled features defined in the config
     - Entity based difficulty attribute modifications
+    - Entity based block break list
     - Check out the wiki how to use
   - Changes:
     - `Punish Time Skip` -> `Consider Time Skip`
@@ -25,6 +27,9 @@ Improved Mobs 1.14.0
     - Auto target config can now accept tags
   - Added equipment drop chance config. `Should drop equipment` removed
 - Add `improvedmobs:no_steal` block tag in addition to config
+- Overhaul pathfinding. Should be more correct now
+- Redid equipment config default weights/quality. The old config will still work!
+- Fix mobs not climbing ladders
 - Fix pause state not saved on players
 - Fix LevelZ conflict
 
