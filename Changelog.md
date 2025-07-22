@@ -29,6 +29,8 @@ Improved Mobs 1.14.0
 - Add `improvedmobs:no_steal` block tag in addition to config
 - Overhaul pathfinding. Should be more correct now
 - Redid equipment config default weights/quality. The old config will still work!
+- Add powerscale integration (replaces scaling health)
+- Add runecraftory integration
 - Fix mobs not climbing ladders
 - Fix pause state not saved on players
 - Fix LevelZ conflict
