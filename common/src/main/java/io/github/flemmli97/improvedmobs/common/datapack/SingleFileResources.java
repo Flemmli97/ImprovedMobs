@@ -18,6 +18,7 @@ import java.io.Reader;
 
 public abstract class SingleFileResources extends SimplePreparableReloadListener<JsonElement> {
 
+    public static final String CONFIG_DIRECTORY = "improvedmobs/config";
     public static final Gson GSON = new Gson();
 
     public final ResourceLocation id;
@@ -27,7 +28,7 @@ public abstract class SingleFileResources extends SimplePreparableReloadListener
 
     public SingleFileResources(ResourceLocation id, HolderLookup.Provider provider) {
         this.id = id;
-        this.file = FileToIdConverter.json("config").idToFile(id);
+        this.file = FileToIdConverter.json(CONFIG_DIRECTORY).idToFile(id);
         this.provider = provider;
     }
 
