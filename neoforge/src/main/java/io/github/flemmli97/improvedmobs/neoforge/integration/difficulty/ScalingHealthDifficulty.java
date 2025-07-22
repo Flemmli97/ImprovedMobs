@@ -5,18 +5,18 @@ import io.github.flemmli97.improvedmobs.common.config.Config;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
-import net.silentchaos512.scalinghealth.utils.config.SHDifficulty;
+import net.silentchaos512.powerscale.core.DifficultyUtil;
 
 public class ScalingHealthDifficulty implements DifficultyGetter {
 
     @Override
     public float getDifficulty(ServerLevel level, Vec3 pos) {
-        return (float) SHDifficulty.areaDifficulty(level, BlockPos.containing(pos));
+        return (float) DifficultyUtil.getLocalDifficulty(level, BlockPos.containing(pos));
     }
 
     @Override
     public Config.IntegrationType getType() {
-        return Config.CommonConfig.useScalingHealthMod;
+        return Config.CommonConfig.usePowerScaleMod;
     }
 
     @Override

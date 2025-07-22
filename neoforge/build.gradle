@@ -23,7 +23,8 @@ dependencies {
     modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-neoforge"
 
     // modRuntimeOnly "${sillib_dep}"
-    modCompileOnly "${scalhealth_dep}"
+    modCompileOnly "${powerscale_dep}"
+
     modRuntimeOnly "io.github.flemmli97:debugutils:1.21.1-1.0.9-neoforge"
     modRuntimeOnly "maven.modrinth:jade:2P7THd8J"
     modRuntimeOnly "curse.maven:moonlight-499980:6682378"

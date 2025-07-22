@@ -67,7 +67,7 @@ public class Config {
         // Integration
         public static IntegrationType vanillaClamped = IntegrationType.OFF;
         public static float vanillaClampedMax = 250;
-        public static IntegrationType useScalingHealthMod = IntegrationType.ON;
+        public static IntegrationType usePowerScaleMod = IntegrationType.ON;
         public static IntegrationType usePlayerEXMod = IntegrationType.ON;
         public static float playerEXScale = 1;
         public static IntegrationType useLevelZMod = IntegrationType.ON;

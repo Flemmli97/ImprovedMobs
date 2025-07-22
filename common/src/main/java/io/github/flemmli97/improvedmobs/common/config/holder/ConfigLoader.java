@@ -45,7 +45,7 @@ public class ConfigLoader {
 
         Config.CommonConfig.vanillaClamped = ConfigSpecs.COMMON_CONF.vanillaClamped.get();
         Config.CommonConfig.vanillaClampedMax = ConfigSpecs.COMMON_CONF.vanillaClampedMax.get().floatValue();
-        Config.CommonConfig.useScalingHealthMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("scalinghealth") ? ConfigSpecs.COMMON_CONF.useScalingHealthMod.get() : Config.IntegrationType.OFF;
+        Config.CommonConfig.usePowerScaleMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("powerscale") ? ConfigSpecs.COMMON_CONF.usePowerScaleMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.usePlayerEXMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("playerex") ? ConfigSpecs.COMMON_CONF.usePlayerEXMod.get() : Config.IntegrationType.OFF;
         Config.CommonConfig.playerEXScale = ConfigSpecs.COMMON_CONF.playerEXScale.get().floatValue();
         Config.CommonConfig.useLevelZMod = TenshiLibCrossPlat.INSTANCE.isModLoaded("levelz") ? ConfigSpecs.COMMON_CONF.useLevelZMod.get() : Config.IntegrationType.OFF;
