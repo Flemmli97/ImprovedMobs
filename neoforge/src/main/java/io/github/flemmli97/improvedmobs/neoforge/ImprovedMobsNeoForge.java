@@ -4,7 +4,7 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.ai.ItemAITasks;
 import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
-import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
+import io.github.flemmli97.improvedmobs.common.config.equipment.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfig;

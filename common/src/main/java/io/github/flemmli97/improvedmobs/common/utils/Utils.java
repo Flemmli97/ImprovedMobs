@@ -2,7 +2,7 @@ package io.github.flemmli97.improvedmobs.common.utils;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
+import io.github.flemmli97.improvedmobs.common.config.equipment.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.config.values.StepExpressionConfig;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.core.BlockPos;

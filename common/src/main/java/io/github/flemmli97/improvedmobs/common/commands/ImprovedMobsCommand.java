@@ -7,7 +7,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
+import io.github.flemmli97.improvedmobs.common.config.equipment.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;

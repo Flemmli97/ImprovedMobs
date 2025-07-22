@@ -2,7 +2,7 @@ package io.github.flemmli97.improvedmobs.fabric.events;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.ai.ItemAITasks;
-import io.github.flemmli97.improvedmobs.common.config.EquipmentList;
+import io.github.flemmli97.improvedmobs.common.config.equipment.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
