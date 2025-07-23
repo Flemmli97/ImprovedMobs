@@ -72,7 +72,7 @@ public class Config {
         public static float playerEXScale = 1;
         public static IntegrationType useLevelZMod = IntegrationType.ON;
         public static float levelZScale = 1;
-        public static IntegrationType useRunecraftoryMod;
+        public static IntegrationType useRunecraftoryMod = IntegrationType.ON;
         public static float runecraftoryScale = 1;
 
         // AI

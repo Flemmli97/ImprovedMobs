@@ -1,3 +1,7 @@
+Improved Mobs 1.14.2
+================
+- Hotfix: Fix nullpointer with config (for real this time...)
+
 Improved Mobs 1.14.1
 ================
 - Hotfix: Fix nullpointer with config
