@@ -80,7 +80,7 @@ public class ImprovedMobsNeoForge {
     }
 
     static void addReloadListener(AddReloadListenerEvent event) {
-        event.addListener(DifficultyAttributeConfig.create(event.getRegistryAccess()));
-        event.addListener(EntityOverridesManager.create(event.getRegistryAccess()));
+        event.addListener(DifficultyAttributeConfig.create(event.getServerResources().getRegistryLookup()));
+        event.addListener(EntityOverridesManager.create(event.getServerResources().getRegistryLookup()));
     }
 }
