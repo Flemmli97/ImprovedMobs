@@ -36,22 +36,22 @@ public class EventHandler {
         EquipmentList.initEquip(server.registryAccess());
     }
 
-    public static void worldLoad(MinecraftServer server, ServerLevel world) {
-        if (world.dimension() == Level.OVERWORLD)
-            ConfigLoader.serverInit(world);
+    public static void worldLoad(MinecraftServer server, ServerLevel level) {
+        if (level.dimension() == Level.OVERWORLD)
+            ConfigLoader.serverInit(level);
     }
 
-    public static void onEntityLoad(Entity entity, ServerLevel world) {
+    public static void onEntityLoad(Entity entity, ServerLevel level) {
         if (entity instanceof Mob mob)
             EventCalls.onEntityLoad(mob);
     }
 
-    public static InteractionResult openTile(Player player, Level world, InteractionHand hand, BlockHitResult hitResult) {
+    public static InteractionResult openTile(Player player, Level level, InteractionHand hand, BlockHitResult hitResult) {
         EventCalls.openTile(player, hitResult.getBlockPos());
         return InteractionResult.PASS;
     }
 
-    public static InteractionResult equipPet(Player player, Level world, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
+    public static InteractionResult equipPet(Player player, Level level, InteractionHand hand, Entity entity, @Nullable EntityHitResult hitResult) {
         if (EventCalls.equipPet(player, hand, entity))
             return InteractionResult.CONSUME;
         return InteractionResult.PASS;
