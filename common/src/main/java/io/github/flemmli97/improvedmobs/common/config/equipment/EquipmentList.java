@@ -8,6 +8,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.ai.ItemAI;
@@ -19,7 +20,6 @@ import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.RegistryOps;
 import net.minecraft.util.GsonHelper;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.EquipmentSlotGroup;
@@ -76,7 +76,7 @@ public class EquipmentList {
     public static void initEquip(HolderLookup.Provider provider) {
         try {
             Path path = CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json");
-            RegistryOps<JsonElement> ops = provider.createSerializationContext(JsonOps.INSTANCE);
+            DynamicOps<JsonElement> ops = provider.createSerializationContext(JsonOps.INSTANCE);
             if (!Files.exists(path)) {
                 initDefaultVals();
                 Files.createFile(path);
