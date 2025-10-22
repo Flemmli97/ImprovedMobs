@@ -1,14 +1,12 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/common.gradle"
-
-loom {
-    accessWidenerPath.set project(":fabric").file("src/main/resources/improvedmobs.accesswidener")
+plugins {
+    id 'io.github.flemmli97.multiloader.platform-common'
 }
 
 dependencies {
-    modCompileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
-    modCompileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api}"
+    compileOnly "io.github.flemmli97:tenshilib:${tenshilib_version}-common"
+    compileOnly "fuzs.forgeconfigapiport:forgeconfigapiport-common-neoforgeapi:${forge_config_api}"
 
-    modCompileOnly "io.github.flemmli97:runecraftory:${runecraftory_version}-common"
+    commonDependency "io.github.flemmli97:runecraftory:${runecraftory_version}-common"
 }
 
 sourceSets.main.resources {

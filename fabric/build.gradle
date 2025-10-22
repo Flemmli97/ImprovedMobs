@@ -1,7 +1,8 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/fabric.gradle"
-
-loom {
-    accessWidenerPath.set file("src/main/resources/improvedmobs.accesswidener")
+plugins {
+    id 'fabric-loom'
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'com.modrinth.minotaur' version '2.+'
+    id 'io.github.flemmli97.multiloader.platform-fabric'
 }
 
 ext {
@@ -13,6 +14,9 @@ repositories {
     maven {
         name = 'Ladysnake Mods'
         url = 'https://maven.ladysnake.org/releases'
+        content {
+            includeGroup 'dev.onyxstudios.cardinal-components-api'
+        }
     }
 }
 
