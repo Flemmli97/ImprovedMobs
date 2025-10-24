@@ -11,8 +11,8 @@ import com.mojang.serialization.Codec;
 import com.mojang.serialization.DynamicOps;
 import com.mojang.serialization.JsonOps;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.api.ai.ItemAI;
-import io.github.flemmli97.improvedmobs.api.ai.ItemAITasks;
+import io.github.flemmli97.improvedmobs.api.datapack.ItemUseLookupManager;
+import io.github.flemmli97.improvedmobs.api.item.ItemUseHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.CodecUtils;
 import io.github.flemmli97.tenshilib.common.utils.ItemUtils;
@@ -73,12 +73,12 @@ public class EquipmentList {
         return eq.getRandomStack(mob.getRandom(), difficulty);
     }
 
-    public static void initEquip(HolderLookup.Provider provider) {
+    public static void initEquip(HolderLookup.Provider provider, ItemUseLookupManager manager) {
         try {
             Path path = CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json");
             DynamicOps<JsonElement> ops = provider.createSerializationContext(JsonOps.INSTANCE);
             if (!Files.exists(path)) {
-                initDefaultVals();
+                initDefaultVals(manager);
                 Files.createFile(path);
             } else {
                 BufferedReader reader = Files.newBufferedReader(path);
@@ -90,7 +90,7 @@ public class EquipmentList {
                 if (version < CONFIG_VERSION) {
                     // Legacy config. create a backup and reset to default
                     ImprovedMobs.LOGGER.debug("You are having a legacy config. A Backup will be created");
-                    createBackup();
+                    createBackup(manager);
                 } else {
                     // Read and update from config
                     EQUIPMENTS = CODEC.parse(ops, config).getPartialOrThrow();
@@ -121,16 +121,16 @@ public class EquipmentList {
         return comment;
     }
 
-    private static void createBackup() {
+    private static void createBackup(ItemUseLookupManager manager) {
         try {
             Files.move(CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json"), CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json.bak"));
-            initDefaultVals();
+            initDefaultVals(manager);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void initDefaultVals() {
+    private static void initDefaultVals(ItemUseLookupManager manager) {
         EQUIPMENTS = new EnumMap<>(EquipmentSlot.class);
         Map<EquipmentSlot, List<Pair<Integer, OptionalItemStack>>> inverseWeight = new HashMap<>();
         BuiltInRegistries.ITEM.holders().forEach(holder -> {
@@ -138,19 +138,9 @@ public class EquipmentList {
             Item item = holder.value();
             if (item instanceof BowItem)
                 slot = EquipmentSlot.MAINHAND;
-            ItemAI ai = ItemAITasks.getAI(item);
+            ItemUseHandler ai = manager.get(item).stream().findFirst().orElse(null);
             if (ai != null) {
-                switch (ai.prefHand()) {
-                    case BOTH -> {
-                        if (ai.type() == ItemAI.ItemType.NON_STRAFINGITEM) {
-                            slot = EquipmentSlot.OFFHAND;
-                        } else {
-                            slot = EquipmentSlot.MAINHAND;
-                        }
-                    }
-                    case MAIN -> slot = EquipmentSlot.MAINHAND;
-                    case OFF -> slot = EquipmentSlot.OFFHAND;
-                }
+                slot = ai.defaultedSlot();
             }
             if (item instanceof Equipable equipable && equipable.getEquipmentSlot().getType() != EquipmentSlot.Type.ANIMAL_ARMOR) {
                 slot = equipable.getEquipmentSlot();

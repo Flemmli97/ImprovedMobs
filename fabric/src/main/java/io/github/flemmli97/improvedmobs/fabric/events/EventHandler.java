@@ -1,8 +1,6 @@
 package io.github.flemmli97.improvedmobs.fabric.events;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.api.ai.ItemAITasks;
-import io.github.flemmli97.improvedmobs.common.config.equipment.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
@@ -29,11 +27,6 @@ public class EventHandler {
 
     public static void worldJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
         EventCalls.levelJoin(handler.player, server);
-    }
-
-    public static void serverStart(MinecraftServer server) {
-        ItemAITasks.initAI();
-        EquipmentList.initEquip(server.registryAccess());
     }
 
     public static void worldLoad(MinecraftServer server, ServerLevel level) {

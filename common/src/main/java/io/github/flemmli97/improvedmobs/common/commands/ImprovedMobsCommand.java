@@ -7,7 +7,6 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.equipment.EquipmentList;
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
@@ -30,7 +29,6 @@ public class ImprovedMobsCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("improvedmobs")
                 .executes(ImprovedMobsCommand::getDifficulty)
-                .then(Commands.literal("reloadJson").requires(src -> src.hasPermission(2)).executes(ImprovedMobsCommand::reloadJson))
                 .then(Commands.literal("difficulty").requires(src -> src.hasPermission(2))
                         .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile())
                                 .then(Commands.literal("set").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::setDifficultyPlayer)))
@@ -48,12 +46,6 @@ public class ImprovedMobsCommand {
                                         .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> ImprovedMobsCommand.simulateDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), IntegerArgumentType.getInteger(src, "steps")))))
                                         .executes(src -> ImprovedMobsCommand.simulateDifficulty(src, null, IntegerArgumentType.getInteger(src, "steps")))))
                 ));
-    }
-
-    private static int reloadJson(CommandContext<CommandSourceStack> src) {
-        src.getSource().sendSuccess(() -> Component.literal("Reloading equipment.json"), true);
-        EquipmentList.initEquip(src.getSource().registryAccess());
-        return 1;
     }
 
     private static int setDifficulty(CommandContext<CommandSourceStack> src) {

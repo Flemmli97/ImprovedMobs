@@ -4,7 +4,9 @@ import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeConfigRegistry;
 import fuzs.forgeconfigapiport.fabric.api.neoforge.v4.NeoForgeModConfigEvents;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
+import io.github.flemmli97.improvedmobs.api.datapack.ItemUseLookupManager;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
+import io.github.flemmli97.improvedmobs.api.item.ItemUseRegistry;
 import io.github.flemmli97.improvedmobs.common.commands.ImprovedMobsCommand;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
@@ -20,7 +22,6 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
@@ -43,6 +44,7 @@ public class ImprovedMobsFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ItemUseRegistry.initBuiltin();
         ServerTickEvents.END_WORLD_TICK.register(EventCalls::tick);
         ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> ImprovedMobsCommand.register(dispatcher));
@@ -50,7 +52,6 @@ public class ImprovedMobsFabric implements ModInitializer {
         UseBlockCallback.EVENT.register(EventHandler::openTile);
         UseEntityCallback.EVENT.register(EventHandler::equipPet);
         ServerPlayConnectionEvents.JOIN.register(EventHandler::worldJoin);
-        ServerLifecycleEvents.SERVER_STARTING.register(EventHandler::serverStart);
 
         registerPacket();
         NeoForgeModConfigEvents.loading(ImprovedMobs.MODID).register(config -> {
@@ -91,6 +92,17 @@ public class ImprovedMobsFabric implements ModInitializer {
             @Override
             public ResourceLocation getFabricId() {
                 return EntityOverridesManager.ID;
+            }
+        });
+        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(ItemUseLookupManager.ID, reg -> new IdentifiableResourceReloadListener() {
+            @Override
+            public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
+                return ItemUseLookupManager.create(reg).reload(preparationBarrier, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
+            }
+
+            @Override
+            public ResourceLocation getFabricId() {
+                return ItemUseLookupManager.ID;
             }
         });
         if (FabricLoader.getInstance().isModLoaded("playerex"))

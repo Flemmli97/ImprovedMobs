@@ -1,10 +1,10 @@
 package io.github.flemmli97.improvedmobs.neoforge;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.api.ai.ItemAITasks;
 import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
+import io.github.flemmli97.improvedmobs.api.datapack.ItemUseLookupManager;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
-import io.github.flemmli97.improvedmobs.common.config.equipment.EquipmentList;
+import io.github.flemmli97.improvedmobs.api.item.ItemUseRegistry;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfig;
@@ -27,7 +27,6 @@ import net.neoforged.fml.loading.FMLEnvironment;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.AddReloadListenerEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 
@@ -49,8 +48,8 @@ public class ImprovedMobsNeoForge {
         if (FMLEnvironment.dist == Dist.CLIENT)
             ClientEventHandler.setup(modBus);
         NeoForge.EVENT_BUS.register(new EventHandler());
-        NeoForge.EVENT_BUS.addListener(ImprovedMobsNeoForge::serverStart);
         NeoForge.EVENT_BUS.addListener(ImprovedMobsNeoForge::addReloadListener);
+        ItemUseRegistry.initBuiltin();
 
         DifficultyFetcher.register();
         if (ModList.get().isLoaded("scalinghealth"))
@@ -58,12 +57,7 @@ public class ImprovedMobsNeoForge {
     }
 
     static void setup(FMLCommonSetupEvent event) {
-        ItemAITasks.initAI();
         NeoForge.EVENT_BUS.register(new DifficultyHandler());
-    }
-
-    static void serverStart(ServerStartedEvent event) {
-        EquipmentList.initEquip(event.getServer().registryAccess());
     }
 
     static void conf(ModConfigEvent event) {
@@ -82,5 +76,6 @@ public class ImprovedMobsNeoForge {
     static void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(DifficultyAttributeConfig.create(event.getServerResources().getRegistryLookup()));
         event.addListener(EntityOverridesManager.create(event.getServerResources().getRegistryLookup()));
+        event.addListener(ItemUseLookupManager.create(event.getServerResources().getRegistryLookup()));
     }
 }
