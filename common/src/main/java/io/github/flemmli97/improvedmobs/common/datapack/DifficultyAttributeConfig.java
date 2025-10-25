@@ -22,8 +22,8 @@ public class DifficultyAttributeConfig extends SingleFileResources {
             .with(Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADD_VALUE, "min(difficulty * 0.1 / 250, 0.1)")
             .with(Attributes.SCALE, AttributeModifier.Operation.ADD_MULTIPLIED_BASE, "random(-0.2, 0.2)")
             .with(EntityFlags.ServerSideAttributes.MAGIC_RESISTANCE, "min(difficulty * 0.4 / 250, 0.4)")
-            .with(EntityFlags.ServerSideAttributes.PROJECTILE_DAMAGE_MULTIPLIER, "min(difficulty * 2 / 250, 2)")
-            .with(EntityFlags.ServerSideAttributes.EXPLOSION_DAMAGE_MULTIPLIER, "min(difficulty * 2 / 250, 2)")
+            .with(EntityFlags.ServerSideAttributes.PROJECTILE_DAMAGE_MULTIPLIER, "1 + min(difficulty * 2 / 250, 2)")
+            .with(EntityFlags.ServerSideAttributes.EXPLOSION_DAMAGE_MULTIPLIER, "1 + min(difficulty * 2 / 250, 2)")
             .build();
 
     private static DifficultyAttributeConfig INSTANCE;

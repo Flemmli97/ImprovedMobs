@@ -104,10 +104,10 @@ public class ConfigLoader {
         Config.CommonConfig.enchantWhitelist = ConfigSpecs.COMMON_CONF.enchantWhitelist.get();
     }
 
-    public static void serverInit(ServerLevel world) {
+    public static void serverInit(ServerLevel level) {
         List<? extends String> l = ConfigSpecs.COMMON_CONF.entityBlacklist.get();
         if (l.size() == 1 && l.getFirst().equals("UNINITIALIZED")) {
-            Config.CommonConfig.entityBlacklist.initDefault(world);
+            Config.CommonConfig.entityBlacklist.initDefault(level);
             ConfigSpecs.COMMON_CONF.entityBlacklist.set(Config.CommonConfig.entityBlacklist.write());
             ConfigSpecs.COMMON_CONF.entityBlacklist.save();
         }

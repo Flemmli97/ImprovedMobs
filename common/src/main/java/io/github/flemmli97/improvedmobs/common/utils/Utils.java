@@ -114,8 +114,8 @@ public class Utils {
         }
     }
 
-    public static float getBlockStrength(Mob entityLiving, BlockState state, Level world, BlockPos pos) {
-        float hardness = world.getBlockState(pos).getDestroySpeed(world, pos);
+    public static float getBlockStrength(Mob entityLiving, BlockState state, Level level, BlockPos pos) {
+        float hardness = level.getBlockState(pos).getDestroySpeed(level, pos);
         if (hardness < 0) {
             return 0.0F;
         }

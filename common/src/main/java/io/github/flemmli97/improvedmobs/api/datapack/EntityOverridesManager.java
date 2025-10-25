@@ -124,8 +124,7 @@ public class EntityOverridesManager extends SimpleJsonResourceReloadListener {
                 builder.add(EntityConfigProperties.CODEC.parse(ops, element).getOrThrow());
                 overrides.add(res);
             } catch (Exception ex) {
-                ImprovedMobs.LOGGER.error("Couldn't parse entity config json {} {}", res, ex);
-                ex.fillInStackTrace();
+                ImprovedMobs.LOGGER.error("Couldn't parse entity config json {} {}", res, ex, ex.fillInStackTrace());
             }
         });
         if (!overrides.isEmpty())

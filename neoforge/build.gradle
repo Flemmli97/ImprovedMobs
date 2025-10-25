@@ -1,16 +1,21 @@
-apply from: "https://raw.githubusercontent.com/Flemmli97/GradleScripts/arch-loom-v2/neoforge.gradle"
+plugins {
+    id 'com.matthewprenger.cursegradle' version '1.4.0'
+    id 'com.modrinth.minotaur' version '2.+'
+    id 'io.github.flemmli97.multiloader.platform-neoforge'
+}
 
-loom {
+neoForge {
     runs {
+        var common = project(":common")
         data {
             data()
-            programArgs "--all", "--mod", "improvedmobs"
-            programArgs "--output", project(":common").file("src/generated/resources").absolutePath
-            programArgs "--existing", file("src/main/resources").absolutePath
-            programArgs "--existing", project(":common").file("src/main/resources").absolutePath
+            programArguments.addAll "--all", "--mod", "improvedmobs"
+            programArguments.addAll "--output", common.file("src/generated/resources").absolutePath
+            programArguments.addAll "--existing", file("src/main/resources").absolutePath
+            programArguments.addAll "--existing", common.file("src/main/resources").absolutePath
         }
         client {
-            vmArgs "-XX:+AllowEnhancedClassRedefinition"
+            jvmArgument "-XX:+AllowEnhancedClassRedefinition"
         }
     }
 }
@@ -20,14 +25,14 @@ ext {
 }
 
 dependencies {
-    modImplementation "io.github.flemmli97:tenshilib:${tenshilib_version}-neoforge"
+    implementation "io.github.flemmli97:tenshilib:${tenshilib_version}-neoforge"
 
     // modRuntimeOnly "${sillib_dep}"
-    modCompileOnly "${powerscale_dep}"
+    compileOnly "${powerscale_dep}"
 
-    modRuntimeOnly "io.github.flemmli97:debugutils:1.21.1-1.0.9-neoforge"
-    modRuntimeOnly "maven.modrinth:jade:2P7THd8J"
-    modRuntimeOnly "curse.maven:moonlight-499980:6682378"
-    modRuntimeOnly "curse.maven:dummy-225738:6608246"
-    modRuntimeOnly "io.github.flemmli97:mobbattle:1.21.1-2.6.1-neoforge"
+    runtimeOnly "io.github.flemmli97:debugutils:1.21.1-1.0.9-neoforge"
+    runtimeOnly "maven.modrinth:jade:2P7THd8J"
+    runtimeOnly "curse.maven:moonlight-499980:6682378"
+    runtimeOnly "curse.maven:dummy-225738:6608246"
+    runtimeOnly "io.github.flemmli97:mobbattle:1.21.1-2.6.1-neoforge"
 }

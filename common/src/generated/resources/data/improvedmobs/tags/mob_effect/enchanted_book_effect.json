@@ -1,0 +1,10 @@
+{
+  "values": [
+    "minecraft:regeneration",
+    "minecraft:speed",
+    "minecraft:strength",
+    "minecraft:invisibility",
+    "minecraft:resistance",
+    "minecraft:fire_resistance"
+  ]
+}

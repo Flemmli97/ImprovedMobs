@@ -1,8 +1,8 @@
 {
   "additional": {
-    "EXPLOSION_DAMAGE_MULTIPLIER": "min(difficulty * 2 / 250, 2)",
+    "EXPLOSION_DAMAGE_MULTIPLIER": "1 + min(difficulty * 2 / 250, 2)",
     "MAGIC_RESISTANCE": "min(difficulty * 0.4 / 250, 0.4)",
-    "PROJECTILE_DAMAGE_MULTIPLIER": "min(difficulty * 2 / 250, 2)"
+    "PROJECTILE_DAMAGE_MULTIPLIER": "1 + min(difficulty * 2 / 250, 2)"
   },
   "attributes": {
     "minecraft:generic.attack_damage": {

@@ -1,29 +1,12 @@
 package io.github.flemmli97.improvedmobs.common.entities.ai.util;
 
-import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.effect.MobEffect;
-import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.projectile.AbstractArrow;
-import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.entity.projectile.ThrowableProjectile;
 import net.minecraft.world.entity.projectile.ThrownPotion;
-import net.minecraft.world.entity.projectile.ThrownTrident;
-import net.minecraft.world.item.BowItem;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Items;
-import net.minecraft.world.item.alchemy.PotionContents;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.LiquidBlock;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -33,58 +16,10 @@ import java.util.List;
 public class AIUtils {
 
     //TODO building, stone, block;
+
     public static void setHeadingToPosition(ThrowableProjectile e, double x, double y, double z, float velocity, float inaccuracy) {
         Vec3 dir = new Vec3(x - e.getX(), y - e.getY(), z - e.getZ()).scale(1 / velocity);
         e.shoot(dir.x, dir.y, dir.z, velocity, inaccuracy);
-    }
-
-    public static void attackWithArrows(Mob entity, LivingEntity target, float distanceFactor) {
-        ItemStack weapon = entity.getMainHandItem().getItem() instanceof BowItem ? entity.getMainHandItem() : entity.getOffhandItem();
-        ItemStack itemstack = entity.getProjectile(weapon);
-        AbstractArrow abstractarrowentity = CrossPlatformStuff.INSTANCE.customBowArrow(weapon, entity.getMainHandItem(), ProjectileUtil.getMobArrow(entity, itemstack, distanceFactor, weapon));
-        double d0 = target.getX() - entity.getX();
-        double d1 = target.getY(0.3333333333333333D) - abstractarrowentity.getY();
-        double d2 = target.getZ() - entity.getZ();
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        abstractarrowentity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.level().getDifficulty().getId() * 4));
-        entity.playSound(SoundEvents.SKELETON_SHOOT, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
-        entity.level().addFreshEntity(abstractarrowentity);
-    }
-
-    public static void tridentAttack(Mob entity, LivingEntity target) {
-        ThrownTrident tridententity = new ThrownTrident(entity.level(), entity, new ItemStack(Items.TRIDENT));
-        double d0 = target.getX() - entity.getX();
-        double d1 = target.getY(0.3333333333333333D) - tridententity.getY();
-        double d2 = target.getZ() - entity.getZ();
-        double d3 = Math.sqrt(d0 * d0 + d2 * d2);
-        tridententity.shoot(d0, d1 + d3 * (double) 0.2F, d2, 1.6F, (float) (14 - entity.level().getDifficulty().getId() * 4));
-        entity.playSound(SoundEvents.DROWNED_SHOOT, 1.0F, 1.0F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
-        entity.level().addFreshEntity(tridententity);
-    }
-
-    public static boolean tryPlaceLava(Level level, BlockPos pos) {
-        BlockState state = level.getBlockState(pos);
-        boolean flag = !state.isSolid();
-        boolean flag1 = state.canBeReplaced();
-
-        if (!state.getFluidState().isEmpty())
-            return false;
-        if (!state.isAir() && !flag && !flag1)
-            return false;
-        if (!level.isClientSide && (flag || flag1) && !state.liquid()) {
-            level.destroyBlock(pos, true);
-        }
-        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY_LAVA, SoundSource.BLOCKS, 1.0F, 1.0F);
-        level.setBlock(pos, Blocks.LAVA.defaultBlockState().setValue(LiquidBlock.LEVEL, 1), 11);
-        return true;
-    }
-
-    public static boolean isBadPotion(ItemStack stack) {
-        for (MobEffectInstance effect : stack.getOrDefault(DataComponents.POTION_CONTENTS, PotionContents.EMPTY).getAllEffects()) {
-            if (effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
-                return true;
-        }
-        return false;
     }
 
     public static void applyPotion(ThrownPotion entity, Iterable<MobEffectInstance> effects, @Nullable Entity p_213888_2_) {
@@ -115,12 +50,5 @@ public class AIUtils {
                 }
             }
         }
-    }
-
-    public static void ropeInTarget(Mob entity, LivingEntity target) {
-        Vec3 vec3 = entity.position().subtract(target.position()).normalize().scale(1.5);
-        target.setDeltaMovement(target.getDeltaMovement().add(vec3.add(0, 0.3, 0)));
-        target.hurtMarked = true;
-        entity.playSound(SoundEvents.FISHING_BOBBER_RETRIEVE, 1.0F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
     }
 }

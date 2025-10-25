@@ -17,8 +17,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(PrimedTnt.class)
 public abstract class TNTEntityMixin extends Entity implements TNTExtension {
 
-    private TNTEntityMixin(EntityType<?> type, Level world) {
-        super(type, world);
+    private TNTEntityMixin(EntityType<?> type, Level level) {
+        super(type, level);
     }
 
     @Shadow

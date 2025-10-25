@@ -129,7 +129,7 @@ public class EventCalls {
         }
         applyAttributesAndItems(mob, difficulty, map);
         if (!Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.USEITEM)) {
-            mob.goalSelector.addGoal(1, new ItemUseGoal(mob, 12));
+            mob.goalSelector.addGoal(-1, new ItemUseGoal(mob));
         }
         if (mob.getRandom().nextFloat() < Config.CommonConfig.guardianAIChance.get(map) && !Config.CommonConfig.entityBlacklist.isDisabledFor(mob, DifficultyFeatures.GUARDIAN)) {
             mob.goalSelector.addGoal(6, new WaterRidingGoal(mob));
