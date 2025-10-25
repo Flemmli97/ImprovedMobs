@@ -125,10 +125,16 @@ public class ConfigSpecs {
             this.ignoreSpawner = builder.comment("Whether mobs from spawners should be ignored").define("Ignore Spawner", Config.CommonConfig.ignoreSpawner);
             this.difficultyIncrease = builder.comment("Handles increase in difficulty regarding current difficulty.",
                     "Difficulty increase runs every 2400 ticks. One minecraft day has 24000 ticks.",
-                    "Format is <minimum current difficulty>;<expression> with expression being the new difficulty",
+                    "Format is <difficulty threshold>;<expression> with expression being the new difficulty",
                     "Example [\"0;difficulty + 0.01\",\"10;difficulty + 0.1\",\"30;difficulty + 0\"]",
-                    "The difficulty will increases by 0.01 every 2400 ticks (or 0.1 per mc day) till it reaches a difficulty of 10.",
-                    "Then it increases by 1 per mc day till it reaches 30 and then stops.").define("Difficulty Increase", Config.CommonConfig.difficultyIncrease.write(), stringList());
+                    "With this the difficulty will increase by 0.01 every 2400 ticks for a total of 0.1 per mc day till reaching a difficulty of 10.",
+                    "Afterwards it increases by 1 per mc day till it reaches 30 and then stops increasing.",
+                    "Negative values are also supported.",
+                    "Lastly following variables are available to use in expressions:",
+                    "difficulty: The current difficulty in the context",
+                    "distance_spawn: Distance to the spawnpoint. Does not include the height",
+                    "distance_origin: Distance to 0,0",
+                    "distance_center: Distance to the center as per defined in this config").define("Difficulty Increase", Config.CommonConfig.difficultyIncrease.write(), stringList());
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online player or not").define("Ignore Players", Config.CommonConfig.ignorePlayers);
             this.considerTimeskip = builder.comment("If true will increase difficulty by the amount of time skipped. Else will only increase difficulty once.").define("Consider Time Skip", Config.CommonConfig.considerTimeskip);
             this.difficultyType = builder.comment("How the difficulty at a position is calculated. Supported values are: ",
