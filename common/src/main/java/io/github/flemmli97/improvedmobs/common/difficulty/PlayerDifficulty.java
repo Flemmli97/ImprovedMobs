@@ -1,12 +1,22 @@
 package io.github.flemmli97.improvedmobs.common.difficulty;
 
+import io.github.flemmli97.tenshilib.common.attachment.SerializableAttachment;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 
-public class PlayerDifficulty {
+public class PlayerDifficulty implements SerializableAttachment<CompoundTag, PlayerDifficulty> {
 
     private float difficultyLevel;
 
     private boolean paused;
+
+    public PlayerDifficulty() {
+    }
+
+    public PlayerDifficulty(PlayerDifficulty other) {
+        this.difficultyLevel = other.difficultyLevel;
+        this.paused = other.paused;
+    }
 
     public void setDifficultyLevel(float level) {
         this.difficultyLevel = level;
@@ -24,19 +34,18 @@ public class PlayerDifficulty {
         return this.paused;
     }
 
-    public void load(CompoundTag nbt) {
-        this.difficultyLevel = nbt.contains("IMDifficulty") ? nbt.getFloat("IMDifficulty") : nbt.getFloat("Difficulty");
-        this.paused = nbt.getBoolean("Paused");
+    @Override
+    public PlayerDifficulty read(CompoundTag tag, HolderLookup.Provider provider) {
+        this.difficultyLevel = tag.contains("IMDifficulty") ? tag.getFloat("IMDifficulty") : tag.getFloat("Difficulty");
+        this.paused = tag.getBoolean("Paused");
+        return this;
     }
 
-    public CompoundTag save(CompoundTag compound) {
-        compound.putFloat("Difficulty", this.difficultyLevel);
-        compound.putBoolean("Paused", this.paused);
-        return compound;
-    }
-
-    public void copyFrom(PlayerDifficulty other) {
-        this.difficultyLevel = other.difficultyLevel;
-        this.paused = other.paused;
+    @Override
+    public CompoundTag write(HolderLookup.Provider provider) {
+        CompoundTag tag = new CompoundTag();
+        tag.putFloat("Difficulty", this.difficultyLevel);
+        tag.putBoolean("Paused", this.paused);
+        return tag;
     }
 }

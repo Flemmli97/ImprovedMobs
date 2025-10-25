@@ -10,8 +10,10 @@ import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
+import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.ChatFormatting;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
@@ -67,7 +69,7 @@ public class ImprovedMobsCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+            PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
             data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
             CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
             src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
@@ -80,7 +82,7 @@ public class ImprovedMobsCommand {
         MinecraftServer server = src.getSource().getServer();
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-            PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+            PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
             data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
             CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
             src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
@@ -95,7 +97,7 @@ public class ImprovedMobsCommand {
                     .getDifficulty();
         else {
             ServerPlayer player = src.getSource().getPlayerOrException();
-            diff = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player).getDifficultyLevel();
+            diff = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
         }
         src.getSource().sendSuccess(() -> Component.literal("Difficulty: " + diff).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
@@ -106,7 +108,7 @@ public class ImprovedMobsCommand {
             MinecraftServer server = src.getSource().getServer();
             for (GameProfile prof : profs) {
                 ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-                PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+                PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
                 data.setPaused(pause);
             }
             src.getSource().sendSuccess(() -> Component.literal("Difficulty " + (pause ? "paused" : "unpaused") + " for given players").setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
@@ -124,7 +126,7 @@ public class ImprovedMobsCommand {
             MinecraftServer server = src.getSource().getServer();
             for (GameProfile prof : profs) {
                 ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
-                PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(player);
+                PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
                 Config.apply(vars, player, 0);
                 int i = steps;
                 while (i > 0) {

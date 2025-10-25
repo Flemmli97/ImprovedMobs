@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.platform;
 
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.tenshilib.loader.LoaderInitializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -23,8 +22,6 @@ public interface CrossPlatformStuff {
             "io.github.flemmli97.improvedmobs.fabric.platform.CrossPlatformStuffImpl",
             "io.github.flemmli97.improvedmobs.neoforge.platform.CrossPlatformStuffImpl");
 
-    void onPlayerOpen(BlockEntity blockEntity);
-
     boolean canLoot(BlockEntity blockEntity);
 
     ItemStack lootRandomItem(BlockEntity blockEntity, RandomSource rand);
@@ -42,6 +39,4 @@ public interface CrossPlatformStuff {
     AbstractArrow customBowArrow(ItemStack weapon, ItemStack projectile, AbstractArrow def);
 
     boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker);
-
-    PlayerDifficulty getPlayerDifficultyData(ServerPlayer player);
 }

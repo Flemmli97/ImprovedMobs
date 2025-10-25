@@ -1,11 +1,12 @@
 package io.github.flemmli97.improvedmobs.neoforge.platform;
 
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
-import io.github.flemmli97.improvedmobs.neoforge.AttachmentsRegister;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
+import io.github.flemmli97.improvedmobs.common.utils.ContainerOpened;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.server.MinecraftServer;
@@ -21,28 +22,27 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.fml.loading.FMLPaths;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.items.IItemHandler;
-import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
 public class CrossPlatformStuffImpl implements CrossPlatformStuff {
 
     @Override
-    public void onPlayerOpen(BlockEntity blockEntity) {
-        blockEntity.getData(AttachmentsRegister.HAS_BEEN_OPENED.get())
-                .setOpened(blockEntity);
-    }
-
-    @Override
     public boolean canLoot(BlockEntity blockEntity) {
-        if (blockEntity.hasData(AttachmentsRegister.HAS_BEEN_OPENED.get()))
-            return blockEntity.getData(AttachmentsRegister.HAS_BEEN_OPENED.get()).playerOpened();
+        IItemHandler cap = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, blockEntity.getBlockPos(), null);
+        if (cap == null)
+            return false;
+        ContainerOpened attachment = AttachmentRegister.INSTANCE.getOptionalAttachment(blockEntity, ImprovedMobsAttachments.HAS_BEEN_OPENED.get())
+                .orElse(null);
+        if (attachment != null) {
+            return attachment.playerOpened();
+        }
         return false;
     }
 
     @Override
     public ItemStack lootRandomItem(BlockEntity blockEntity, RandomSource rand) {
-        @Nullable IItemHandler cap = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, blockEntity.getBlockPos(), null);
+        IItemHandler cap = blockEntity.getLevel().getCapability(Capabilities.ItemHandler.BLOCK, blockEntity.getBlockPos(), null);
         if (cap != null) {
             ItemStack drop = cap.extractItem(rand.nextInt(cap.getSlots()), 1, false);
             int tries = 0;
@@ -95,10 +95,5 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     @Override
     public boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
         return attackingStack.canDisableShield(held, entity, attacker);
-    }
-
-    @Override
-    public PlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
-        return player.getData(AttachmentsRegister.PLAYER_DIFFICULTY.get());
     }
 }

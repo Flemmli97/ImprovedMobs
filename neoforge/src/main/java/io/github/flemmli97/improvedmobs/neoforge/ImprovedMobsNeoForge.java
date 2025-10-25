@@ -10,6 +10,7 @@ import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
 import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfig;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.common.network.S2CShowDifficulty;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.neoforge.client.ClientEventHandler;
 import io.github.flemmli97.improvedmobs.neoforge.events.DifficultyHandler;
 import io.github.flemmli97.improvedmobs.neoforge.events.EventHandler;
@@ -36,6 +37,7 @@ import java.io.File;
 public class ImprovedMobsNeoForge {
 
     public ImprovedMobsNeoForge(IEventBus modBus) {
+        ImprovedMobsAttachments.ATTACHMENTS.registerContent();
         File file = FMLPaths.CONFIGDIR.get().resolve("improvedmobs").toFile();
         if (!file.exists())
             file.mkdir();

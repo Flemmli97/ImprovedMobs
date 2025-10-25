@@ -2,12 +2,11 @@ package io.github.flemmli97.improvedmobs.fabric.platform;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
-import io.github.flemmli97.improvedmobs.fabric.mixinutil.ContainerOpenAccess;
-import io.github.flemmli97.improvedmobs.fabric.mixinutil.PlayerDifficultyAccess;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
@@ -39,14 +38,9 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     public static final TagKey<Item> COMMON_AXE = TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath("c", "axes"));
 
     @Override
-    public void onPlayerOpen(BlockEntity blockEntity) {
-        ((ContainerOpenAccess) blockEntity).improvedMobs$getContainerState().setOpened(blockEntity);
-    }
-
-    @Override
     public boolean canLoot(BlockEntity blockEntity) {
         if (blockEntity instanceof Container container)
-            return ((ContainerOpenAccess) blockEntity).improvedMobs$getContainerState().playerOpened() && !container.isEmpty();
+            return AttachmentRegister.INSTANCE.getAttachment(blockEntity, ImprovedMobsAttachments.HAS_BEEN_OPENED).playerOpened() && !container.isEmpty();
         return false;
     }
 
@@ -108,10 +102,5 @@ public class CrossPlatformStuffImpl implements CrossPlatformStuff {
     @Override
     public boolean canDisableShield(ItemStack attackingStack, ItemStack held, LivingEntity entity, LivingEntity attacker) {
         return (attackingStack.getItem() instanceof AxeItem || attackingStack.is(FABRIC_AXE) || attackingStack.is(COMMON_AXE)) && held.getItem() instanceof ShieldItem;
-    }
-
-    @Override
-    public PlayerDifficulty getPlayerDifficultyData(ServerPlayer player) {
-        return ((PlayerDifficultyAccess) player).improvedMobs$getDifficulty();
     }
 }

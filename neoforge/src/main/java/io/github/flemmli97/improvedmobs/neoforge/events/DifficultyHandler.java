@@ -1,14 +1,13 @@
 package io.github.flemmli97.improvedmobs.neoforge.events;
 
-import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
-import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
+import io.github.flemmli97.improvedmobs.neoforge.AttachmentsRegister;
+import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.tick.LevelTickEvent;
 
 public class DifficultyHandler {
@@ -16,24 +15,17 @@ public class DifficultyHandler {
     @SubscribeEvent
     public void worldJoin(EntityJoinLevelEvent event) {
         if (event.getEntity() instanceof ServerPlayer player && !event.getEntity().level().isClientSide) {
+            player.getExistingData(AttachmentsRegister.PLAYER_DIFFICULTY.get())
+                    .ifPresent(d -> AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY)
+                            .read(d.write(player.registryAccess()), player.registryAccess()));
             EventCalls.levelJoin(player, player.getServer());
         }
     }
 
     @SubscribeEvent
-    public void increaseDifficulty(LevelTickEvent.Post e) {
-        if (e.getLevel() instanceof ServerLevel level) {
+    public void increaseDifficulty(LevelTickEvent.Post event) {
+        if (event.getLevel() instanceof ServerLevel level) {
             EventCalls.tick(level);
-        }
-    }
-
-    @SubscribeEvent
-    public void readOnDeath(PlayerEvent.Clone event) {
-        if (event.getEntity() instanceof ServerPlayer serverPlayer) {
-            PlayerDifficulty data = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
-            PlayerDifficulty old = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData(serverPlayer);
-            data.copyFrom(old);
-            CrossPlatformStuff.INSTANCE.sendDifficultyData(DifficultyData.get(serverPlayer.getServer()), serverPlayer.getServer());
         }
     }
 }

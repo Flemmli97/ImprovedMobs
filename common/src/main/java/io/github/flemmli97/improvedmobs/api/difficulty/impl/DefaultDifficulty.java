@@ -3,9 +3,9 @@ package io.github.flemmli97.improvedmobs.api.difficulty.impl;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyGetter;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
-import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
+import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
@@ -20,7 +20,7 @@ public class DefaultDifficulty implements DifficultyGetter {
             case PLAYERMAX -> {
                 float diff = 0;
                 for (Player player : DifficultyGetter.playersIn(level, pos, 256)) {
-                    float pD = CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    float pD = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
                     if (pD > diff)
                         diff = pD;
                 }
@@ -29,7 +29,7 @@ public class DefaultDifficulty implements DifficultyGetter {
             case PLAYERSUM -> {
                 float diff = 0;
                 for (Player player : DifficultyData.playersIn(level, pos, 256)) {
-                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    diff += AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
                 }
                 yield diff;
             }
@@ -39,7 +39,7 @@ public class DefaultDifficulty implements DifficultyGetter {
                 if (list.isEmpty())
                     yield 0f;
                 for (Player player : list) {
-                    diff += CrossPlatformStuff.INSTANCE.getPlayerDifficultyData((ServerPlayer) player).getDifficultyLevel();
+                    diff += AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
                 }
                 yield diff / list.size();
             }

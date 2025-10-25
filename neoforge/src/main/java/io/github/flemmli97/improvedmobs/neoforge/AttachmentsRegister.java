@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.neoforge;
 
 import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
-import io.github.flemmli97.improvedmobs.common.utils.ContainerOpened;
 import io.github.flemmli97.tenshilib.TenshiLib;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +11,9 @@ import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
 
+/**
+ * Well... used wrong mod id so this is here for moving it over to correct id
+ */
 public class AttachmentsRegister {
 
     public static final DeferredRegister<AttachmentType<?>> ATTACHMENT_TYPES = DeferredRegister.create(NeoForgeRegistries.ATTACHMENT_TYPES, TenshiLib.MODID);
@@ -21,35 +23,15 @@ public class AttachmentsRegister {
         @Override
         public PlayerDifficulty read(IAttachmentHolder holder, CompoundTag arg, HolderLookup.Provider provider) {
             PlayerDifficulty cap = new PlayerDifficulty();
-            cap.load(arg);
+            cap.read(arg, provider);
             return cap;
         }
 
+        // Don't serialize this wrong attachment
         @Override
         public CompoundTag write(PlayerDifficulty object, HolderLookup.Provider provider) {
-            CompoundTag compound = new CompoundTag();
-            object.save(compound);
-            return compound;
+            return null;
         }
     };
-
-    public static final IAttachmentSerializer<CompoundTag, ContainerOpened> CONTAINER_OPEN_SERIALIZER = new IAttachmentSerializer<>() {
-
-        @Override
-        public ContainerOpened read(IAttachmentHolder holder, CompoundTag tag, HolderLookup.Provider provider) {
-            ContainerOpened cap = new ContainerOpened();
-            cap.readFromNBT(tag);
-            return cap;
-        }
-
-        @Override
-        public CompoundTag write(ContainerOpened object, HolderLookup.Provider provider) {
-            CompoundTag compound = new CompoundTag();
-            object.writeToNBT(compound);
-            return compound;
-        }
-    };
-
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<ContainerOpened>> HAS_BEEN_OPENED = ATTACHMENT_TYPES.register("has_been_opened", () -> AttachmentType.builder(ContainerOpened::new).serialize(CONTAINER_OPEN_SERIALIZER).build());
-    public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerDifficulty>> PLAYER_DIFFICULTY = ATTACHMENT_TYPES.register("player_difficulty", () -> AttachmentType.builder(PlayerDifficulty::new).serialize(DIFFICULTY_SERIALIZER).build());
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<PlayerDifficulty>> PLAYER_DIFFICULTY = ATTACHMENT_TYPES.register("player_difficulty", () -> AttachmentType.builder(() -> new PlayerDifficulty()).serialize(DIFFICULTY_SERIALIZER).build());
 }

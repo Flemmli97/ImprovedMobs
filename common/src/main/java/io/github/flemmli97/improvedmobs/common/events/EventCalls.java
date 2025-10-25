@@ -13,6 +13,7 @@ import io.github.flemmli97.improvedmobs.common.entities.ai.LadderClimbGoal;
 import io.github.flemmli97.improvedmobs.common.entities.ai.StealGoal;
 import io.github.flemmli97.improvedmobs.common.entities.ai.WaterRidingGoal;
 import io.github.flemmli97.improvedmobs.common.network.PacketHandler;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.common.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.common.utils.Utils;
@@ -22,6 +23,7 @@ import io.github.flemmli97.improvedmobs.mixin.TargetGoalAccessor;
 import io.github.flemmli97.improvedmobs.mixinhelper.EntitySpawnReason;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
+import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -268,9 +270,10 @@ public class EventCalls {
 
     public static void openTile(Player player, BlockPos pos) {
         if (!player.level().isClientSide && !player.isShiftKeyDown()) {
-            BlockEntity tile = player.level().getBlockEntity(pos);
-            if (tile != null) {
-                CrossPlatformStuff.INSTANCE.onPlayerOpen(tile);
+            BlockEntity blockEntity = player.level().getBlockEntity(pos);
+            if (blockEntity != null) {
+                AttachmentRegister.INSTANCE.getAttachment(blockEntity, ImprovedMobsAttachments.HAS_BEEN_OPENED)
+                        .setOpened(blockEntity);
             }
         }
     }

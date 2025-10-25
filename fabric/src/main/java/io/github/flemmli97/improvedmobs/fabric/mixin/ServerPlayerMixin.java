@@ -1,45 +1,43 @@
 package io.github.flemmli97.improvedmobs.fabric.mixin;
 
+import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.common.difficulty.PlayerDifficulty;
-import io.github.flemmli97.improvedmobs.fabric.mixinutil.PlayerDifficultyAccess;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
+import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ServerPlayer.class)
-public abstract class ServerPlayerMixin implements PlayerDifficultyAccess {
+public abstract class ServerPlayerMixin extends Player {
 
-    @Unique
-    private final PlayerDifficulty improvedmobs$Difficulty = new PlayerDifficulty();
+    private ServerPlayerMixin(Level level, BlockPos pos, float yRot, GameProfile gameProfile) {
+        super(level, pos, yRot, gameProfile);
+    }
 
+    @Shadow
+    public abstract ServerLevel serverLevel();
+
+    // Legacy handling
     @Inject(method = "readAdditionalSaveData", at = @At("RETURN"))
-    private void loadData(CompoundTag compound, CallbackInfo info) {
-        CompoundTag data;
-        if (compound.contains("IMDifficulty")) {
-            data = compound;
-        } else {
-            data = compound.getCompound(ImprovedMobs.MODID + ":difficulty_data");
+    private void loadData(CompoundTag tag, CallbackInfo info) {
+        CompoundTag data = null;
+        if (tag.contains("IMDifficulty")) {
+            data = tag;
+        } else if (tag.contains(ImprovedMobs.MODID + ":difficulty_data")) {
+            data = tag.getCompound(ImprovedMobs.MODID + ":difficulty_data");
         }
-        this.improvedmobs$Difficulty.load(data);
-    }
-
-    @Inject(method = "addAdditionalSaveData", at = @At("RETURN"))
-    private void saveData(CompoundTag compound, CallbackInfo info) {
-        compound.put(ImprovedMobs.MODID + ":difficulty_data", this.improvedmobs$Difficulty.save(new CompoundTag()));
-    }
-
-    @Inject(method = "restoreFrom", at = @At("RETURN"))
-    private void copyOld(ServerPlayer oldPlayer, boolean alive, CallbackInfo info) {
-        this.improvedmobs$Difficulty.copyFrom(((PlayerDifficultyAccess) oldPlayer).improvedMobs$getDifficulty());
-    }
-
-    @Override
-    public PlayerDifficulty improvedMobs$getDifficulty() {
-        return this.improvedmobs$Difficulty;
+        if (data != null) {
+            AttachmentRegister.INSTANCE.getAttachment((ServerPlayer) (Object) this, ImprovedMobsAttachments.PLAYER_DIFFICULTY)
+                    .read(data, this.registryAccess());
+        }
     }
 }
