@@ -13,7 +13,7 @@ import java.util.Locale;
 
 public class ClientEvents {
 
-    private static float clientDifficulty;
+    private static double clientDifficulty;
     private static final ResourceLocation BAR = ImprovedMobs.modRes("textures/gui/difficulty_bar.png");
 
     public static void displayDifficulty(GuiGraphics graphics) {
@@ -43,7 +43,7 @@ public class ClientEvents {
         graphics.pose().popPose();
     }
 
-    public static void updateClientDifficulty(float difficulty) {
+    public static void updateClientDifficulty(double difficulty) {
         clientDifficulty = difficulty;
     }
 }

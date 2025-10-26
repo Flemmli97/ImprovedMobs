@@ -12,7 +12,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.ToDoubleFunction;
 
 public interface DifficultyGetter {
 
@@ -25,38 +25,38 @@ public interface DifficultyGetter {
         return list;
     }
 
-    static float getDifficulty(Level level, Vec3 pos, Function<ServerPlayer, Float> getter) {
+    static double getDifficulty(Level level, Vec3 pos, ToDoubleFunction<ServerPlayer> getter) {
         return switch (Config.CommonConfig.difficultyType) {
             case PLAYERMAX -> {
-                float diff = 0;
+                double diff = 0;
                 for (Player player : DifficultyData.playersIn(level, pos, 256)) {
-                    float pD = getter.apply((ServerPlayer) player);
+                    double pD = getter.applyAsDouble((ServerPlayer) player);
                     if (pD > diff)
                         diff = pD;
                 }
                 yield diff;
             }
             case PLAYERSUM -> {
-                float diff = 0;
+                double diff = 0;
                 for (Player player : DifficultyData.playersIn(level, pos, 256)) {
-                    diff += getter.apply((ServerPlayer) player);
+                    diff += getter.applyAsDouble((ServerPlayer) player);
                 }
                 yield diff;
             }
             case PLAYERMEAN, GLOBAL, DISTANCE, DISTANCESPAWN -> {
-                float diff = 0;
+                double diff = 0;
                 List<Player> list = DifficultyData.playersIn(level, pos, 256);
                 if (list.isEmpty())
                     yield 0f;
                 for (Player player : list) {
-                    diff += getter.apply((ServerPlayer) player);
+                    diff += getter.applyAsDouble((ServerPlayer) player);
                 }
                 yield diff / list.size();
             }
         };
     }
 
-    float getDifficulty(ServerLevel level, Vec3 pos);
+    double getDifficulty(ServerLevel level, Vec3 pos);
 
     Config.IntegrationType getType();
 

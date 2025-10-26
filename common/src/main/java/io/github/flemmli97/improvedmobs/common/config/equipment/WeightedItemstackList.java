@@ -21,14 +21,14 @@ public class WeightedItemstackList {
 
     private List<WeightedItemstack> filtered = new ArrayList<>();
     private int totalWeight;
-    private float lastModifier = -1;
+    private double lastModifier = -1;
 
     public WeightedItemstackList(List<WeightedItemstack> values) {
         this.values = values;
         this.valid = this.values.stream().filter(WeightedItemstack::valid).toList();
     }
 
-    public int getTotalWeight(float modifier) {
+    public int getTotalWeight(double modifier) {
         if (this.lastModifier != modifier) {
             this.lastModifier = modifier;
             this.calculateTotalWeight(this.lastModifier);
@@ -36,7 +36,7 @@ public class WeightedItemstackList {
         return this.totalWeight;
     }
 
-    public ItemStack getRandomStack(RandomSource random, float difficulty) {
+    public ItemStack getRandomStack(RandomSource random, double difficulty) {
         if (this.valid.isEmpty())
             return ItemStack.EMPTY;
         int totalWeight = this.getTotalWeight(difficulty);
@@ -52,7 +52,7 @@ public class WeightedItemstackList {
         return ItemStack.EMPTY;
     }
 
-    private void calculateTotalWeight(float modifier) {
+    private void calculateTotalWeight(double modifier) {
         this.filtered = this.valid.stream().filter(entry -> entry.getWeight(modifier) > 0).toList();
         this.totalWeight = this.filtered.stream().mapToInt(entry -> entry.getWeight(modifier)).sum();
     }

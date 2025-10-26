@@ -66,7 +66,7 @@ public class EquipmentList {
 
     private static Map<EquipmentSlot, WeightedItemstackList> EQUIPMENTS = new EnumMap<>(EquipmentSlot.class);
 
-    public static ItemStack getEquipment(Mob mob, EquipmentSlot slot, float difficulty) {
+    public static ItemStack getEquipment(Mob mob, EquipmentSlot slot, double difficulty) {
         WeightedItemstackList eq = EQUIPMENTS.get(slot);
         if (eq == null)
             return ItemStack.EMPTY;

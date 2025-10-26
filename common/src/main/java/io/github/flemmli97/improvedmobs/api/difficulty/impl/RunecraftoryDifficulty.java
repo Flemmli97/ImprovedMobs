@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 public class RunecraftoryDifficulty implements DifficultyGetter {
 
     @Override
-    public float getDifficulty(ServerLevel level, Vec3 pos) {
+    public double getDifficulty(ServerLevel level, Vec3 pos) {
         return DifficultyGetter.getDifficulty(level, pos, p -> PlayerAPI.getLevel(p) * Config.CommonConfig.runecraftoryScale);
     }
 

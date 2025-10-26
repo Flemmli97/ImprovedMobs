@@ -19,8 +19,8 @@ public class StepExpressionConfig {
         this.values.addAll(List.of(values));
     }
 
-    public Value get(float difficulty) {
-        return SearchUtils.searchInfFunc(this.values, v -> Float.compare(v.requiredDifficulty(), difficulty), this.defaultValue);
+    public Value get(double difficulty) {
+        return SearchUtils.searchInfFunc(this.values, v -> Double.compare(v.requiredDifficulty(), difficulty), this.defaultValue);
     }
 
     public void read(List<String> config) {
@@ -30,7 +30,7 @@ public class StepExpressionConfig {
                 String[] parts = s.split(";");
                 if (parts.length != 2)
                     continue;
-                list.add(new Value(Float.parseFloat(parts[0]), new ExpressionConfig(parts[1])));
+                list.add(new Value(Double.parseDouble(parts[0]), new ExpressionConfig(parts[1])));
             }
             list.sort(null);
             this.values.clear();
@@ -46,9 +46,9 @@ public class StepExpressionConfig {
         return list;
     }
 
-    public record Value(float requiredDifficulty, ExpressionConfig expression) implements Comparable<Value> {
+    public record Value(double requiredDifficulty, ExpressionConfig expression) implements Comparable<Value> {
 
-        public Value(float requiredDifficulty, String expression) {
+        public Value(double requiredDifficulty, String expression) {
             this(requiredDifficulty, new ExpressionConfig(expression));
         }
 
@@ -58,7 +58,7 @@ public class StepExpressionConfig {
 
         @Override
         public int compareTo(Value o) {
-            return Float.compare(this.requiredDifficulty, o.requiredDifficulty);
+            return Double.compare(this.requiredDifficulty, o.requiredDifficulty);
         }
     }
 }

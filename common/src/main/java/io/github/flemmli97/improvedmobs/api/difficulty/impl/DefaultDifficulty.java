@@ -14,27 +14,27 @@ import java.util.List;
 public class DefaultDifficulty implements DifficultyGetter {
 
     @Override
-    public float getDifficulty(ServerLevel level, Vec3 pos) {
+    public double getDifficulty(ServerLevel level, Vec3 pos) {
         return switch (Config.CommonConfig.difficultyType) {
             case GLOBAL -> DifficultyData.get(level.getServer()).getDifficulty();
             case PLAYERMAX -> {
-                float diff = 0;
+                double diff = 0;
                 for (Player player : DifficultyGetter.playersIn(level, pos, 256)) {
-                    float pD = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
+                    double pD = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
                     if (pD > diff)
                         diff = pD;
                 }
                 yield diff;
             }
             case PLAYERSUM -> {
-                float diff = 0;
+                double diff = 0;
                 for (Player player : DifficultyData.playersIn(level, pos, 256)) {
                     diff += AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
                 }
                 yield diff;
             }
             case PLAYERMEAN -> {
-                float diff = 0;
+                double diff = 0;
                 List<Player> list = DifficultyGetter.playersIn(level, pos, 256);
                 if (list.isEmpty())
                     yield 0f;

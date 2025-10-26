@@ -57,9 +57,9 @@ public class DifficultyFetcher {
         return base < 2 || (adding.size() == 1 && !adding.get(0)) || !adding.isEmpty();
     }
 
-    public static float getDifficulty(ServerLevel level, Vec3 pos) {
-        float difficulty = 0;
-        float toAdd = 0;
+    public static double getDifficulty(ServerLevel level, Vec3 pos) {
+        double difficulty = 0;
+        double toAdd = 0;
         for (OrderedResource r : ORDERED_RESOURCES) {
             DifficultyGetter v = DIFFICULTIES.get(r.res);
             switch (v.getType()) {

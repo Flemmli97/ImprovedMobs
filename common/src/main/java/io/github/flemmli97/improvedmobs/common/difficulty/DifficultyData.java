@@ -1,9 +1,10 @@
 package io.github.flemmli97.improvedmobs.common.difficulty;
 
 import com.google.common.collect.Lists;
+import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import io.github.flemmli97.improvedmobs.common.config.values.StepExpressionConfig;
+import io.github.flemmli97.improvedmobs.common.config.values.DifficultyExpressionConfig;
 import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
@@ -12,7 +13,6 @@ import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.util.Mth;
 import net.minecraft.util.datafix.DataFixTypes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -29,7 +29,8 @@ public class DifficultyData extends SavedData {
     private static final String IDENTIFIER = "Difficulty";
     private static final SavedData.Factory<DifficultyData> FACTORY = new Factory<>(DifficultyData::new, DifficultyData::new, DataFixTypes.LEVEL);
 
-    private float difficultyLevel;
+    private int difficultyIndex;
+    private double difficultyLevel;
     private long prevTime;
 
     private boolean paused;
@@ -45,7 +46,7 @@ public class DifficultyData extends SavedData {
         return server.overworld().getDataStorage().computeIfAbsent(FACTORY, IDENTIFIER);
     }
 
-    public static float getDifficulty(Level level, LivingEntity entity) {
+    public static double getDifficulty(Level level, LivingEntity entity) {
         if (!(level instanceof ServerLevel serverLevel))
             return 0;
         return DifficultyFetcher.getDifficulty(serverLevel, entity.position());
@@ -64,17 +65,14 @@ public class DifficultyData extends SavedData {
         if (shouldIncrease) {
             VariableMap vars = new VariableMap();
             if (!this.paused) {
-                float current = this.getDifficulty();
-                this.difficultyLevel = (float) Config.CommonConfig.difficultyIncrease.get(current)
-                        .expression().get(vars.setVariable("difficulty", current));
+                this.increaseCurrent(vars);
             }
             server.getPlayerList().getPlayers()
                     .forEach(player -> {
                         PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
                         if (!data.paused()) {
-                            float current = data.getDifficultyLevel();
-                            Config.apply(vars, player, current);
-                            data.setDifficultyLevel((float) Config.CommonConfig.difficultyIncrease.get(current).expression().get(vars));
+                            Config.apply(vars, player, data.getDifficultyLevel());
+                            data.increaseCurrent(vars);
                         }
                     });
         }
@@ -83,25 +81,33 @@ public class DifficultyData extends SavedData {
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
     }
 
+    public void increaseCurrent(VariableMap vars) {
+        double current = this.getDifficulty();
+        Pair<Integer, DifficultyExpressionConfig.Value> difficulty = Config.CommonConfig.difficultyIncrease.get(current, this.difficultyIndex);
+        this.difficultyIndex = difficulty.getFirst();
+        this.difficultyLevel = (float) difficulty.getSecond().expression().get(vars.setVariable("difficulty", current));
+    }
+
     public void updateTime(MinecraftServer server) {
         this.prevTime = server.overworld().getDayTime();
         this.setDirty();
     }
 
-    public void setDifficulty(float level, MinecraftServer server) {
+    public void setDifficulty(double level, MinecraftServer server) {
         this.difficultyLevel = level;
+        this.difficultyIndex = 0;
         this.prevTime = server.overworld().getDayTime();
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
         this.setDirty();
     }
 
-    public void addDifficulty(float level, MinecraftServer server) {
+    public void addDifficulty(double level, MinecraftServer server) {
         this.difficultyLevel += level;
         CrossPlatformStuff.INSTANCE.sendDifficultyData(this, server);
         this.setDirty();
     }
 
-    public float getDifficulty() {
+    public double getDifficulty() {
         return this.difficultyLevel;
     }
 
@@ -109,34 +115,36 @@ public class DifficultyData extends SavedData {
         return this.prevTime;
     }
 
-    public static float getDifficultyFromDist(ServerLevel level, Vec3 pos) {
-        float dist;
+    public static double getDifficultyFromDist(ServerLevel level, Vec3 pos) {
+        double dist;
         if (Config.CommonConfig.difficultyType == Config.DifficultyType.DISTANCESPAWN) {
-            dist = Mth.sqrt((float) pos.distanceToSqr(level.getSharedSpawnPos().getX() + 0.5, pos.y(), level.getSharedSpawnPos().getZ() + 0.5));
+            dist = Math.sqrt(pos.distanceToSqr(level.getSharedSpawnPos().getX() + 0.5, pos.y(), level.getSharedSpawnPos().getZ() + 0.5));
         } else {
-            dist = Mth.sqrt((float) pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().x() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().z() + 0.5));
+            dist = Math.sqrt(pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().x() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().z() + 0.5));
         }
-        StepExpressionConfig.Value value = Config.CommonConfig.difficultyIncrease.get(dist);
+        DifficultyExpressionConfig.Value value = Config.CommonConfig.difficultyIncrease.get(dist, 0).getSecond();
         VariableMap map = new VariableMap();
         Config.apply(map, level.getRandom(), level.getSharedSpawnPos(), pos, 0);
-        return (float) value.expression().get(map);
+        return value.expression().get(map);
     }
 
     public void setPaused(boolean paused) {
         this.paused = paused;
     }
 
-    public void load(CompoundTag nbt) {
-        this.difficultyLevel = nbt.getFloat("Difficulty");
-        this.prevTime = nbt.getLong("Time");
-        this.paused = nbt.getBoolean("Paused");
+    public void load(CompoundTag tag) {
+        this.difficultyLevel = tag.getDouble("Difficulty");
+        this.difficultyIndex = tag.getInt("DifficultyIndex");
+        this.prevTime = tag.getLong("Time");
+        this.paused = tag.getBoolean("Paused");
     }
 
     @Override
-    public CompoundTag save(CompoundTag compound, HolderLookup.Provider provider) {
-        compound.putFloat("Difficulty", this.difficultyLevel);
-        compound.putLong("Time", this.prevTime);
-        compound.putBoolean("Paused", this.paused);
-        return compound;
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider provider) {
+        tag.putDouble("Difficulty", this.difficultyLevel);
+        tag.putInt("DifficultyIndex", this.difficultyIndex);
+        tag.putLong("Time", this.prevTime);
+        tag.putBoolean("Paused", this.paused);
+        return tag;
     }
 }

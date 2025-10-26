@@ -38,7 +38,7 @@ public class WeightedItemstack implements Comparable<WeightedItemstack> {
         return this.quality;
     }
 
-    public int getWeight(float modifier) {
+    public int getWeight(double modifier) {
         return Math.max(this.weight + Mth.floor(modifier * this.quality), 0);
     }
 

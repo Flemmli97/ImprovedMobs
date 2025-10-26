@@ -10,8 +10,8 @@ import net.silentchaos512.powerscale.core.DifficultyUtil;
 public class ScalingHealthDifficulty implements DifficultyGetter {
 
     @Override
-    public float getDifficulty(ServerLevel level, Vec3 pos) {
-        return (float) DifficultyUtil.getLocalDifficulty(level, BlockPos.containing(pos));
+    public double getDifficulty(ServerLevel level, Vec3 pos) {
+        return DifficultyUtil.getLocalDifficulty(level, BlockPos.containing(pos));
     }
 
     @Override

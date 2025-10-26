@@ -130,11 +130,17 @@ public class ConfigSpecs {
                     "With this the difficulty will increase by 0.01 every 2400 ticks for a total of 0.1 per mc day till reaching a difficulty of 10.",
                     "Afterwards it increases by 1 per mc day till it reaches 30 and then stops increasing.",
                     "Negative values are also supported.",
-                    "Lastly following variables are available to use in expressions:",
+                    "Following variables are available to use in expressions:",
                     "difficulty: The current difficulty in the context",
                     "distance_spawn: Distance to the spawnpoint. Does not include the height",
                     "distance_origin: Distance to 0,0",
-                    "distance_center: Distance to the center as per defined in this config").define("Difficulty Increase", Config.CommonConfig.difficultyIncrease.write(), stringList());
+                    "distance_center: Distance to the center as per defined in this config",
+                    "Difficulty thresholds also supports a range input in form of <from>-<to>",
+                    "This is mostly interesting if you are using NEGATIVE values",
+                    "E.g. following example [\"0;difficulty + 0.01\",\"10;difficulty - 0.1\"]",
+                    "has the problem that once reaching difficulty 10 it will decrease by 0.1 once and then increase once again as it was below 10",
+                    "To fix this you can instead now define something like [\"0;difficulty + 0.01\",\"10-5;difficulty - 0.1\"]",
+                    "This allows the decrease to span from 10 to 5").define("Difficulty Increase", Config.CommonConfig.difficultyIncrease.write(), stringList());
             this.ignorePlayers = builder.comment("Wether difficulty should only increase with at least one online player or not").define("Ignore Players", Config.CommonConfig.ignorePlayers);
             this.considerTimeskip = builder.comment("If true will increase difficulty by the amount of time skipped. Else will only increase difficulty once.").define("Consider Time Skip", Config.CommonConfig.considerTimeskip);
             this.difficultyType = builder.comment("How the difficulty at a position is calculated. Supported values are: ",

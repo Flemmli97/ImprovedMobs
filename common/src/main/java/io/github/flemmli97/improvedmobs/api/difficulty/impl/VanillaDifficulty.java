@@ -9,7 +9,7 @@ import net.minecraft.world.phys.Vec3;
 public class VanillaDifficulty implements DifficultyGetter {
 
     @Override
-    public float getDifficulty(ServerLevel level, Vec3 pos) {
+    public double getDifficulty(ServerLevel level, Vec3 pos) {
         return level.getCurrentDifficultyAt(BlockPos.containing(pos)).getSpecialMultiplier() * Config.CommonConfig.vanillaClampedMax;
     }
 

@@ -114,7 +114,7 @@ public class EventCalls {
             return;
         EntityFlags flags = EntityFlags.get(mob);
         boolean mobGriefing = mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-        float difficulty = DifficultyData.getDifficulty(mob.level(), mob);
+        double difficulty = DifficultyData.getDifficulty(mob.level(), mob);
         VariableMap map = Config.create(mob, difficulty);
         if (flags.canBreakBlocks == EntityFlags.FlagType.UNDEFINED) {
             if (difficulty >= Config.CommonConfig.difficultyBreak && mob.getRandom().nextFloat() < Config.CommonConfig.breakerChance.get(map)
@@ -201,7 +201,7 @@ public class EventCalls {
         return goal;
     }
 
-    private static void applyAttributesAndItems(Mob living, float difficulty, VariableMap map) {
+    private static void applyAttributesAndItems(Mob living, double difficulty, VariableMap map) {
         EntityFlags flags = EntityFlags.get(living);
         if (!flags.modifyArmor) {
             if (!Config.CommonConfig.entityBlacklist.isDisabledFor(living, DifficultyFeatures.ARMOR))

@@ -10,8 +10,8 @@ import net.minecraft.world.phys.Vec3;
 public class PlayerEXDifficulty implements DifficultyGetter {
 
     @Override
-    public float getDifficulty(ServerLevel level, Vec3 pos) {
-        return DifficultyGetter.getDifficulty(level, pos, p -> (float) (p.getAttributeValue(Holder.direct(PlayerEXAttributes.LEVEL)) * Config.CommonConfig.playerEXScale));
+    public double getDifficulty(ServerLevel level, Vec3 pos) {
+        return DifficultyGetter.getDifficulty(level, pos, p -> p.getAttributeValue(Holder.direct(PlayerEXAttributes.LEVEL)) * Config.CommonConfig.playerEXScale);
     }
 
     @Override

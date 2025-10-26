@@ -6,19 +6,19 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 
-public record S2CDiffcultyValue(float difficulty) implements CustomPacketPayload {
+public record S2CDiffcultyValue(double difficulty) implements CustomPacketPayload {
 
     public static final Type<S2CDiffcultyValue> TYPE = new Type<>(ImprovedMobs.modRes("difficulty"));
 
     public static final StreamCodec<FriendlyByteBuf, S2CDiffcultyValue> STREAM_CODEC = new StreamCodec<>() {
         @Override
         public S2CDiffcultyValue decode(FriendlyByteBuf buf) {
-            return new S2CDiffcultyValue(buf.readFloat());
+            return new S2CDiffcultyValue(buf.readDouble());
         }
 
         @Override
         public void encode(FriendlyByteBuf buf, S2CDiffcultyValue pkt) {
-            buf.writeFloat(pkt.difficulty);
+            buf.writeDouble(pkt.difficulty);
         }
     };
 

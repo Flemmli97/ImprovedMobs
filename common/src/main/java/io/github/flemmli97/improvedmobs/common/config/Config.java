@@ -3,6 +3,7 @@ package io.github.flemmli97.improvedmobs.common.config;
 import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
 import io.github.flemmli97.improvedmobs.common.config.values.BreakableBlocks;
+import io.github.flemmli97.improvedmobs.common.config.values.DifficultyExpressionConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.EntityFeatureConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.EntityItemConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.ExpressionConfig;
@@ -48,9 +49,9 @@ public class Config {
         public static boolean enableDifficultyScaling = true;
         public static int difficultyDelay;
         public static boolean ignoreSpawner;
-        public static StepExpressionConfig difficultyIncrease = new StepExpressionConfig(StepExpressionConfig.DIFFICULTY_DEFAULT,
-                new StepExpressionConfig.Value(0, "difficulty + 0.1"),
-                new StepExpressionConfig.Value(250, "difficulty"));
+        public static DifficultyExpressionConfig difficultyIncrease = new DifficultyExpressionConfig(
+                new DifficultyExpressionConfig.UnresolvedValue(0, "difficulty + 0.1"),
+                new DifficultyExpressionConfig.UnresolvedValue(250, "difficulty"));
         public static boolean ignorePlayers;
         public static boolean considerTimeskip = true;
         public static boolean friendlyFire;
@@ -141,15 +142,15 @@ public class Config {
         }
     }
 
-    public static VariableMap create(LivingEntity entity, float difficulty) {
+    public static VariableMap create(LivingEntity entity, double difficulty) {
         return apply(new VariableMap(), entity, difficulty);
     }
 
-    public static VariableMap apply(VariableMap variables, LivingEntity entity, float difficulty) {
+    public static VariableMap apply(VariableMap variables, LivingEntity entity, double difficulty) {
         return apply(variables, entity.getRandom(), entity.level().getSharedSpawnPos(), entity.position(), difficulty);
     }
 
-    public static VariableMap apply(VariableMap variables, RandomSource random, BlockPos spawn, Vec3 pos, float difficulty) {
+    public static VariableMap apply(VariableMap variables, RandomSource random, BlockPos spawn, Vec3 pos, double difficulty) {
         double distSpawn = Math.sqrt(pos.distanceToSqr(spawn.getX() + 0.5, pos.y(), spawn.getZ() + 0.5));
         double distOrigin = Math.sqrt(pos.distanceToSqr(0.5, pos.y(), 0.5));
         double distCenter = Math.sqrt(pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().x() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().z() + 0.5));

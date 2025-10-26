@@ -9,8 +9,8 @@ import net.minecraft.world.phys.Vec3;
 public class LevelZDifficulty implements DifficultyGetter {
 
     @Override
-    public float getDifficulty(ServerLevel level, Vec3 pos) {
-        return DifficultyGetter.getDifficulty(level, pos, p -> (float) ((LevelManagerAccess) p).getLevelManager().getOverallLevel() * Config.CommonConfig.levelZScale);
+    public double getDifficulty(ServerLevel level, Vec3 pos) {
+        return DifficultyGetter.getDifficulty(level, pos, p -> ((LevelManagerAccess) p).getLevelManager().getOverallLevel() * Config.CommonConfig.levelZScale);
     }
 
     @Override

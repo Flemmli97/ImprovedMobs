@@ -2,7 +2,7 @@ package io.github.flemmli97.improvedmobs.common.commands;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
-import com.mojang.brigadier.arguments.FloatArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -33,10 +33,10 @@ public class ImprovedMobsCommand {
                 .executes(ImprovedMobsCommand::getDifficulty)
                 .then(Commands.literal("difficulty").requires(src -> src.hasPermission(2))
                         .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile())
-                                .then(Commands.literal("set").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::setDifficultyPlayer)))
-                                .then(Commands.literal("add").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::addDifficultyPlayer)))))
-                        .then(Commands.literal("set").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::setDifficulty)))
-                        .then(Commands.literal("add").then(Commands.argument("val", FloatArgumentType.floatArg()).executes(ImprovedMobsCommand::addDifficulty)))
+                                .then(Commands.literal("set").then(Commands.argument("val", DoubleArgumentType.doubleArg()).executes(ImprovedMobsCommand::setDifficultyPlayer)))
+                                .then(Commands.literal("add").then(Commands.argument("val", DoubleArgumentType.doubleArg()).executes(ImprovedMobsCommand::addDifficultyPlayer)))))
+                        .then(Commands.literal("set").then(Commands.argument("val", DoubleArgumentType.doubleArg()).executes(ImprovedMobsCommand::setDifficulty)))
+                        .then(Commands.literal("add").then(Commands.argument("val", DoubleArgumentType.doubleArg()).executes(ImprovedMobsCommand::addDifficulty)))
                         .then(Commands.literal("pause")
                                 .then(Commands.literal("player").then(Commands.argument("players", GameProfileArgument.gameProfile()).executes(src -> ImprovedMobsCommand.pauseDifficulty(src, GameProfileArgument.getGameProfiles(src, "players"), true))))
                                 .executes(src -> ImprovedMobsCommand.pauseDifficulty(src, null, true)))
@@ -52,14 +52,14 @@ public class ImprovedMobsCommand {
 
     private static int setDifficulty(CommandContext<CommandSourceStack> src) {
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
-        data.setDifficulty(FloatArgumentType.getFloat(src, "val"), src.getSource().getServer());
+        data.setDifficulty(DoubleArgumentType.getDouble(src, "val"), src.getSource().getServer());
         src.getSource().sendSuccess(() -> Component.literal("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
 
     private static int addDifficulty(CommandContext<CommandSourceStack> src) {
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
-        data.addDifficulty(FloatArgumentType.getFloat(src, "val"), src.getSource().getServer());
+        data.addDifficulty(DoubleArgumentType.getDouble(src, "val"), src.getSource().getServer());
         src.getSource().sendSuccess(() -> Component.literal("Difficulty set to " + data.getDifficulty()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }
@@ -70,7 +70,7 @@ public class ImprovedMobsCommand {
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
             PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
-            data.setDifficultyLevel(FloatArgumentType.getFloat(src, "val"));
+            data.setDifficultyLevel(DoubleArgumentType.getDouble(src, "val"));
             CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
             src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         }
@@ -83,7 +83,7 @@ public class ImprovedMobsCommand {
         for (GameProfile prof : profs) {
             ServerPlayer player = server.getPlayerList().getPlayer(prof.getId());
             PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
-            data.setDifficultyLevel(data.getDifficultyLevel() + FloatArgumentType.getFloat(src, "val"));
+            data.setDifficultyLevel(data.getDifficultyLevel() + DoubleArgumentType.getDouble(src, "val"));
             CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
             src.getSource().sendSuccess(() -> Component.literal("Difficulty for " + prof.getName() + " set to " + data.getDifficultyLevel()).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         }
@@ -91,7 +91,7 @@ public class ImprovedMobsCommand {
     }
 
     private static int getDifficulty(CommandContext<CommandSourceStack> src) throws CommandSyntaxException {
-        float diff;
+        double diff;
         if (Config.CommonConfig.difficultyType == Config.DifficultyType.GLOBAL)
             diff = DifficultyData.get(src.getSource().getServer())
                     .getDifficulty();
@@ -130,9 +130,7 @@ public class ImprovedMobsCommand {
                 Config.apply(vars, player, 0);
                 int i = steps;
                 while (i > 0) {
-                    float current = data.getDifficultyLevel();
-                    data.setDifficultyLevel((float) Config.CommonConfig.difficultyIncrease.get(current)
-                            .expression().get(vars.setVariable("difficulty", current)));
+                    data.increaseCurrent(vars);
                     i--;
                 }
                 CrossPlatformStuff.INSTANCE.sendClientboundPacket(PacketHandler.createDifficultyPacket(DifficultyData.get(server), player), player);
@@ -142,14 +140,11 @@ public class ImprovedMobsCommand {
         }
         DifficultyData data = DifficultyData.get(src.getSource().getServer());
         int i = steps;
-        float current = data.getDifficulty();
         vars.clear();
         while (i > 0) {
-            current = (float) Config.CommonConfig.difficultyIncrease.get(current)
-                    .expression().get(vars.setVariable("difficulty", current));
+            data.increaseCurrent(vars);
             i--;
         }
-        data.setDifficulty(current, src.getSource().getServer());
         src.getSource().sendSuccess(() -> Component.literal(String.format("Simulated %s difficulty steps globally. Now at %s", steps, data.getDifficulty())).setStyle(Style.EMPTY.withColor(ChatFormatting.GOLD)), true);
         return 1;
     }

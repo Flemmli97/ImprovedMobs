@@ -50,7 +50,7 @@ public class Utils {
         return item.isCorrectToolForDrops(block) || !block.requiresCorrectToolForDrops();
     }
 
-    public static void equipArmor(Mob living, float difficulty, VariableMap map) {
+    public static void equipArmor(Mob living, double difficulty, VariableMap map) {
         if (living.getRandom().nextFloat() < Config.CommonConfig.equipmentChance.get(map)) {
             for (EquipmentSlot slot : EquipmentSlot.values()) {
                 if (slot.getType() == EquipmentSlot.Type.HAND)
@@ -75,7 +75,7 @@ public class Utils {
         }
     }
 
-    public static void equipHeld(Mob living, float difficulty, VariableMap map) {
+    public static void equipHeld(Mob living, double difficulty, VariableMap map) {
         if (living.getRandom().nextFloat() < Config.CommonConfig.mainHandChance.get(map)) {
             if (living.getMainHandItem().isEmpty()) {
                 ItemStack stack = EquipmentList.getEquipment(living, EquipmentSlot.MAINHAND, difficulty);
@@ -95,7 +95,7 @@ public class Utils {
         }
     }
 
-    public static void enchantGear(Mob living, float difficulty, VariableMap map) {
+    public static void enchantGear(Mob living, double difficulty, VariableMap map) {
         StepExpressionConfig.Value val = Config.CommonConfig.enchantCalc.get(difficulty);
         int level = (int) val.expression().get(map);
         if (level == 0)
