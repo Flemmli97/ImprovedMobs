@@ -1,3 +1,12 @@
+Improved Mobs 1.15.0
+================
+- Add support for difficulty range config. See updated comment for the difficulty increase config
+- Rewrite difficulty to use doubles instead of floats
+- Rewrite Item AI handling
+- Fix crossbow ai not working
+- Fix projectile and explosion damage modifier
+- Reduce size variation
+
 Improved Mobs 1.14.2
 ================
 - Hotfix: Fix nullpointer with config (for real this time...)
