@@ -4,7 +4,6 @@ import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyGetter;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.difficulty.DifficultyData;
 import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
-import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
@@ -20,7 +19,7 @@ public class DefaultDifficulty implements DifficultyGetter {
             case PLAYERMAX -> {
                 double diff = 0;
                 for (Player player : DifficultyGetter.playersIn(level, pos, 256)) {
-                    double pD = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
+                    double pD = ImprovedMobsAttachments.PLAYER_DIFFICULTY.get().get(player).getDifficultyLevel();
                     if (pD > diff)
                         diff = pD;
                 }
@@ -29,7 +28,7 @@ public class DefaultDifficulty implements DifficultyGetter {
             case PLAYERSUM -> {
                 double diff = 0;
                 for (Player player : DifficultyData.playersIn(level, pos, 256)) {
-                    diff += AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
+                    diff += ImprovedMobsAttachments.PLAYER_DIFFICULTY.get().get(player).getDifficultyLevel();
                 }
                 yield diff;
             }
@@ -39,7 +38,7 @@ public class DefaultDifficulty implements DifficultyGetter {
                 if (list.isEmpty())
                     yield 0f;
                 for (Player player : list) {
-                    diff += AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY).getDifficultyLevel();
+                    diff += ImprovedMobsAttachments.PLAYER_DIFFICULTY.get().get(player).getDifficultyLevel();
                 }
                 yield diff / list.size();
             }

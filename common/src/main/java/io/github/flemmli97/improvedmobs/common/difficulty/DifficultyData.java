@@ -8,7 +8,6 @@ import io.github.flemmli97.improvedmobs.common.config.values.DifficultyExpressio
 import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
-import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -69,7 +68,7 @@ public class DifficultyData extends SavedData {
             }
             server.getPlayerList().getPlayers()
                     .forEach(player -> {
-                        PlayerDifficulty data = AttachmentRegister.INSTANCE.getAttachment(player, ImprovedMobsAttachments.PLAYER_DIFFICULTY);
+                        PlayerDifficulty data = ImprovedMobsAttachments.PLAYER_DIFFICULTY.get().get(player);
                         if (!data.paused()) {
                             Config.apply(vars, player, data.getDifficultyLevel());
                             data.increaseCurrent(vars);

@@ -2,7 +2,6 @@ package io.github.flemmli97.improvedmobs.fabric.mixin;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
-import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,8 +23,7 @@ public abstract class BlockEntityMixin {
             data = tag.getCompound(ImprovedMobs.MODID + ":container");
         }
         if (data != null) {
-            AttachmentRegister.INSTANCE.getAttachment((BlockEntity) (Object) this, ImprovedMobsAttachments.HAS_BEEN_OPENED)
-                    .read(data, provider);
+            ImprovedMobsAttachments.HAS_BEEN_OPENED.get().get(this).read(data, provider);
         }
     }
 }

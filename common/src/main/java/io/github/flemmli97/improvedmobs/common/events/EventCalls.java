@@ -23,7 +23,6 @@ import io.github.flemmli97.improvedmobs.mixin.TargetGoalAccessor;
 import io.github.flemmli97.improvedmobs.mixinhelper.EntitySpawnReason;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
-import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -272,7 +271,7 @@ public class EventCalls {
         if (!player.level().isClientSide && !player.isShiftKeyDown()) {
             BlockEntity blockEntity = player.level().getBlockEntity(pos);
             if (blockEntity != null) {
-                AttachmentRegister.INSTANCE.getAttachment(blockEntity, ImprovedMobsAttachments.HAS_BEEN_OPENED)
+                ImprovedMobsAttachments.HAS_BEEN_OPENED.get().get(blockEntity)
                         .setOpened(blockEntity);
             }
         }

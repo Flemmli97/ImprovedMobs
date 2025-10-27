@@ -3,7 +3,6 @@ package io.github.flemmli97.improvedmobs.fabric.mixin;
 import com.mojang.authlib.GameProfile;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
-import io.github.flemmli97.tenshilib.loader.registry.AttachmentRegister;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,8 +30,7 @@ public abstract class ServerPlayerMixin extends Player {
             data = tag.getCompound(ImprovedMobs.MODID + ":difficulty_data");
         }
         if (data != null) {
-            AttachmentRegister.INSTANCE.getAttachment((ServerPlayer) (Object) this, ImprovedMobsAttachments.PLAYER_DIFFICULTY)
-                    .read(data, this.registryAccess());
+            ImprovedMobsAttachments.PLAYER_DIFFICULTY.get().get(this).read(data, this.registryAccess());
         }
     }
 }
