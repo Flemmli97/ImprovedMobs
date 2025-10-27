@@ -14,6 +14,7 @@ import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfi
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.common.network.S2CShowDifficulty;
+import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
 import io.github.flemmli97.improvedmobs.fabric.integration.difficulty.LevelZDifficulty;
 import io.github.flemmli97.improvedmobs.fabric.integration.difficulty.PlayerEXDifficulty;
@@ -44,6 +45,7 @@ public class ImprovedMobsFabric implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ImprovedMobsAttachments.ATTACHMENTS.registerContent();
         ItemUseRegistry.initBuiltin();
         ServerTickEvents.END_WORLD_TICK.register(EventCalls::tick);
         ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
