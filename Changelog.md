@@ -1,3 +1,8 @@
+Improved Mobs 1.15.1
+================
+- Fix fabric attachment not registered
+- Update lib
+
 Improved Mobs 1.15.0
 ================
 - Add support for difficulty range config. See updated comment for the difficulty increase config
