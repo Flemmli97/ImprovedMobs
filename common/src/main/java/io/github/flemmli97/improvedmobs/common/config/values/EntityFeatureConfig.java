@@ -96,6 +96,12 @@ public class EntityFeatureConfig {
         this.features.putAll(direct);
     }
 
+    public void tagReloaded() {
+        this.features.clear();
+        this.initialized = false;
+        this.initialize();
+    }
+
     public void read(List<String> config) {
         this.config.clear();
         this.config.addAll(config);

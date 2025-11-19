@@ -22,6 +22,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
@@ -54,6 +55,11 @@ public class ImprovedMobsFabric implements ModInitializer {
         UseBlockCallback.EVENT.register(EventHandler::openTile);
         UseEntityCallback.EVENT.register(EventHandler::equipPet);
         ServerPlayConnectionEvents.JOIN.register(EventHandler::worldJoin);
+        CommonLifecycleEvents.TAGS_LOADED.register((reg, client) -> {
+            if (!client) {
+                EventCalls.onTagReloaded();
+            }
+        });
 
         registerPacket();
         NeoForgeModConfigEvents.loading(ImprovedMobs.MODID).register(config -> {

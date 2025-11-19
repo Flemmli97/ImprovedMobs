@@ -2,7 +2,9 @@ package io.github.flemmli97.improvedmobs.common.config.values;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.mojang.datafixers.util.Either;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
@@ -16,6 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 public class TargetMapConfig {
@@ -35,18 +38,32 @@ public class TargetMapConfig {
         if (this.initialized)
             return;
         this.initialized = true;
-        Map<EntityType<?>, PredicateBuilder> builder = new HashMap<>();
+        Map<EntityType<?>, PredicateBuilder> direct = new HashMap<>();
+        Map<HolderSet<EntityType<?>>, PredicateBuilder> tags = new HashMap<>();
         for (String value : this.config) {
             String[] sub = value.replace(" ", "").split("-");
-            Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(sub[0]));
-            if (type.isEmpty())
-                continue;
             if (sub.length < 2)
                 continue;
+            String source = sub[0];
+            Consumer<Either<TagKey<EntityType<?>>, EntityType<?>>> cons;
+            if (source.startsWith("#")) {
+                TagKey<EntityType<?>> tag = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(source.substring(1)));
+                cons = either -> BuiltInRegistries.ENTITY_TYPE.getTag(tag)
+                        .ifPresent(named -> either
+                                .ifLeft(t -> tags.computeIfAbsent(named, key -> new PredicateBuilder()).appendTag(t))
+                                .ifRight(t -> tags.computeIfAbsent(named, key -> new PredicateBuilder()).appendType(t)));
+            } else {
+                Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(source));
+                if (type.isEmpty())
+                    continue;
+                cons = either -> either
+                        .ifLeft(t -> direct.computeIfAbsent(type.get(), key -> new PredicateBuilder()).appendTag(t))
+                        .ifRight(t -> direct.computeIfAbsent(type.get(), key -> new PredicateBuilder()).appendType(t));
+            }
             if (sub[1].startsWith("#")) {
                 TagKey<EntityType<?>> tag = TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.parse(sub[1].substring(1)));
                 if (BuiltInRegistries.ENTITY_TYPE.getTag(tag).isPresent()) {
-                    builder.computeIfAbsent(type.get(), key -> new PredicateBuilder()).appendTag(tag);
+                    cons.accept(Either.left(tag));
                 }
             } else {
                 EntityType<?> target = BuiltInRegistries.ENTITY_TYPE.getOptional(ResourceLocation.parse(sub[1])).orElse(null);
@@ -54,10 +71,17 @@ public class TargetMapConfig {
                     ImprovedMobs.LOGGER.error("Entity {} does not exist/is not registered", sub[1]);
                     continue;
                 }
-                builder.computeIfAbsent(type.get(), key -> new PredicateBuilder()).appendType(target);
+                cons.accept(Either.right(target));
             }
         }
-        builder.forEach((type, pred) -> this.map.put(type, pred.build()));
+        direct.forEach((type, pred) -> this.map.put(type, pred.build()));
+        tags.forEach((set, pred) -> set.forEach(h -> this.map.put(h.value(), pred.build())));
+    }
+
+    public void tagReloaded() {
+        this.map.clear();
+        this.initialized = false;
+        this.initialize();
     }
 
     public void read(List<String> config) {
@@ -75,7 +99,7 @@ public class TargetMapConfig {
         return new String[]{
                 "List for of pairs containing which mobs auto target others.",
                 "Syntax is <source-target> where",
-                "  source: is the mob that should target something",
+                "  source: is the mob that should target something. This can be either an entity or a tag",
                 "  target: the mob source should target. This can be either an entity or a tag",
                 "Examples: ",
                 "minecraft:zombie-minecraft:skeleton makes all zombies target skeletons",

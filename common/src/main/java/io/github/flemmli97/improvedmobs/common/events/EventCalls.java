@@ -337,4 +337,10 @@ public class EventCalls {
             }
         }
     }
+
+    public static void onTagReloaded() {
+        Config.CommonConfig.breakableBlocks.tagReloaded();
+        Config.CommonConfig.autoTargets.tagReloaded();
+        Config.CommonConfig.entityBlacklist.tagReloaded();
+    }
 }

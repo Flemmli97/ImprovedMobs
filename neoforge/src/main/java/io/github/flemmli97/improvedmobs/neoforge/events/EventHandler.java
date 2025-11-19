@@ -9,6 +9,7 @@ import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.neoforged.neoforge.event.TagsUpdatedEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
@@ -76,5 +77,12 @@ public class EventHandler {
     @SubscribeEvent
     public void explosion(ExplosionEvent.Detonate event) {
         EventCalls.explosion(event.getExplosion(), event.getExplosion().getDirectSourceEntity(), event.getAffectedEntities());
+    }
+
+    @SubscribeEvent
+    public void onTagUpdate(TagsUpdatedEvent event) {
+        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD) {
+            EventCalls.onTagReloaded();
+        }
     }
 }
