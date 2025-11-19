@@ -74,8 +74,8 @@ public class ImprovedMobsFabric implements ModInitializer {
             if (config.getSpec() == ConfigSpecs.COMMON_SPEC)
                 ConfigLoader.loadCommon();
         });
-        NeoForgeConfigRegistry.INSTANCE.register(ImprovedMobs.MODID, ModConfig.Type.CLIENT, ConfigSpecs.CLIENT_SPEC);
-        NeoForgeConfigRegistry.INSTANCE.register(ImprovedMobs.MODID, ModConfig.Type.COMMON, ConfigSpecs.COMMON_SPEC);
+        NeoForgeConfigRegistry.INSTANCE.register(ImprovedMobs.MODID, ModConfig.Type.CLIENT, ConfigSpecs.CLIENT_SPEC, "improvedmobs/client.toml");
+        NeoForgeConfigRegistry.INSTANCE.register(ImprovedMobs.MODID, ModConfig.Type.COMMON, ConfigSpecs.COMMON_SPEC, "improvedmobs/common.toml");
         DifficultyFetcher.register();
 
         ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(DifficultyAttributeConfig.ID, reg -> new IdentifiableResourceReloadListener() {
