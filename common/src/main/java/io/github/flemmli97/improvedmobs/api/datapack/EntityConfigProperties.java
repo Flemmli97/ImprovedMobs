@@ -23,7 +23,8 @@ public record EntityConfigProperties(EntityTypeValue type, Optional<EnumSet<Diff
                     ConfigurableProperty.codecFor(RegistryCodecs.homogeneousList(Registries.BLOCK)).fieldOf("breakable_blocks").forGetter(EntityConfigProperties::breakableBlocks),
                     ConfigurableProperty.codecFor(DifficultyAttributeProperty.CODEC).fieldOf("attributes").forGetter(EntityConfigProperties::attributes)
             ).apply(instance, (type, features, blocks, attributes) ->
-                    new EntityConfigProperties(type, features.map(EnumSet::copyOf), blocks, attributes)));
+                    new EntityConfigProperties(type, features.map(list -> list.isEmpty() ? EnumSet.noneOf(DifficultyFeatures.class) : EnumSet.copyOf(list)),
+                            blocks, attributes)));
 
     public record ConfigurableProperty<T>(T val, boolean replace) {
 
