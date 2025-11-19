@@ -1,3 +1,9 @@
+Improved Mobs 1.15.2
+================
+- Fix mob specific config empty feature set not working
+- Support tags for targeting mob in auto target config
+- Fix wrong config paths on fabric which also fixes equipment.json missing
+
 Improved Mobs 1.15.1
 ================
 - Fix fabric attachment not registered
