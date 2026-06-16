@@ -46,9 +46,6 @@ public class ItemUseGoal extends Goal {
         LivingEntity target = this.living.getTarget();
         if (target == null || !target.isAlive())
             return false;
-        if (this.stackMain != this.living.getMainHandItem() || this.stackOff != this.living.getOffhandItem()) {
-            this.calculateAi();
-        }
         return this.ai != null;
     }
 
@@ -77,6 +74,12 @@ public class ItemUseGoal extends Goal {
 
     @Override
     public void tick() {
+        // Move this check here cause ordering of different ai can change the state between #canContinueToUse and #tick
+        if (this.stackMain != this.living.getMainHandItem() || this.stackOff != this.living.getOffhandItem()) {
+            this.stop();
+            this.calculateAi();
+            return;
+        }
         if (EntityFlags.get(this.living).isShieldDisabled() && this.living.getItemInHand(this.hand).getUseAnimation() == UseAnim.BLOCK) {
             return;
         }
