@@ -37,8 +37,10 @@ public interface ItemUseHandler {
      * 1. #startUse is called
      * 2. #useDelay ticks is waited
      * 3. #use is called
+     *
+     * @return a cooldown for using it again
      */
-    void use(LivingEntity entity, LivingEntity target, InteractionHand hand);
+    int use(LivingEntity entity, LivingEntity target, InteractionHand hand);
 
     /**
      * Whether the entity can use this item in its current state.
@@ -56,8 +58,6 @@ public interface ItemUseHandler {
      * Item needs to be in this hand to be able to be used
      */
     PreferredHand preferredHand();
-
-    int cooldown(LivingEntity entity);
 
     /**
      * Whether this handler matches the given item. Used during setup for calculating quick lookups

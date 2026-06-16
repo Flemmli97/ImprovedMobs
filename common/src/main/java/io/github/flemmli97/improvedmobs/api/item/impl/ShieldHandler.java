@@ -15,18 +15,14 @@ public class ShieldHandler implements ItemUseHandler {
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         entity.stopUsingItem();
+        return 60 + entity.getRandom().nextInt(20);
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.OFFHAND;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 60 + entity.getRandom().nextInt(20);
     }
 
     @Override

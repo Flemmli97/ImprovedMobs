@@ -43,6 +43,11 @@ public record OptionalItemStack(Holder.Reference<Item> item, int count, DataComp
         this(item, 1, map(components));
     }
 
+    @SuppressWarnings("deprecation")
+    public OptionalItemStack(ItemStack stack) {
+        this(stack.getItem().builtInRegistryHolder(), stack.getCount(), stack.getComponentsPatch());
+    }
+
     private static DataComponentPatch map(Consumer<DataComponentPatch.Builder> components) {
         DataComponentPatch.Builder builder = DataComponentPatch.builder();
         components.accept(builder);

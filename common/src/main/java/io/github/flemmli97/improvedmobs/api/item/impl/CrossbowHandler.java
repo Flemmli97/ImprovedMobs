@@ -32,23 +32,19 @@ public class CrossbowHandler implements ItemUseHandler {
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         ItemStack stack = entity.getItemInHand(hand);
         if (stack.getItem() instanceof CrossbowItem crossbow) {
             ChargedProjectiles projectile = stack.getOrDefault(DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
             float vel = projectile.contains(Items.FIREWORK_ROCKET) ? 1.6F : 3.15F;
             crossbow.performShooting(entity.level(), entity, hand, stack, vel, 14 - entity.level().getDifficulty().getId() * 4, target);
         }
+        return 30;
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 30;
     }
 
     @Override
@@ -63,6 +59,6 @@ public class CrossbowHandler implements ItemUseHandler {
 
     @Override
     public Function<Mob, MoveHandler> movementType() {
-        return mob -> new KeepDistanceMover(mob, 8);
+        return mob -> new KeepDistanceMover(mob, 5, 9);
     }
 }

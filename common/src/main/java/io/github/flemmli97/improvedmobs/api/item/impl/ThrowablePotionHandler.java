@@ -31,27 +31,21 @@ public class ThrowablePotionHandler implements ItemUseHandler {
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         ItemStack stack = entity.getItemInHand(hand);
         double dis = entity.position().distanceTo(target.position());
+        ThrownPotion potion = new ThrownPotion(entity.level(), entity);
+        potion.setItem(stack);
+        potion.shootFromRotation(entity, entity.getViewXRot(1), entity.getViewYRot(1), -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
+        EntityFlags.get(potion).isThrownEntity = true;
         entity.playSound(SoundEvents.SPLASH_POTION_THROW, 0.5F, 0.4F / (entity.level().random.nextFloat() * 0.4F + 0.8F));
-        if (!entity.level().isClientSide) {
-            ThrownPotion potion = new ThrownPotion(entity.level(), entity);
-            potion.setItem(stack);
-            potion.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), -30.0F, 0.2F + (float) (dis * 0.05), 1.2F);
-            EntityFlags.get(potion).isThrownEntity = true;
-            entity.level().addFreshEntity(potion);
-        }
+        entity.level().addFreshEntity(potion);
+        return 80 + entity.getRandom().nextInt(10);
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 80 + entity.getRandom().nextInt(10);
     }
 
     @Override

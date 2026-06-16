@@ -33,7 +33,7 @@ public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator implements No
 
     @WrapOperation(method = "getPathTypeOfMob", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;isPathfindable(Lnet/minecraft/world/level/pathfinder/PathComputationType;)Z", ordinal = 0))
     private boolean pathTypeCheckFirst(BlockState state, PathComputationType type, Operation<Boolean> original, @Local BlockPos.MutableBlockPos pos) {
-        if (PathFindingUtils.BREAKABLE.equals(this.improvedMobs$pathTypeOf(pos, null))) {
+        if (PathFindingUtils.BREAKABLE.equals(this.improvedMobs$pathTypeOf(pos))) {
             return true;
         }
         return original.call(state, type);
@@ -41,7 +41,7 @@ public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator implements No
 
     @WrapOperation(method = "getPathTypeOfMob", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/block/state/BlockState;isPathfindable(Lnet/minecraft/world/level/pathfinder/PathComputationType;)Z", ordinal = 1))
     private boolean pathTypeCheck(BlockState state, PathComputationType type, Operation<Boolean> original, @Local BlockPos.MutableBlockPos pos) {
-        if (PathFindingUtils.BREAKABLE.equals(this.improvedMobs$pathTypeOf(pos, null))) {
+        if (PathFindingUtils.BREAKABLE.equals(this.improvedMobs$pathTypeOf(pos))) {
             return true;
         }
         return original.call(state, type);
@@ -49,7 +49,7 @@ public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator implements No
 
     @ModifyExpressionValue(method = "getPathTypeOfMob", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/material/FluidState;is(Lnet/minecraft/tags/TagKey;)Z"))
     private boolean fluidCheck(boolean original, @Local BlockPos.MutableBlockPos pos, @Local BlockState state) {
-        if (PathFindingUtils.BREAKABLE.equals(this.improvedMobs$pathTypeOf(pos, null))) {
+        if (PathFindingUtils.BREAKABLE.equals(this.improvedMobs$pathTypeOf(pos))) {
             return true;
         }
         return original;

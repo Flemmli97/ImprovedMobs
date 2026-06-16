@@ -11,14 +11,16 @@ public class KeepDistanceMover implements MoveHandler {
 
     private final Mob mob;
     private final double maxAttackDistance;
+    private final double minAttackDistance;
     private int seeTime;
 
     public KeepDistanceMover(Mob mob) {
-        this(mob, 12);
+        this(mob, 4, 12);
     }
 
-    public KeepDistanceMover(Mob mob, double dist) {
+    public KeepDistanceMover(Mob mob, double minDist, double dist) {
         this.mob = mob;
+        this.minAttackDistance = MoveHandler.defaultRangeOf(mob, minDist);
         this.maxAttackDistance = MoveHandler.defaultRangeOf(mob, dist);
     }
 
@@ -29,16 +31,20 @@ public class KeepDistanceMover implements MoveHandler {
             ++this.seeTime;
         else
             this.seeTime = 0;
-        if (dist > this.maxAttackDistance || this.seeTime < 5)
+        boolean look = true;
+        if (dist > this.maxAttackDistance || this.seeTime < 5) {
             this.mob.getNavigation().moveTo(target, 1);
-        else if (dist <= this.maxAttackDistance * 0.3 && this.mob instanceof PathfinderMob pathfinderMob) {
+        } else if (dist <= this.minAttackDistance && this.mob instanceof PathfinderMob pathfinderMob) {
             Vec3 posAway = DefaultRandomPos.getPosAway(pathfinderMob, 7, 5, target.position());
             if (posAway != null) {
-                this.mob.getNavigation().moveTo(posAway.x(), posAway.y(), posAway.z(), 1);
+                this.mob.getNavigation().moveTo(posAway.x(), posAway.y(), posAway.z(), 1.2f);
             }
+            look = false;
         } else {
             this.mob.getNavigation().stop();
         }
-        this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+        if (look) {
+            this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
+        }
     }
 }

@@ -5,7 +5,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.projectile.ThrowableProjectile;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ThrownPotion;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
@@ -17,9 +17,9 @@ public class AIUtils {
 
     //TODO building, stone, block;
 
-    public static void setHeadingToPosition(ThrowableProjectile e, double x, double y, double z, float velocity, float inaccuracy) {
-        Vec3 dir = new Vec3(x - e.getX(), y - e.getY(), z - e.getZ()).scale(1 / velocity);
-        e.shoot(dir.x, dir.y, dir.z, velocity, inaccuracy);
+    public static void setHeadingToPosition(Projectile projectile, double x, double y, double z, float velocity, float inaccuracy) {
+        Vec3 dir = new Vec3(x - projectile.getX(), y - projectile.getY(), z - projectile.getZ()).scale(1 / velocity);
+        projectile.shoot(dir.x, dir.y, dir.z, velocity, inaccuracy);
     }
 
     public static void applyPotion(ThrownPotion entity, Iterable<MobEffectInstance> effects, @Nullable Entity p_213888_2_) {

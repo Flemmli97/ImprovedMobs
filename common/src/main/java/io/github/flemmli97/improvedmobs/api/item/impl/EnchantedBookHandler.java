@@ -25,50 +25,44 @@ import java.util.function.Function;
 public class EnchantedBookHandler implements ItemUseHandler {
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
-        if (!entity.level().isClientSide) {
-            List<Entity> nearby = entity.level().getEntities(entity, entity.getBoundingBox().inflate(8.0D));
-            List<Entity> nearTarget = entity.level().getEntities(target, target.getBoundingBox().inflate(2.0D));
-            if (nearby.isEmpty() || nearby.size() == 1 && nearby.get(0) == target || entity.level().random.nextInt(3) <= 1) {
-                if (nearTarget.isEmpty())
-                    for (int x = -1; x <= 1; x++)
-                        for (int z = -1; z <= 1; z++) {
-                            if (x == 0 || z == 0) {
-                                Vec3 targetMotion = target.getDeltaMovement();
-                                EvokerFangs fang = new EvokerFangs(entity.level(), target.getX() + x + targetMotion.x, target.getY(), target.getZ() + z + targetMotion.z, 0, 5, entity);
-                                entity.level().addFreshEntity(fang);
-                            }
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+        List<Entity> nearby = entity.level().getEntities(entity, entity.getBoundingBox().inflate(8.0D));
+        List<Entity> nearTarget = entity.level().getEntities(target, target.getBoundingBox().inflate(2.0D));
+        if (nearby.isEmpty() || nearby.size() == 1 && nearby.get(0) == target || entity.level().random.nextInt(3) <= 1) {
+            if (nearTarget.isEmpty())
+                for (int x = -1; x <= 1; x++)
+                    for (int z = -1; z <= 1; z++) {
+                        if (x == 0 || z == 0) {
+                            Vec3 targetMotion = target.getDeltaMovement();
+                            EvokerFangs fang = new EvokerFangs(entity.level(), target.getX() + x + targetMotion.x, target.getY(), target.getZ() + z + targetMotion.z, 0, 5, entity);
+                            entity.level().addFreshEntity(fang);
                         }
-                else {
-                    ShulkerBullet bullet = new ShulkerBullet(entity.level(), entity, target, entity.getDirection().getAxis());
-                    EntityFlags.get(bullet).isThrownEntity = true;
-                    entity.level().addFreshEntity(bullet);
-                }
-            } else {
-                for (int i = 0; i < nearby.size(); i++) {
-                    Entity entityRand = nearby.get(entity.level().random.nextInt(nearby.size()));
-                    if (entityRand instanceof Monster mob && entityRand != target) {
-                        BuiltInRegistries.MOB_EFFECT.getTag(ImprovedMobsTags.ENCHANTED_BOOK_EFFECT)
-                                .flatMap(n -> n.getRandomElement(mob.getRandom()))
-                                .ifPresent(effect -> {
-                                    mob.addEffect(new MobEffectInstance(effect, 3600, 1));
-                                    entity.playSound(SoundEvents.ELDER_GUARDIAN_CURSE, 2F, 1.0F);
-                                });
-                        return;
                     }
+            else {
+                ShulkerBullet bullet = new ShulkerBullet(entity.level(), entity, target, entity.getDirection().getAxis());
+                EntityFlags.get(bullet).isThrownEntity = true;
+                entity.level().addFreshEntity(bullet);
+            }
+        } else {
+            for (int i = 0; i < nearby.size(); i++) {
+                Entity entityRand = nearby.get(entity.level().random.nextInt(nearby.size()));
+                if (entityRand instanceof Monster mob && entityRand != target) {
+                    BuiltInRegistries.MOB_EFFECT.getTag(ImprovedMobsTags.ENCHANTED_BOOK_EFFECT)
+                            .flatMap(n -> n.getRandomElement(mob.getRandom()))
+                            .ifPresent(effect -> {
+                                entity.playSound(SoundEvents.ELDER_GUARDIAN_CURSE, 2, 1);
+                                mob.addEffect(new MobEffectInstance(effect, 3600, 1));
+                            });
+                    return 80 + entity.getRandom().nextInt(30);
                 }
             }
         }
+        return 100;
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 80 + entity.getRandom().nextInt(30);
     }
 
     @Override

@@ -15,6 +15,7 @@ import io.github.flemmli97.improvedmobs.api.item.impl.TntHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.TridentHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.WindChargeHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.integration.SupplementariesBomb;
+import io.github.flemmli97.improvedmobs.api.item.impl.integration.TACZGuns;
 import io.github.flemmli97.tenshilib.loader.TenshiLibCrossPlat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
@@ -68,7 +69,7 @@ public class ItemUseRegistry {
         register(ImprovedMobs.modRes("snowball"), new SimpleProjectileHandler(item -> item == Items.SNOWBALL,
                 e -> 25, entity -> {
             Snowball ball = new Snowball(entity.level(), entity);
-            ball.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), 0, 1.5F, 1.0F);
+            ball.shootFromRotation(entity, entity.getViewXRot(1), entity.getViewYRot(1), 0, 1.5F, 1.0F);
             return ball;
         }, () -> SoundEvents.SNOWBALL_THROW));
         register(ImprovedMobs.modRes("potion"), new ThrowablePotionHandler());
@@ -77,6 +78,9 @@ public class ItemUseRegistry {
         register(ImprovedMobs.modRes("wind_charge"), new WindChargeHandler());
         if (TenshiLibCrossPlat.INSTANCE.isModLoaded("supplementaries")) {
             register(ImprovedMobs.modRes("bomb"), new SupplementariesBomb());
+        }
+        if (TenshiLibCrossPlat.INSTANCE.isModLoaded("tacz")) {
+            register(ImprovedMobs.modRes("tacz"), new TACZGuns());
         }
     }
 }

@@ -10,22 +10,19 @@ import net.minecraft.world.item.Items;
 public class FlintAndSteelHandler implements ItemUseHandler {
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         double dis = entity.position().distanceTo(target.position());
         if (dis < entity.getBbWidth() + target.getBbWidth() + 0.5 && !target.isOnFire()) {
             entity.playSound(SoundEvents.FLINTANDSTEEL_USE, 1, 1);
             target.igniteForSeconds(4);
+            return 30 + entity.getRandom().nextInt(30);
         }
+        return 10;
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 30 + entity.getRandom().nextInt(30);
     }
 
     @Override

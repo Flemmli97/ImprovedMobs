@@ -23,7 +23,7 @@ public class TridentHandler implements ItemUseHandler {
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         entity.stopUsingItem();
         ItemStack trident = entity.getItemInHand(hand).getItem() instanceof TridentItem ? entity.getItemInHand(hand).copy() : new ItemStack(Items.TRIDENT);
         ThrownTrident tridententity = new ThrownTrident(entity.level(), entity, trident);
@@ -34,16 +34,12 @@ public class TridentHandler implements ItemUseHandler {
         tridententity.shoot(d0, d1 + d3 * 0.2, d2, 1.6f, 14 - entity.level().getDifficulty().getId() * 4);
         entity.playSound(SoundEvents.DROWNED_SHOOT, 1, 1 / (entity.getRandom().nextFloat() * 0.4f + 0.8f));
         entity.level().addFreshEntity(tridententity);
+        return 60 + entity.getRandom().nextInt(15);
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 60 + entity.getRandom().nextInt(15);
     }
 
     @Override

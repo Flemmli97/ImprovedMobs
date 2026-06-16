@@ -29,27 +29,23 @@ public class LavaBucketHandler implements ItemUseHandler {
         if (!level.isClientSide && (flag || flag1) && !state.liquid()) {
             level.destroyBlock(pos, true);
         }
-        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY_LAVA, SoundSource.BLOCKS, 1.0F, 1.0F);
+        level.playSound(null, pos, SoundEvents.BUCKET_EMPTY_LAVA, SoundSource.BLOCKS, 1, 1);
         level.setBlock(pos, Blocks.LAVA.defaultBlockState().setValue(LiquidBlock.LEVEL, 1), 11);
         return true;
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         double dis = entity.position().distanceToSqr(target.position());
         if (dis < 8 * 8 && tryPlaceLava(entity.level(), BlockPos.containing(target.getX() - 2 + entity.level().random.nextInt(4), target.getY() - 1 + entity.level().random.nextInt(2), target.getZ() - 2 + entity.level().random.nextInt(4)))) {
             entity.addEffect(new MobEffectInstance(MobEffects.FIRE_RESISTANCE, 240, 1, true, false));
         }
+        return 80 + entity.getRandom().nextInt(20);
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 80 + entity.getRandom().nextInt(20);
     }
 
     @Override

@@ -17,6 +17,7 @@ import io.github.flemmli97.improvedmobs.neoforge.events.EventHandler;
 import io.github.flemmli97.improvedmobs.neoforge.integration.difficulty.ScalingHealthDifficulty;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
+import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.ModList;
 import net.neoforged.fml.ModLoadingContext;
@@ -51,6 +52,7 @@ public class ImprovedMobsNeoForge {
             ClientEventHandler.setup(modBus);
         NeoForge.EVENT_BUS.register(new EventHandler());
         NeoForge.EVENT_BUS.addListener(ImprovedMobsNeoForge::addReloadListener);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, ImprovedMobsNeoForge::addItemUseListener);
         ItemUseRegistry.initBuiltin();
 
         DifficultyFetcher.register();
@@ -78,6 +80,9 @@ public class ImprovedMobsNeoForge {
     static void addReloadListener(AddReloadListenerEvent event) {
         event.addListener(DifficultyAttributeConfig.create(event.getServerResources().getRegistryLookup()));
         event.addListener(EntityOverridesManager.create(event.getServerResources().getRegistryLookup()));
+    }
+
+    static void addItemUseListener(AddReloadListenerEvent event) {
         event.addListener(ItemUseLookupManager.create(event.getServerResources().getRegistryLookup()));
     }
 }

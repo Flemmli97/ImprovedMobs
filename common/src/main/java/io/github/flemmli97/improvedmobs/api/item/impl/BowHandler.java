@@ -25,7 +25,7 @@ public class BowHandler implements ItemUseHandler {
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         float distanceFactor = BowItem.getPowerForTime(entity.getTicksUsingItem());
         entity.stopUsingItem();
         ItemStack weapon = entity.getItemInHand(hand);
@@ -38,16 +38,12 @@ public class BowHandler implements ItemUseHandler {
         arrow.shoot(d0, d1 + d3 * 0.2, d2, 1.6f, 14 - entity.level().getDifficulty().getId() * 4);
         entity.playSound(SoundEvents.SKELETON_SHOOT, 1, 1 / (entity.getRandom().nextFloat() * 0.4f + 0.8f));
         entity.level().addFreshEntity(arrow);
+        return 30;
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 30;
     }
 
     @Override

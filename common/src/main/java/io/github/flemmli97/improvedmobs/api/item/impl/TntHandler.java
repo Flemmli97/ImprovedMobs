@@ -5,6 +5,7 @@ import io.github.flemmli97.improvedmobs.api.item.MoveHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.move.StrafingMover;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import io.github.flemmli97.improvedmobs.mixinhelper.TNTExtension;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,24 +20,19 @@ import java.util.function.Function;
 public class TntHandler implements ItemUseHandler {
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
-        if (!entity.level().isClientSide) {
-            PrimedTnt tnt = new PrimedTnt(entity.level(), entity.getX(), entity.getY(), entity.getZ(), entity);
-            double dis = entity.position().distanceTo(target.position());
-            ((TNTExtension) tnt).improvedMobs$shootFromEntity(entity, entity.getXRot(), entity.getYRot(), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
-            EntityFlags.get(tnt).isThrownEntity = true;
-            entity.level().addFreshEntity(tnt);
-        }
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+        PrimedTnt tnt = new PrimedTnt(entity.level(), entity.getX(), entity.getY(), entity.getZ(), entity);
+        double dis = entity.position().distanceTo(target.position());
+        ((TNTExtension) tnt).improvedMobs$shootFromEntity(entity, entity.getViewXRot(1), entity.getViewYRot(1), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
+        entity.playSound(SoundEvents.TNT_PRIMED, 0.5f, 1);
+        EntityFlags.get(tnt).isThrownEntity = true;
+        entity.level().addFreshEntity(tnt);
+        return 60 + entity.getRandom().nextInt(20);
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 60 + entity.getRandom().nextInt(20);
     }
 
     @Override

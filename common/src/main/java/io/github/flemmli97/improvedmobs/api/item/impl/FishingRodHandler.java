@@ -14,25 +14,21 @@ public class FishingRodHandler implements ItemUseHandler {
         Vec3 vec3 = entity.position().subtract(target.position()).normalize().scale(1.5);
         target.setDeltaMovement(target.getDeltaMovement().add(vec3.add(0, 0.3, 0)));
         target.hurtMarked = true;
-        entity.playSound(SoundEvents.FISHING_BOBBER_RETRIEVE, 1.0F, 0.4F / (entity.getRandom().nextFloat() * 0.4F + 0.8F));
+        entity.playSound(SoundEvents.FISHING_BOBBER_RETRIEVE, 1, 0.4f / (entity.getRandom().nextFloat() * 0.4f + 0.8f));
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         double dis = entity.position().distanceToSqr(target.position());
         if (dis < 100) {
             ropeInTarget(entity, target);
         }
+        return 40 + entity.getRandom().nextInt(30);
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 40 + entity.getRandom().nextInt(30);
     }
 
     @Override

@@ -78,7 +78,7 @@ public class EquipmentList {
             Path path = CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json");
             DynamicOps<JsonElement> ops = provider.createSerializationContext(JsonOps.INSTANCE);
             if (!Files.exists(path)) {
-                initDefaultVals(manager);
+                initDefaultVals(manager, provider);
                 Files.createFile(path);
             } else {
                 BufferedReader reader = Files.newBufferedReader(path);
@@ -90,7 +90,7 @@ public class EquipmentList {
                 if (version < CONFIG_VERSION) {
                     // Legacy config. create a backup and reset to default
                     ImprovedMobs.LOGGER.debug("You are having a legacy config. A Backup will be created");
-                    createBackup(manager);
+                    createBackup(manager, provider);
                 } else {
                     // Read and update from config
                     EQUIPMENTS = CODEC.parse(ops, config).getPartialOrThrow();
@@ -121,16 +121,16 @@ public class EquipmentList {
         return comment;
     }
 
-    private static void createBackup(ItemUseLookupManager manager) {
+    private static void createBackup(ItemUseLookupManager manager, HolderLookup.Provider provider) {
         try {
             Files.move(CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json"), CrossPlatformStuff.INSTANCE.configDirPath().resolve("improvedmobs").resolve("equipment.json.bak"));
-            initDefaultVals(manager);
+            initDefaultVals(manager, provider);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static void initDefaultVals(ItemUseLookupManager manager) {
+    private static void initDefaultVals(ItemUseLookupManager manager, HolderLookup.Provider provider) {
         EQUIPMENTS = new EnumMap<>(EquipmentSlot.class);
         Map<EquipmentSlot, List<Pair<Integer, OptionalItemStack>>> inverseWeight = new HashMap<>();
         BuiltInRegistries.ITEM.holders().forEach(holder -> {
@@ -138,16 +138,16 @@ public class EquipmentList {
             Item item = holder.value();
             if (item instanceof BowItem)
                 slot = EquipmentSlot.MAINHAND;
-            ItemUseHandler ai = manager.get(item).stream().findFirst().orElse(null);
-            if (ai != null) {
-                slot = ai.defaultedSlot();
-            }
             if (item instanceof Equipable equipable && equipable.getEquipmentSlot().getType() != EquipmentSlot.Type.ANIMAL_ARMOR) {
                 slot = equipable.getEquipmentSlot();
             }
             if (item instanceof SwordItem || item instanceof DiggerItem)
                 if (!defaultBlackLists(item))
                     slot = EquipmentSlot.MAINHAND;
+            ItemUseHandler ai = manager.get(item).stream().findFirst().orElse(null);
+            if (ai != null) {
+                slot = ai.defaultedSlot();
+            }
             if (slot != null) {
                 OptionalItemStack stack;
                 if (item instanceof ThrowablePotionItem) {
@@ -159,6 +159,7 @@ public class EquipmentList {
                         .add(Pair.of(score(item), stack));
             }
         });
+        OtherScores.addItems(inverseWeight, provider);
         for (Map.Entry<EquipmentSlot, List<Pair<Integer, OptionalItemStack>>> entry : inverseWeight.entrySet()) {
             if (entry.getValue().isEmpty())
                 continue;
@@ -220,13 +221,13 @@ public class EquipmentList {
             if (item == Items.FLINT_AND_STEEL)
                 score = 800;
             else if (item instanceof ShieldItem)
-                score = 1200;
+                score = 1100;
             else if (item instanceof BowItem bow)
-                score = 1000 + bow.getDefaultProjectileRange() * 15;
+                score = 900 + bow.getDefaultProjectileRange() * 15;
             else if (item instanceof TridentItem)
                 multiplier *= 1.1;
             else if (item instanceof CrossbowItem crossbow)
-                score = 1000 + crossbow.getDefaultProjectileRange() * 15;
+                score = 900 + crossbow.getDefaultProjectileRange() * 15;
             else if (item instanceof FishingRodItem)
                 score = 900;
             else if (item == Items.LAVA_BUCKET)
@@ -234,13 +235,13 @@ public class EquipmentList {
             else if (item == Items.ENDER_PEARL)
                 score = 1800;
             else if (item == Items.SNOWBALL)
-                score = 500;
+                score = 800;
             else if (item instanceof ThrowablePotionItem)
                 score = 1500;
             else if (item == Items.ENCHANTED_BOOK)
                 score = 1900;
             else if (item == Blocks.TNT.asItem())
-                score = 2200;
+                score = 2500;
             else if (item == Items.WIND_CHARGE)
                 score = 2000;
         }

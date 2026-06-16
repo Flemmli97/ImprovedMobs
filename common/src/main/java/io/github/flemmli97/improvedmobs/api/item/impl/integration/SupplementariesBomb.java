@@ -27,33 +27,24 @@ public class SupplementariesBomb implements ItemUseHandler {
     }
 
     @Override
-    public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
+    public int use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         if (!entity.level().isClientSide) {
             double dis = entity.position().distanceTo(target.position()) - 5;
             if (dis <= 0)
-                return;
+                return 20;
             ItemStack stack = entity.getItemInHand(hand);
             BombEntity.BombType type = stack.getItem() instanceof BombItem bombItem ? bombItem.getType() : BombEntity.BombType.NORMAL;
             Projectile bomb = new BombEntity(entity.level(), entity.getX(), entity.getEyeY(), entity.getZ(), type);
-            bomb.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), -10, 0.8f + (float) (dis * 0.02), 1.0F);
+            bomb.shootFromRotation(entity, entity.getViewXRot(1), entity.getViewYRot(1), -10, 0.8f + (float) (dis * 0.02), 1.0F);
             EntityFlags.get(bomb).isThrownEntity = true;
             entity.level().addFreshEntity(bomb);
         }
+        return 55 + entity.getRandom().nextInt(25);
     }
 
     @Override
     public PreferredHand preferredHand() {
         return PreferredHand.ANY;
-    }
-
-    @Override
-    public int cooldown(LivingEntity entity) {
-        return 55 + entity.getRandom().nextInt(25);
-    }
-
-    @Override
-    public int attackDelay(LivingEntity entity, ItemStack stack) {
-        return 0;
     }
 
     @Override

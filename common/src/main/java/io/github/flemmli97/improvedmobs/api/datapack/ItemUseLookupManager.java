@@ -97,6 +97,6 @@ public class ItemUseLookupManager implements PreparableReloadListener {
                     builder.put(item, handlers);
             }
             this.lookup = builder.build();
-        }).thenRun(() -> EquipmentList.initEquip(this.provider, this)).thenCompose(stage::wait);
+        }).thenCompose(stage::wait).thenRun(() -> EquipmentList.initEquip(this.provider, this));
     }
 }

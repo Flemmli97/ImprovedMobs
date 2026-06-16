@@ -35,7 +35,7 @@ public class LadderClimbGoal extends Goal {
         BlockState state = this.entity.getInBlockState();
         BlockPos below = this.entity.blockPosition().below();
         if (!CrossPlatformStuff.INSTANCE.isClimbable(state, this.entity, this.entity.blockPosition())
-            && (target.y + 0.2 < this.entity.getY() && !CrossPlatformStuff.INSTANCE.isClimbable(state, this.entity, below))) {
+                && (target.y + 0.2 < this.entity.getY() && !CrossPlatformStuff.INSTANCE.isClimbable(state, this.entity, below))) {
             return;
         }
         double yMotion;

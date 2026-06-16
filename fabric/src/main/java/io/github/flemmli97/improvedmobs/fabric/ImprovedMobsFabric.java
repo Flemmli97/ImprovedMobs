@@ -18,6 +18,7 @@ import io.github.flemmli97.improvedmobs.common.registry.ImprovedMobsAttachments;
 import io.github.flemmli97.improvedmobs.fabric.events.EventHandler;
 import io.github.flemmli97.improvedmobs.fabric.integration.difficulty.LevelZDifficulty;
 import io.github.flemmli97.improvedmobs.fabric.integration.difficulty.PlayerEXDifficulty;
+import io.github.flemmli97.tenshilib.fabric.loader.events.CommonSetupEvent;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -102,7 +103,8 @@ public class ImprovedMobsFabric implements ModInitializer {
                 return EntityOverridesManager.ID;
             }
         });
-        ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(ItemUseLookupManager.ID, reg -> new IdentifiableResourceReloadListener() {
+        // Defer this so this gets reloaded with lower priority... prob?
+        CommonSetupEvent.EVENT.register(l -> ResourceManagerHelper.get(PackType.SERVER_DATA).registerReloadListener(ItemUseLookupManager.ID, reg -> new IdentifiableResourceReloadListener() {
             @Override
             public CompletableFuture<Void> reload(PreparationBarrier preparationBarrier, ResourceManager resourceManager, ProfilerFiller preparationsProfiler, ProfilerFiller reloadProfiler, Executor backgroundExecutor, Executor gameExecutor) {
                 return ItemUseLookupManager.create(reg).reload(preparationBarrier, resourceManager, preparationsProfiler, reloadProfiler, backgroundExecutor, gameExecutor);
@@ -112,7 +114,7 @@ public class ImprovedMobsFabric implements ModInitializer {
             public ResourceLocation getFabricId() {
                 return ItemUseLookupManager.ID;
             }
-        });
+        }));
         if (FabricLoader.getInstance().isModLoaded("playerex"))
             DifficultyFetcher.add(ImprovedMobs.modRes("player_ex_integration"), new PlayerEXDifficulty());
         if (FabricLoader.getInstance().isModLoaded("levelz"))

@@ -75,7 +75,8 @@ public class ItemUseGoal extends Goal {
     @Override
     public void tick() {
         // Move this check here cause ordering of different ai can change the state between #canContinueToUse and #tick
-        if (this.stackMain != this.living.getMainHandItem() || this.stackOff != this.living.getOffhandItem()) {
+        if (this.stackMain != this.living.getMainHandItem() || this.stackOff != this.living.getOffhandItem()
+                || this.ai == null || !this.ai.matches(this.living.getItemInHand(this.hand).getItem())) {
             this.stop();
             this.calculateAi();
             return;
@@ -93,8 +94,7 @@ public class ItemUseGoal extends Goal {
                 this.attackDelay = this.ai.attackDelay(this.living, this.living.getItemInHand(this.hand));
             }
             if (--this.attackDelay == -1) {
-                this.ai.use(this.living, target, this.hand);
-                this.cooldown = this.ai.cooldown(this.living);
+                this.cooldown = this.ai.use(this.living, target, this.hand);
             } else if (this.attackDelay > 0) {
                 this.ai.onPrepare(this.living, target, this.hand);
             }
