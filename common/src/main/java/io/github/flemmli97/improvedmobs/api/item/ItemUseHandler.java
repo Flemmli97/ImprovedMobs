@@ -43,8 +43,11 @@ public interface ItemUseHandler {
     /**
      * Whether the entity can use this item in its current state.
      * E.g. it shouldn't use it if some condition is met
+     *
+     * @param attempt returns true during active use check. false during handler selection
+     *                returning false when attempt=false removes this handler from being selectable
      */
-    default boolean canUse(LivingEntity entity, ItemStack stack) {
+    default boolean canUse(LivingEntity entity, ItemStack stack, boolean attempt) {
         return true;
     }
 

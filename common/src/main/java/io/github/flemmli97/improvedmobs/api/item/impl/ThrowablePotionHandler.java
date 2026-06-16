@@ -60,7 +60,7 @@ public class ThrowablePotionHandler implements ItemUseHandler {
     }
 
     @Override
-    public boolean canUse(LivingEntity entity, ItemStack stack) {
+    public boolean canUse(LivingEntity entity, ItemStack stack, boolean attempt) {
         return isBadPotion(stack);
     }
 

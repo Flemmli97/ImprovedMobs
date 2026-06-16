@@ -46,7 +46,7 @@ public class ItemUseGoal extends Goal {
         LivingEntity target = this.living.getTarget();
         if (target == null || !target.isAlive())
             return false;
-        return this.ai != null;
+        return this.ai != null && this.ai.canUse(this.living, this.living.getItemInHand(this.hand), true);
     }
 
     private void calculateAi() {

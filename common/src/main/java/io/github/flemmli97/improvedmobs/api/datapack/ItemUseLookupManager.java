@@ -66,11 +66,11 @@ public class ItemUseLookupManager implements PreparableReloadListener {
         }
         InteractionHand hand = InteractionHand.MAIN_HAND;
         ItemStack mainCheck = heldMain;
-        ItemUseHandler ai = this.get(heldMain.getItem()).stream().filter(handler -> handler.canUse(entity, mainCheck))
+        ItemUseHandler ai = this.get(heldMain.getItem()).stream().filter(handler -> handler.canUse(entity, mainCheck, false))
                 .findFirst().orElse(null);
         if (ai == null || ai.preferredHand() == ItemUseHandler.PreferredHand.OFFHAND || blockedAI(entity, heldMain.getItem())) {
             ItemStack offCheck = heldOff;
-            ai = this.get(heldOff.getItem()).stream().filter(handler -> handler.canUse(entity, offCheck))
+            ai = this.get(heldOff.getItem()).stream().filter(handler -> handler.canUse(entity, offCheck, false))
                     .findFirst().orElse(null);
             if (ai != null) {
                 if (ai.preferredHand() == ItemUseHandler.PreferredHand.MAINHAND || blockedAI(entity, heldOff.getItem()))

@@ -20,9 +20,9 @@ public class TntHandler implements ItemUseHandler {
 
     @Override
     public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
-        double dis = entity.position().distanceTo(target.position());
         if (!entity.level().isClientSide) {
             PrimedTnt tnt = new PrimedTnt(entity.level(), entity.getX(), entity.getY(), entity.getZ(), entity);
+            double dis = entity.position().distanceTo(target.position());
             ((TNTExtension) tnt).improvedMobs$shootFromEntity(entity, entity.getXRot(), entity.getYRot(), -20.0F, 0.2F + (float) (dis * 0.05), 1.0F);
             EntityFlags.get(tnt).isThrownEntity = true;
             entity.level().addFreshEntity(tnt);

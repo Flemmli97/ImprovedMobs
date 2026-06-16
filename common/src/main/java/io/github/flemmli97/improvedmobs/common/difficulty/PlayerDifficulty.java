@@ -1,6 +1,5 @@
 package io.github.flemmli97.improvedmobs.common.difficulty;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.config.values.DifficultyExpressionConfig;
 import io.github.flemmli97.tenshilib.common.attachment.SerializableAttachment;

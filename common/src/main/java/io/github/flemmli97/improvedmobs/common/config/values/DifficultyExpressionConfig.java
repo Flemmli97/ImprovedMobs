@@ -1,9 +1,7 @@
 package io.github.flemmli97.improvedmobs.common.config.values;
 
-import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -154,7 +152,7 @@ public class DifficultyExpressionConfig {
             if (this.start < this.end) {
                 return this.end;
             }
-            return  this.start;
+            return this.start;
         }
 
         @Override

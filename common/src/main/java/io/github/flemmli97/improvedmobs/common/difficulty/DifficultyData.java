@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.common.difficulty;
 
 import com.google.common.collect.Lists;
-import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.config.values.DifficultyExpressionConfig;

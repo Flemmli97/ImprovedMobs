@@ -20,11 +20,6 @@ public class ShieldHandler implements ItemUseHandler {
     }
 
     @Override
-    public boolean canUse(LivingEntity entity, ItemStack stack) {
-        return ItemUseHandler.super.canUse(entity, stack);
-    }
-
-    @Override
     public PreferredHand preferredHand() {
         return PreferredHand.OFFHAND;
     }

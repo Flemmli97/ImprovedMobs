@@ -13,6 +13,8 @@ import io.github.flemmli97.improvedmobs.api.item.impl.SimpleProjectileHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.ThrowablePotionHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.TntHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.TridentHandler;
+import io.github.flemmli97.improvedmobs.api.item.impl.integration.SupplementariesBomb;
+import io.github.flemmli97.tenshilib.loader.TenshiLibCrossPlat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.projectile.Snowball;
@@ -70,6 +72,9 @@ public class ItemUseRegistry {
         }, () -> SoundEvents.SNOWBALL_THROW));
         register(ImprovedMobs.modRes("potion"), new ThrowablePotionHandler());
         register(ImprovedMobs.modRes("tnt"), new TntHandler());
-        register(ImprovedMobs.modRes("triden"), new TridentHandler());
+        register(ImprovedMobs.modRes("trident"), new TridentHandler());
+        if (TenshiLibCrossPlat.INSTANCE.isModLoaded("supplementaries")) {
+            register(ImprovedMobs.modRes("bomb"), new SupplementariesBomb());
+        }
     }
 }
