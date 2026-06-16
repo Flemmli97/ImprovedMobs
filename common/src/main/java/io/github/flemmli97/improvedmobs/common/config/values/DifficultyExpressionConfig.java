@@ -2,6 +2,8 @@ package io.github.flemmli97.improvedmobs.common.config.values;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
+import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -21,21 +23,21 @@ public class DifficultyExpressionConfig {
         }
     }
 
-    public Pair<Integer, Value> get(double difficulty, int index) {
+    public DifficultyExpression get(double difficulty, int index) {
         if (index >= 0 && index < this.values.size()) {
             Value value = this.values.get(index);
             if (value.range().matches(difficulty)) {
-                return Pair.of(index, value);
+                return new DifficultyExpression(index, value);
             }
         }
         for (int i = 0; i < this.values.size(); i++) {
             int idx = Math.floorMod(i + index, this.values.size());
             Value value = this.values.get(idx);
             if (value.range().matches(difficulty)) {
-                return Pair.of(idx, value);
+                return new DifficultyExpression(idx, value);
             }
         }
-        return Pair.of(-1, DIFFICULTY_DEFAULT);
+        return new DifficultyExpression(-1, DIFFICULTY_DEFAULT);
     }
 
     public void read(List<String> config) {
@@ -74,6 +76,30 @@ public class DifficultyExpressionConfig {
         @Override
         public String toString() {
             return String.format("Value:[%s, %s]", this.range, this.expression.write());
+        }
+    }
+
+    public static class DifficultyExpression {
+
+        private final int index;
+        private final Value value;
+
+        public DifficultyExpression(int index, Value value) {
+            this.index = index;
+            this.value = value;
+        }
+
+        public int getIndex() {
+            return this.index;
+        }
+
+        public double get(VariableMap vars) {
+            double val = this.value.expression().get(vars);
+            // Do not allow overshooting defined upper limit and accommodate for floating point errors
+            // Otherwise state can't change properly
+            if (Math.abs(this.value.range().limit() - val) < 1.0e-10)
+                return this.value.range().limit();
+            return this.value.expression().get(vars);
         }
     }
 
@@ -122,6 +148,13 @@ public class DifficultyExpressionConfig {
                 return this.start <= difficulty && difficulty < this.end;
             }
             return difficulty <= this.start && difficulty > this.end;
+        }
+
+        public double limit() {
+            if (this.start < this.end) {
+                return this.end;
+            }
+            return  this.start;
         }
 
         @Override

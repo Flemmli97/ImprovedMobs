@@ -82,9 +82,9 @@ public class DifficultyData extends SavedData {
 
     public void increaseCurrent(VariableMap vars) {
         double current = this.getDifficulty();
-        Pair<Integer, DifficultyExpressionConfig.Value> difficulty = Config.CommonConfig.difficultyIncrease.get(current, this.difficultyIndex);
-        this.difficultyIndex = difficulty.getFirst();
-        this.difficultyLevel = (float) difficulty.getSecond().expression().get(vars.setVariable("difficulty", current));
+        DifficultyExpressionConfig.DifficultyExpression difficulty = Config.CommonConfig.difficultyIncrease.get(current, this.difficultyIndex);
+        this.difficultyIndex = difficulty.getIndex();
+        this.difficultyLevel = difficulty.get(vars.setVariable("difficulty", current));
     }
 
     public void updateTime(MinecraftServer server) {
@@ -121,10 +121,10 @@ public class DifficultyData extends SavedData {
         } else {
             dist = Math.sqrt(pos.distanceToSqr(Config.CommonConfig.centerPos.getPos().x() + 0.5, pos.y(), Config.CommonConfig.centerPos.getPos().z() + 0.5));
         }
-        DifficultyExpressionConfig.Value value = Config.CommonConfig.difficultyIncrease.get(dist, 0).getSecond();
+        DifficultyExpressionConfig.DifficultyExpression value = Config.CommonConfig.difficultyIncrease.get(dist, 0);
         VariableMap map = new VariableMap();
         Config.apply(map, level.getRandom(), level.getSharedSpawnPos(), pos, 0);
-        return value.expression().get(map);
+        return value.get(map);
     }
 
     public void setPaused(boolean paused) {

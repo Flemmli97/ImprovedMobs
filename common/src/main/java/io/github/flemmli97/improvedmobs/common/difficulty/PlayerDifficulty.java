@@ -35,9 +35,9 @@ public class PlayerDifficulty implements SerializableAttachment<CompoundTag, Pla
 
     public void increaseCurrent(VariableMap vars) {
         double current = this.difficultyLevel;
-        Pair<Integer, DifficultyExpressionConfig.Value> difficulty = Config.CommonConfig.difficultyIncrease.get(current, this.difficultyIndex);
-        this.difficultyIndex = difficulty.getFirst();
-        this.difficultyLevel = difficulty.getSecond().expression().get(vars.setVariable("difficulty", current));
+        DifficultyExpressionConfig.DifficultyExpression difficulty = Config.CommonConfig.difficultyIncrease.get(current, this.difficultyIndex);
+        this.difficultyIndex = difficulty.getIndex();
+        this.difficultyLevel = difficulty.get(vars.setVariable("difficulty", current));
     }
 
     public void setPaused(boolean paused) {
