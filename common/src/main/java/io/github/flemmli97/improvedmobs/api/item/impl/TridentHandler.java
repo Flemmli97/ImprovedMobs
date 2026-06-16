@@ -25,7 +25,8 @@ public class TridentHandler implements ItemUseHandler {
     @Override
     public void use(LivingEntity entity, LivingEntity target, InteractionHand hand) {
         entity.stopUsingItem();
-        ThrownTrident tridententity = new ThrownTrident(entity.level(), entity, new ItemStack(Items.TRIDENT));
+        ItemStack trident = entity.getItemInHand(hand).getItem() instanceof TridentItem ? entity.getItemInHand(hand).copy() : new ItemStack(Items.TRIDENT);
+        ThrownTrident tridententity = new ThrownTrident(entity.level(), entity, trident);
         double d0 = target.getX() - entity.getX();
         double d1 = target.getY(0.33) - tridententity.getY();
         double d2 = target.getZ() - entity.getZ();
