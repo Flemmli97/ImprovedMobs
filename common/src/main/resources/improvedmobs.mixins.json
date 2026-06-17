@@ -4,8 +4,9 @@
   "package": "io.github.flemmli97.improvedmobs.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
-    "pathfinding.NodeEvaluatorMixin",
     "pathfinding.FlyNodeMixin",
+    "pathfinding.NodeEvaluatorMixin",
+    "pathfinding.PathFindingContextMixin",
     "pathfinding.SwimNodeEvaluatorMixin",
     "pathfinding.WalkNodeMixin",
     "ClipContextMixin",
