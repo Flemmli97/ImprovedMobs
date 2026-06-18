@@ -30,7 +30,6 @@ public class BlockBreakGoal extends Goal {
     protected final Mob living;
     private final VariableMap variables = new VariableMap();
 
-    private LivingEntity target;
     private BlockPos diggingPosition;
     private Vec3 lastPos;
     private int digTimer;
@@ -42,18 +41,19 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public boolean canUse() {
-        this.target = this.living.getTarget();
+        if (!Utils.canBreakBlocks(this.living)) {
+            return false;
+        }
         if (this.lastPos == null) {
             this.lastPos = this.living.position();
             this.cooldown = Config.CommonConfig.breakerCooldown;
         }
         if (--this.cooldown <= 0) {
-            this.target = this.living.getTarget();
             if (this.lastPos.distanceToSqr(this.living.position()) > 0.2) {
                 this.lastPos = null;
                 this.cooldown = Config.CommonConfig.breakerCooldown;
                 return false;
-            } else if (this.target != null) {
+            } else {
                 BlockPos blockPos = this.getDiggingLocation();
                 if (blockPos == null)
                     return false;
@@ -69,7 +69,7 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return this.target != null && this.target.isAlive() && this.living.isAlive()
+        return Utils.canBreakBlocks(this.living) && this.living.isAlive()
                 && this.diggingPosition != null && this.lastPos.distanceToSqr(this.living.position()) <= 0.2;
     }
 
@@ -130,16 +130,20 @@ public class BlockBreakGoal extends Goal {
     public BlockPos getDiggingLocation() {
         Path path = this.living.getNavigation().getPath();
         BlockPos currentPos = this.living.blockPosition();
-        if (path == null || path.isDone())
-            return null;
-        Node node = path.getNextNode();
-        // We dig towards the next node
-        // Reason the node is not directly used is that there are cases were the location of the mob and the position of the next node
-        // don't match correctly (often with bigger mobs)
-        BlockPos direction = new BlockPos(
-                Math.clamp(node.x - this.living.getBlockX(), -1, 1),
-                Math.clamp(node.y - this.living.getBlockY(), -2, 1),
-                Math.clamp(node.z - this.living.getBlockZ(), -1, 1));
+        BlockPos direction;
+        if (path == null || path.isDone()) {
+            direction = BlockPos.ZERO;
+        }
+        else {
+            Node node = path.getNextNode();
+            // We dig towards the next node
+            // Reason the node is not directly used is that there are cases were the location of the mob and the position of the next node
+            // don't match correctly (often with bigger mobs)
+            direction = new BlockPos(
+                    Math.clamp(node.x - this.living.getBlockX(), -1, 1),
+                    Math.clamp(node.y - this.living.getBlockY(), -2, 1),
+                    Math.clamp(node.z - this.living.getBlockZ(), -1, 1));
+        }
         int digHeight = Mth.floor(this.living.getBbHeight() + 1 + (direction.getY() < 0 ? Math.abs(direction.getY()) : 0));
         int digWidth = Mth.floor(this.living.getBbWidth() + 1);
         if (direction.getX() != 0 && direction.getZ() != 0) {
