@@ -1,6 +1,6 @@
 package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 
-import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
+import io.github.flemmli97.improvedmobs.common.utils.Utils;
 import io.github.flemmli97.improvedmobs.mixinhelper.NodeExtension;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
@@ -15,6 +15,6 @@ public abstract class NodeEvaluatorMixin implements NodeExtension {
 
     @Override
     public boolean improvedMobs$canBreakBlocks() {
-        return this.mob != null && PathFindingUtils.canBreakBlocks(this.mob);
+        return this.mob != null && Utils.canBreakBlocks(this.mob);
     }
 }

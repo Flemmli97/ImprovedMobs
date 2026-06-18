@@ -17,6 +17,7 @@ import net.minecraft.world.effect.MobEffectUtil;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.piglin.AbstractPiglin;
@@ -25,8 +26,10 @@ import net.minecraft.world.item.armortrim.ArmorTrim;
 import net.minecraft.world.item.armortrim.TrimMaterial;
 import net.minecraft.world.item.armortrim.TrimPattern;
 import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,6 +45,22 @@ public class Utils {
             return !isInList(entry, list, false, mapper);
         ResourceLocation res = mapper.apply(entry);
         return list.contains(res.getPath()) || list.contains(res.toString());
+    }
+
+    public static boolean canBreakBlocks(Mob mob) {
+        if (mob.getTarget() == null && !Config.CommonConfig.idleBreak)
+            return false;
+        return EntityFlags.get(mob).canBreakBlocks == EntityFlags.FlagType.TRUE
+                && mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
+    }
+
+    public static boolean canClimb(Mob mob) {
+        return EntityFlags.get(mob).ladderClimber;
+    }
+
+    public static boolean canBreakState(LivingEntity entity, BlockState state, BlockPos pos) {
+        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level(), entity, CollisionContext.of(entity))
+                && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
     }
 
     public static boolean canHarvest(BlockState block, ItemStack item) {

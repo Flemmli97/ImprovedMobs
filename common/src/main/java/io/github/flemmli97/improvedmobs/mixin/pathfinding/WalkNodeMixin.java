@@ -4,7 +4,6 @@ import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
-import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
 import io.github.flemmli97.improvedmobs.mixinhelper.NodeExtension;
 import io.github.flemmli97.improvedmobs.mixinhelper.PathfindingContextExt;
@@ -54,6 +53,7 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtensi
     private final Long2ObjectMap<ResourceLocation> improvedMobs$pathTypePosCache = new Long2ObjectOpenHashMap<>();
     @Unique
     private final Long2ObjectMap<ResourceLocation> improvedMobs$pathTypeNodePosCache = new Long2ObjectOpenHashMap<>();
+
     @Unique
     private final Long2ObjectMap<PathType> improvedMobs$defaultPathTypesCache = new Long2ObjectOpenHashMap<>();
     @Unique
@@ -78,16 +78,17 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtensi
                 Node point = points[i];
                 if (point == null)
                     continue;
-                Direction direction = PathFindingUtils.fromNodes(point, origin);
+                Direction direction = PathFindingUtils.fromNodes(origin.x, origin.z, point.x, point.z);
                 if (direction == null)
                     continue;
                 // Check if this node was marked as a breakable node
-                if (PathFindingUtils.BREAKABLE.equals(this.improvedMob$pathTypeForNode(new BlockPos(point.x, point.y, point.z), direction))) {
+                ResourceLocation type = this.improvedMob$pathTypeForNode(point.x, point.y, point.z);
+                if (PathFindingUtils.BREAKABLE.equals(type)) {
                     float malus = Math.max(point.costMalus, 2);
                     // Try add the node above to allow entities to jump over breakable blocks instead of taking time to dig
                     Node node = this.findAcceptedNode(point.x, point.y + 1, point.z, jump, floor, direction, pathType);
                     if (this.isNeighborValid(node, origin) && node.y != point.y) {
-                        if (PathFindingUtils.BREAKABLE.equals(this.improvedMob$pathTypeForNode(new BlockPos(node.x, node.y, node.z), direction))) {
+                        if (PathFindingUtils.BREAKABLE.equals(this.improvedMob$pathTypeForNode(node.x, node.y, node.z))) {
                             node.costMalus = Math.max(node.costMalus, 2);
                         }
                         points[nodeCounts++] = node;
@@ -97,22 +98,24 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtensi
                 // Try add the node below to allow entity to also dig down
                 Node node = this.findAcceptedNode(point.x, point.y - 1, point.z, jump, floor, direction, pathType);
                 if (this.isNeighborValid(node, origin) && node.y != point.y) {
-                    if (PathFindingUtils.BREAKABLE.equals(this.improvedMob$pathTypeForNode(new BlockPos(node.x, node.y, node.z), direction))) {
+                    if (PathFindingUtils.BREAKABLE.equals(this.improvedMob$pathTypeForNode(node.x, node.y, node.z))) {
                         node.costMalus = Math.max(node.costMalus, 2);
                     }
                     points[nodeCounts++] = node;
                 }
             }
         }
-        if (PathFindingUtils.LADDER.equals(this.improvedMob$pathTypeForNode(new BlockPos(origin.x, origin.y + 1, origin.z), Direction.UP))) {
-            Node node = this.getNodeAndUpdateCostToMax(origin.x, origin.y + 1, origin.z, PathType.WALKABLE, 0);
+        int y = origin.y + 1;
+        if (PathFindingUtils.LADDER.equals(this.improvedMob$pathTypeForNode(origin.x, y, origin.z)) && !this.improvedMob$collidesFrom(origin.x, y, origin.z, Direction.UP)) {
+            Node node = this.getNodeAndUpdateCostToMax(origin.x, y, origin.z, PathType.WALKABLE, 0);
             if (node != null && !node.closed) {
                 node.costMalus = PathType.WALKABLE.getMalus();
                 points[nodeCounts++] = node;
             }
         }
-        if (PathFindingUtils.LADDER.equals(this.improvedMob$pathTypeForNode(new BlockPos(origin.x, origin.y - 1, origin.z), Direction.DOWN))) {
-            Node node = this.getNodeAndUpdateCostToMax(origin.x, origin.y - 1, origin.z, PathType.WALKABLE, 0);
+        y = origin.y - 1;
+        if (PathFindingUtils.LADDER.equals(this.improvedMob$pathTypeForNode(origin.x, y, origin.z)) && !this.improvedMob$collidesFrom(origin.x, y, origin.z, Direction.DOWN)) {
+            Node node = this.getNodeAndUpdateCostToMax(origin.x, y, origin.z, PathType.WALKABLE, 0);
             if (node != null && !node.closed) {
                 node.costMalus = PathType.WALKABLE.getMalus();
                 points[nodeCounts++] = node;
@@ -125,13 +128,19 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtensi
     private void onFindingAcceptedNode(int x, int y, int z, int verticalDeltaLimit, double nodeFloorLevel,
                                        Direction direction, PathType pathType, CallbackInfoReturnable<Node> info) {
         ((PathfindingContextExt) this.currentContext).improvedMobs$setPathHandler(this.improvedMobs$canBreakBlocks()
-                ? new PathfindingContextExt.AdditionalPathTypeHandler(y, pos -> {
-            ResourceLocation t = this.improvedMobs$pathTypeOf(pos, direction);
-            if (PathFindingUtils.LADDER.equals(t)) {
-                System.out.printf("from %s %s %s dir %s pos %s%n\n", x, y, z, direction, pos);
+                ? new PathfindingContextExt.AdditionalPathTypeHandler(y, pos -> this.improvedMobs$pathTypeOf(pos) != null) : null);
+    }
+
+    @ModifyReturnValue(method = "findAcceptedNode", at = @At("RETURN"))
+    private Node updateNode(Node original, @Local(argsOnly = true) Direction direction) {
+        if (original != null && PathFindingUtils.LADDER.equals(this.improvedMob$pathTypeForNode(original.x, original.y, original.z))) {
+            if (this.improvedMob$collidesFrom(original.x, original.y, original.z, direction)) {
+                // This node should not be reachable from this direction
+                original.type = PathType.BLOCKED;
+                original.costMalus = -1;
             }
-            return t!= null;
-        }) : null);
+        }
+        return original;
     }
 
     @WrapMethod(method = "tryFindFirstNonWaterBelow")
@@ -161,15 +170,20 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtensi
     }
 
     @Unique
-    private ResourceLocation improvedMob$pathTypeForNode(BlockPos pos, Direction direction) {
-        return this.improvedMobs$pathTypeNodePosCache.computeIfAbsent(pos.asLong(), l -> PathFindingUtils.getPathTypeNode(pos.getX(), pos.getY(), pos.getZ(),
-                this.entityWidth, this.entityHeight, this.entityDepth, p -> this.improvedMobs$pathTypeOf(p, direction)));
+    private ResourceLocation improvedMob$pathTypeForNode(int x, int y, int z) {
+        return this.improvedMobs$pathTypeNodePosCache.computeIfAbsent(BlockPos.asLong(x, y, z), l -> PathFindingUtils.getPathTypeNode(x, y, z,
+                this.entityWidth, this.entityHeight, this.entityDepth, this::improvedMobs$pathTypeOf));
+    }
+
+    @Unique
+    private boolean improvedMob$collidesFrom(int x, int y, int z, Direction direction) {
+        return PathFindingUtils.collidesFromSide(x, y, z, this.mob, direction,
+                aabb -> this.collisionCache.computeIfAbsent(aabb, object -> !this.currentContext.level().noBlockCollision(this.mob, aabb)));
     }
 
     @Override
-    public ResourceLocation improvedMobs$pathTypeOf(BlockPos pos, Direction direction, ResourceLocation... only) {
+    public ResourceLocation improvedMobs$pathTypeOf(BlockPos pos, ResourceLocation... only) {
         return this.improvedMobs$pathTypePosCache.computeIfAbsent(pos.asLong(),
-                p -> PathFindingUtils.pathType(this.currentContext.getBlockState(pos), pos, this.mob, direction,
-                        aabb -> this.collisionCache.computeIfAbsent(aabb, object -> !this.currentContext.level().noCollision(this.mob, aabb)), only));
+                p -> PathFindingUtils.pathType(this.currentContext.getBlockState(pos), pos, this.mob));
     }
 }

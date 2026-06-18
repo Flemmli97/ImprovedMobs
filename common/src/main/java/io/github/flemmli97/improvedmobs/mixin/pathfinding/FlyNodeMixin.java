@@ -17,6 +17,6 @@ public abstract class FlyNodeMixin extends NodeEvaluator {
     @Inject(method = "findAcceptedNode", at = @At(value = "HEAD"))
     private void onFindingAcceptedNode(int x, int y, int z, CallbackInfoReturnable<Node> info) {
         ((PathfindingContextExt) this.currentContext).improvedMobs$setPathHandler(new PathfindingContextExt.AdditionalPathTypeHandler(Integer.MIN_VALUE,
-                pos -> PathFindingUtils.BREAKABLE.equals(((NodeExtension) this).improvedMobs$pathTypeOf(pos, null, PathFindingUtils.BREAKABLE))));
+                pos -> PathFindingUtils.BREAKABLE.equals(((NodeExtension) this).improvedMobs$pathTypeOf(pos, PathFindingUtils.BREAKABLE))));
     }
 }

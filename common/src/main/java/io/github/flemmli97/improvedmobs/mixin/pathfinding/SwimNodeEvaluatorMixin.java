@@ -57,8 +57,8 @@ public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator implements No
     }
 
     @Override
-    public ResourceLocation improvedMobs$pathTypeOf(BlockPos pos, Direction direction, ResourceLocation... only) {
+    public ResourceLocation improvedMobs$pathTypeOf(BlockPos pos, ResourceLocation... only) {
         return this.improvedMobs$pathTypePosCache.computeIfAbsent(pos.asLong(),
-                p -> PathFindingUtils.pathType(this.currentContext.getBlockState(pos), pos, this.mob, direction, aabb -> false, PathFindingUtils.BREAKABLE));
+                p -> PathFindingUtils.pathType(this.currentContext.getBlockState(pos), pos, this.mob, PathFindingUtils.BREAKABLE));
     }
 }

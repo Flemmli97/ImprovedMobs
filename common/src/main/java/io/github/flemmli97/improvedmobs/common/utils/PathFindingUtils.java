@@ -1,19 +1,15 @@
 package io.github.flemmli97.improvedmobs.common.utils;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.shapes.CollisionContext;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -26,22 +22,11 @@ public class PathFindingUtils {
     public static final ResourceLocation BREAKABLE = ImprovedMobs.modRes("breakable");
     public static final ResourceLocation LADDER = ImprovedMobs.modRes("ladder");
 
-    public static boolean canBreakBlocks(Mob mob) {
-        if (mob.getTarget() == null && !Config.CommonConfig.idleBreak)
-            return false;
-        return EntityFlags.get(mob).canBreakBlocks == EntityFlags.FlagType.TRUE
-                && mob.level().getGameRules().getBoolean(GameRules.RULE_MOBGRIEFING);
-    }
-
-    public static boolean canClimb(Mob mob) {
-        return EntityFlags.get(mob).ladderClimber;
-    }
-
-    public static Direction fromNodes(Node point, Node origin) {
+    public static Direction fromNodes(int x1, int z1, int x2, int z2) {
         // Assumes the nodes if diagonal have the direction applied as direction + direction.clockwise().
         // See diagonal nodes of #WalkNodeEvaluator#getNeighbors
-        int dx = origin.x + point.x;
-        int dz = origin.z + point.z;
+        int dx = x1 + x2;
+        int dz = z1 + z2;
         if (dx >= 0 && dz < 0) {
             return Direction.NORTH;
         }
@@ -51,23 +36,20 @@ public class PathFindingUtils {
         if (dx < 0 && dz == 0) {
             return Direction.WEST;
         }
-        if (dx > 0) {
-            return Direction.EAST;
-        }
-        return null;
+        return Direction.EAST;
     }
 
     public static ResourceLocation getPathTypeNode(int x, int y, int z,
                                                    int entityWidth, int entityHeight, int entityDepth,
                                                    Function<BlockPos, ResourceLocation> pathTypeGetter) {
         Set<ResourceLocation> types = new HashSet<>();
-        for (int i = 0; i < entityWidth; ++i) {
-            for (int j = 0; j < entityHeight; ++j) {
-                for (int k = 0; k < entityDepth; ++k) {
-                    int l = i + x;
-                    int i1 = j + y;
-                    int j1 = k + z;
-                    ResourceLocation pathType = pathTypeGetter.apply(new BlockPos(l, i1, j1));
+        for (int dx = 0; dx < entityWidth; ++dx) {
+            for (int dy = 0; dy < entityHeight; ++dy) {
+                for (int dz = 0; dz < entityDepth; ++dz) {
+                    int xN = dx + x;
+                    int yN = dy + y;
+                    int zN = dz + z;
+                    ResourceLocation pathType = pathTypeGetter.apply(new BlockPos(xN, yN, zN));
                     types.add(pathType);
                     if (BREAKABLE.equals(pathType))
                         return pathType;
@@ -103,22 +85,21 @@ public class PathFindingUtils {
         return nodeID;
     }
 
-    public static ResourceLocation pathType(BlockState state, BlockPos pos, Mob entity, @Nullable Direction direction, Predicate<AABB> collision, ResourceLocation... only) {
+    public static boolean collidesFromSide(int x, int y, int z, Mob entity, Direction direction, Predicate<AABB> collision) {
+        double widthHalf = entity.getBbWidth() * 0.5;
+        double height = entity.getBbHeight();
+        AABB aabb = new AABB(x + 0.5 - widthHalf, y, z + 0.5 - widthHalf ,
+                x + 0.5 + widthHalf, y + height, z + 0.5 + widthHalf)
+                .move(-direction.getStepX() * 0.5, 0, -direction.getStepZ() * 0.5);
+        return collision.test(aabb);
+    }
+
+    public static ResourceLocation pathType(BlockState state, BlockPos pos, Mob entity, ResourceLocation... only) {
         Set<ResourceLocation> included = only.length == 0 ? Collections.emptySet() : Set.of(only);
-        if ((included.isEmpty() || included.contains(LADDER)) && canClimb(entity) && CrossPlatformStuff.INSTANCE.isClimbable(state, entity, pos)) {
-            double widthHalf = entity.getBbWidth() * 0.5;
-            double height = entity.getBbHeight();
-            AABB aabb = new AABB(pos.getX() + 0.5 - widthHalf + 0.5, pos.getY(), pos.getZ() + 0.5 - widthHalf + 0.5,
-                    pos.getX() + widthHalf + 0.5, pos.getY() + height, pos.getZ() + 0.5 + widthHalf + 0.5);
-            if (direction != null) {
-                aabb = aabb.move(-direction.getStepX() + 0.5, 0, -direction.getStepZ() + 0.5);
-            }
-            if (!collision.test(aabb)) {
-                return LADDER;
-            }
+        if ((included.isEmpty() || included.contains(LADDER)) && Utils.canClimb(entity) && CrossPlatformStuff.INSTANCE.isClimbable(state, entity, pos)) {
+            return LADDER;
         }
-        if ((included.isEmpty() || included.contains(BREAKABLE)) && canBreakBlocks(entity) && Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level(), entity, CollisionContext.of(entity))
-                && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()))) {
+        if ((included.isEmpty() || included.contains(BREAKABLE)) && Utils.canBreakBlocks(entity) && Utils.canBreakState(entity, state, pos)) {
             return BREAKABLE;
         }
         return null;
