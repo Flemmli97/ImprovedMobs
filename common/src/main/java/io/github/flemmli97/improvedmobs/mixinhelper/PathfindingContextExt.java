@@ -6,10 +6,10 @@ import java.util.function.Predicate;
 
 public interface PathfindingContextExt {
 
-    void improvedMobs$setBreakingHandler(BreakingHandler breakingHandler);
+    void improvedMobs$setPathHandler(AdditionalPathTypeHandler pathTypeHandler);
 
-    BreakingHandler improvedMobs$getBreakingHandler();
+    AdditionalPathTypeHandler improvedMobs$getPathHandler();
 
-    record BreakingHandler(int height, Predicate<BlockPos> breakingHandler) {
+    record AdditionalPathTypeHandler(int height, Predicate<BlockPos> walkable) {
     }
 }
