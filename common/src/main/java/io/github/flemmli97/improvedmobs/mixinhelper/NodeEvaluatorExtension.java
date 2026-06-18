@@ -3,7 +3,7 @@ package io.github.flemmli97.improvedmobs.mixinhelper;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 
-public interface NodeExtension {
+public interface NodeEvaluatorExtension {
 
     boolean improvedMobs$canBreakBlocks();
 

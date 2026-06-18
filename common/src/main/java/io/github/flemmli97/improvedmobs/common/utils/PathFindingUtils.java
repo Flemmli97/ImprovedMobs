@@ -2,14 +2,14 @@ package io.github.flemmli97.improvedmobs.common.utils;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
-import it.unimi.dsi.fastutil.longs.Long2BooleanMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Mob;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -59,47 +59,26 @@ public class PathFindingUtils {
         return types.contains(LADDER) ? LADDER : null;
     }
 
-    public static int createLadderNodeFor(int nodeID, Node[] nodes, Node origin, Function<BlockPos, Node> nodeGetter, Mob mob, Long2BooleanMap cache) {
-        BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos(origin.x, origin.y + 1, origin.z);
-        if (cache.computeIfAbsent(pos.asLong(), l -> {
-            BlockState state = mob.level().getBlockState(pos);
-            return CrossPlatformStuff.INSTANCE.isClimbable(state, mob, pos);
-        })) {
-            Node node = nodeGetter.apply(pos);
-            if (node != null && !node.closed) {
-                if (nodeID + 1 < nodes.length)
-                    nodes[nodeID++] = node;
-            }
-        }
-        pos.set(pos.getX(), pos.getY() - 1, pos.getZ());
-        if (cache.computeIfAbsent(pos.asLong(), l -> {
-            BlockState state = mob.level().getBlockState(pos);
-            return CrossPlatformStuff.INSTANCE.isClimbable(state, mob, pos);
-        })) {
-            Node node = nodeGetter.apply(pos);
-            if (node != null && !node.closed) {
-                if (nodeID + 1 < nodes.length)
-                    nodes[nodeID++] = node;
-            }
-        }
-        return nodeID;
-    }
-
     public static boolean collidesFromSide(int x, int y, int z, Mob entity, Direction direction, Predicate<AABB> collision) {
         double widthHalf = entity.getBbWidth() * 0.5;
         double height = entity.getBbHeight();
-        AABB aabb = new AABB(x + 0.5 - widthHalf, y, z + 0.5 - widthHalf ,
+        AABB aabb = new AABB(x + 0.5 - widthHalf, y, z + 0.5 - widthHalf,
                 x + 0.5 + widthHalf, y + height, z + 0.5 + widthHalf)
                 .move(-direction.getStepX() * 0.5, 0, -direction.getStepZ() * 0.5);
         return collision.test(aabb);
     }
 
-    public static ResourceLocation pathType(BlockState state, BlockPos pos, Mob entity, ResourceLocation... only) {
+    public static ResourceLocation pathType(BlockGetter level, BlockState state, BlockPos pos, Mob entity, ResourceLocation... only) {
         Set<ResourceLocation> included = only.length == 0 ? Collections.emptySet() : Set.of(only);
         if ((included.isEmpty() || included.contains(LADDER)) && Utils.canClimb(entity) && CrossPlatformStuff.INSTANCE.isClimbable(state, entity, pos)) {
             return LADDER;
         }
-        if ((included.isEmpty() || included.contains(BREAKABLE)) && Utils.canBreakBlocks(entity) && Utils.canBreakState(entity, state, pos)) {
+        if ((included.isEmpty() || included.contains(BREAKABLE)) && Utils.canBreakBlocks(entity) && Utils.canBreakState(entity, state)) {
+            // No collision states can just walk through so let vanilla handle them
+            // Previously in BreakableBlocks#canBreak but now moved here to let the blocks be broken with the goals
+            if (state.getCollisionShape(level, pos, CollisionContext.of(entity)).isEmpty()) {
+                return null;
+            }
             return BREAKABLE;
         }
         return null;

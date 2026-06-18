@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
-import io.github.flemmli97.improvedmobs.mixinhelper.NodeExtension;
+import io.github.flemmli97.improvedmobs.mixinhelper.NodeEvaluatorExtension;
 import io.github.flemmli97.improvedmobs.mixinhelper.PathfindingContextExt;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -30,7 +30,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import javax.annotation.Nullable;
 
 @Mixin(value = WalkNodeEvaluator.class)
-public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtension {
+public abstract class WalkNodeMixin extends NodeEvaluator implements NodeEvaluatorExtension {
 
     @Shadow
     @Final
@@ -133,7 +133,8 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtensi
 
     @ModifyReturnValue(method = "findAcceptedNode", at = @At("RETURN"))
     private Node updateNode(Node original, @Local(argsOnly = true) Direction direction) {
-        if (original != null && PathFindingUtils.LADDER.equals(this.improvedMob$pathTypeForNode(original.x, original.y, original.z))) {
+        ResourceLocation type = original != null ? this.improvedMob$pathTypeForNode(original.x, original.y, original.z) : null;
+        if (PathFindingUtils.LADDER.equals(type)) {
             if (this.improvedMob$collidesFrom(original.x, original.y, original.z, direction)) {
                 // This node should not be reachable from this direction
                 original.type = PathType.BLOCKED;
@@ -184,6 +185,6 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeExtensi
     @Override
     public ResourceLocation improvedMobs$pathTypeOf(BlockPos pos, ResourceLocation... only) {
         return this.improvedMobs$pathTypePosCache.computeIfAbsent(pos.asLong(),
-                p -> PathFindingUtils.pathType(this.currentContext.getBlockState(pos), pos, this.mob));
+                p -> PathFindingUtils.pathType(this.currentContext.level(), this.currentContext.getBlockState(pos), pos, this.mob));
     }
 }

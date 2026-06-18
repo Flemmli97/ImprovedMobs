@@ -5,11 +5,10 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
-import io.github.flemmli97.improvedmobs.mixinhelper.NodeExtension;
+import io.github.flemmli97.improvedmobs.mixinhelper.NodeEvaluatorExtension;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.NodeEvaluator;
@@ -22,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(value = SwimNodeEvaluator.class)
-public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator implements NodeExtension {
+public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator implements NodeEvaluatorExtension {
 
     @Unique
     private final Long2ObjectMap<ResourceLocation> improvedMobs$pathTypePosCache = new Long2ObjectOpenHashMap<>();
@@ -59,6 +58,6 @@ public abstract class SwimNodeEvaluatorMixin extends NodeEvaluator implements No
     @Override
     public ResourceLocation improvedMobs$pathTypeOf(BlockPos pos, ResourceLocation... only) {
         return this.improvedMobs$pathTypePosCache.computeIfAbsent(pos.asLong(),
-                p -> PathFindingUtils.pathType(this.currentContext.getBlockState(pos), pos, this.mob, PathFindingUtils.BREAKABLE));
+                p -> PathFindingUtils.pathType(this.currentContext.level(), this.currentContext.getBlockState(pos), pos, this.mob, PathFindingUtils.BREAKABLE));
     }
 }

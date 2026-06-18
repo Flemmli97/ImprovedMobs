@@ -7,6 +7,7 @@
     "pathfinding.FlyNodeMixin",
     "pathfinding.NodeEvaluatorMixin",
     "pathfinding.PathFindingContextMixin",
+    "pathfinding.PathNavigationMixin",
     "pathfinding.SwimNodeEvaluatorMixin",
     "pathfinding.WalkNodeMixin",
     "ClipContextMixin",

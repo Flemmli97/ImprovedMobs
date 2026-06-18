@@ -29,7 +29,6 @@ import net.minecraft.world.item.enchantment.EnchantmentHelper;
 import net.minecraft.world.level.GameRules;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.CollisionContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -58,9 +57,8 @@ public class Utils {
         return EntityFlags.get(mob).ladderClimber;
     }
 
-    public static boolean canBreakState(LivingEntity entity, BlockState state, BlockPos pos) {
-        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level(), entity, CollisionContext.of(entity))
-                && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
+    public static boolean canBreakState(LivingEntity entity, BlockState state) {
+        return Config.CommonConfig.breakableBlocks.canBreak(state, entity) && (Utils.canHarvest(state, entity.getMainHandItem()) || Utils.canHarvest(state, entity.getOffhandItem()));
     }
 
     public static boolean canHarvest(BlockState block, ItemStack item) {

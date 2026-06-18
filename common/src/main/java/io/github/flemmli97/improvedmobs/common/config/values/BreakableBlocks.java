@@ -2,15 +2,13 @@ package io.github.flemmli97.improvedmobs.common.config.values;
 
 import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
 import io.github.flemmli97.improvedmobs.common.config.Config;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.phys.shapes.CollisionContext;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -29,11 +27,11 @@ public class BreakableBlocks {
         this.config.addAll(List.of(defaultVal));
     }
 
-    public boolean canBreak(BlockState state, BlockPos pos, BlockGetter level, @Nullable Entity entity, CollisionContext ctx) {
+    public boolean canBreak(BlockState state, @Nullable Entity entity) {
         this.initialize();
         if (!Config.CommonConfig.idleBreak && entity instanceof Mob mob && mob.getTarget() == null)
             return false;
-        if (state.getCollisionShape(level, pos, ctx).isEmpty())
+        if (state.is(BlockTags.AIR))
             return false;
         if (!Config.CommonConfig.breakBlockEntities && state.hasBlockEntity())
             return false;

@@ -4,6 +4,7 @@ import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.improvedmobs.common.utils.BlockRestorationData;
 import io.github.flemmli97.improvedmobs.common.utils.Utils;
+import io.github.flemmli97.improvedmobs.mixinhelper.PathNavigateData;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.math.parser.VariableMap;
 import net.minecraft.core.BlockPos;
@@ -23,65 +24,43 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.pathfinder.Node;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.phys.shapes.CollisionContext;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BlockBreakGoal extends Goal {
 
     protected final Mob living;
+    private final VariableMap variables = new VariableMap();
+
     private LivingEntity target;
-    private BlockPos markedLoc;
-    private BlockPos entityPos;
+    private BlockPos diggingPosition;
+    private Vec3 lastPos;
     private int digTimer;
     private int cooldown = Config.CommonConfig.breakerInitCooldown;
 
-    private final List<BlockPos> breakAOE = new ArrayList<>();
-    private int breakIndex;
-
-    private final int digHeight;
-
-    private final VariableMap variables = new VariableMap();
-
     public BlockBreakGoal(Mob living) {
         this.living = living;
-        int digWidth = living.getBbWidth() < 1 ? 0 : Mth.ceil(living.getBbWidth());
-        this.digHeight = (int) living.getBbHeight() + 1;
-        for (int i = this.digHeight; i >= 0; i--)
-            this.breakAOE.add(new BlockPos(0, i, 0));
-        //north = neg z
-        for (int z = digWidth + 1; z >= -digWidth; z--)
-            for (int y = this.digHeight; y >= 0; y--) {
-                for (int x = 0; x <= digWidth; x++) {
-                    if (z != 0) {
-                        this.breakAOE.add(new BlockPos(x, y, z));
-                        if (x != 0)
-                            this.breakAOE.add(new BlockPos(-x, y, z));
-                    }
-                }
-            }
     }
 
     @Override
     public boolean canUse() {
         this.target = this.living.getTarget();
-        if (this.entityPos == null) {
-            this.entityPos = this.living.blockPosition();
+        if (this.lastPos == null) {
+            this.lastPos = this.living.position();
             this.cooldown = Config.CommonConfig.breakerCooldown;
         }
         if (--this.cooldown <= 0) {
-            if (!this.entityPos.equals(this.living.blockPosition())) {
-                this.entityPos = null;
+            this.target = this.living.getTarget();
+            if (this.lastPos.distanceToSqr(this.living.position()) > 0.2) {
+                this.lastPos = null;
                 this.cooldown = Config.CommonConfig.breakerCooldown;
                 return false;
-            } else if (this.target != null && this.living.distanceTo(this.target) > 1D) {// && this.living.isOnGround()) {
+            } else if (this.target != null) {
                 BlockPos blockPos = this.getDiggingLocation();
                 if (blockPos == null)
                     return false;
+                ((PathNavigateData) this.living.getNavigation()).improvedMobs$setMining(true);
                 this.cooldown = Config.CommonConfig.breakerCooldown;
-                this.markedLoc = blockPos;
-                this.entityPos = this.living.blockPosition();
+                this.diggingPosition = blockPos;
+                this.lastPos = this.living.position();
                 return true;
             }
         }
@@ -90,19 +69,16 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public boolean canContinueToUse() {
-        return this.target != null && this.target.isAlive() && this.living.isAlive() && this.markedLoc != null && this.nearSameSpace(this.entityPos, this.living.blockPosition()) && this.living.distanceTo(this.target) > 1D;
-    }
-
-    private boolean nearSameSpace(BlockPos pos1, BlockPos pos2) {
-        return pos1 != null && pos2 != null && pos1.getX() == pos2.getX() && pos1.getZ() == pos2.getZ() && Math.abs(pos1.getY() - pos2.getY()) <= 1;
+        return this.target != null && this.target.isAlive() && this.living.isAlive()
+                && this.diggingPosition != null && this.lastPos.distanceToSqr(this.living.position()) <= 0.2;
     }
 
     @Override
     public void stop() {
-        this.breakIndex = 0;
-        if (this.markedLoc != null)
-            this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, -1);
-        this.markedLoc = null;
+        ((PathNavigateData) this.living.getNavigation()).improvedMobs$setMining(false);
+        if (this.diggingPosition != null)
+            this.living.level().destroyBlockProgress(this.living.getId(), this.diggingPosition, -1);
+        this.diggingPosition = null;
     }
 
     @Override
@@ -112,12 +88,12 @@ public class BlockBreakGoal extends Goal {
 
     @Override
     public void tick() {
-        if (this.markedLoc == null || this.living.level().getBlockState(this.markedLoc).getCollisionShape(this.living.level(), this.markedLoc).isEmpty()) {
+        if (this.diggingPosition == null) {
             this.digTimer = 0;
             return;
         }
-        BlockState state = this.living.level().getBlockState(this.markedLoc);
-        float str = Utils.getBlockStrength(this.living, state, this.living.level(), this.markedLoc);
+        BlockState state = this.living.level().getBlockState(this.diggingPosition);
+        float str = Utils.getBlockStrength(this.living, state, this.living.level(), this.diggingPosition);
         str = str == Float.POSITIVE_INFINITY ? 1 : str / (1 + str * 6) * (this.digTimer * this.breakSpeedMod() + 1);
         if (str >= 1F) {
             this.digTimer = 0;
@@ -128,27 +104,20 @@ public class BlockBreakGoal extends Goal {
             if (Config.CommonConfig.restoreDelay > 0 && this.living.level() instanceof ServerLevel serverLevel) {
                 canHarvest = false;
                 BlockRestorationData.get(serverLevel)
-                        .restore(serverLevel, serverLevel.getBlockState(this.markedLoc), this.markedLoc, this.living);
+                        .restore(serverLevel, serverLevel.getBlockState(this.diggingPosition), this.diggingPosition, this.living);
             } else
                 canHarvest = Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff);
-            this.living.level().destroyBlock(this.markedLoc, canHarvest);
-            this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, -1);
-            this.markedLoc = null;
-            if (!this.aboveTarget()) {
-                this.living.setSpeed(0);
-                this.living.getNavigation().stop();
-                this.living.getNavigation().moveTo(this.living.getNavigation().createPath(this.target, 0), 1D);
-            } else {
-                this.living.getNavigation().stop();
-            }
+            this.living.level().destroyBlock(this.diggingPosition, canHarvest);
+            this.living.level().destroyBlockProgress(this.living.getId(), this.diggingPosition, -1);
+            this.diggingPosition = null;
         } else {
             this.digTimer++;
             if (this.digTimer % 5 == 0) {
-                SoundType sound = CrossPlatformStuff.INSTANCE.blockSound(state, this.living, this.markedLoc);
-                this.living.level().playSeededSound(null, this.markedLoc.getX() + 0.5, this.markedLoc.getY() + 0.5, this.markedLoc.getZ() + 0.5, Config.CommonConfig.useBlockBreakSound ? BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound.getBreakSound()) : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F, this.living.level().getRandom().nextLong());
+                SoundType sound = CrossPlatformStuff.INSTANCE.blockSound(state, this.living, this.diggingPosition);
+                this.living.level().playSeededSound(null, this.diggingPosition.getX() + 0.5, this.diggingPosition.getY() + 0.5, this.diggingPosition.getZ() + 0.5, Config.CommonConfig.useBlockBreakSound ? BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound.getBreakSound()) : SoundEvents.NOTE_BLOCK_BASS, SoundSource.BLOCKS, 2F, 0.5F, this.living.level().getRandom().nextLong());
                 this.living.swing(InteractionHand.MAIN_HAND);
-                this.living.getLookControl().setLookAt(this.markedLoc.getX(), this.markedLoc.getY(), this.markedLoc.getZ(), 0.0F, 0.0F);
-                this.living.level().destroyBlockProgress(this.living.getId(), this.markedLoc, (int) (str * 10) - 1);
+                this.living.getLookControl().setLookAt(this.diggingPosition.getX(), this.diggingPosition.getY(), this.diggingPosition.getZ(), 0.0F, 0.0F);
+                this.living.level().destroyBlockProgress(this.living.getId(), this.diggingPosition, (int) (str * 10) - 1);
             }
         }
     }
@@ -159,66 +128,74 @@ public class BlockBreakGoal extends Goal {
     }
 
     public BlockPos getDiggingLocation() {
-        ItemStack item = this.living.getMainHandItem();
-        ItemStack itemOff = this.living.getOffhandItem();
-        BlockPos pos = this.living.blockPosition();
-        BlockState state;
-        if (this.living.getTarget() != null) {
-            Vec3 target = this.living.getTarget().position();
-            if (this.aboveTarget() && Math.abs(target.x - pos.getX()) <= 1 && Math.abs(target.z - pos.getZ()) <= 1) {
-                pos = this.living.blockPosition().below();
-                state = this.living.level().getBlockState(pos);
-                if (this.canBreak(this.living, state, pos, item, itemOff)) {
-                    this.breakIndex = 0;
-                    return pos;
+        Path path = this.living.getNavigation().getPath();
+        BlockPos currentPos = this.living.blockPosition();
+        if (path == null || path.isDone())
+            return null;
+        Node node = path.getNextNode();
+        // We dig towards the next node
+        // Reason the node is not directly used is that there are cases were the location of the mob and the position of the next node
+        // don't match correctly (often with bigger mobs)
+        BlockPos direction = new BlockPos(
+                Math.clamp(node.x - this.living.getBlockX(), -1, 1),
+                Math.clamp(node.y - this.living.getBlockY(), -2, 1),
+                Math.clamp(node.z - this.living.getBlockZ(), -1, 1));
+        int digHeight = Mth.floor(this.living.getBbHeight() + 1 + (direction.getY() < 0 ? Math.abs(direction.getY()) : 0));
+        int digWidth = Mth.floor(this.living.getBbWidth() + 1);
+        if (direction.getX() != 0 && direction.getZ() != 0) {
+            // For diagonal nodes we need to break more blocks
+            // For this try each individual axis separately
+            BlockPos pos = this.getBreakablePosition(digHeight, digWidth,
+                    currentPos.getX() + direction.getX(), currentPos.getY() + direction.getY(), currentPos.getZ());
+            if (pos != null) {
+                return pos;
+            }
+            pos = this.getBreakablePosition(digHeight, digWidth,
+                    currentPos.getX(), currentPos.getY() + direction.getY(), currentPos.getZ() + direction.getZ());
+            if (pos != null) {
+                return pos;
+            }
+        }
+        return this.getBreakablePosition(digHeight, digWidth,
+                currentPos.getX() + direction.getX(), currentPos.getY() + direction.getY(), currentPos.getZ() + direction.getZ());
+    }
+
+    private BlockPos getBreakablePosition(int height, int width, int px, int py, int pz) {
+        if (width > 1)
+            width = (int) Math.ceil(width * 0.5);
+        int minZ = width > 1 ? -width : 0;
+        int minX = width > 1 ? -width : 0;
+        for (int y = 0; y < height; ++y) {
+            for (int z = minZ; z < width; ++z) {
+                for (int x = minX; x < width; ++x) {
+                    BlockPos offset = new BlockPos(x, y, z);
+                    BlockPos pos = this.getPosFromOffset(offset, px, py, pz);
+                    BlockState state = this.living.level().getBlockState(pos);
+                    if (Utils.canBreakState(this.living, state)) {
+                        return pos;
+                    }
                 }
             }
         }
-        Rotation rot = getDigDirection(this.living);
-        BlockPos offset = this.breakAOE.get(this.breakIndex);
-        offset = new BlockPos(offset.getX(), this.aboveTarget() ? (-(this.digHeight - offset.getY())) : offset.getY(), offset.getZ());
-        pos = pos.offset(offset.rotate(rot));
-        state = this.living.level().getBlockState(pos);
-        if (this.canBreak(this.living, state, pos, item, itemOff)) {
-            this.breakIndex = 0;
-            return pos;
-        }
-        this.breakIndex++;
-        if (this.breakIndex == this.breakAOE.size())
-            this.breakIndex = 0;
         return null;
     }
 
-    private boolean canBreak(LivingEntity entity, BlockState state, BlockPos pos, ItemStack item, ItemStack itemOff) {
-        return Config.CommonConfig.breakableBlocks.canBreak(state, pos, entity.level(), entity, CollisionContext.of(entity)) && (Utils.canHarvest(state, item) || Utils.canHarvest(state, itemOff));
+    private BlockPos getPosFromOffset(BlockPos offset, int x, int y, int z) {
+        offset = offset.rotate(this.getDigDirection(x, z)).mutable();
+        return new BlockPos(x + offset.getX(),
+                y + offset.getY(),
+                z + offset.getZ());
     }
 
-    private boolean aboveTarget() {
-        return this.target.getY() < this.living.getY() + 1.1;
-    }
-
-    public static Rotation getDigDirection(Mob mob) {
-        Path path = mob.getNavigation().getPath();
-        if (path != null) {
-            Node point = path.getNextNodeIndex() < path.getNodeCount() ? path.getNextNode() : null;
-            if (point != null) {
-                Vec3 dir = new Vec3(point.x + 0.5, mob.position().y, point.z + 0.5).subtract(mob.position());
-                if (Math.abs(dir.x) < Math.abs(dir.z)) {
-                    if (dir.z >= 0)
-                        return Rotation.NONE;
-                    return Rotation.CLOCKWISE_180;
-                } else {
-                    if (dir.x > 0)
-                        return Rotation.COUNTERCLOCKWISE_90;
-                    return Rotation.CLOCKWISE_90;
-                }
-            }
+    public Rotation getDigDirection(int x, int z) {
+        Vec3 dir = new Vec3(x + 0.5, this.living.position().y, z + 0.5).subtract(this.living.position());
+        if (Math.abs(dir.x) <= Math.abs(dir.z)) {
+            if (dir.z >= 0)
+                return Rotation.NONE;
+            return Rotation.CLOCKWISE_180;
         }
-        return switch (mob.getDirection()) {
-            case SOUTH -> Rotation.CLOCKWISE_180;
-            case EAST -> Rotation.CLOCKWISE_90;
-            case WEST -> Rotation.COUNTERCLOCKWISE_90;
-            default -> Rotation.NONE;
-        };
+        if (dir.x >= 0)
+            return Rotation.COUNTERCLOCKWISE_90;
+        return Rotation.CLOCKWISE_90;
     }
 }
