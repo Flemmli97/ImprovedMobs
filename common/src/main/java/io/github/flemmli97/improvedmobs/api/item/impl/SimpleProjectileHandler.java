@@ -36,7 +36,6 @@ public class SimpleProjectileHandler implements ItemUseHandler {
         entity.playSound(this.sound.get(), 0.5F, 0.4F / (entity.level().random.nextFloat() * 0.4F + 0.8F));
         if (!entity.level().isClientSide) {
             Projectile projectile = this.factory.apply(entity);
-            ;
             EntityFlags.get(projectile).isThrownEntity = true;
             entity.level().addFreshEntity(projectile);
         }

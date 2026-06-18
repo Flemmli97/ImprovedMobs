@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.api.item.impl;
 
 import io.github.flemmli97.improvedmobs.api.item.ItemUseHandler;
 import io.github.flemmli97.improvedmobs.common.entities.ai.util.AIUtils;
+import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
@@ -29,6 +30,7 @@ public class EnderpearlHandler implements ItemUseHandler {
                     z = v1.z;
                 }
                 ThrownEnderpearl pearl = new ThrownEnderpearl(entity.level(), entity);
+                EntityFlags.get(pearl).isThrownEntity = true;
                 AIUtils.setHeadingToPosition(pearl, target.getX() - x, target.getY() - y, target.getZ() - z, 1.5F, 3.0F);
                 entity.level().addFreshEntity(pearl);
             }

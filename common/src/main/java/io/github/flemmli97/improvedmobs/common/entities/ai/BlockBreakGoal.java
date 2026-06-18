@@ -14,7 +14,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.item.ItemStack;
@@ -133,8 +132,7 @@ public class BlockBreakGoal extends Goal {
         BlockPos direction;
         if (path == null || path.isDone()) {
             direction = BlockPos.ZERO;
-        }
-        else {
+        } else {
             Node node = path.getNextNode();
             // We dig towards the next node
             // Reason the node is not directly used is that there are cases were the location of the mob and the position of the next node

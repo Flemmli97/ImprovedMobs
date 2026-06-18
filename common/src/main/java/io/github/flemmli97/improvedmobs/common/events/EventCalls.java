@@ -44,7 +44,6 @@ import net.minecraft.world.entity.ai.goal.target.NearestAttackableTargetGoal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.WallClimberNavigation;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.npc.AbstractVillager;
@@ -328,7 +327,7 @@ public class EventCalls {
     }
 
     public static void explosion(Explosion explosion, Entity source, List<Entity> affectedEntities) {
-        if (source instanceof PrimedTnt && EntityFlags.get(source).isThrownEntity) {
+        if (source != null && EntityFlags.get(source).isThrownEntity) {
             if (!Config.CommonConfig.tntBlockDestruction)
                 explosion.getToBlow().clear();
             LivingEntity igniter = explosion.getIndirectSourceEntity();

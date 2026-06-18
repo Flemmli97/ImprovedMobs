@@ -3,6 +3,7 @@ package io.github.flemmli97.improvedmobs.api.item.impl.integration;
 import io.github.flemmli97.improvedmobs.api.item.ItemUseHandler;
 import io.github.flemmli97.improvedmobs.api.item.MoveHandler;
 import io.github.flemmli97.improvedmobs.api.item.impl.move.StrafingMover;
+import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import net.mehvahdjukaar.supplementaries.common.entities.BombEntity;
 import net.mehvahdjukaar.supplementaries.common.items.BombItem;
 import net.minecraft.world.InteractionHand;
@@ -35,6 +36,7 @@ public class SupplementariesBomb implements ItemUseHandler {
             BombEntity.BombType type = stack.getItem() instanceof BombItem bombItem ? bombItem.getType() : BombEntity.BombType.NORMAL;
             Projectile bomb = new BombEntity(entity.level(), entity.getX(), entity.getEyeY(), entity.getZ(), type);
             bomb.shootFromRotation(entity, entity.getXRot(), entity.getYRot(), -10, 0.8f + (float) (dis * 0.02), 1.0F);
+            EntityFlags.get(bomb).isThrownEntity = true;
             entity.level().addFreshEntity(bomb);
         }
     }

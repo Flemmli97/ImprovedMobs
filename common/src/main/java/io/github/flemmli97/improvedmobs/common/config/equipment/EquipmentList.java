@@ -188,6 +188,9 @@ public class EquipmentList {
     }
 
     private static int score(Item item) {
+        int remote = OtherScores.score(item);
+        if (remote != -1)
+            return remote;
         double score = 0;
         int durability = item.components().getOrDefault(DataComponents.MAX_DAMAGE, 0);
         ItemStack stack = new ItemStack(item);
@@ -238,6 +241,8 @@ public class EquipmentList {
                 score = 1900;
             else if (item == Blocks.TNT.asItem())
                 score = 2200;
+            else if (item == Items.WIND_CHARGE)
+                score = 2000;
         }
         score += Math.sqrt(durability) * 15;
         score += Math.max(0, step(damage, new Step(10, v -> (v * v * v * 3 - v * 5) * 2.5),
