@@ -212,7 +212,13 @@ public class EquipmentList {
     }
 
     private static void addItemTo(Map<EquipmentSlot, List<WeightedItemstack>> map, EquipmentSlot slot, Item item) {
-        float[] weights = getDefaultWeight(item);
+        float[] weights;
+        try {
+            weights = getDefaultWeight(item);
+        } catch (Exception e) {
+            ImprovedMobs.logger.error("Error calculating default weights for item {}. If you really want this item you are free to manually add this to the pool.", item, e);
+            return;
+        }
         map.compute(slot, (s, l) -> {
             if (l == null)
                 return new ArrayList<>(List.of(new WeightedItemstack(item, (int) weights[0], weights[1])));
