@@ -1,6 +1,7 @@
 package io.github.flemmli97.improvedmobs.common.entities.ai;
 
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.level.block.state.BlockState;
@@ -28,18 +29,21 @@ public class LadderClimbGoal extends Goal {
 
     @Override
     public void tick() {
-        int i = this.path.getNextNodeIndex();
-        if (i + 1 < this.path.getNodeCount()) {
-            int y = this.path.getNode(i).y;
-            Node pointNext = this.path.getNode(i + 1);
-            BlockState down = this.entity.level().getBlockState(this.entity.blockPosition().below());
-            double yMotion;
-            if (pointNext.y < y || (pointNext.y == y && !CrossPlatformStuff.INSTANCE.isClimbable(down, this.entity, pointNext.asBlockPos())))
-                yMotion = -0.14;
-            else
-                yMotion = 0.14;
-            Vec3 delta = this.entity.getDeltaMovement().multiply(0.1, 1, 0.1);
-            this.entity.setDeltaMovement(delta.x(), yMotion, delta.z());
+        if (this.path.isDone())
+            return;
+        Node target = this.path.getNextNodeIndex() + 1 < this.path.getNodeCount() ? this.path.getNode(this.path.getNextNodeIndex() + 1) : this.path.getNextNode();
+        BlockState state = this.entity.getInBlockState();
+        BlockPos below = this.entity.blockPosition().below();
+        if (!CrossPlatformStuff.INSTANCE.isClimbable(state, this.entity, this.entity.blockPosition())
+            && (target.y + 0.2 < this.entity.getY() && !CrossPlatformStuff.INSTANCE.isClimbable(state, this.entity, below))) {
+            return;
         }
+        double yMotion;
+        if (target.y < this.entity.getY())
+            yMotion = -0.14;
+        else
+            yMotion = 0.14;
+        Vec3 delta = this.entity.getDeltaMovement().multiply(0.1, 1, 0.1);
+        this.entity.setDeltaMovement(delta.x(), yMotion, delta.z());
     }
 }
