@@ -84,8 +84,8 @@ public class EventCalls {
         if (level.dimension() == Level.OVERWORLD) {
             boolean shouldIncrease = (Config.CommonConfig.ignorePlayers || !level.getServer().getPlayerList().getPlayers().isEmpty()) && level.getDayTime() > Config.CommonConfig.difficultyDelay;
             DifficultyData data = DifficultyData.get(level.getServer());
+            long timeDiff = Math.abs(level.getDayTime() - data.getPrevTime());
             if (Config.CommonConfig.shouldPunishTimeSkip) {
-                long timeDiff = Math.abs(level.getDayTime() - data.getPrevTime());
                 if (timeDiff > 2400) {
                     long i = timeDiff / 2400;
                     if (timeDiff - i * 2400 > (i + 1) * 2400 - timeDiff)
@@ -96,7 +96,7 @@ public class EventCalls {
                     }
                 }
             } else {
-                if (level.getDayTime() - data.getPrevTime() > 2400) {
+                if (timeDiff > 2400) {
                     data.increaseDifficultyBy(current -> shouldIncrease && Config.CommonConfig.doIMDifficulty ? Config.CommonConfig.increaseHandler.get(current).getRight().start() : 0, level.getDayTime(), level.getServer());
                 }
             }
