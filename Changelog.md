@@ -1,3 +1,8 @@
+Improved Mobs 1.13.7
+================
+- Fix difficulty sometimes not increasing if messing with time
+- Wrap score calc in try catch... should fix some mods breaking it
+
 Improved Mobs 1.13.6
 ================
 - Fix pause state not saved on players
