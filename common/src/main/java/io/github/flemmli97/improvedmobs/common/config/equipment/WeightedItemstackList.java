@@ -1,8 +1,12 @@
 package io.github.flemmli97.improvedmobs.common.config.equipment;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.DynamicOps;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.TestOnly;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +59,17 @@ public class WeightedItemstackList {
     private void calculateTotalWeight(double modifier) {
         this.filtered = this.valid.stream().filter(entry -> entry.getWeight(modifier) > 0).toList();
         this.totalWeight = this.filtered.stream().mapToInt(entry -> entry.getWeight(modifier)).sum();
+    }
+
+    @TestOnly
+    public JsonElement asProbability(DynamicOps<JsonElement> ops) {
+        JsonArray array = new JsonArray();
+        float modifier = 250;
+        float totalWeight = this.getTotalWeight(modifier);
+        for (WeightedItemstack entry : this.values) {
+            array.add(WeightedItemstack.CODEC.encodeStart(ops, entry.withWeight(totalWeight != 0 ? entry.getWeight(modifier) / totalWeight : 0)).getOrThrow());
+        }
+        return array;
     }
 
     @Override

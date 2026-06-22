@@ -21,40 +21,43 @@ import java.util.Map;
 
 public class OtherScores {
 
-    public static int score(Item item) {
+    public static ItemScore score(Item item, double durability, double damage, double armor, double toughness, double knockbackResistance, int enchantmentValue) {
         if (TenshiLibCrossPlat.INSTANCE.isModLoaded("supplementaries")) {
             if (item == ModRegistry.BOMB_BLUE_ITEM.get()) {
-                return 3000;
+                return new ItemScore(durability, 25, armor, toughness, knockbackResistance, enchantmentValue, 2100, 1);
             } else if (item instanceof BombItem) {
-                return 2800;
+                return new ItemScore(durability, 20, armor, toughness, knockbackResistance, enchantmentValue, 2250, 1);
             }
         }
-        return -1;
+        return null;
     }
 
-    public static void addItems(Map<EquipmentSlot, List<Pair<Integer, OptionalItemStack>>> scores, HolderLookup.Provider provider) {
+    public static void addItems(Map<EquipmentSlot, List<Pair<ItemScore, OptionalItemStack>>> scores, HolderLookup.Provider provider) {
         if (TenshiLibCrossPlat.INSTANCE.isModLoaded("tacz")) {
             TimelessAPI.getAllCommonGunIndex().forEach(entry -> {
                 CommonGunIndex index = entry.getValue();
                 GunData gunData = index.getGunData();
                 GunTabType type = TACZGuns.TYPE_LOOKUP.get(index.getType());
-                int score = 1000;
-                score += type == null ? 3500 : switch (type) {
-                    case PISTOL -> 3500;
-                    case RIFLE, SMG -> 4000;
-                    case SHOTGUN -> 4500;
-                    case RPG -> 4600;
-                    case SNIPER -> 4900;
-                    case MG -> 5000;
+                int score = 500;
+                score += type == null ? 750 : switch (type) {
+                    case PISTOL -> 750;
+                    case RIFLE, SMG -> 1000;
+                    case SHOTGUN -> 1500;
+                    case RPG -> 1650;
+                    case SNIPER -> 1750;
+                    case MG -> 2000;
                 };
+                double rate = gunData.getRoundsPerMinute(gunData.getFireModeSet().getFirst());
                 score += switch (gunData.getFireModeSet().getFirst()) {
-                    case AUTO -> 500;
+                    case AUTO -> 400;
                     case SEMI -> 300;
-                    case BURST -> 250;
+                    case BURST -> {
+                        rate = index.getGunData().getBurstData().getBpm();
+                        yield 250;
+                    }
                     case UNKNOWN -> 0;
                 };
-                score += gunData.getAmmoAmount() * 50;
-                score += gunData.getRoundsPerMinute(gunData.getFireModeSet().getFirst()) * 10;
+                score += (int) Math.ceil(rate);
                 ItemStack stack = GunItemBuilder.create()
                         .setId(entry.getKey())
                         .setFireMode(gunData.getFireModeSet().getFirst())
@@ -63,7 +66,9 @@ public class OtherScores {
                         .setAmmoInBarrel(true)
                         .build(provider);
                 scores.computeIfAbsent(EquipmentSlot.MAINHAND, k -> new ArrayList<>())
-                        .add(Pair.of(score, new OptionalItemStack(stack)));
+                        .add(Pair.of(new ItemScore(gunData.getAmmoAmount() * 50,
+                                (gunData.getBulletData().getDamageAmount() * gunData.getBulletData().getBulletAmount()),
+                                0, 0, 0, 0, score, 1.5), new OptionalItemStack(stack)));
             });
         }
     }

@@ -16,7 +16,6 @@ import io.github.flemmli97.improvedmobs.api.item.ItemUseHandler;
 import io.github.flemmli97.improvedmobs.platform.CrossPlatformStuff;
 import io.github.flemmli97.tenshilib.common.utils.CodecUtils;
 import io.github.flemmli97.tenshilib.common.utils.ItemUtils;
-import it.unimi.dsi.fastutil.doubles.Double2DoubleFunction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -50,7 +49,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
@@ -58,6 +56,7 @@ import java.util.Map;
 
 public class EquipmentList {
 
+    private static final boolean DEBUG = false;
     private static final int CONFIG_VERSION = 2;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
@@ -107,6 +106,19 @@ public class EquipmentList {
             JsonWriter wr = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardOpenOption.TRUNCATE_EXISTING));
             GSON.toJson(updated, JsonObject.class, wr);
             wr.close();
+            if (DEBUG) {
+                JsonObject obj = new JsonObject();
+                for (Map.Entry<EquipmentSlot, WeightedItemstackList> entry : EQUIPMENTS.entrySet()) {
+                    obj.add(entry.getKey().toString(), entry.getValue().asProbability(ops));
+                }
+                path = path.getParent().resolve("probabilities.json");
+                if (!Files.exists(path)) {
+                    Files.createFile(path);
+                }
+                wr = GSON.newJsonWriter(Files.newBufferedWriter(path, StandardOpenOption.TRUNCATE_EXISTING));
+                GSON.toJson(obj, JsonObject.class, wr);
+                wr.close();
+            }
         } catch (IOException | IllegalStateException e) {
             ImprovedMobs.LOGGER.error("Error initializing equipment file", e);
         }
@@ -132,7 +144,7 @@ public class EquipmentList {
 
     private static void initDefaultVals(ItemUseLookupManager manager, HolderLookup.Provider provider) {
         EQUIPMENTS = new EnumMap<>(EquipmentSlot.class);
-        Map<EquipmentSlot, List<Pair<Integer, OptionalItemStack>>> inverseWeight = new HashMap<>();
+        Map<EquipmentSlot, List<Pair<ItemScore, OptionalItemStack>>> inverseWeight = new HashMap<>();
         BuiltInRegistries.ITEM.holders().forEach(holder -> {
             EquipmentSlot slot = null;
             Item item = holder.value();
@@ -155,31 +167,42 @@ public class EquipmentList {
                 } else {
                     stack = new OptionalItemStack(holder);
                 }
+                ItemScore score = score(item);
                 inverseWeight.computeIfAbsent(slot, k -> new ArrayList<>())
-                        .add(Pair.of(score(item), stack));
+                        .add(Pair.of(score, stack));
             }
         });
         OtherScores.addItems(inverseWeight, provider);
-        for (Map.Entry<EquipmentSlot, List<Pair<Integer, OptionalItemStack>>> entry : inverseWeight.entrySet()) {
+        for (Map.Entry<EquipmentSlot, List<Pair<ItemScore, OptionalItemStack>>> entry : inverseWeight.entrySet()) {
             if (entry.getValue().isEmpty())
                 continue;
-            List<Pair<Integer, OptionalItemStack>> sorted = entry.getValue().stream().sorted(Comparator.comparingInt(Pair::getFirst)).toList();
-            int total = entry.getValue().stream().mapToInt(Pair::getFirst).sum();
-            float max = 1f / sorted.getFirst().getFirst() * total;
-            float median = 1f / sorted.get((int) (sorted.size() * 0.5)).getFirst() * total;
+            ItemScore.ScoreRange[] comp = ItemScore.composite(entry.getValue().stream().map(Pair::getFirst).toList());
             WeightedItemstackList list = new WeightedItemstackList(entry.getValue().stream()
                     .map(p -> {
-                        float[] normalized = normalizeAndInvertWeight(p.getFirst(), max, median, total);
+                        float[] normalized = normalizeAndInvertWeight(p.getFirst(), comp[0], comp[1]);
                         return new WeightedItemstack(p.getSecond(), (int) normalized[0], normalized[1]);
                     }).toList());
             EQUIPMENTS.put(entry.getKey(), list);
         }
     }
 
-    private static float[] normalizeAndInvertWeight(int score, float max, float median, int total) {
-        float weight = (1f / score) * total;
-        float quality = (max - weight) / (median * 1.5f) + 0.5f;
-        return new float[]{Math.round(weight * 100), quality * quality};
+    private static float[] normalizeAndInvertWeight(ItemScore itemScore, ItemScore.ScoreRange min, ItemScore.ScoreRange max) {
+        double dmgNorm = normalize(itemScore.damage(), min.damage(), max.damage());
+        double armorNorm = normalize(itemScore.armor(), min.armor(), max.armor());
+        double score = normalize(Math.sqrt(itemScore.durability()), Math.sqrt(min.durability()), Math.sqrt(max.durability())) * 25
+                + dmgNorm * dmgNorm * 70
+                + armorNorm * armorNorm * 70
+                + normalize(itemScore.armorToughness(), min.armorToughness(), max.armorToughness()) * 15
+                + normalize(itemScore.knockbackResistance(), min.knockbackResistance(), max.knockbackResistance()) * 15
+                + normalize(itemScore.enchantmentValue(), min.enchantmentValue(), max.enchantmentValue()) * 5
+                + normalize(Math.sqrt(itemScore.utilityScore()), Math.sqrt(min.utilityScore()), Math.sqrt(max.utilityScore())) * 50;
+        score *= itemScore.multiplier();
+        float weight = score != 0 ? (float) (10000 / score) : 0;
+        return new float[]{weight, (float) Math.pow(score, 1 / 3.)};
+    }
+
+    private static double normalize(double value, double min, double max) {
+        return max == min ? 0.0 : Math.clamp((value - min) / (max - min), 0, 1);
     }
 
     private static boolean defaultBlackLists(Item item) {
@@ -188,25 +211,24 @@ public class EquipmentList {
         return BuiltInRegistries.ITEM.getKey(item).getNamespace().equals("mobbattle");
     }
 
-    private static int score(Item item) {
-        int remote = OtherScores.score(item);
-        if (remote != -1)
-            return remote;
-        double score = 0;
-        int durability = item.components().getOrDefault(DataComponents.MAX_DAMAGE, 0);
+    private static ItemScore score(Item item) {
+        double durability = item.components().getOrDefault(DataComponents.MAX_DAMAGE, 0);
         ItemStack stack = new ItemStack(item);
-        double damage = ItemUtils.attribute(stack, Attributes.ATTACK_DAMAGE, 1, EquipmentSlotGroup.values());
-        double armor = ItemUtils.attribute(stack, Attributes.ARMOR, 1, EquipmentSlotGroup.values());
-        double toughness = ItemUtils.attribute(stack, Attributes.ARMOR_TOUGHNESS, 1, EquipmentSlotGroup.values());
-        double knockbackResistance = ItemUtils.attribute(stack, Attributes.KNOCKBACK_RESISTANCE, 1, EquipmentSlotGroup.values());
-        int enchantability = item.getEnchantmentValue();
-        double multiplier = 1;
-        if (item.components().has(DataComponents.UNBREAKABLE)) {
-            multiplier *= 2.5;
-        }
+        double damage = ItemUtils.attribute(stack, Attributes.ATTACK_DAMAGE, 0, EquipmentSlotGroup.values());
+        double armor = ItemUtils.attribute(stack, Attributes.ARMOR, 0, EquipmentSlotGroup.values());
         if ((armor > 1 || damage > 1) && durability <= 0) {
-            durability = 1000;
+            durability = 5000;
         }
+        if (item.components().has(DataComponents.UNBREAKABLE)) {
+            durability *= 3;
+        }
+        double toughness = ItemUtils.attribute(stack, Attributes.ARMOR_TOUGHNESS, 0, EquipmentSlotGroup.values());
+        double knockbackResistance = ItemUtils.attribute(stack, Attributes.KNOCKBACK_RESISTANCE, 0, EquipmentSlotGroup.values());
+        int enchantmentValue = item.getEnchantmentValue();
+        ItemScore remote = OtherScores.score(item, durability, damage, armor, toughness, knockbackResistance, enchantmentValue);
+        if (remote != null)
+            return remote;
+        double multiplier = 1;
         if (item instanceof ArmorItem armorItem) {
             try {
                 multiplier *= !armorItem.getMaterial().value().repairIngredient().get().isEmpty() ? 1.1 : 1;
@@ -216,63 +238,40 @@ public class EquipmentList {
             multiplier *= (armorItem.getMaterial() == ArmorMaterials.LEATHER || armorItem.getMaterial() == ArmorMaterials.GOLD
                     || armorItem.getMaterial() == ArmorMaterials.CHAIN || armorItem.getMaterial() == ArmorMaterials.IRON
                     || armorItem.getMaterial() == ArmorMaterials.DIAMOND || armorItem.getMaterial() == ArmorMaterials.NETHERITE
-                    || armorItem.getMaterial() == ArmorMaterials.TURTLE) ? 1.2 : 1;
-        } else {
-            if (item == Items.FLINT_AND_STEEL)
-                score = 800;
-            else if (item instanceof ShieldItem)
-                score = 1100;
-            else if (item instanceof BowItem bow)
-                score = 900 + bow.getDefaultProjectileRange() * 15;
-            else if (item instanceof TridentItem)
-                multiplier *= 1.1;
-            else if (item instanceof CrossbowItem crossbow)
-                score = 900 + crossbow.getDefaultProjectileRange() * 15;
-            else if (item instanceof FishingRodItem)
-                score = 900;
-            else if (item == Items.LAVA_BUCKET)
-                score = 2200;
-            else if (item == Items.ENDER_PEARL)
-                score = 1800;
-            else if (item == Items.SNOWBALL)
-                score = 800;
-            else if (item instanceof ThrowablePotionItem)
-                score = 1500;
-            else if (item == Items.ENCHANTED_BOOK)
-                score = 1900;
-            else if (item == Blocks.TNT.asItem())
-                score = 2500;
-            else if (item == Items.WIND_CHARGE)
-                score = 2000;
+                    || armorItem.getMaterial() == ArmorMaterials.TURTLE) ? 0.9 : 1;
         }
-        score += Math.sqrt(durability) * 15;
-        score += Math.max(0, step(damage, new Step(10, v -> (v * v * v * 3 - v * 5) * 2.5),
-                new Step(40, v -> v * v * 8 + v * 5 + Math.sqrt(v * 50)),
-                new Step(Double.MAX_VALUE, v -> v * v * 6 + v - 5000)));
-        score += armor * armor * armor * 25 + armor * armor * 11;
-        score += toughness * toughness * 30;
-        score += enchantability > 0 ? enchantability * 5 + Math.log(enchantability) * 30 : 0;
-        multiplier *= 1 + knockbackResistance * 0.25;
-        score *= multiplier;
-        return (int) score;
-    }
-
-    private static double step(double val, Step... steps) {
-        double add = 0;
-        double offset = 0;
-        for (Step step : steps) {
-            if (val <= step.limit) {
-                add += step.func().get(val - offset);
-                break;
-            } else {
-                double range = step.limit() - offset;
-                add += step.func().get(range);
-            }
+        double utilityScore = 100;
+        // MainHand
+        if (item instanceof TridentItem) {
+            utilityScore = 150;
+        } else if (item instanceof CrossbowItem crossbow) {
+            utilityScore = Math.max(200 + crossbow.getDefaultProjectileRange() * 10 - Math.sqrt(durability), 100);
+        } else if (item == Items.ENCHANTED_BOOK) {
+            utilityScore = 500;
+        } else if (item == Items.LAVA_BUCKET) {
+            utilityScore = 400;
+        } else if (item instanceof FishingRodItem) {
+            utilityScore = Math.max(185 - Math.sqrt(durability), 75);
+        } else if (item == Items.FLINT_AND_STEEL) { // Offhand
+            utilityScore = 800;
+            damage = 3;
+        } else if (item instanceof ShieldItem) {
+            utilityScore = Math.max(650 - Math.sqrt(durability), 200);
+        } else if (item instanceof BowItem bow) {
+            utilityScore = Math.max(250 + bow.getDefaultProjectileRange() * 15 - Math.sqrt(durability), 150);
+        } else if (item == Items.ENDER_PEARL) {
+            utilityScore = 1600;
+        } else if (item == Items.SNOWBALL) {
+            utilityScore = 750;
+        } else if (item instanceof ThrowablePotionItem) {
+            utilityScore = 1400;
+            damage = 3;
+        } else if (item == Blocks.TNT.asItem()) {
+            utilityScore = 2000;
+            damage = 15;
+        } else if (item == Items.WIND_CHARGE) {
+            utilityScore = 1900;
         }
-        return add;
-    }
-
-    private record Step(double limit, Double2DoubleFunction func) {
-
+        return new ItemScore(durability, damage, armor, toughness, knockbackResistance, enchantmentValue, utilityScore, multiplier);
     }
 }

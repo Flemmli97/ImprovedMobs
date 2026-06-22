@@ -24,6 +24,8 @@ public class MoveTillMover implements MoveHandler {
             this.seeTime = 0;
         if (dist > this.range || this.seeTime < 5) {
             this.mob.getNavigation().moveTo(target, 1);
+        } else {
+            this.mob.getNavigation().stop();
         }
         this.mob.getLookControl().setLookAt(target, 30.0F, 30.0F);
     }

@@ -5,6 +5,7 @@ import io.github.flemmli97.improvedmobs.common.entities.ai.util.AIUtils;
 import io.github.flemmli97.improvedmobs.common.utils.EntityFlags;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ThrownEnderpearl;
 import net.minecraft.world.item.Item;
@@ -43,5 +44,10 @@ public class EnderpearlHandler implements ItemUseHandler {
     @Override
     public boolean matches(Item item) {
         return item == Items.ENDER_PEARL;
+    }
+
+    @Override
+    public EquipmentSlot defaultedSlot() {
+        return EquipmentSlot.OFFHAND;
     }
 }

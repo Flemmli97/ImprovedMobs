@@ -5,21 +5,22 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import net.minecraft.util.Mth;
 import net.minecraft.world.item.ItemStack;
+import org.jetbrains.annotations.TestOnly;
 
 public class WeightedItemstack implements Comparable<WeightedItemstack> {
 
     public static final Codec<WeightedItemstack> CODEC = RecordCodecBuilder.create(inst -> inst.group(
             OptionalItemStack.CODEC.fieldOf("value").forGetter(d -> d.item),
-            Codec.INT.fieldOf("weight").forGetter(d -> d.weight),
+            Codec.FLOAT.fieldOf("weight").forGetter(d -> d.weight),
             Codec.FLOAT.fieldOf("quality").forGetter(d -> d.quality)
     ).apply(inst, WeightedItemstack::new));
 
     private final OptionalItemStack item;
     private final ItemStack stack;
-    private final int weight;
+    private final float weight;
     private final float quality;
 
-    public WeightedItemstack(OptionalItemStack item, int itemWeight, float quality) {
+    public WeightedItemstack(OptionalItemStack item, float itemWeight, float quality) {
         this.item = item;
         this.stack = item.asStack();
         this.weight = itemWeight;
@@ -30,7 +31,7 @@ public class WeightedItemstack implements Comparable<WeightedItemstack> {
         return this.stack.copy();
     }
 
-    public int weight() {
+    public float weight() {
         return this.weight;
     }
 
@@ -39,7 +40,7 @@ public class WeightedItemstack implements Comparable<WeightedItemstack> {
     }
 
     public int getWeight(double modifier) {
-        return Math.max(this.weight + Mth.floor(modifier * this.quality), 0);
+        return (int) Math.max(this.weight + Mth.floor(modifier * this.quality), 0);
     }
 
     public boolean valid() {
@@ -51,6 +52,11 @@ public class WeightedItemstack implements Comparable<WeightedItemstack> {
             return Config.CommonConfig.equipmentModBlacklist.contains(this.item.item().key().location().getNamespace());
         }
         return !Config.CommonConfig.equipmentModBlacklist.contains(this.item.item().key().location().getNamespace());
+    }
+
+    @TestOnly
+    public WeightedItemstack withWeight(float weight) {
+        return new WeightedItemstack(this.item, weight, this.quality);
     }
 
     @Override
