@@ -60,13 +60,13 @@ public class EquipmentList {
     private static final int CONFIG_VERSION = 2;
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
 
-    private static final Codec<Map<EquipmentSlot, WeightedItemstackList>> CODEC = Codec.unboundedMap(CodecUtils.stringEnumCodec(EquipmentSlot.class, null),
-            WeightedItemstackList.CODEC).xmap(EnumMap::new, m -> m);
+    private static final Codec<Map<EquipmentSlot, WeightedItemStackList>> CODEC = Codec.unboundedMap(CodecUtils.stringEnumCodec(EquipmentSlot.class, null),
+            WeightedItemStackList.CODEC).xmap(EnumMap::new, m -> m);
 
-    private static Map<EquipmentSlot, WeightedItemstackList> EQUIPMENTS = new EnumMap<>(EquipmentSlot.class);
+    private static Map<EquipmentSlot, WeightedItemStackList> EQUIPMENTS = new EnumMap<>(EquipmentSlot.class);
 
     public static ItemStack getEquipment(Mob mob, EquipmentSlot slot, double difficulty) {
-        WeightedItemstackList eq = EQUIPMENTS.get(slot);
+        WeightedItemStackList eq = EQUIPMENTS.get(slot);
         if (eq == null)
             return ItemStack.EMPTY;
         return eq.getRandomStack(mob.getRandom(), difficulty);
@@ -108,7 +108,7 @@ public class EquipmentList {
             wr.close();
             if (DEBUG) {
                 JsonObject obj = new JsonObject();
-                for (Map.Entry<EquipmentSlot, WeightedItemstackList> entry : EQUIPMENTS.entrySet()) {
+                for (Map.Entry<EquipmentSlot, WeightedItemStackList> entry : EQUIPMENTS.entrySet()) {
                     obj.add(entry.getKey().toString(), entry.getValue().asProbability(ops));
                 }
                 path = path.getParent().resolve("probabilities.json");
@@ -177,10 +177,10 @@ public class EquipmentList {
             if (entry.getValue().isEmpty())
                 continue;
             ItemScore.ScoreRange[] comp = ItemScore.composite(entry.getValue().stream().map(Pair::getFirst).toList());
-            WeightedItemstackList list = new WeightedItemstackList(entry.getValue().stream()
+            WeightedItemStackList list = new WeightedItemStackList(entry.getValue().stream()
                     .map(p -> {
                         float[] normalized = normalizeAndInvertWeight(p.getFirst(), comp[0], comp[1]);
-                        return new WeightedItemstack(p.getSecond(), (int) normalized[0], normalized[1]);
+                        return new WeightedItemStack.UnresolvedWeightedStack(p.getSecond(), (int) normalized[0], normalized[1]);
                     }).toList());
             EQUIPMENTS.put(entry.getKey(), list);
         }

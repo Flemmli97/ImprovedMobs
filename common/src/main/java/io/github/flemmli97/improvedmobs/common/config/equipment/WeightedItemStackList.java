@@ -11,25 +11,25 @@ import org.jetbrains.annotations.TestOnly;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WeightedItemstackList {
+public class WeightedItemStackList {
 
-    public static final Codec<WeightedItemstackList> CODEC = WeightedItemstack.CODEC.listOf()
-            .xmap(WeightedItemstackList::new, l -> {
-                List<WeightedItemstack> sorted = new ArrayList<>(l.values);
+    public static final Codec<WeightedItemStackList> CODEC = WeightedItemStack.UnresolvedWeightedStack.CODEC.listOf()
+            .xmap(WeightedItemStackList::new, l -> {
+                List<WeightedItemStack.UnresolvedWeightedStack> sorted = new ArrayList<>(l.values);
                 sorted.sort(null);
                 return sorted;
             });
 
-    private final List<WeightedItemstack> values;
-    private final List<WeightedItemstack> valid;
+    private final List<WeightedItemStack.UnresolvedWeightedStack> values;
+    private final List<WeightedItemStack> valid;
 
-    private List<WeightedItemstack> filtered = new ArrayList<>();
+    private List<WeightedItemStack> filtered = new ArrayList<>();
     private int totalWeight;
     private double lastModifier = -1;
 
-    public WeightedItemstackList(List<WeightedItemstack> values) {
+    public WeightedItemStackList(List<WeightedItemStack.UnresolvedWeightedStack> values) {
         this.values = values;
-        this.valid = this.values.stream().filter(WeightedItemstack::valid).toList();
+        this.valid = this.values.stream().flatMap(WeightedItemStack.UnresolvedWeightedStack::resolve).toList();
     }
 
     public int getTotalWeight(double modifier) {
@@ -47,7 +47,7 @@ public class WeightedItemstackList {
         if (totalWeight <= 0)
             return ItemStack.EMPTY;
         int index = random.nextInt(totalWeight);
-        for (WeightedItemstack entry : this.filtered) {
+        for (WeightedItemStack entry : this.filtered) {
             index -= entry.getWeight(difficulty);
             if (index < 0) {
                 return entry.getItem();
@@ -66,8 +66,8 @@ public class WeightedItemstackList {
         JsonArray array = new JsonArray();
         float modifier = 250;
         float totalWeight = this.getTotalWeight(modifier);
-        for (WeightedItemstack entry : this.values) {
-            array.add(WeightedItemstack.CODEC.encodeStart(ops, entry.withWeight(totalWeight != 0 ? entry.getWeight(modifier) / totalWeight : 0)).getOrThrow());
+        for (WeightedItemStack.UnresolvedWeightedStack entry : this.values) {
+            array.add(WeightedItemStack.UnresolvedWeightedStack.CODEC.encodeStart(ops, entry.withWeight(totalWeight != 0 ? entry.getWeight(modifier) / totalWeight : 0)).getOrThrow());
         }
         return array;
     }
