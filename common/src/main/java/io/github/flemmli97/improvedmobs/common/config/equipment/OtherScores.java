@@ -68,7 +68,7 @@ public class OtherScores {
                 scores.computeIfAbsent(EquipmentSlot.MAINHAND, k -> new ArrayList<>())
                         .add(Pair.of(new ItemScore(gunData.getAmmoAmount() * 50,
                                 (gunData.getBulletData().getDamageAmount() * gunData.getBulletData().getBulletAmount()),
-                                0, 0, 0, 0, score, 1.5), new OptionalItemStack(stack)));
+                                0, 0, 0, 0, score, 1.75), new OptionalItemStack(stack)));
             });
         }
     }
