@@ -14,6 +14,7 @@ import net.minecraft.world.entity.ai.behavior.BehaviorUtils;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.level.pathfinder.FlyNodeEvaluator;
 import net.minecraft.world.level.pathfinder.Path;
 import net.minecraft.world.level.pathfinder.PathFinder;
 import org.jetbrains.annotations.Nullable;
@@ -27,6 +28,7 @@ public class FlyRidingGoal extends Goal {
     private boolean start;
 
     private final PathNavigation flyer;
+    private Path lastPath;
 
     public FlyRidingGoal(Mob living) {
         this.living = living;
@@ -64,7 +66,7 @@ public class FlyRidingGoal extends Goal {
             this.targetDelay = 0;
         } else if (!this.living.isPassenger() && ++this.targetDelay > 100) {
             if (--this.pathCheckWait <= 0) {
-                this.pathCheckWait = 30;
+                this.pathCheckWait = 40;
                 if (this.checkFlying()) {
                     this.targetDelay = 0;
                     this.idle = 0;
@@ -76,7 +78,8 @@ public class FlyRidingGoal extends Goal {
     }
 
     private boolean isFlying() {
-        return this.living.getNavigation() instanceof FlyingPathNavigation;
+        return this.living.getNavigation() instanceof FlyingPathNavigation
+                || this.living.getNavigation().getNodeEvaluator() instanceof FlyNodeEvaluator;
     }
 
     @Override
@@ -133,16 +136,28 @@ public class FlyRidingGoal extends Goal {
         if (this.living.isNoGravity() || !this.living.onGround())
             return false;
         Path path = this.living.getNavigation().getPath();
-        if (path == null || this.living.getNavigation().isStuck() || path.isDone() || !path.canReach()) {
-            Path ground = this.living.getNavigation().createPath(this.living.getTarget(), 1);
-            if (ground != null && ground.canReach())
+        if (!this.doesPathReachTarget(path)) {
+            Path ground = this.living.getNavigation().createPath(this.living.getTarget(), 0);
+            if (this.doesPathReachTarget(ground)) {
+                this.lastPath = ground;
                 return false;
+            }
             Path flyer = this.flyer.createPath(this.living.getTarget(), 1);
             double dist = ground == null || ground.getEndNode() == null ? this.living.blockPosition().distManhattan(this.living.getTarget().blockPosition())
                     : ground.getEndNode().distanceManhattan(this.living.getTarget().blockPosition());
             return flyer != null && (flyer.canReach() || flyer.getDistToTarget() < dist);
         }
         return false;
+    }
+
+    private boolean doesPathReachTarget(Path groundPath) {
+        if (groundPath == null || !groundPath.canReach())
+            return false;
+        LivingEntity target = this.living.getTarget();
+        double dist = target.position().distanceToSqr(groundPath.getTarget().getX() + 0.5, target.getY(), groundPath.getTarget().getZ() + 0.5);
+        // Assume if the paths end node is close enough but not high enough the entity can't reach
+        // as walking navigators move the nodes till down till a walkable node is found
+        return dist > 16 || target.getY() - groundPath.getTarget().getY() < this.living.getBbHeight();
     }
 
     private boolean isOnLand(Entity riding) {
