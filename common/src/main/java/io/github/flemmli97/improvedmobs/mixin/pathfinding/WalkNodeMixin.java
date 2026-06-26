@@ -27,8 +27,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import javax.annotation.Nullable;
-
 @Mixin(value = WalkNodeEvaluator.class)
 public abstract class WalkNodeMixin extends NodeEvaluator implements NodeEvaluatorExtension {
 
@@ -43,7 +41,6 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeEvaluat
     protected abstract Node getNodeAndUpdateCostToMax(int x, int y, int z, PathType pathType, float malus);
 
     @Shadow
-    @Nullable
     protected abstract Node findAcceptedNode(int x, int y, int z, int verticalDeltaLimit, double nodeFloorLevel, Direction direction, PathType pathType);
 
     @Shadow

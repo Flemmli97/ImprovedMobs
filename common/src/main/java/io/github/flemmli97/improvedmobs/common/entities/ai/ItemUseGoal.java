@@ -59,6 +59,10 @@ public class ItemUseGoal extends Goal {
         }
         this.stackMain = this.living.getMainHandItem();
         this.stackOff = this.living.getOffhandItem();
+        this.living.getNavigation().stop();
+        if (this.ai != null) {
+            this.living.getNavigation().stop();
+        }
     }
 
     @Override
