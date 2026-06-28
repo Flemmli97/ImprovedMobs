@@ -3,7 +3,11 @@ package io.github.flemmli97.improvedmobs.mixin.pathfinding;
 import com.llamalad7.mixinextras.injector.ModifyReturnValue;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
+import com.llamalad7.mixinextras.sugar.Share;
+import com.llamalad7.mixinextras.sugar.ref.LocalIntRef;
+import com.llamalad7.mixinextras.sugar.ref.LocalRef;
 import io.github.flemmli97.improvedmobs.common.utils.PathFindingUtils;
 import io.github.flemmli97.improvedmobs.mixinhelper.NodeEvaluatorExtension;
 import io.github.flemmli97.improvedmobs.mixinhelper.PathfindingContextExt;
@@ -63,14 +67,31 @@ public abstract class WalkNodeMixin extends NodeEvaluator implements NodeEvaluat
         this.improvedMobs$defaultPathTypesCache.clear();
     }
 
+    // Because capturing the local does not work on fabric for some reason...
+    @WrapOperation(method = "getNeighbors", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/level/pathfinder/WalkNodeEvaluator;getCachedPathType(III)Lnet/minecraft/world/level/pathfinder/PathType;", ordinal = 1))
+    private PathType jumepVar(WalkNodeEvaluator instance, int x, int y, int z, Operation<PathType> original, @Share("pathType") LocalRef<PathType> ref) {
+        PathType pathType = original.call(instance, x, y, z);
+        ref.set(pathType);
+        return pathType;
+    }
+
+    // Because capturing the local does not work on fabric for some reason...
+    @WrapOperation(method = "getNeighbors", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Mth;floor(F)I"))
+    private int jumpVar(float value, Operation<Integer> original, @Share("jump") LocalIntRef ref) {
+        int jump = original.call(value);
+        ref.set(jump);
+        return jump;
+    }
+
     @ModifyReturnValue(method = "getNeighbors", at = @At(value = "RETURN"))
-    private int addAdditionalPoints(int nodeCounts, Node[] points, Node origin,
-                                    @Local(ordinal = 1) int jump, @Local(ordinal = 1) PathType pathType) {
+    private int addAdditionalPoints(int nodeCounts, Node[] points, Node origin, @Share("jump") LocalIntRef jumpRef, @Share("pathType") LocalRef<PathType> pathTypeRef) {
         if (this.improvedMobs$canBreakBlocks()) {
             // Current nodes should be nodes in all 8 horizontal direction
             // For some reason local cannot find this value...
             double floor = this.getFloorLevel(new BlockPos(origin.x, origin.y, origin.z));
             int count = nodeCounts;
+            int jump = jumpRef.get();
+            PathType pathType = pathTypeRef.get();
             for (int i = 0; i < count; i++) {
                 Node point = points[i];
                 if (point == null)
