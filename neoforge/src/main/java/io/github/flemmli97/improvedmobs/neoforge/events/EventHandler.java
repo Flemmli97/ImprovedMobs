@@ -1,12 +1,9 @@
 package io.github.flemmli97.improvedmobs.neoforge.events;
 
 import io.github.flemmli97.improvedmobs.common.commands.ImprovedMobsCommand;
-import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.TagsUpdatedEvent;
@@ -16,21 +13,8 @@ import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.level.ExplosionEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 public class EventHandler {
-
-    /**
-     * Move the init of default config to {@link LevelEvent.Load} cause {@link ServerStartingEvent} is too late.
-     * Entities are already loaded at that point
-     */
-    @SubscribeEvent
-    public void worldLoad(LevelEvent.Load event) {
-        if (event.getLevel() instanceof ServerLevel serverLevel && serverLevel.dimension() == Level.OVERWORLD) {
-            ConfigLoader.serverInit(serverLevel);
-        }
-    }
 
     @SubscribeEvent
     public void commands(RegisterCommandsEvent event) {

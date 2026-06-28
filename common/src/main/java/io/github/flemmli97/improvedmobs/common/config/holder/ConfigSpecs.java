@@ -166,7 +166,7 @@ public class ConfigSpecs {
                     DifficultyFeatures.toggable().toString(),
                     "added here will disable that feature completely.",
                     "E.g. [\"" + DifficultyFeatures.GUARDIAN + "\"] will disable the guardian feature").define("Feature Blacklist", Config.CommonConfig.featureBlacklist.stream().map(Enum::toString).toList(), stringList());
-            this.entityBlacklist = builder.comment(EntityFeatureConfig.use()).define("Entity Configs", Lists.newArrayList("UNINITIALIZED"), stringList());
+            this.entityBlacklist = builder.comment(EntityFeatureConfig.use()).define("Entity Configs", Config.CommonConfig.entityBlacklist.write(), stringList());
             this.featureWhitelist = builder.comment("Any of the following ",
                     DifficultyFeatures.toggable().toString(),
                     "added here will turn that feature into a whitelist in regards to Entity Configs.").define("Feature Whitelist", Config.CommonConfig.featureBlacklist.stream().map(Enum::toString).toList(), stringList());

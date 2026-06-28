@@ -12,7 +12,7 @@ public class ImprovedMobsAttachments {
 
     public static final AttachmentRegister.AttachmentRegistry ATTACHMENTS = AttachmentRegister.INSTANCE.of(ImprovedMobs.MODID);
 
-    public static final Supplier<AttachmentType<PlayerDifficulty>> PLAYER_DIFFICULTY = ATTACHMENTS.register("player_difficulty", AttachmentType.builder(() -> new PlayerDifficulty())
+    public static final Supplier<AttachmentType<Object, PlayerDifficulty>> PLAYER_DIFFICULTY = ATTACHMENTS.register("player_difficulty", AttachmentType.builder(() -> new PlayerDifficulty())
             .transferHandler(((from, targetHolder, wasDead) -> new PlayerDifficulty(from))));
-    public static final Supplier<AttachmentType<ContainerOpened>> HAS_BEEN_OPENED = ATTACHMENTS.register("has_been_opened", AttachmentType.builder(ContainerOpened::new));
+    public static final Supplier<AttachmentType<Object, ContainerOpened>> HAS_BEEN_OPENED = ATTACHMENTS.register("has_been_opened", AttachmentType.builder(ContainerOpened::new));
 }

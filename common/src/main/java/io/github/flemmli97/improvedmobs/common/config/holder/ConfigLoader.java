@@ -4,7 +4,6 @@ import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import io.github.flemmli97.tenshilib.loader.TenshiLibCrossPlat;
-import net.minecraft.server.level.ServerLevel;
 
 import java.util.EnumSet;
 import java.util.List;
@@ -37,8 +36,12 @@ public class ConfigLoader {
                 .stream().map(DifficultyFeatures::valueOf).toList();
         Config.CommonConfig.featureBlacklist = featureList.isEmpty() ? EnumSet.noneOf(DifficultyFeatures.class) : EnumSet.copyOf(featureList);
         List<String> blacklist = ConfigSpecs.COMMON_CONF.entityBlacklist.get();
-        if (blacklist.size() != 1 || !blacklist.getFirst().equals("UNINITIALIZED"))
+        if (blacklist.size() != 1 || !blacklist.getFirst().equals("UNINITIALIZED")) {
             Config.CommonConfig.entityBlacklist.read(ConfigSpecs.COMMON_CONF.entityBlacklist.get());
+        } else {
+            ConfigSpecs.COMMON_CONF.entityBlacklist.set(Config.CommonConfig.entityBlacklist.write());
+            ConfigSpecs.COMMON_CONF.entityBlacklist.save();
+        }
         featureList = ConfigSpecs.COMMON_CONF.featureWhitelist.get()
                 .stream().map(DifficultyFeatures::valueOf).toList();
         Config.CommonConfig.featureWhitelist = featureList.isEmpty() ? EnumSet.noneOf(DifficultyFeatures.class) : EnumSet.copyOf(featureList);
@@ -102,14 +105,5 @@ public class ConfigLoader {
         Config.CommonConfig.enchantCalc.read(ConfigSpecs.COMMON_CONF.enchantCalc.get());
         Config.CommonConfig.enchantBlacklist = ConfigSpecs.COMMON_CONF.enchantBlacklist.get();
         Config.CommonConfig.enchantWhitelist = ConfigSpecs.COMMON_CONF.enchantWhitelist.get();
-    }
-
-    public static void serverInit(ServerLevel level) {
-        List<? extends String> l = ConfigSpecs.COMMON_CONF.entityBlacklist.get();
-        if (l.size() == 1 && l.getFirst().equals("UNINITIALIZED")) {
-            Config.CommonConfig.entityBlacklist.initDefault(level);
-            ConfigSpecs.COMMON_CONF.entityBlacklist.set(Config.CommonConfig.entityBlacklist.write());
-            ConfigSpecs.COMMON_CONF.entityBlacklist.save();
-        }
     }
 }

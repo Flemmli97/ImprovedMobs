@@ -1,17 +1,13 @@
 package io.github.flemmli97.improvedmobs.common.config.values;
 
-import io.github.flemmli97.improvedmobs.ImprovedMobs;
 import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
 import io.github.flemmli97.improvedmobs.api.datapack.EntityOverridesManager;
 import io.github.flemmli97.improvedmobs.common.config.Config;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.monster.Enemy;
-import net.minecraft.world.level.Level;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,17 +23,8 @@ public class EntityFeatureConfig {
 
     private final Map<EntityType<?>, EnumSet<DifficultyFeatures>> features = new HashMap<>();
 
-    public void initDefault(Level level) {
-        this.features.clear();
-        BuiltInRegistries.ENTITY_TYPE.holders().forEach(type -> {
-            try {
-                Entity entity = type.value().create(level);
-                if (entity instanceof Mob && !(entity instanceof Enemy))
-                    this.config.add(type.getRegisteredName());
-            } catch (Exception e) {
-                ImprovedMobs.LOGGER.error("Error during default entity config for EntityType {}, skipping this type. Cause: {}", type.key(), e.getMessage());
-            }
-        });
+    public EntityFeatureConfig(String... values) {
+        this.config.addAll(List.of(values));
     }
 
     public boolean isDisabledFor(Mob living, DifficultyFeatures flag) {

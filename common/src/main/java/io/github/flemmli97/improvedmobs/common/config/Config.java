@@ -2,6 +2,7 @@ package io.github.flemmli97.improvedmobs.common.config;
 
 import com.mojang.datafixers.util.Pair;
 import io.github.flemmli97.improvedmobs.api.DifficultyFeatures;
+import io.github.flemmli97.improvedmobs.common.config.tags.DynamicTags;
 import io.github.flemmli97.improvedmobs.common.config.values.BreakableBlocks;
 import io.github.flemmli97.improvedmobs.common.config.values.DifficultyExpressionConfig;
 import io.github.flemmli97.improvedmobs.common.config.values.EntityFeatureConfig;
@@ -62,7 +63,7 @@ public class Config {
 
         // Feature config
         public static Set<DifficultyFeatures> featureBlacklist = EnumSet.noneOf(DifficultyFeatures.class);
-        public static EntityFeatureConfig entityBlacklist = new EntityFeatureConfig();
+        public static EntityFeatureConfig entityBlacklist = new EntityFeatureConfig("#" + DynamicTags.NON_HOSTILE_MOBS.location());
         public static Set<DifficultyFeatures> featureWhitelist = EnumSet.noneOf(DifficultyFeatures.class);
 
         // Integration

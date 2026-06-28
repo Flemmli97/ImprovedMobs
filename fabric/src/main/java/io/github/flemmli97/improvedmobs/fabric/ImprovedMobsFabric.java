@@ -10,6 +10,7 @@ import io.github.flemmli97.improvedmobs.api.item.ItemUseRegistry;
 import io.github.flemmli97.improvedmobs.common.commands.ImprovedMobsCommand;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
+import io.github.flemmli97.improvedmobs.common.config.tags.DynamicTags;
 import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfig;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
@@ -26,7 +27,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.CommonLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
@@ -49,8 +49,8 @@ public class ImprovedMobsFabric implements ModInitializer {
     public void onInitialize() {
         ImprovedMobsAttachments.ATTACHMENTS.registerContent();
         ItemUseRegistry.initBuiltin();
+        DynamicTags.init();
         ServerTickEvents.END_WORLD_TICK.register(EventCalls::tick);
-        ServerWorldEvents.LOAD.register(EventHandler::worldLoad);
         CommandRegistrationCallback.EVENT.register((dispatcher, context, selection) -> ImprovedMobsCommand.register(dispatcher));
         ServerEntityEvents.ENTITY_LOAD.register(EventHandler::onEntityLoad);
         UseBlockCallback.EVENT.register(EventHandler::openTile);

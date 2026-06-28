@@ -7,6 +7,7 @@ import io.github.flemmli97.improvedmobs.api.difficulty.DifficultyFetcher;
 import io.github.flemmli97.improvedmobs.api.item.ItemUseRegistry;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.config.holder.ConfigSpecs;
+import io.github.flemmli97.improvedmobs.common.config.tags.DynamicTags;
 import io.github.flemmli97.improvedmobs.common.datapack.DifficultyAttributeConfig;
 import io.github.flemmli97.improvedmobs.common.network.S2CDiffcultyValue;
 import io.github.flemmli97.improvedmobs.common.network.S2CShowDifficulty;
@@ -53,6 +54,7 @@ public class ImprovedMobsNeoForge {
         NeoForge.EVENT_BUS.register(new EventHandler());
         NeoForge.EVENT_BUS.addListener(ImprovedMobsNeoForge::addReloadListener);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, ImprovedMobsNeoForge::addItemUseListener);
+        DynamicTags.init();
         ItemUseRegistry.initBuiltin();
 
         DifficultyFetcher.register();

@@ -1,7 +1,6 @@
 package io.github.flemmli97.improvedmobs.fabric.events;
 
 import io.github.flemmli97.improvedmobs.ImprovedMobs;
-import io.github.flemmli97.improvedmobs.common.config.holder.ConfigLoader;
 import io.github.flemmli97.improvedmobs.common.events.EventCalls;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.resources.ResourceLocation;
@@ -27,11 +26,6 @@ public class EventHandler {
 
     public static void worldJoin(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server) {
         EventCalls.levelJoin(handler.player, server);
-    }
-
-    public static void worldLoad(MinecraftServer server, ServerLevel level) {
-        if (level.dimension() == Level.OVERWORLD)
-            ConfigLoader.serverInit(level);
     }
 
     public static void onEntityLoad(Entity entity, ServerLevel level) {
