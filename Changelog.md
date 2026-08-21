@@ -1,3 +1,22 @@
+Improved Mobs 1.16.0
+================
+- Update block breaking AI + path finding. This should also make mobs dig in a more sensible way towards their target
+- Mobs now can use wind charges
+- Add supplementary bombs compat
+- Add TaCZ guns compat
+- Update item weight and quality calculation. If you want the updated weights you need to delete your current equipment.json
+- Allow tags to be used in equipment.json
+- Update the trigger for when mobs start flying on mounts
+- Add dynamic tags. These tags are not defined via json but are created at runtime which allows better automatic entity groupings
+  - `improvedmobs:hostile_mobs`: Contains all hostile mobs
+  - `improvedmobs:non_hostile_mobs`: Contains all non hostile mobs
+  - `improvedmobs:neutral_mobs`: Contains all neutral mobs
+  - `improvedmobs:animal_mobs`: Contains all animals
+- Fix some crashes with item use AI
+- Trident AI now use the held trident item (which more or less buffs it)
+- Improve floating point errors with difficulty which should fix it being stuck in some cases
+- Fix idle block breaking not working
+
 Improved Mobs 1.15.2
 ================
 - Fix mob specific config empty feature set not working
