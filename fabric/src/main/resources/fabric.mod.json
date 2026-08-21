@@ -29,8 +29,8 @@
   ],
   "accessWidener": "improvedmobs.accesswidener",
   "depends": {
-    "fabric": ">=${fabric_version}",
-    "minecraft": ">=${mcversion}",
+    "fabric": ">=${fabric_api_version}",
+    "minecraft": ">=${minecraft_version}",
     "tenshilib": ">=${tenshilib_version}",
     "forgeconfigapiport": ">=${forge_config_api}"
   }
