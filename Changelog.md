@@ -1,3 +1,7 @@
+Improved Mobs 1.16.0.b
+================
+- Fix neoforge toml
+
 Improved Mobs 1.16.0
 ================
 - Update block breaking AI + path finding. This should also make mobs dig in a more sensible way towards their target
